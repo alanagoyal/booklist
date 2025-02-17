@@ -8,6 +8,7 @@ type ColumnDef = {
   field: string;
   header: string;
   width?: number;
+  cell?: (props: { row: { original: any } }) => React.ReactNode;
 };
 
 type DataItem = {
@@ -87,7 +88,7 @@ export function DataGrid({ data, columns }: DataGridProps) {
                   key={`${rowIndex}-${column.field}`}
                   className="px-3 py-2 border-b"
                 >
-                  {value}
+                  {column.cell ? column.cell({ row: { original: row } }) : value}
                 </div>
               );
             })}
