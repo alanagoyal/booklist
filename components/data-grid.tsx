@@ -21,7 +21,7 @@ export function DataGrid({ data, columns }: DataGridProps) {
   return (
     <div className="w-full text-sm">
       {/* Header */}
-      <div className="grid" style={{ gridTemplateColumns: columns.map(col => `${col.width || 100}px`).join(' ') }}>
+      <div className="grid" style={{ gridTemplateColumns: columns.map(col => col.width ? `${col.width}fr` : '1fr').join(' ') }}>
         {columns.map((column) => (
           <div
             key={column.field}
@@ -38,11 +38,10 @@ export function DataGrid({ data, columns }: DataGridProps) {
           <div
             key={rowIndex}
             className="grid"
-            style={{ gridTemplateColumns: columns.map(col => `${col.width || 100}px`).join(' ') }}
+            style={{ gridTemplateColumns: columns.map(col => col.width ? `${col.width}fr` : '1fr').join(' ') }}
           >
             {columns.map((column) => {
               const value = row[column.field];
-              const isHighlighted = !isNaN(value) && value > 0;
               return (
                 <div
                   key={`${rowIndex}-${column.field}`}
