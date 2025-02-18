@@ -25,6 +25,7 @@ export function DataGrid({ data, columns }: DataGridProps) {
     field: '',
     direction: null,
   });
+  const [filters, setFilters] = useState<{ [key: string]: string }>({});
 
   const handleSort = (field: string) => {
     setSortConfig(current => ({
@@ -35,24 +36,58 @@ export function DataGrid({ data, columns }: DataGridProps) {
     }));
   };
 
-  const sortedData = React.useMemo(() => {
-    if (!sortConfig.direction) return data;
+  const handleFilterChange = (field: string, value: string) => {
+    setFilters(current => ({
+      ...current,
+      [field]: value
+    }));
+  };
 
-    return [...data].sort((a, b) => {
-      const aValue = a[sortConfig.field];
-      const bValue = b[sortConfig.field];
-
-      if (aValue === bValue) return 0;
-      if (aValue === null || aValue === undefined) return 1;
-      if (bValue === null || bValue === undefined) return -1;
-
-      const comparison = aValue < bValue ? -1 : 1;
-      return sortConfig.direction === 'asc' ? comparison : -comparison;
+  const filteredAndSortedData = React.useMemo(() => {
+    // First apply filters
+    let result = data.filter(item => {
+      return Object.entries(filters).every(([field, filterValue]) => {
+        if (!filterValue) return true;
+        const value = item[field];
+        return value?.toString().toLowerCase().includes(filterValue.toLowerCase());
+      });
     });
-  }, [data, sortConfig]);
+
+    // Then apply sorting
+    if (sortConfig.direction) {
+      result = [...result].sort((a, b) => {
+        const aValue = a[sortConfig.field];
+        const bValue = b[sortConfig.field];
+
+        if (aValue === bValue) return 0;
+        if (aValue === null || aValue === undefined) return 1;
+        if (bValue === null || bValue === undefined) return -1;
+
+        const comparison = aValue < bValue ? -1 : 1;
+        return sortConfig.direction === 'asc' ? comparison : -comparison;
+      });
+    }
+
+    return result;
+  }, [data, sortConfig, filters]);
 
   return (
     <div className="w-full text-sm">
+      {/* Filters */}
+      <div className="grid" style={{ gridTemplateColumns: columns.map(col => col.width ? `${col.width}fr` : '1fr').join(' ') }}>
+        {columns.map((column) => (
+          <div key={`filter-${column.field}`} className="px-3 py-2 border-b">
+            <input
+              type="text"
+              className="w-full bg-transparent outline-none text-sm"
+              placeholder={`Search ${column.header}`}
+              value={filters[column.field] || ''}
+              onChange={(e) => handleFilterChange(column.field, e.target.value)}
+            />
+          </div>
+        ))}
+      </div>
+
       {/* Header */}
       <div className="grid" style={{ gridTemplateColumns: columns.map(col => col.width ? `${col.width}fr` : '1fr').join(' ') }}>
         {columns.map((column) => (
@@ -75,7 +110,7 @@ export function DataGrid({ data, columns }: DataGridProps) {
       
       {/* Body */}
       <div>
-        {sortedData.map((row, rowIndex) => (
+        {filteredAndSortedData.map((row, rowIndex) => (
           <div
             key={rowIndex}
             className="grid"
