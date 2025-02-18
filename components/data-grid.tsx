@@ -76,7 +76,7 @@ export function DataGrid({ data, columns }: DataGridProps) {
       {/* Filters */}
       <div className="grid" style={{ gridTemplateColumns: columns.map(col => col.width ? `${col.width}fr` : '1fr').join(' ') }}>
         {columns.map((column) => (
-          <div key={`filter-${column.field}`} className="px-3 py-2 border-b">
+          <div key={`filter-${column.field}`} className="px-3 py-2 border-b relative">
             <input
               type="text"
               className="w-full bg-transparent outline-none text-sm"
@@ -84,6 +84,14 @@ export function DataGrid({ data, columns }: DataGridProps) {
               value={filters[column.field] || ''}
               onChange={(e) => handleFilterChange(column.field, e.target.value)}
             />
+            {filters[column.field] && (
+              <button
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                onClick={() => handleFilterChange(column.field, '')}
+              >
+                ×
+              </button>
+            )}
           </div>
         ))}
       </div>
