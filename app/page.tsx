@@ -68,7 +68,7 @@ export default function Home() {
             recommender:people(full_name)
           )
         `)
-        .order('created_at', { ascending: false });
+        .order('title', { ascending: true });
       
       if (error) throw error;
       return data;
