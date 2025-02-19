@@ -72,48 +72,50 @@ export function DataGrid({ data, columns }: DataGridProps) {
   }, [data, sortConfig, filters]);
 
   return (
-    <div className="w-full text-sm">
-      {/* Filters */}
-      <div className="grid" style={{ gridTemplateColumns: columns.map(col => col.width ? `${col.width}fr` : '1fr').join(' ') }}>
-        {columns.map((column) => (
-          <div key={`filter-${column.field}`} className="px-3 py-2 border-b relative">
-            <input
-              type="text"
-              className="w-full bg-transparent outline-none text-sm"
-              placeholder={`Search ${column.header}`}
-              value={filters[column.field] || ''}
-              onChange={(e) => handleFilterChange(column.field, e.target.value)}
-            />
-            {filters[column.field] && (
-              <button
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                onClick={() => handleFilterChange(column.field, '')}
-              >
-                ×
-              </button>
-            )}
-          </div>
-        ))}
-      </div>
+    <div className="w-full text-sm relative">
+      <div className="sticky top-0 bg-background z-10">
+        {/* Filters */}
+        <div className="grid" style={{ gridTemplateColumns: columns.map(col => col.width ? `${col.width}fr` : '1fr').join(' ') }}>
+          {columns.map((column) => (
+            <div key={`filter-${column.field}`} className="px-3 py-2 border-b relative">
+              <input
+                type="text"
+                className="w-full bg-transparent outline-none text-sm"
+                placeholder={`Search ${column.header}`}
+                value={filters[column.field] || ''}
+                onChange={(e) => handleFilterChange(column.field, e.target.value)}
+              />
+              {filters[column.field] && (
+                <button
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  onClick={() => handleFilterChange(column.field, '')}
+                >
+                  ×
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
 
-      {/* Header */}
-      <div className="grid" style={{ gridTemplateColumns: columns.map(col => col.width ? `${col.width}fr` : '1fr').join(' ') }}>
-        {columns.map((column) => (
-          <div
-            key={column.field}
-            className="px-3 py-2 border-b-2 font-medium cursor-pointer select-none flex items-center justify-between"
-            onClick={() => handleSort(column.field)}
-          >
-            <span>{column.header}</span>
-            <span className="ml-1">
-              {sortConfig.field === column.field ? (
-                sortConfig.direction === 'desc' ? '↓' :
-                sortConfig.direction === 'asc' ? '↑' : 
-                '↕'
-              ) : '↕'}
-            </span>
-          </div>
-        ))}
+        {/* Header */}
+        <div className="grid" style={{ gridTemplateColumns: columns.map(col => col.width ? `${col.width}fr` : '1fr').join(' ') }}>
+          {columns.map((column) => (
+            <div
+              key={column.field}
+              className="px-3 py-2 border-b-2 font-medium cursor-pointer select-none flex items-center justify-between"
+              onClick={() => handleSort(column.field)}
+            >
+              <span>{column.header}</span>
+              <span className="ml-1">
+                {sortConfig.field === column.field ? (
+                  sortConfig.direction === 'desc' ? '↓' :
+                  sortConfig.direction === 'asc' ? '↑' : 
+                  '↕'
+                ) : '↕'}
+              </span>
+            </div>
+          ))}
+        </div>
       </div>
       
       {/* Body */}
