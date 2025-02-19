@@ -1,8 +1,8 @@
-"use client";
-
-import { DataGrid } from "@/components/data-grid";
 import { createClient } from '@supabase/supabase-js';
-import { useQuery } from '@tanstack/react-query';
+import { BookGrid } from '@/components/books';
+
+export const revalidate = 0; // Turn off automatic revalidation
+export const dynamic = 'force-static';
 
 // Create Supabase client
 const supabase = createClient(
@@ -25,61 +25,20 @@ type Book = {
   }[];
 };
 
-const columns = [
-  { field: "title", header: "Title", width: 150 },
-  { field: "author", header: "Author", width: 120 },
-  { field: "description", header: "Description", width: 200 },
-  { field: "genres", header: "Genres", width: 150 },
-  { field: "recommender", header: "Recommender", width: 150 },
-  { 
-    field: "source", 
-    header: "Source", 
-    width: 150,
-    cell: (props: any) => {
-      const sourceLink = props.row.original.source_link;
-      const sourceText = props.row.original.source;
-      return sourceLink ? (
-        <a 
-          href={sourceLink} 
-          target="_blank" 
-          rel="noopener noreferrer"
-          className="text-blue-600 hover:underline"
-        >
-          {sourceText || 'Link'}
-        </a>
-      ) : (
-        <span>{sourceText || 'N/A'}</span>
-      );
-    }
-  }
-];
+export default async function Home() {
+  const { data: books } = await supabase
+    .from('books')
+    .select(`
+      *,
+      recommendations (
+        source,
+        source_link,
+        recommender:people(full_name)
+      )
+    `)
+    .order('title', { ascending: true });
 
-export default function Home() {
-  const { data: books, isLoading, error } = useQuery<Book[]>({
-    queryKey: ['books'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('books')
-        .select(`
-          *,
-          recommendations (
-            source,
-            source_link,
-            recommender:people(full_name)
-          )
-        `)
-        .order('title', { ascending: true });
-      
-      if (error) throw error;
-      return data;
-    },
-    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
-  });
-
-  if (isLoading) return <div className="w-full h-dvh flex items-center justify-center">Loading...</div>;
-  if (error) return <div className="w-full h-dvh flex items-center justify-center">Error loading books</div>;
-
-  const formattedBooks = books?.map(book => ({
+  const formattedBooks = (books || []).map(book => ({
     id: book.id,
     title: book.title,
     author: book.author,
@@ -88,11 +47,7 @@ export default function Home() {
     recommender: book.recommendations?.[0]?.recommender?.full_name || 'N/A',
     source: book.recommendations?.[0]?.source || 'N/A',
     source_link: book.recommendations?.[0]?.source_link || ''
-  })) || [];
+  }));
 
-  return (
-    <div className="w-full h-dvh">
-      <DataGrid data={formattedBooks} columns={columns} />
-    </div>
-  );
+  return <BookGrid data={formattedBooks} />;
 }
