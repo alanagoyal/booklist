@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { ThemeToggle } from './theme-toggle';
 
 type SortDirection = 'asc' | 'desc' | null;
 
@@ -74,6 +75,11 @@ export function DataGrid({ data, columns }: DataGridProps) {
   return (
     <div className="w-full text-sm relative">
       <div className="sticky top-0 bg-background z-10">
+        {/* Title */}
+        <div className="px-3 py-2 border-b flex justify-between items-center">
+          <span>BookList</span>
+          <ThemeToggle />
+        </div>
         {/* Filters */}
         <div className="grid" style={{ gridTemplateColumns: columns.map(col => col.width ? `${col.width}fr` : '1fr').join(' ') }}>
           {columns.map((column) => (
@@ -102,7 +108,7 @@ export function DataGrid({ data, columns }: DataGridProps) {
           {columns.map((column) => (
             <div
               key={column.field}
-              className="px-3 py-2 border-b-2 font-medium cursor-pointer select-none flex items-center justify-between"
+              className="px-3 py-2 border-b font-medium cursor-pointer select-none flex items-center justify-between"
               onClick={() => handleSort(column.field)}
             >
               <span>{column.header}</span>
