@@ -77,7 +77,7 @@ export function DataGrid({ data, columns }: DataGridProps) {
       <div className="sticky top-0 bg-background z-10">
         {/* Title */}
         <div className="px-3 py-2 border-b flex justify-between items-center">
-          <span>BookList</span>
+          <span>booklist</span>
           <ThemeToggle />
         </div>
         {/* Filters */}
@@ -86,8 +86,8 @@ export function DataGrid({ data, columns }: DataGridProps) {
             <div key={`filter-${column.field}`} className="px-3 py-2 border-b relative">
               <input
                 type="text"
-                className="w-full bg-transparent outline-none text-sm"
-                placeholder={`Search ${column.header}`}
+                className="w-full bg-transparent outline-none text-sm truncate"
+                placeholder={`search ${column.header.toLowerCase()}`}
                 value={filters[column.field] || ''}
                 onChange={(e) => handleFilterChange(column.field, e.target.value)}
               />
@@ -111,7 +111,7 @@ export function DataGrid({ data, columns }: DataGridProps) {
               className="px-3 py-2 border-b font-medium cursor-pointer select-none flex items-center justify-between"
               onClick={() => handleSort(column.field)}
             >
-              <span>{column.header}</span>
+              <span>{column.header.toLowerCase()}</span>
               <span className="ml-1">
                 {sortConfig.field === column.field ? (
                   sortConfig.direction === 'desc' ? '↓' :
