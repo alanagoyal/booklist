@@ -18,7 +18,7 @@ export function ThemeToggle() {
   return (
     <button
       onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-      className="p-2 rounded-full bg-background border border-foreground/20 w-28 text-center"
+      className="p-2 rounded-full bg-background border border-foreground/20 w-24 text-center text-xs"
     >
       {theme === 'dark' ? 'light mode' : 'dark mode'}
     </button>
