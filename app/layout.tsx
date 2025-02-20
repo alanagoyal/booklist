@@ -31,7 +31,6 @@ export default function RootLayout({
       >
         <Providers>
           {children}
-          <ThemeToggle />
         </Providers>
       </body>
     </html>
