@@ -74,79 +74,84 @@ export function DataGrid({ data, columns }: DataGridProps) {
 
   return (
     <div className="h-dvh w-full text-sm flex flex-col">
-      {/* Fixed header section */}
-      <div className="bg-background">
-        {/* Title */}
-        <div className="px-3 py-2 border-b flex justify-between items-center">
+      {/* Title - always visible, no scroll */}
+      <div className="bg-background border-b-2">
+        <div className="px-3 py-2 flex justify-between items-center">
           <span>booklist</span>
           <ThemeToggle />
         </div>
-
-        {/* Filters */}
-        <div className="grid" style={{ gridTemplateColumns: columns.map(col => col.width ? `${col.width}fr` : '1fr').join(' ') }}>
-          {columns.map((column) => (
-            <div key={`filter-${column.field}`} className="px-3 py-2 border-b relative">
-              <input
-                type="text"
-                className="w-full bg-transparent outline-none text-sm truncate"
-                placeholder={`search ${column.header.toLowerCase()}`}
-                value={filters[column.field] || ''}
-                onChange={(e) => handleFilterChange(column.field, e.target.value)}
-              />
-              {filters[column.field] && (
-                <button
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                  onClick={() => handleFilterChange(column.field, '')}
-                >
-                  ×
-                </button>
-              )}
-            </div>
-          ))}
-        </div>
-
-        {/* Header */}
-        <div className="grid" style={{ gridTemplateColumns: columns.map(col => col.width ? `${col.width}fr` : '1fr').join(' ') }}>
-          {columns.map((column) => (
-            <div
-              key={column.field}
-              className="px-3 py-2 border-b font-medium cursor-pointer select-none flex items-center justify-between"
-              onClick={() => handleSort(column.field)}
-            >
-              <span>{column.header.toLowerCase()}</span>
-              <span className="ml-1">
-                {sortConfig.field === column.field ? (
-                  sortConfig.direction === 'desc' ? '↓' :
-                  sortConfig.direction === 'asc' ? '↑' : 
-                  '↕'
-                ) : '↕'}
-              </span>
-            </div>
-          ))}
-        </div>
       </div>
-      
-      {/* Scrollable body */}
+
+      {/* Scrollable container for both header and body */}
       <div className="flex-1 overflow-auto">
-        {filteredAndSortedData.map((row, rowIndex) => (
-          <div
-            key={rowIndex}
-            className="grid"
-            style={{ gridTemplateColumns: columns.map(col => col.width ? `${col.width}fr` : '1fr').join(' ') }}
-          >
-            {columns.map((column) => {
-              const value = row[column.field];
-              return (
-                <div
-                  key={`${rowIndex}-${column.field}`}
-                  className="px-3 py-2 border-b"
-                >
-                  {column.cell ? column.cell({ row: { original: row } }) : value}
+        <div className="w-full">
+          {/* Header section */}
+          <div className="sticky top-0 bg-background">
+            {/* Filters */}
+            <div className="grid" style={{ gridTemplateColumns: `repeat(${columns.length}, minmax(200px, 1fr))` }}>
+              {columns.map((column) => (
+                <div key={`filter-${column.field}`} className="px-3 py-2 border-b relative">
+                  <input
+                    type="text"
+                    className="w-full bg-transparent outline-none text-sm truncate"
+                    placeholder={`search ${column.header.toLowerCase()}`}
+                    value={filters[column.field] || ''}
+                    onChange={(e) => handleFilterChange(column.field, e.target.value)}
+                  />
+                  {filters[column.field] && (
+                    <button
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                      onClick={() => handleFilterChange(column.field, '')}
+                    >
+                      ×
+                    </button>
+                  )}
                 </div>
-              );
-            })}
+              ))}
+            </div>
+
+            {/* Column headers */}
+            <div className="grid" style={{ gridTemplateColumns: `repeat(${columns.length}, minmax(200px, 1fr))` }}>
+              {columns.map((column) => (
+                <div
+                  key={column.field}
+                  className="px-3 py-2 border-b font-medium cursor-pointer select-none flex items-center justify-between"
+                  onClick={() => handleSort(column.field)}
+                >
+                  <span>{column.header.toLowerCase()}</span>
+                  <span className="ml-1">
+                    {sortConfig.field === column.field ? (
+                      sortConfig.direction === 'desc' ? '↓' :
+                      sortConfig.direction === 'asc' ? '↑' : 
+                      '↕'
+                    ) : '↕'}
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
-        ))}
+
+          {/* Body */}
+          {filteredAndSortedData.map((row, rowIndex) => (
+            <div
+              key={rowIndex}
+              className="grid"
+              style={{ gridTemplateColumns: `repeat(${columns.length}, minmax(200px, 1fr))` }}
+            >
+              {columns.map((column) => {
+                const value = row[column.field];
+                return (
+                  <div
+                    key={`${rowIndex}-${column.field}`}
+                    className="px-3 py-2 border-b"
+                  >
+                    {column.cell ? column.cell({ row: { original: row } }) : value}
+                  </div>
+                );
+              })}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
