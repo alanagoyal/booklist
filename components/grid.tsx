@@ -73,13 +73,15 @@ export function DataGrid({ data, columns }: DataGridProps) {
   }, [data, sortConfig, filters]);
 
   return (
-    <div className="w-full text-sm relative">
-      <div className="sticky top-0 bg-background z-10">
+    <div className="h-dvh w-full text-sm flex flex-col">
+      {/* Fixed header section */}
+      <div className="bg-background">
         {/* Title */}
         <div className="px-3 py-2 border-b flex justify-between items-center">
           <span>booklist</span>
           <ThemeToggle />
         </div>
+
         {/* Filters */}
         <div className="grid" style={{ gridTemplateColumns: columns.map(col => col.width ? `${col.width}fr` : '1fr').join(' ') }}>
           {columns.map((column) => (
@@ -124,8 +126,8 @@ export function DataGrid({ data, columns }: DataGridProps) {
         </div>
       </div>
       
-      {/* Body */}
-      <div>
+      {/* Scrollable body */}
+      <div className="flex-1 overflow-auto">
         {filteredAndSortedData.map((row, rowIndex) => (
           <div
             key={rowIndex}
