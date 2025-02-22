@@ -9,6 +9,8 @@ export class Scrollbar {
   isScrolling: boolean;
   transientScrollOffsetY: number;
   transientScrollOffsetX: number;
+  scrollDirection: 'horizontal' | 'vertical' | null;
+  scrollLockTimeout: number | null;
 
   grid: Grid;
   constructor(grid: Grid) {
@@ -16,6 +18,8 @@ export class Scrollbar {
     this.isScrolling = false;
     this.transientScrollOffsetY = 0;
     this.transientScrollOffsetX = 0;
+    this.scrollDirection = null;
+    this.scrollLockTimeout = null;
 
     this.trackX = document.createElement("div");
     this.trackX.className =
@@ -131,11 +135,34 @@ export class Scrollbar {
 
     let deltaY = e.deltaY;
     let deltaX = e.deltaX;
-    // NOTE(gab): it's hard to scroll exactly horizontally or vertically, so zero out
-    // the other dimension for small deltas if scrolling fast
-    if (Math.abs(deltaY) > 30 && Math.abs(deltaX) < 15) {
+
+    // Determine the primary scroll direction if not already locked
+    if (!this.scrollDirection) {
+      if (Math.abs(deltaY) > Math.abs(deltaX)) {
+        this.scrollDirection = 'vertical';
+      } else if (Math.abs(deltaX) > Math.abs(deltaY)) {
+        this.scrollDirection = 'horizontal';
+      } else {
+        // If equal, prefer vertical scrolling
+        this.scrollDirection = 'vertical';
+      }
+
+      // Clear any existing timeout
+      if (this.scrollLockTimeout) {
+        window.clearTimeout(this.scrollLockTimeout);
+      }
+
+      // Reset the scroll direction after a delay
+      this.scrollLockTimeout = window.setTimeout(() => {
+        this.scrollDirection = null;
+        this.scrollLockTimeout = null;
+      }, 150) as unknown as number; // Timeout in ms
+    }
+
+    // Only apply scroll in the locked direction
+    if (this.scrollDirection === 'vertical') {
       deltaX = 0;
-    } else if (Math.abs(deltaX) > 30 && Math.abs(deltaY) < 15) {
+    } else if (this.scrollDirection === 'horizontal') {
       deltaY = 0;
     }
 
@@ -146,9 +173,6 @@ export class Scrollbar {
     }
 
     this.isScrolling = true;
-    // NOTE(gab): makes sure scroll events are only triggered at most
-    // once every frame. useses transient scrolling to keep track of
-    // intermediate scroll offsets
     window.requestAnimationFrame(() => {
       const scrollX =
         this.transientScrollOffsetX != 0
