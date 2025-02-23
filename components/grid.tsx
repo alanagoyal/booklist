@@ -84,11 +84,11 @@ export function DataGrid({ data, columns }: DataGridProps) {
 
       {/* Scrollable container for both header and body */}
       <div className="flex-1 overflow-auto">
-        <div className="w-full">
+        <div className="min-w-full inline-block align-middle">
           {/* Header section */}
-          <div className="sticky top-0 bg-background">
+          <div className="sticky top-0 min-w-full">
             {/* Filters */}
-            <div className="grid" style={{ gridTemplateColumns: `repeat(${columns.length}, minmax(200px, 1fr))` }}>
+            <div className="grid bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60" style={{ gridTemplateColumns: `repeat(${columns.length}, minmax(200px, 1fr))` }}>
               {columns.map((column) => (
                 <div key={`filter-${column.field}`} className="px-3 py-2 border-b relative">
                   <input
@@ -111,7 +111,7 @@ export function DataGrid({ data, columns }: DataGridProps) {
             </div>
 
             {/* Column headers */}
-            <div className="grid" style={{ gridTemplateColumns: `repeat(${columns.length}, minmax(200px, 1fr))` }}>
+            <div className="grid bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60" style={{ gridTemplateColumns: `repeat(${columns.length}, minmax(200px, 1fr))` }}>
               {columns.map((column) => (
                 <div
                   key={column.field}
