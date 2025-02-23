@@ -13,17 +13,14 @@
     --foreground: #ededed;
   }
 
-  html {
-    overflow: hidden;
-    height: 100%;
+  * {
+    -webkit-overflow-scrolling: auto;
+    overscroll-behavior: none;
+    scroll-behavior: auto;
   }
 
   body {
     @apply bg-background text-foreground antialiased;
-    overscroll-behavior: none;
-    overflow-y: auto;
-    overflow-x: hidden;
-    height: 100%;
-    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y pinch-zoom;
   }
 }
