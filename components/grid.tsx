@@ -75,7 +75,7 @@ export function DataGrid({ data, columns }: DataGridProps) {
   return (
     <div className="h-dvh w-full text-sm flex flex-col">
       {/* Title - always visible, no scroll */}
-      <div className="bg-background border-b-2">
+      <div className="bg-background border-b">
         <div className="px-3 py-2 flex justify-between items-center">
           <span>booklist</span>
           <ThemeToggle />
@@ -86,9 +86,9 @@ export function DataGrid({ data, columns }: DataGridProps) {
       <div className="flex-1 overflow-auto">
         <div className="min-w-full inline-block align-middle">
           {/* Header section */}
-          <div className="sticky top-0 min-w-full">
+          <div className="sticky top-0 min-w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
             {/* Filters */}
-            <div className="grid bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60" style={{ gridTemplateColumns: `repeat(${columns.length}, minmax(200px, 1fr))` }}>
+            <div className="grid" style={{ gridTemplateColumns: `repeat(${columns.length}, minmax(200px, 1fr))` }}>
               {columns.map((column) => (
                 <div key={`filter-${column.field}`} className="px-3 py-2 border-b relative">
                   <input
@@ -111,7 +111,7 @@ export function DataGrid({ data, columns }: DataGridProps) {
             </div>
 
             {/* Column headers */}
-            <div className="grid bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60" style={{ gridTemplateColumns: `repeat(${columns.length}, minmax(200px, 1fr))` }}>
+            <div className="grid" style={{ gridTemplateColumns: `repeat(${columns.length}, minmax(200px, 1fr))` }}>
               {columns.map((column) => (
                 <div
                   key={column.field}
