@@ -23,7 +23,7 @@ export async function GET() {
           <div
             style={{
               fontFamily: 'Space Mono',
-              fontSize: 128,
+              fontSize: 72,
               color: 'white',
               letterSpacing: '-0.05em',
             }}
