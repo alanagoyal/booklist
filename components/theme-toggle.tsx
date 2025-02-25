@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 
 export function ThemeToggle() {
   const [mounted, setMounted] = useState(false);
-  const { theme, setTheme } = useTheme();
+  const { resolvedTheme, setTheme } = useTheme();
 
   useEffect(() => {
     setMounted(true);
@@ -17,10 +17,10 @@ export function ThemeToggle() {
 
   return (
     <button
-      onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+      onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
       className="p-2 rounded-full bg-background border border-foreground/20 w-24 text-center text-xs"
     >
-      {theme === 'dark' ? 'light mode' : 'dark mode'}
+      {resolvedTheme === 'dark' ? 'light mode' : 'dark mode'}
     </button>
   );
 }
