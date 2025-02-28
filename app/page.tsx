@@ -12,17 +12,17 @@ const supabase = createClient(
 
 type Book = {
   id: number;
-  title: string;
-  author: string;
-  description: string;
-  genre: string[];
+  title: string | null;
+  author: string | null;
+  description: string | null;
+  genre: string[] | null;
   recommendations: {
     source: string;
-    source_link: string;
+    source_link: string | null;
     recommender: {
       full_name: string;
     };
-  }[];
+  }[] | null;
 };
 
 export default async function Home() {
@@ -40,12 +40,12 @@ export default async function Home() {
 
   const formattedBooks = (books || []).map(book => ({
     id: book.id,
-    title: book.title.toLowerCase(),
-    author: book.author.toLowerCase(),
-    description: book.description.toLowerCase() || 'n/a',
-    genres: book.genre?.join(', ').toLowerCase() || 'n/a',
-    recommender: book.recommendations?.[0]?.recommender?.full_name.toLowerCase() || 'n/a',
-    source: book.recommendations?.[0]?.source.toLowerCase() || 'n/a',
+    title: book.title?.toLowerCase() || 'n/a',
+    author: book.author?.toLowerCase() || 'n/a',
+    description: book.description?.toLowerCase() || 'n/a',
+    genres: book.genre?.join(', ')?.toLowerCase() || 'n/a',
+    recommender: book.recommendations?.map((rec: { recommender?: { full_name: string } }) => rec.recommender?.full_name?.toLowerCase()).join(', ') || 'n/a',
+    source: book.recommendations?.map((rec: { source: string }) => rec.source?.toLowerCase()).join(', ') || 'n/a',
     source_link: book.recommendations?.[0]?.source_link || ''
   }));
 
