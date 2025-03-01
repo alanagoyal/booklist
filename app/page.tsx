@@ -35,7 +35,7 @@ export default async function Home() {
   }));
 
   return (
-    <div className="min-h-screen m-2 border border-gray-700">
+    <div className="min-h-screen m-2 border border-black dark:border-white">
       <BookGrid data={formattedBooks} />
     </div>
   );
