@@ -10,21 +10,6 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
-type Book = {
-  id: number;
-  title: string | null;
-  author: string | null;
-  description: string | null;
-  genre: string[] | null;
-  recommendations: {
-    source: string;
-    source_link: string | null;
-    recommender: {
-      full_name: string;
-    };
-  }[] | null;
-};
-
 export default async function Home() {
   const { data: books } = await supabase
     .from('books')
@@ -49,5 +34,9 @@ export default async function Home() {
     source_link: book.recommendations?.[0]?.source_link || ''
   }));
 
-  return <BookGrid data={formattedBooks} />;
+  return (
+    <div className="min-h-screen m-2 border border-gray-700">
+      <BookGrid data={formattedBooks} />
+    </div>
+  );
 }
