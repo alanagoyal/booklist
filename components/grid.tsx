@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { ThemeToggle } from './theme-toggle';
+import { Filter } from 'lucide-react';
 
 type SortDirection = 'asc' | 'desc' | null;
 
@@ -98,14 +99,18 @@ export function DataGrid({ data, columns }: DataGridProps) {
                     value={filters[column.field] || ''}
                     onChange={(e) => handleFilterChange(column.field, e.target.value)}
                   />
-                  {filters[column.field] && (
-                    <button
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                      onClick={() => handleFilterChange(column.field, '')}
-                    >
-                      ×
-                    </button>
-                  )}
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                    {filters[column.field] ? (
+                      <button
+                        className="text-gray-400 hover:text-gray-600"
+                        onClick={() => handleFilterChange(column.field, '')}
+                      >
+                        ×
+                      </button>
+                    ) : (
+                      <Filter className="w-3 h-3 text-gray-400" />
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
