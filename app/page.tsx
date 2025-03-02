@@ -18,7 +18,12 @@ export default async function Home() {
       recommendations (
         source,
         source_link,
-        recommender:people(full_name)
+        recommender:people(
+          full_name,
+          website_url,
+          twitter_url,
+          wiki_url
+        )
       )
     `)
     .order('title', { ascending: true });
@@ -31,7 +36,10 @@ export default async function Home() {
     genres: book.genre?.join(', ')?.toLowerCase() || 'n/a',
     recommender: book.recommendations?.map((rec: { recommender?: { full_name: string } }) => rec.recommender?.full_name?.toLowerCase()).join(', ') || 'n/a',
     source: book.recommendations?.map((rec: { source: string }) => rec.source?.toLowerCase()).join(', ') || 'n/a',
-    source_link: book.recommendations?.[0]?.source_link || ''
+    source_link: book.recommendations?.[0]?.source_link || '',
+    website_url: book.recommendations?.[0]?.recommender?.website_url || '',
+    twitter_url: book.recommendations?.[0]?.recommender?.twitter_url || '',
+    wiki_url: book.recommendations?.[0]?.recommender?.wiki_url || ''
   }));
 
   return (

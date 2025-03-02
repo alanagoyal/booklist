@@ -7,7 +7,31 @@ const columns = [
   { field: "author", header: "Author", width: 120 },
   { field: "description", header: "Description", width: 200 },
   { field: "genres", header: "Genres", width: 150 },
-  { field: "recommender", header: "Recommender", width: 150 },
+  {
+    field: "recommender",
+    header: "Recommender",
+    width: 150,
+    cell: (props: any) => {
+      const recommenderText = props.row.original.recommender;
+      const websiteUrl = props.row.original.website_url;
+      const twitterUrl = props.row.original.twitter_url;
+      const wikiUrl = props.row.original.wiki_url;
+      const linkUrl = websiteUrl || twitterUrl || wikiUrl;
+      
+      return linkUrl ? (
+        <a
+          href={linkUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-[#0000EE] hover:underline"
+        >
+          {recommenderText}
+        </a>
+      ) : (
+        <span>{recommenderText}</span>
+      );
+    },
+  },
   {
     field: "source",
     header: "Source",
@@ -20,7 +44,7 @@ const columns = [
           href={sourceLink}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-blue-600 hover:underline"
+          className="text-[#0000EE] hover:underline"
         >
           {sourceText || "Link"}
         </a>
@@ -41,6 +65,9 @@ type BookGridProps = {
     recommender: string;
     source: string;
     source_link: string;
+    website_url: string;
+    twitter_url: string;
+    wiki_url: string;
   }>;
 };
 
