@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { ThemeToggle } from './theme-toggle';
-import { Filter } from 'lucide-react';
+import { ChevronDown, ListFilter, Check, X } from 'lucide-react';
 
 type SortDirection = 'asc' | 'desc' | null;
 
@@ -28,14 +28,29 @@ export function DataGrid({ data, columns }: DataGridProps) {
     direction: null,
   });
   const [filters, setFilters] = useState<{ [key: string]: string }>({});
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const [activeFilters, setActiveFilters] = useState<string[]>([]);
+  const dropdownRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
-  const handleSort = (field: string) => {
-    setSortConfig(current => ({
-      field,
-      direction: current.field === field 
-        ? (current.direction === null ? 'desc' : current.direction === 'desc' ? 'asc' : null)
-        : 'desc'
-    }));
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (openDropdown) {
+        const dropdownElement = dropdownRefs.current[openDropdown];
+        if (dropdownElement && !dropdownElement.contains(event.target as Node)) {
+          setOpenDropdown(null);
+        }
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [openDropdown]);
+
+  const handleSort = (field: string, direction: SortDirection) => {
+    setSortConfig({ field, direction });
+    setOpenDropdown(null);
   };
 
   const handleFilterChange = (field: string, value: string) => {
@@ -43,6 +58,15 @@ export function DataGrid({ data, columns }: DataGridProps) {
       ...current,
       [field]: value
     }));
+    if (value && !activeFilters.includes(field)) {
+      setActiveFilters([...activeFilters, field]);
+    } else if (!value && activeFilters.includes(field)) {
+      setActiveFilters(activeFilters.filter(f => f !== field));
+    }
+  };
+
+  const toggleDropdown = (field: string) => {
+    setOpenDropdown(openDropdown === field ? null : field);
   };
 
   const filteredAndSortedData = React.useMemo(() => {
@@ -78,7 +102,7 @@ export function DataGrid({ data, columns }: DataGridProps) {
       {/* Title - always visible, no scroll */}
       <div className="bg-background border-b">
         <div className="px-3 py-2 flex justify-between items-center">
-          <span>booklist</span>
+          <span>BOOKLIST</span>
           <ThemeToggle />
         </div>
       </div>
@@ -88,49 +112,76 @@ export function DataGrid({ data, columns }: DataGridProps) {
         <div className="min-w-full inline-block align-middle">
           {/* Header section */}
           <div className="sticky top-0 min-w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-            {/* Filters */}
-            <div className="grid" style={{ gridTemplateColumns: `repeat(${columns.length}, minmax(200px, 1fr))` }}>
-              {columns.map((column) => (
-                <div key={`filter-${column.field}`} className="px-3 py-2 border-b relative">
-                  <input
-                    type="text"
-                    className="w-full bg-transparent outline-none text-sm truncate"
-                    placeholder={`search ${column.header.toLowerCase()}`}
-                    value={filters[column.field] || ''}
-                    onChange={(e) => handleFilterChange(column.field, e.target.value)}
-                  />
-                  <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1">
-                    {filters[column.field] ? (
-                      <button
-                        className="text-gray-400 hover:text-gray-600"
-                        onClick={() => handleFilterChange(column.field, '')}
-                      >
-                        ×
-                      </button>
-                    ) : (
-                      <Filter className="w-3 h-3 text-gray-400" />
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-
             {/* Column headers */}
             <div className="grid" style={{ gridTemplateColumns: `repeat(${columns.length}, minmax(200px, 1fr))` }}>
               {columns.map((column) => (
                 <div
                   key={column.field}
-                  className="px-3 py-2 border-b font-medium cursor-pointer select-none flex items-center justify-between"
-                  onClick={() => handleSort(column.field)}
+                  className="px-3 py-2 border-b font-medium select-none relative"
+                  ref={el => void (dropdownRefs.current[column.field] = el)}
                 >
-                  <span>{column.header.toLowerCase()}</span>
-                  <span className="ml-1">
-                    {sortConfig.field === column.field ? (
-                      sortConfig.direction === 'desc' ? '↓' :
-                      sortConfig.direction === 'asc' ? '↑' : 
-                      '↕'
-                    ) : '↕'}
-                  </span>
+                  <div className="flex items-center justify-between">
+                    <span>{column.header.toLowerCase()}</span>
+                    <button
+                      onClick={() => toggleDropdown(column.field)}
+                      className="flex items-center gap-1 hover:bg-accent rounded p-1"
+                    >
+                      {activeFilters.includes(column.field) && (
+                        <ListFilter className="w-3 h-3" />
+                      )}
+                      <ChevronDown className="w-4 h-4" />
+                    </button>
+                  </div>
+                  
+                  {/* Dropdown Menu */}
+                  {openDropdown === column.field && (
+                    <div className="absolute top-full left-0 right-0 bg-background border shadow-lg z-50">
+                      <div className="py-1">
+                        <button
+                          className="w-full px-4 py-2 text-left hover:bg-accent/50 flex items-center justify-between"
+                          onClick={() => handleSort(column.field, 'asc')}
+                        >
+                          sort ascending (a→z)
+                          {sortConfig.field === column.field && sortConfig.direction === 'asc' && (
+                            <Check className="w-3 h-3" />
+                          )}
+                        </button>
+                        <button
+                          className="w-full px-4 py-2 text-left hover:bg-accent/50 flex items-center justify-between"
+                          onClick={() => handleSort(column.field, 'desc')}
+                        >
+                          sort descending (z→a)
+                          {sortConfig.field === column.field && sortConfig.direction === 'desc' && (
+                            <Check className="w-3 h-3" />
+                          )}
+                        </button>
+                        <hr className="my-1" />
+                        <div className="px-4 py-2">
+                          <div className="relative">
+                            <input
+                              type="text"
+                              className="w-full px-2 py-1 border rounded bg-background pr-7"
+                              placeholder="filter..."
+                              value={filters[column.field] || ''}
+                              onChange={(e) => handleFilterChange(column.field, e.target.value)}
+                              onClick={(e) => e.stopPropagation()}
+                            />
+                            {filters[column.field] && (
+                              <button
+                                className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleFilterChange(column.field, '');
+                                }}
+                              >
+                                <X className="w-3 h-3" />
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
