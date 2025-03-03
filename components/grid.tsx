@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ThemeToggle } from './theme-toggle';
 import { ChevronDown, ListFilter, Check, X } from 'lucide-react';
+import { useSearchParams, usePathname, useRouter } from 'next/navigation';
 
 type SortDirection = 'asc' | 'desc' | null;
 
@@ -23,13 +24,31 @@ type DataGridProps = {
 };
 
 export function DataGrid({ data, columns }: DataGridProps) {
-  const [sortConfig, setSortConfig] = useState<{ field: string; direction: SortDirection }>({
-    field: '',
-    direction: null,
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const router = useRouter();
+
+  const [sortConfig, setSortConfig] = useState<{ field: string; direction: SortDirection }>(() => ({
+    field: searchParams.get('sortField') || '',
+    direction: (searchParams.get('sortDir') as SortDirection) || null,
+  }));
+
+  const [filters, setFilters] = useState<{ [key: string]: string }>(() => {
+    const urlFilters: { [key: string]: string } = {};
+    columns.forEach(column => {
+      const filterValue = searchParams.get(`filter_${column.field}`);
+      if (filterValue) {
+        urlFilters[column.field] = filterValue;
+      }
+    });
+    return urlFilters;
   });
-  const [filters, setFilters] = useState<{ [key: string]: string }>({});
+
+  const [activeFilters, setActiveFilters] = useState<string[]>(() => 
+    Object.keys(filters).filter(key => filters[key])
+  );
+
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
-  const [activeFilters, setActiveFilters] = useState<string[]>([]);
   const dropdownRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
   useEffect(() => {
@@ -48,16 +67,45 @@ export function DataGrid({ data, columns }: DataGridProps) {
     };
   }, [openDropdown]);
 
+  const updateUrlParams = (newSortConfig: typeof sortConfig, newFilters: typeof filters) => {
+    const params = new URLSearchParams(searchParams);
+    
+    // Update sort parameters
+    if (newSortConfig.field && newSortConfig.direction) {
+      params.set('sortField', newSortConfig.field);
+      params.set('sortDir', newSortConfig.direction);
+    } else {
+      params.delete('sortField');
+      params.delete('sortDir');
+    }
+
+    // Update filter parameters
+    Object.entries(newFilters).forEach(([field, value]) => {
+      if (value) {
+        params.set(`filter_${field}`, value);
+      } else {
+        params.delete(`filter_${field}`);
+      }
+    });
+
+    router.replace(`${pathname}?${params.toString()}`);
+  };
+
   const handleSort = (field: string, direction: SortDirection) => {
-    setSortConfig({ field, direction });
+    const newSortConfig = { field, direction };
+    setSortConfig(newSortConfig);
+    updateUrlParams(newSortConfig, filters);
     setOpenDropdown(null);
   };
 
   const handleFilterChange = (field: string, value: string) => {
-    setFilters(current => ({
-      ...current,
+    const newFilters = {
+      ...filters,
       [field]: value
-    }));
+    };
+    setFilters(newFilters);
+    updateUrlParams(sortConfig, newFilters);
+    
     if (value && !activeFilters.includes(field)) {
       setActiveFilters([...activeFilters, field]);
     } else if (!value && activeFilters.includes(field)) {
@@ -101,7 +149,7 @@ export function DataGrid({ data, columns }: DataGridProps) {
     <div className="h-dvh w-full text-sm flex flex-col">
       {/* Title - always visible, no scroll */}
       <div className="bg-background border-b">
-        <div className="px-3 py-2 flex justify-between items-center">
+        <div className="h-16 px-3 py-2 flex justify-between items-center">
           <span>BOOKLIST</span>
           <ThemeToggle />
         </div>
@@ -113,7 +161,7 @@ export function DataGrid({ data, columns }: DataGridProps) {
           {/* Header section */}
           <div className="sticky top-0 min-w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
             {/* Column headers */}
-            <div className="grid" style={{ gridTemplateColumns: `repeat(${columns.length}, minmax(200px, 1fr))` }}>
+            <div className="grid h-10 items-center" style={{ gridTemplateColumns: `repeat(${columns.length}, minmax(200px, 1fr))` }}>
               {columns.map((column) => (
                 <div
                   key={column.field}
