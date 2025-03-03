@@ -39,7 +39,8 @@ export default async function Home() {
     source_link: book.recommendations?.[0]?.source_link || '',
     website_url: book.recommendations?.[0]?.recommender?.website_url || '',
     twitter_url: book.recommendations?.[0]?.recommender?.twitter_url || '',
-    wiki_url: book.recommendations?.[0]?.recommender?.wiki_url || ''
+    wiki_url: book.recommendations?.[0]?.recommender?.wiki_url || '',
+    amazon_url: book.amazon_url || ''
   }));
 
   return (

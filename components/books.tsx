@@ -3,7 +3,28 @@
 import { DataGrid } from "@/components/grid";
 
 const columns = [
-  { field: "title", header: "Title", width: 150 },
+  { 
+    field: "title", 
+    header: "Title", 
+    width: 150,
+    cell: (props: any) => {
+      const title = props.row.original.title;
+      const amazonUrl = props.row.original.amazon_url;
+      
+      return amazonUrl ? (
+        <a
+          href={amazonUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-[#0000EE] hover:underline"
+        >
+          {title}
+        </a>
+      ) : (
+        <span>{title}</span>
+      );
+    },
+  },
   { field: "author", header: "Author", width: 120 },
   { field: "description", header: "Description", width: 200 },
   { field: "genres", header: "Genres", width: 150 },
@@ -68,6 +89,7 @@ type BookGridProps = {
     website_url: string;
     twitter_url: string;
     wiki_url: string;
+    amazon_url: string;
   }>;
 };
 
