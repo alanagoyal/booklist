@@ -4,6 +4,29 @@ import { BookGrid } from "@/components/books";
 export const revalidate = 0; // Turn off automatic revalidation
 export const dynamic = "force-static";
 
+interface Person {
+  full_name: string;
+  website_url: string | null;
+  twitter_url: string | null;
+  wiki_url: string | null;
+}
+
+interface Recommendation {
+  source: string;
+  source_link: string | null;
+  recommender: Person;
+}
+
+interface Book {
+  id: number;
+  title: string | null;
+  author: string | null;
+  description: string | null;
+  genre: string[] | null;
+  amazon_url: string | null;
+  recommendations: Recommendation[] | null;
+}
+
 // Create Supabase client
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -30,7 +53,7 @@ export default async function Home() {
     )
     .order("title", { ascending: true });
 
-  const formattedBooks = (books || []).map((book) => ({
+  const formattedBooks = (books || []).map((book: Book) => ({
     id: book.id,
     title: book.title?.toLowerCase() || "n/a",
     author: book.author?.toLowerCase() || "n/a",
@@ -38,18 +61,24 @@ export default async function Home() {
     genres: book.genre?.join(", ")?.toLowerCase() || "n/a",
     recommender:
       book.recommendations
-        ?.map((rec: { recommender?: { full_name: string } }) =>
-          rec.recommender?.full_name?.toLowerCase()
-        )
+        ?.map((rec) => rec.recommender?.full_name?.toLowerCase())
         .join(", ") || "n/a",
     source:
       book.recommendations
-        ?.map((rec: { source: string }) => rec.source?.toLowerCase())
+        ?.map((rec) => rec.source?.toLowerCase())
         .join(", ") || "n/a",
-    source_link: book.recommendations?.[0]?.source_link || "",
-    website_url: book.recommendations?.[0]?.recommender?.website_url || "",
-    twitter_url: book.recommendations?.[0]?.recommender?.twitter_url || "",
-    wiki_url: book.recommendations?.[0]?.recommender?.wiki_url || "",
+    source_link: book.recommendations
+        ?.map((rec) => rec.source_link)
+        .join(",") || "",
+    website_url: book.recommendations
+        ?.map((rec) => rec.recommender?.website_url)
+        .join(",") || "",
+    twitter_url: book.recommendations
+        ?.map((rec) => rec.recommender?.twitter_url)
+        .join(",") || "",
+    wiki_url: book.recommendations
+        ?.map((rec) => rec.recommender?.wiki_url)
+        .join(",") || "",
     amazon_url: book.amazon_url || "",
   }));
 
