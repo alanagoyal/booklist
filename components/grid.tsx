@@ -189,7 +189,7 @@ export function DataGrid({ data, columns }: DataGridProps) {
                           className="w-full px-4 py-2 text-left hover:bg-accent/50 flex items-center justify-between"
                           onClick={() => handleSort(column.field, 'asc')}
                         >
-                          sort ascending (a→z)
+                          sort ascending
                           {sortConfig.field === column.field && sortConfig.direction === 'asc' && (
                             <Check className="w-3 h-3" />
                           )}
@@ -198,7 +198,7 @@ export function DataGrid({ data, columns }: DataGridProps) {
                           className="w-full px-4 py-2 text-left hover:bg-accent/50 flex items-center justify-between"
                           onClick={() => handleSort(column.field, 'desc')}
                         >
-                          sort descending (z→a)
+                          sort descending
                           {sortConfig.field === column.field && sortConfig.direction === 'desc' && (
                             <Check className="w-3 h-3" />
                           )}
@@ -209,7 +209,7 @@ export function DataGrid({ data, columns }: DataGridProps) {
                             <input
                               type="text"
                               className="w-full px-2 py-1 border rounded bg-background pr-7"
-                              placeholder="filter..."
+                              placeholder="search"
                               value={filters[column.field] || ''}
                               onChange={(e) => handleFilterChange(column.field, e.target.value)}
                               onClick={(e) => e.stopPropagation()}
