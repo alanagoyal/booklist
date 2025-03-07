@@ -13,6 +13,9 @@ export default {
         background: "var(--background)",
         foreground: "var(--foreground)",
       },
+      fontFamily: {
+        sans: ['ABC Whyte', 'system-ui', 'sans-serif'],
+      },
     },
   },
   plugins: [],

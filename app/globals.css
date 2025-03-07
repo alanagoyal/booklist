@@ -2,6 +2,42 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: 'ABC Whyte';
+  src: url('/fonts/ABCWhyte-Regular.woff2') format('woff2'),
+       url('/fonts/ABCWhyte-Regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'ABC Whyte';
+  src: url('/fonts/ABCWhyte-Medium.woff2') format('woff2'),
+       url('/fonts/ABCWhyte-Medium.woff') format('woff');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'ABC Whyte';
+  src: url('/fonts/ABCWhyte-Bold.woff2') format('woff2'),
+       url('/fonts/ABCWhyte-Bold.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'ABC Whyte';
+  src: url('/fonts/ABCWhyte-Black.woff2') format('woff2'),
+       url('/fonts/ABCWhyte-Black.woff') format('woff');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
 @layer base {
   :root {
     --background: #ffffff;
@@ -20,7 +56,7 @@
   }
 
   body {
-    @apply bg-background text-foreground antialiased;
+    @apply bg-background text-foreground antialiased font-sans;
     touch-action: pan-y pinch-zoom;
   }
 }

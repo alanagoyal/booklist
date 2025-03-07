@@ -150,7 +150,7 @@ export function DataGrid({ data, columns }: DataGridProps) {
       {/* Title - always visible, no scroll */}
       <div className="bg-background border-b">
         <div className="h-16 px-3 py-2 flex justify-between items-center">
-          <span>BOOKLIST</span>
+          <span className="font-bold">BOOKLIST</span>
           <ThemeToggle />
         </div>
       </div>
