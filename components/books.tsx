@@ -38,7 +38,7 @@ const columns = [
           href={amazonUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-[#0000EE] hover:underline"
+          className="underline"
         >
           {title}
         </a>
@@ -87,7 +87,7 @@ const columns = [
                     href={recommenderUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-[#0000EE] hover:underline"
+                    className="underline"
                   >
                     {rec}
                   </a>
@@ -130,7 +130,7 @@ const columns = [
                   href={sourceLinks[i]}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-[#0000EE] hover:underline"
+                  className="underline"
                 >
                   {source}
                 </a>

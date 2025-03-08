@@ -165,7 +165,7 @@ export function DataGrid({ data, columns }: DataGridProps) {
               {columns.map((column) => (
                 <div
                   key={column.field}
-                  className="px-3 py-2 border-b font-medium select-none relative"
+                  className="px-3 py-2 border-b select-none relative"
                   ref={el => void (dropdownRefs.current[column.field] = el)}
                 >
                   <div className="flex items-center justify-between">
@@ -203,7 +203,6 @@ export function DataGrid({ data, columns }: DataGridProps) {
                             <Check className="w-3 h-3" />
                           )}
                         </button>
-                        <hr className="my-1" />
                         <div className="px-4 py-2">
                           <div className="relative">
                             <input

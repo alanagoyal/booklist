@@ -40,13 +40,15 @@
 
 @layer base {
   :root {
-    --background: #ffffff;
-    --foreground: #171717;
+    --background: #EBEBEB;
+    --foreground: #121212;
+    --border: #121212;
   }
 
   .dark {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #56493C;
+    --foreground: #D4C4A3;
+    --border: #D4C4A3;
   }
 
   * {
@@ -58,5 +60,9 @@
   body {
     @apply bg-background text-foreground antialiased font-sans;
     touch-action: pan-y pinch-zoom;
+  }
+
+  .border, .border-b {
+    border-color: var(--border);
   }
 }
