@@ -43,12 +43,14 @@
     --background: #EBEBEB;
     --foreground: #121212;
     --border: #121212;
+    --muted-foreground: #121212/70;
   }
 
   .dark {
     --background: #56493C;
     --foreground: #D4C4A3;
     --border: #D4C4A3;
+    --muted-foreground: #D4C4A3/70;
   }
 
   * {
@@ -64,5 +66,10 @@
 
   .border, .border-b {
     border-color: var(--border);
+  }
+
+  input::placeholder {
+    color: var(--muted-foreground);
+    opacity: 0.7;
   }
 }
