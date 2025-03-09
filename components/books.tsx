@@ -121,6 +121,7 @@ const columns = [
     header: "Source",
     width: 150,
     cell: ({ row: { original } }: CellProps) => {
+      const [isExpanded, setIsExpanded] = useState(false);
       const sourceText = original.source;
       
       // Split source text into array if it contains commas
@@ -135,9 +136,12 @@ const columns = [
         return <span></span>;
       }
 
+      // Show only first two sources + count if there are more than 2 and not expanded
+      const displayCount = !isExpanded && sources.length > 2 ? 2 : sources.length;
+
       return (
         <span>
-          {sources.map((source, i) => (
+          {sources.slice(0, displayCount).map((source, i) => (
             <Fragment key={i}>
               {i > 0 && ", "}
               {sourceLinks[i] ? (
@@ -154,6 +158,17 @@ const columns = [
               )}
             </Fragment>
           ))}
+          {!isExpanded && sources.length > 2 && (
+            <>
+              {", "}
+              <button
+                onClick={() => setIsExpanded(true)}
+                className="hover:underline"
+              >
+                + {sources.length - 2} more
+              </button>
+            </>
+          )}
         </span>
       );
     },
