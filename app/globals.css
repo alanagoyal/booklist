@@ -40,14 +40,14 @@
 
 @layer base {
   :root {
-    --background: #EBEBEB;
+    --background: #F0FDF4;
     --foreground: #121212;
     --border: #121212;
     --muted-foreground: #121212/50;
   }
 
   .dark {
-    --background: #56493C;
+    --background: rgba(5, 46, 22, 0.2);
     --foreground: #D4C4A3;
     --border: #D4C4A3;
     --muted-foreground: #D4C4A3/50;
