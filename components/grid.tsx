@@ -21,9 +21,10 @@ type DataItem = {
 type DataGridProps = {
   data: DataItem[];
   columns: ColumnDef[];
+  getRowClassName?: (row: DataItem) => string;
 };
 
-export function DataGrid({ data, columns }: DataGridProps) {
+export function DataGrid({ data, columns, getRowClassName }: DataGridProps) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
@@ -234,26 +235,22 @@ export function DataGrid({ data, columns }: DataGridProps) {
             </div>
           </div>
 
-          {/* Body */}
-          {filteredAndSortedData.map((row, rowIndex) => (
-            <div
-              key={rowIndex}
-              className="grid"
-              style={{ gridTemplateColumns: `repeat(${columns.length}, minmax(200px, 1fr))` }}
-            >
-              {columns.map((column) => {
-                const value = row[column.field];
-                return (
-                  <div
-                    key={`${rowIndex}-${column.field}`}
-                    className="px-3 py-2 border-b"
-                  >
-                    {column.cell ? column.cell({ row: { original: row } }) : value}
+          {/* Table body */}
+          <div>
+            {filteredAndSortedData.map((row, rowIndex) => (
+              <div
+                key={rowIndex}
+                className={`grid transition-colors ${getRowClassName?.(row) || ''}`}
+                style={{ gridTemplateColumns: `repeat(${columns.length}, minmax(200px, 1fr))` }}
+              >
+                {columns.map((column) => (
+                  <div key={column.field} className="px-3 py-2 border-b">
+                    {column.cell ? column.cell({ row: { original: row } }) : row[column.field]}
                   </div>
-                );
-              })}
-            </div>
-          ))}
+                ))}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>

@@ -25,6 +25,7 @@ interface ExpandedState {
 interface EnhancedBook extends FormattedBook {
   _expanded: ExpandedState;
   _toggleExpand: (id: string) => void;
+  _recommendationCount: number;
 }
 
 interface CellProps {
@@ -173,6 +174,26 @@ interface BookGridProps {
   data: FormattedBook[];
 }
 
+const getRecommendationCount = (recommender: string): number => {
+  return recommender ? recommender.split(',').filter(r => r.trim()).length : 0;
+};
+
+const getBackgroundColor = (count: number, maxCount: number): string => {
+  if (count === 0) return '';
+  
+  // Create 4 intensity levels like GitHub
+  const intensity = Math.ceil((count / maxCount) * 4);
+  
+  // Use Tailwind's color opacity classes
+  switch (intensity) {
+    case 1: return 'bg-emerald-50 dark:bg-emerald-950/20';
+    case 2: return 'bg-emerald-100 dark:bg-emerald-950/40';
+    case 3: return 'bg-emerald-200 dark:bg-emerald-950/60';
+    case 4: return 'bg-emerald-300 dark:bg-emerald-950/80';
+    default: return '';
+  }
+};
+
 const columns: { 
   field: keyof FormattedBook; 
   header: string; 
@@ -205,11 +226,25 @@ const columns: {
 export function BookGrid({ data }: BookGridProps) {
   const { expandedItems, toggleExpand } = useExpandableState();
 
-  const enhancedData = data.map(item => ({
-    ...item,
+  // Calculate max recommendation count
+  const maxRecommendations = Math.max(
+    ...data.map(book => getRecommendationCount(book.recommender))
+  );
+
+  const enhancedData: EnhancedBook[] = data.map(book => ({
+    ...book,
     _expanded: expandedItems,
-    _toggleExpand: toggleExpand
+    _toggleExpand: toggleExpand,
+    _recommendationCount: getRecommendationCount(book.recommender)
   }));
 
-  return <DataGrid columns={columns} data={enhancedData} />;
+  return (
+    <DataGrid
+      data={enhancedData}
+      columns={columns}
+      getRowClassName={(row) => 
+        getBackgroundColor(row._recommendationCount, maxRecommendations)
+      }
+    />
+  );
 }
