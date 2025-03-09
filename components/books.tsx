@@ -186,10 +186,10 @@ const getBackgroundColor = (count: number, maxCount: number): string => {
   
   // Use Tailwind's color opacity classes
   switch (intensity) {
-    case 1: return 'bg-emerald-50 dark:bg-emerald-950/20';
-    case 2: return 'bg-emerald-100 dark:bg-emerald-950/40';
-    case 3: return 'bg-emerald-200 dark:bg-emerald-950/60';
-    case 4: return 'bg-emerald-300 dark:bg-emerald-950/80';
+    case 1: return 'bg-emerald-50 dark:bg-[#121212]/20';
+    case 2: return 'bg-emerald-100 dark:bg-[#121212]/40';
+    case 3: return 'bg-emerald-200 dark:bg-[#121212]/60';
+    case 4: return 'bg-emerald-300 dark:bg-[#121212]/80';
     default: return '';
   }
 };

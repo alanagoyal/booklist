@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { ThemeToggle } from './theme-toggle';
+import { useTheme } from 'next-themes';
 import { ChevronDown, ListFilter, Check, X } from 'lucide-react';
 import { useSearchParams, usePathname, useRouter } from 'next/navigation';
 
@@ -28,6 +28,7 @@ export function DataGrid({ data, columns, getRowClassName }: DataGridProps) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
+  const { theme, setTheme } = useTheme();
 
   const [sortConfig, setSortConfig] = useState<{ field: string; direction: SortDirection }>(() => ({
     field: searchParams.get('sortField') || '',
@@ -151,8 +152,12 @@ export function DataGrid({ data, columns, getRowClassName }: DataGridProps) {
       {/* Title - always visible, no scroll */}
       <div className="bg-background border-b">
         <div className="h-16 px-3 py-2 flex justify-between items-center">
-          <span className="font-bold font-display text-xl">BOOKLIST</span>
-          <ThemeToggle />
+          <button 
+            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+            className="font-bold font-display text-xl cursor-pointer"
+          >
+            BOOKLIST
+          </button>
         </div>
       </div>
 
