@@ -215,7 +215,7 @@ export function DataGrid({ data, columns }: DataGridProps) {
                             />
                             {filters[column.field] && (
                               <button
-                                className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                                className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-muted-foreground/70"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   handleFilterChange(column.field, '');
