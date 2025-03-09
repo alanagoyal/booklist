@@ -151,7 +151,7 @@ export function DataGrid({ data, columns, getRowClassName }: DataGridProps) {
       {/* Title - always visible, no scroll */}
       <div className="bg-background border-b">
         <div className="h-16 px-3 py-2 flex justify-between items-center">
-          <span className="font-bold">BOOKLIST</span>
+          <span className="font-bold font-display text-xl">BOOKLIST</span>
           <ThemeToggle />
         </div>
       </div>
@@ -160,7 +160,7 @@ export function DataGrid({ data, columns, getRowClassName }: DataGridProps) {
       <div className="flex-1 overflow-auto">
         <div className="min-w-full inline-block align-middle">
           {/* Header section */}
-          <div className="sticky top-0 min-w-full bg-background">
+          <div className="sticky top-0 min-w-full bg-background z-50">
             {/* Column headers */}
             <div className="grid h-10 items-center" style={{ gridTemplateColumns: `repeat(${columns.length}, minmax(200px, 1fr))` }}>
               {columns.map((column) => (
@@ -170,7 +170,7 @@ export function DataGrid({ data, columns, getRowClassName }: DataGridProps) {
                   ref={el => void (dropdownRefs.current[column.field] = el)}
                 >
                   <div className="flex items-center justify-between">
-                    <span>{column.header.toLowerCase()}</span>
+                    <span className="font-bold">{column.header}</span>
                     <button
                       onClick={() => toggleDropdown(column.field)}
                       className="flex items-center gap-1 hover:bg-accent rounded p-1"

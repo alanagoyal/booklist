@@ -55,17 +55,17 @@ export default async function Home() {
 
   const formattedBooks = (books || []).map((book: Book) => ({
     id: book.id,
-    title: book.title?.toLowerCase() || "n/a",
-    author: book.author?.toLowerCase() || "n/a",
-    description: book.description?.toLowerCase() || "n/a",
-    genres: book.genre?.join(", ")?.toLowerCase() || "n/a",
+    title: book.title || "n/a",
+    author: book.author || "n/a",
+    description: book.description || "n/a",
+    genres: book.genre?.join(", ") || "n/a",
     recommender:
       book.recommendations
-        ?.map((rec) => rec.recommender?.full_name?.toLowerCase())
+        ?.map((rec) => rec.recommender?.full_name)
         .join(", ") || "n/a",
     source:
       book.recommendations
-        ?.map((rec) => rec.source?.toLowerCase())
+        ?.map((rec) => rec.source)
         .join(", ") || "n/a",
     source_link: book.recommendations
         ?.map((rec) => rec.source_link)

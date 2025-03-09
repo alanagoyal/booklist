@@ -15,6 +15,7 @@ export default {
       },
       fontFamily: {
         sans: ['ABC Whyte', 'system-ui', 'sans-serif'],
+        display: ["Playfair Display", "Georgia", "Cambria", "Times New Roman", "Times", "serif"],
       },
     },
   },
