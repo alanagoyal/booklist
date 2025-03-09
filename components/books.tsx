@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment } from 'react';
+import { Fragment, useState } from 'react';
 import { DataGrid } from "@/components/grid";
 
 interface FormattedBook {
@@ -38,7 +38,7 @@ const columns = [
           href={amazonUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="underline"
+          className="hover:underline"
         >
           {title}
         </a>
@@ -55,6 +55,7 @@ const columns = [
     header: "Recommender",
     width: 150,
     cell: ({ row: { original } }: CellProps) => {
+      const [isExpanded, setIsExpanded] = useState(false);
       const recommenderText = original.recommender;
       
       // Split recommender text into array if it contains commas
@@ -73,9 +74,12 @@ const columns = [
         return <span></span>;
       }
 
+      // Show only first two recommenders + count if there are more than 2 and not expanded
+      const displayCount = !isExpanded && recommenders.length > 2 ? 2 : recommenders.length;
+
       return (
         <span>
-          {recommenders.map((rec, i) => {
+          {recommenders.slice(0, displayCount).map((rec, i) => {
             // Get the corresponding URL for this recommender (prefer twitter > website > wiki)
             const recommenderUrl = twitterUrls[i] || websiteUrls[i] || wikiUrls[i];
             
@@ -87,7 +91,7 @@ const columns = [
                     href={recommenderUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="underline"
+                    className="hover:underline"
                   >
                     {rec}
                   </a>
@@ -97,6 +101,17 @@ const columns = [
               </Fragment>
             );
           })}
+          {!isExpanded && recommenders.length > 2 && (
+            <>
+              {", "}
+              <button
+                onClick={() => setIsExpanded(true)}
+                className="hover:underline"
+              >
+                + {recommenders.length - 2} more
+              </button>
+            </>
+          )}
         </span>
       );
     },
@@ -130,7 +145,7 @@ const columns = [
                   href={sourceLinks[i]}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="underline"
+                  className="hover:underline"
                 >
                   {source}
                 </a>
