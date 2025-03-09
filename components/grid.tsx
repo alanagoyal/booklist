@@ -160,7 +160,7 @@ export function DataGrid({ data, columns, getRowClassName }: DataGridProps) {
       <div className="flex-1 overflow-auto">
         <div className="min-w-full inline-block align-middle">
           {/* Header section */}
-          <div className="sticky top-0 min-w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+          <div className="sticky top-0 min-w-full bg-background">
             {/* Column headers */}
             <div className="grid h-10 items-center" style={{ gridTemplateColumns: `repeat(${columns.length}, minmax(200px, 1fr))` }}>
               {columns.map((column) => (
