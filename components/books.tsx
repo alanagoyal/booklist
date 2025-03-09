@@ -18,29 +18,46 @@ interface FormattedBook {
   amazon_url: string;
 }
 
+interface ExpandedState {
+  [key: string]: boolean;
+}
+
+interface EnhancedBook extends FormattedBook {
+  _expanded: ExpandedState;
+  _toggleExpand: (id: string) => void;
+}
+
 interface CellProps {
   row: {
-    original: FormattedBook;
+    original: EnhancedBook;
   };
 }
 
+const useExpandableState = () => {
+  const [expandedItems, setExpandedItems] = useState<ExpandedState>({});
+  
+  const toggleExpand = (id: string) => {
+    setExpandedItems(prev => ({
+      ...prev,
+      [id]: !prev[id]
+    }));
+  };
+
+  return { expandedItems, toggleExpand };
+};
+
 const SourceCell = ({ row: { original } }: CellProps) => {
-  const [isExpanded, setIsExpanded] = useState(false);
-  const sourceText = original.source;
-      
-  // Split source text into array if it contains commas
-  const sources = sourceText.split(',').map(s => s.trim());
-      
-  // Split source links and ensure they match the number of sources by padding with nulls
+  const sourceText = original.source || '';
+  const sources = sourceText.split(',').map(s => s.trim()).filter(Boolean);
   const sourceLinks = (original.source_link?.split(',').map(l => l.trim()) || [])
     .concat(Array(sources.length).fill(null));
-      
-  // If no sources, return empty
+
   if (sources.length === 0) {
     return <span></span>;
   }
 
-  // Show only first two sources + count if there are more than 2 and not expanded
+  const cellId = `source-${original.id}`;
+  const isExpanded = original._expanded?.[cellId] || false;
   const displayCount = !isExpanded && sources.length > 2 ? 2 : sources.length;
 
   return (
@@ -66,7 +83,7 @@ const SourceCell = ({ row: { original } }: CellProps) => {
         <>
           {", "}
           <button
-            onClick={() => setIsExpanded(true)}
+            onClick={() => original._toggleExpand?.(cellId)}
             className="hover:underline"
           >
             + {sources.length - 2} more
@@ -78,7 +95,7 @@ const SourceCell = ({ row: { original } }: CellProps) => {
 };
 
 const TitleCell = function Title({ row: { original } }: CellProps) {
-  const title = original.title;
+  const title = original.title || '';
   const amazonUrl = original.amazon_url;
       
   return amazonUrl ? (
@@ -96,32 +113,27 @@ const TitleCell = function Title({ row: { original } }: CellProps) {
 };
 
 const RecommenderCell = function Recommender({ row: { original } }: CellProps) {
-  const [isExpanded, setIsExpanded] = useState(false);
-  const recommenderText = original.recommender;
-      
-  // Split recommender text into array if it contains commas
-  const recommenders = recommenderText.split(',').map(r => r.trim());
-      
-  // Split URLs and ensure they match the number of recommenders by padding with nulls
+  const recommenderText = original.recommender || '';
+  const recommenders = recommenderText.split(',').map(r => r.trim()).filter(Boolean);
+  
   const websiteUrls = (original.website_url?.split(',').map(url => url.trim()) || [])
     .concat(Array(recommenders.length).fill(null));
   const twitterUrls = (original.twitter_url?.split(',').map(url => url.trim()) || [])
     .concat(Array(recommenders.length).fill(null));
   const wikiUrls = (original.wiki_url?.split(',').map(url => url.trim()) || [])
     .concat(Array(recommenders.length).fill(null));
-      
-  // If no recommenders, return empty
+
   if (recommenders.length === 0) {
     return <span></span>;
   }
 
-  // Show only first two recommenders + count if there are more than 2 and not expanded
+  const cellId = `recommender-${original.id}`;
+  const isExpanded = original._expanded?.[cellId] || false;
   const displayCount = !isExpanded && recommenders.length > 2 ? 2 : recommenders.length;
 
   return (
     <span>
       {recommenders.slice(0, displayCount).map((rec, i) => {
-        // Get the corresponding URL for this recommender (prefer twitter > website > wiki)
         const recommenderUrl = twitterUrls[i] || websiteUrls[i] || wikiUrls[i];
             
         return (
@@ -146,7 +158,7 @@ const RecommenderCell = function Recommender({ row: { original } }: CellProps) {
         <>
           {", "}
           <button
-            onClick={() => setIsExpanded(true)}
+            onClick={() => original._toggleExpand?.(cellId)}
             className="hover:underline"
           >
             + {recommenders.length - 2} more
@@ -157,7 +169,16 @@ const RecommenderCell = function Recommender({ row: { original } }: CellProps) {
   );
 };
 
-const columns = [
+interface BookGridProps {
+  data: FormattedBook[];
+}
+
+const columns: { 
+  field: keyof FormattedBook; 
+  header: string; 
+  width?: number;
+  cell?: (props: CellProps) => React.ReactNode;
+}[] = [
   { 
     field: "title", 
     header: "Title", 
@@ -177,65 +198,18 @@ const columns = [
     field: "source",
     header: "Source",
     width: 150,
-    cell: function Source({ row: { original } }: CellProps) {
-      const [isExpanded, setIsExpanded] = useState(false);
-      const sourceText = original.source;
-      
-      // Split source text into array if it contains commas
-      const sources = sourceText.split(',').map(s => s.trim());
-      
-      // Split source links and ensure they match the number of sources by padding with nulls
-      const sourceLinks = (original.source_link?.split(',').map(l => l.trim()) || [])
-        .concat(Array(sources.length).fill(null));
-      
-      // If no sources, return empty
-      if (sources.length === 0) {
-        return <span></span>;
-      }
-
-      // Show only first two sources + count if there are more than 2 and not expanded
-      const displayCount = !isExpanded && sources.length > 2 ? 2 : sources.length;
-
-      return (
-        <span>
-          {sources.slice(0, displayCount).map((source, i) => (
-            <Fragment key={i}>
-              {i > 0 && ", "}
-              {sourceLinks[i] ? (
-                <a
-                  href={sourceLinks[i]}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:underline"
-                >
-                  {source}
-                </a>
-              ) : (
-                <span>{source}</span>
-              )}
-            </Fragment>
-          ))}
-          {!isExpanded && sources.length > 2 && (
-            <>
-              {", "}
-              <button
-                onClick={() => setIsExpanded(true)}
-                className="hover:underline"
-              >
-                + {sources.length - 2} more
-              </button>
-            </>
-          )}
-        </span>
-      );
-    }
+    cell: SourceCell
   },
 ];
 
-interface BookGridProps {
-  data: FormattedBook[];
-}
-
 export function BookGrid({ data }: BookGridProps) {
-  return <DataGrid columns={columns} data={data} />;
+  const { expandedItems, toggleExpand } = useExpandableState();
+
+  const enhancedData = data.map(item => ({
+    ...item,
+    _expanded: expandedItems,
+    _toggleExpand: toggleExpand
+  }));
+
+  return <DataGrid columns={columns} data={enhancedData} />;
 }

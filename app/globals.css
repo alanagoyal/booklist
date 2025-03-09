@@ -43,14 +43,14 @@
     --background: #EBEBEB;
     --foreground: #121212;
     --border: #121212;
-    --muted-foreground: #121212/70;
+    --muted-foreground: #121212/50;
   }
 
   .dark {
     --background: #56493C;
     --foreground: #D4C4A3;
     --border: #D4C4A3;
-    --muted-foreground: #D4C4A3/70;
+    --muted-foreground: #D4C4A3/50;
   }
 
   * {
