@@ -148,113 +148,115 @@ export function DataGrid({ data, columns, getRowClassName }: DataGridProps) {
   }, [data, sortConfig, filters]);
 
   return (
-    <div className="h-dvh w-full text-sm flex flex-col">
-      {/* Title - always visible, no scroll */}
-      <div className="bg-background border-b">
-        <div className="h-16 px-3 py-2 flex justify-between items-center">
-          <button 
-            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-            className="font-bold font-display text-xl cursor-pointer"
-          >
-            BOOKLIST
-          </button>
+    <div className="h-dvh w-full text-sm flex flex-col border border-[#121212]/70 dark:border-[#D4C4A3]/70 overflow-hidden">
+      <div className="flex flex-col flex-1 m-2 border border-[#121212]/70 dark:border-[#D4C4A3]/70 overflow-hidden">
+        {/* Title - always visible, no scroll */}
+        <div className="bg-background border-b">
+          <div className="h-16 px-3 py-2 flex justify-between items-center">
+            <button 
+              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              className="font-bold font-display text-xl cursor-pointer"
+            >
+              BOOKLIST
+            </button>
+          </div>
         </div>
-      </div>
 
-      {/* Scrollable container for both header and body */}
-      <div className="flex-1 overflow-auto">
-        <div className="min-w-full inline-block align-middle">
-          {/* Header section */}
-          <div className="sticky top-0 min-w-full bg-background z-50">
-            {/* Column headers */}
-            <div className="grid h-10 items-center" style={{ gridTemplateColumns: `repeat(${columns.length}, minmax(200px, 1fr))` }}>
-              {columns.map((column) => (
-                <div
-                  key={column.field}
-                  className="px-3 py-2 border-b select-none relative"
-                  ref={el => void (dropdownRefs.current[column.field] = el)}
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold">{column.header}</span>
-                    <button
-                      onClick={() => toggleDropdown(column.field)}
-                      className="flex items-center gap-1 hover:bg-accent rounded p-1"
-                    >
-                      {activeFilters.includes(column.field) && (
-                        <ListFilter className="w-3 h-3" />
-                      )}
-                      <ChevronDown className="w-4 h-4" />
-                    </button>
-                  </div>
-                  
-                  {/* Dropdown Menu */}
-                  {openDropdown === column.field && (
-                    <div className="absolute top-full left-0 right-0 bg-background border shadow-lg z-50">
-                      <div className="py-1">
-                        <button
-                          className="w-full px-4 py-2 text-left hover:bg-accent/50 flex items-center justify-between"
-                          onClick={() => handleSort(column.field, 'asc')}
-                        >
-                          Sort ascending
-                          {sortConfig.field === column.field && sortConfig.direction === 'asc' && (
-                            <Check className="w-3 h-3" />
-                          )}
-                        </button>
-                        <button
-                          className="w-full px-4 py-2 text-left hover:bg-accent/50 flex items-center justify-between"
-                          onClick={() => handleSort(column.field, 'desc')}
-                        >
-                          Sort descending
-                          {sortConfig.field === column.field && sortConfig.direction === 'desc' && (
-                            <Check className="w-3 h-3" />
-                          )}
-                        </button>
-                        <div className="px-4 py-2">
-                          <div className="relative">
-                            <input
-                              type="text"
-                              className="w-full px-2 py-1 border rounded bg-background pr-7"
-                              placeholder="Search"
-                              value={filters[column.field] || ''}
-                              onChange={(e) => handleFilterChange(column.field, e.target.value)}
-                              onClick={(e) => e.stopPropagation()}
-                            />
-                            {filters[column.field] && (
-                              <button
-                                className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-muted-foreground/70"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleFilterChange(column.field, '');
-                                }}
-                              >
-                                <X className="w-3 h-3" />
-                              </button>
+        {/* Scrollable container for both header and body */}
+        <div className="flex-1 overflow-auto">
+          <div className="min-w-full inline-block align-middle">
+            {/* Header section */}
+            <div className="sticky top-0 min-w-full bg-background z-50">
+              {/* Column headers */}
+              <div className="grid h-10 items-center" style={{ gridTemplateColumns: `repeat(${columns.length}, minmax(200px, 1fr))` }}>
+                {columns.map((column) => (
+                  <div
+                    key={column.field}
+                    className="px-3 py-2 border-b select-none relative"
+                    ref={el => void (dropdownRefs.current[column.field] = el)}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold">{column.header}</span>
+                      <button
+                        onClick={() => toggleDropdown(column.field)}
+                        className="flex items-center gap-1 hover:bg-accent rounded p-1"
+                      >
+                        {activeFilters.includes(column.field) && (
+                          <ListFilter className="w-3 h-3" />
+                        )}
+                        <ChevronDown className="w-4 h-4" />
+                      </button>
+                    </div>
+                    
+                    {/* Dropdown Menu */}
+                    {openDropdown === column.field && (
+                      <div className="absolute top-full left-0 right-0 bg-background border shadow-lg z-50">
+                        <div className="py-1">
+                          <button
+                            className="w-full px-4 py-2 text-left hover:bg-accent/50 flex items-center justify-between"
+                            onClick={() => handleSort(column.field, 'asc')}
+                          >
+                            Sort ascending
+                            {sortConfig.field === column.field && sortConfig.direction === 'asc' && (
+                              <Check className="w-3 h-3" />
                             )}
+                          </button>
+                          <button
+                            className="w-full px-4 py-2 text-left hover:bg-accent/50 flex items-center justify-between"
+                            onClick={() => handleSort(column.field, 'desc')}
+                          >
+                            Sort descending
+                            {sortConfig.field === column.field && sortConfig.direction === 'desc' && (
+                              <Check className="w-3 h-3" />
+                            )}
+                          </button>
+                          <div className="px-4 py-2">
+                            <div className="relative">
+                              <input
+                                type="text"
+                                className="w-full px-2 py-1 border rounded bg-background pr-7"
+                                placeholder="Search"
+                                value={filters[column.field] || ''}
+                                onChange={(e) => handleFilterChange(column.field, e.target.value)}
+                                onClick={(e) => e.stopPropagation()}
+                              />
+                              {filters[column.field] && (
+                                <button
+                                  className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-muted-foreground/70"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleFilterChange(column.field, '');
+                                  }}
+                                >
+                                  <X className="w-3 h-3" />
+                                </button>
+                              )}
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Table body */}
-          <div>
-            {filteredAndSortedData.map((row, rowIndex) => (
-              <div
-                key={rowIndex}
-                className={`grid transition-colors ${getRowClassName?.(row) || ''}`}
-                style={{ gridTemplateColumns: `repeat(${columns.length}, minmax(200px, 1fr))` }}
-              >
-                {columns.map((column) => (
-                  <div key={column.field} className="px-3 py-2 border-b">
-                    {column.cell ? column.cell({ row: { original: row } }) : row[column.field]}
+                    )}
                   </div>
                 ))}
               </div>
-            ))}
+            </div>
+
+            {/* Table body */}
+            <div>
+              {filteredAndSortedData.map((row, rowIndex) => (
+                <div
+                  key={rowIndex}
+                  className={`grid transition-colors ${getRowClassName?.(row) || ''}`}
+                  style={{ gridTemplateColumns: `repeat(${columns.length}, minmax(200px, 1fr))` }}
+                >
+                  {columns.map((column) => (
+                    <div key={column.field} className="px-3 py-2 border-b">
+                      {column.cell ? column.cell({ row: { original: row } }) : row[column.field]}
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
