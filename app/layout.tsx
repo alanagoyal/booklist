@@ -6,6 +6,15 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: siteConfig.title,
   description: siteConfig.description,
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#FFFFFF" },
+    { media: "(prefers-color-scheme: dark)", color: "#121212" }
+  ],
+  viewport: {
+    width: "device-width",
+    initialScale: 1,
+    viewportFit: "cover",
+  },
   openGraph: {
     title: siteConfig.title,
     description: siteConfig.description,
