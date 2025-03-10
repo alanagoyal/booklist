@@ -31,7 +31,7 @@ export class Scrollbar {
 
     this.trackY = document.createElement("div");
     this.trackY.className =
-      "absolute right-0 z-10 h-full w-[8px] cursor-pointer bg-gray-100 border-l border-gray-300";
+      "absolute right-0 z-50 h-full w-[8px] cursor-pointer bg-gray-100 border-l border-gray-300";
 
     this.thumbY = document.createElement("div");
     this.thumbY.className =
