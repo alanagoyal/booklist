@@ -4,10 +4,7 @@ import Providers from "./providers";
 import "./globals.css";
 
 export const viewport = {
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#F0FDF4" },
-    { media: "(prefers-color-scheme: dark)", color: "#052E16" },
-  ],
+  themeColor: "#121212",
   width: "device-width",
   initialScale: 1,
 };
