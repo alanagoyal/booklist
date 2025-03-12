@@ -12,6 +12,7 @@ type ColumnDef = {
   header: string;
   width?: number;
   cell?: (props: { row: { original: any } }) => React.ReactNode;
+  isExpandable?: boolean;
 };
 
 type DataItem = {
@@ -52,6 +53,7 @@ export function DataGrid({ data, columns, getRowClassName }: DataGridProps) {
 
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const dropdownRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
+  const [expandedCells, setExpandedCells] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -117,6 +119,19 @@ export function DataGrid({ data, columns, getRowClassName }: DataGridProps) {
 
   const toggleDropdown = (field: string) => {
     setOpenDropdown(openDropdown === field ? null : field);
+  };
+
+  const toggleExpand = (rowIndex: number, field: string) => {
+    const key = `${rowIndex}-${field}`;
+    setExpandedCells(prev => {
+      const next = new Set(prev);
+      if (next.has(key)) {
+        next.delete(key);
+      } else {
+        next.add(key);
+      }
+      return next;
+    });
   };
 
   const filteredAndSortedData = React.useMemo(() => {
@@ -249,11 +264,26 @@ export function DataGrid({ data, columns, getRowClassName }: DataGridProps) {
                   className={`grid transition-colors ${getRowClassName?.(row) || ''}`}
                   style={{ gridTemplateColumns: `repeat(${columns.length}, minmax(200px, 1fr))` }}
                 >
-                  {columns.map((column) => (
-                    <div key={column.field} className="px-3 py-2 border-b">
-                      {column.cell ? column.cell({ row: { original: row } }) : row[column.field]}
-                    </div>
-                  ))}
+                  {columns.map((column) => {
+                    const cellKey = `${rowIndex}-${column.field}`;
+                    const isExpanded = expandedCells.has(cellKey);
+                    
+                    return (
+                      <div 
+                        key={column.field} 
+                        className={`px-3 py-2 border-b ${column.isExpandable ? 'cursor-pointer' : ''}`}
+                        onClick={() => column.isExpandable ? toggleExpand(rowIndex, column.field) : undefined}
+                      >
+                        {column.cell ? (
+                          column.cell({ row: { original: row } })
+                        ) : (
+                          <div className={`${column.isExpandable && !isExpanded ? 'line-clamp-2' : ''}`}>
+                            {row[column.field]}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               ))}
             </div>

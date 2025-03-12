@@ -193,6 +193,7 @@ const columns: {
   header: string; 
   width?: number;
   cell?: (props: CellProps) => React.ReactNode;
+  isExpandable?: boolean;
 }[] = [
   { 
     field: "title", 
@@ -201,7 +202,7 @@ const columns: {
     cell: TitleCell
   },
   { field: "author", header: "Author", width: 120 },
-  { field: "description", header: "Description", width: 200 },
+  { field: "description", header: "Description", width: 200, isExpandable: true },
   { field: "genres", header: "Genres", width: 150 },
   {
     field: "recommender",
