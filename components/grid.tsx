@@ -11,7 +11,7 @@ type ColumnDef = {
   field: string;
   header: string;
   width?: number;
-  cell?: (props: { row: { original: any } }) => React.ReactNode;
+  cell?: (props: { row: { original: any; isExpanded: boolean } }) => React.ReactNode;
   isExpandable?: boolean;
 };
 
@@ -53,7 +53,7 @@ export function DataGrid({ data, columns, getRowClassName }: DataGridProps) {
 
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const dropdownRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
-  const [expandedCells, setExpandedCells] = useState<Set<string>>(new Set());
+  const [expandedRows, setExpandedRows] = useState<Set<number>>(new Set());
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -121,14 +121,13 @@ export function DataGrid({ data, columns, getRowClassName }: DataGridProps) {
     setOpenDropdown(openDropdown === field ? null : field);
   };
 
-  const toggleExpand = (rowIndex: number, field: string) => {
-    const key = `${rowIndex}-${field}`;
-    setExpandedCells(prev => {
+  const toggleRowExpand = (rowIndex: number) => {
+    setExpandedRows(prev => {
       const next = new Set(prev);
-      if (next.has(key)) {
-        next.delete(key);
+      if (next.has(rowIndex)) {
+        next.delete(rowIndex);
       } else {
-        next.add(key);
+        next.add(rowIndex);
       }
       return next;
     });
@@ -258,34 +257,41 @@ export function DataGrid({ data, columns, getRowClassName }: DataGridProps) {
 
             {/* Table body */}
             <div>
-              {filteredAndSortedData.map((row, rowIndex) => (
-                <div
-                  key={rowIndex}
-                  className={`grid transition-colors ${getRowClassName?.(row) || ''}`}
-                  style={{ gridTemplateColumns: `repeat(${columns.length}, minmax(200px, 1fr))` }}
-                >
-                  {columns.map((column) => {
-                    const cellKey = `${rowIndex}-${column.field}`;
-                    const isExpanded = expandedCells.has(cellKey);
-                    
-                    return (
+              {filteredAndSortedData.map((row, rowIndex) => {
+                const isExpanded = expandedRows.has(rowIndex);
+                
+                return (
+                  <div
+                    key={rowIndex}
+                    className={`grid cursor-pointer hover:bg-accent/50 transition-all duration-200 ${getRowClassName?.(row) || ''}`}
+                    style={{ gridTemplateColumns: `repeat(${columns.length}, minmax(200px, 1fr))` }}
+                    onClick={() => toggleRowExpand(rowIndex)}
+                  >
+                    {columns.map((column) => (
                       <div 
                         key={column.field} 
-                        className={`px-3 py-2 border-b ${column.isExpandable ? 'cursor-pointer' : ''}`}
-                        onClick={() => column.isExpandable ? toggleExpand(rowIndex, column.field) : undefined}
+                        className="px-3 py-2 border-b"
+                        onClick={(e) => {
+                          // Allow links and interactive elements to work
+                          if ((e.target as HTMLElement).closest('a, button, input')) {
+                            e.stopPropagation();
+                          }
+                        }}
                       >
                         {column.cell ? (
-                          column.cell({ row: { original: row } })
+                          <div className={`whitespace-pre-line transition-all duration-200 ${!isExpanded ? 'line-clamp-2' : ''}`}>
+                            {column.cell({ row: { original: row, isExpanded } })}
+                          </div>
                         ) : (
-                          <div className={`${column.isExpandable && !isExpanded ? 'line-clamp-2' : ''}`}>
+                          <div className={`whitespace-pre-line transition-all duration-200 ${!isExpanded ? 'line-clamp-2' : ''}`}>
                             {row[column.field]}
                           </div>
                         )}
                       </div>
-                    );
-                  })}
-                </div>
-              ))}
+                    ))}
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>

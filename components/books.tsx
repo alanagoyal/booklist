@@ -16,36 +16,18 @@ interface FormattedBook {
   amazon_url: string;
 }
 
-interface ExpandedState {
-  [key: string]: boolean;
-}
-
 interface EnhancedBook extends FormattedBook {
-  _expanded: ExpandedState;
-  _toggleExpand: (id: string) => void;
   _recommendationCount: number;
 }
 
 interface CellProps {
   row: {
     original: EnhancedBook;
+    isExpanded: boolean;
   };
 }
 
-const useExpandableState = () => {
-  const [expandedItems, setExpandedItems] = useState<ExpandedState>({});
-  
-  const toggleExpand = (id: string) => {
-    setExpandedItems(prev => ({
-      ...prev,
-      [id]: !prev[id]
-    }));
-  };
-
-  return { expandedItems, toggleExpand };
-};
-
-const SourceCell = ({ row: { original } }: CellProps) => {
+const SourceCell = ({ row: { original, isExpanded } }: CellProps) => {
   const sourceText = original.source || '';
   const sources = sourceText.split(',').map(s => s.trim()).filter(Boolean);
   const sourceLinks = (original.source_link?.split(',').map(l => l.trim()) || [])
@@ -55,9 +37,7 @@ const SourceCell = ({ row: { original } }: CellProps) => {
     return <span></span>;
   }
 
-  const cellId = `source-${original.id}`;
-  const isExpanded = original._expanded?.[cellId] || false;
-  const displayCount = !isExpanded && sources.length > 2 ? 2 : sources.length;
+  const displayCount = !isExpanded ? 2 : sources.length;
 
   return (
     <span>
@@ -78,24 +58,23 @@ const SourceCell = ({ row: { original } }: CellProps) => {
           )}
         </Fragment>
       ))}
-      {!isExpanded && sources.length > 2 && (
+      {!isExpanded && sources.length > displayCount && (
         <>
           {", "}
-          <button
-            onClick={() => original._toggleExpand?.(cellId)}
-            className="hover:underline"
-          >
-            + {sources.length - 2} more
-          </button>
+          <span className="text-[#121212]/70 dark:text-[#D4C4A3]/70">
+            + {sources.length - displayCount} more
+          </span>
         </>
       )}
     </span>
   );
 };
 
-const TitleCell = function Title({ row: { original } }: CellProps) {
+const TitleCell = function Title({ row: { original, isExpanded } }: CellProps) {
   const title = original.title || '';
   const amazonUrl = original.amazon_url;
+  
+  const displayTitle = !isExpanded && title.length > 50 ? `${title.slice(0, 50)}...` : title;
       
   return amazonUrl ? (
     <a
@@ -104,14 +83,14 @@ const TitleCell = function Title({ row: { original } }: CellProps) {
       rel="noopener noreferrer"
       className="hover:underline"
     >
-      {title}
+      {displayTitle}
     </a>
   ) : (
-    <span>{title}</span>
+    <span>{displayTitle}</span>
   );
 };
 
-const RecommenderCell = function Recommender({ row: { original } }: CellProps) {
+const RecommenderCell = function Recommender({ row: { original, isExpanded } }: CellProps) {
   const recommenderText = original.recommender || '';
   const recommenders = recommenderText.split(',').map(r => r.trim()).filter(Boolean);
   
@@ -122,9 +101,7 @@ const RecommenderCell = function Recommender({ row: { original } }: CellProps) {
     return <span></span>;
   }
 
-  const cellId = `recommender-${original.id}`;
-  const isExpanded = original._expanded?.[cellId] || false;
-  const displayCount = !isExpanded && recommenders.length > 2 ? 2 : recommenders.length;
+  const displayCount = !isExpanded ? 2 : recommenders.length;
 
   return (
     <span>
@@ -149,15 +126,12 @@ const RecommenderCell = function Recommender({ row: { original } }: CellProps) {
           </Fragment>
         );
       })}
-      {!isExpanded && recommenders.length > 2 && (
+      {!isExpanded && recommenders.length > displayCount && (
         <>
           {", "}
-          <button
-            onClick={() => original._toggleExpand?.(cellId)}
-            className="hover:underline"
-          >
-            + {recommenders.length - 2} more
-          </button>
+          <span className="text-[#121212]/70 dark:text-[#D4C4A3]/70">
+            + {recommenders.length - displayCount} more
+          </span>
         </>
       )}
     </span>
@@ -219,8 +193,6 @@ const columns: {
 ];
 
 export function BookGrid({ data }: BookGridProps) {
-  const { expandedItems, toggleExpand } = useExpandableState();
-
   // Calculate max recommendation count
   const maxRecommendations = Math.max(
     ...data.map(book => getRecommendationCount(book.recommender))
@@ -228,8 +200,6 @@ export function BookGrid({ data }: BookGridProps) {
 
   const enhancedData: EnhancedBook[] = data.map(book => ({
     ...book,
-    _expanded: expandedItems,
-    _toggleExpand: toggleExpand,
     _recommendationCount: getRecommendationCount(book.recommender)
   }));
 
