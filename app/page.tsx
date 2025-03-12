@@ -6,9 +6,7 @@ export const dynamic = "force-static";
 
 interface Person {
   full_name: string;
-  website_url: string | null;
-  twitter_url: string | null;
-  wiki_url: string | null;
+  url: string | null;
 }
 
 interface Recommendation {
@@ -44,9 +42,7 @@ export default async function Home() {
         source_link,
         recommender:people(
           full_name,
-          website_url,
-          twitter_url,
-          wiki_url
+          url
         )
       )
     `
@@ -70,14 +66,8 @@ export default async function Home() {
     source_link: book.recommendations
         ?.map((rec) => rec.source_link)
         .join(",") || "",
-    website_url: book.recommendations
-        ?.map((rec) => rec.recommender?.website_url)
-        .join(",") || "",
-    twitter_url: book.recommendations
-        ?.map((rec) => rec.recommender?.twitter_url)
-        .join(",") || "",
-    wiki_url: book.recommendations
-        ?.map((rec) => rec.recommender?.wiki_url)
+    url: book.recommendations
+        ?.map((rec) => rec.recommender?.url)
         .join(",") || "",
     amazon_url: book.amazon_url || "",
   }));

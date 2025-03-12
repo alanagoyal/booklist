@@ -12,9 +12,7 @@ interface FormattedBook {
   recommender: string;
   source: string;
   source_link: string;
-  website_url: string;
-  twitter_url: string;
-  wiki_url: string;
+  url: string;
   amazon_url: string;
 }
 
@@ -117,11 +115,7 @@ const RecommenderCell = function Recommender({ row: { original } }: CellProps) {
   const recommenderText = original.recommender || '';
   const recommenders = recommenderText.split(',').map(r => r.trim()).filter(Boolean);
   
-  const websiteUrls = (original.website_url?.split(',').map(url => url.trim()) || [])
-    .concat(Array(recommenders.length).fill(null));
-  const twitterUrls = (original.twitter_url?.split(',').map(url => url.trim()) || [])
-    .concat(Array(recommenders.length).fill(null));
-  const wikiUrls = (original.wiki_url?.split(',').map(url => url.trim()) || [])
+  const urls = (original.url?.split(',').map(url => url.trim()) || [])
     .concat(Array(recommenders.length).fill(null));
 
   if (recommenders.length === 0) {
@@ -135,7 +129,7 @@ const RecommenderCell = function Recommender({ row: { original } }: CellProps) {
   return (
     <span>
       {recommenders.slice(0, displayCount).map((rec, i) => {
-        const recommenderUrl = twitterUrls[i] || websiteUrls[i] || wikiUrls[i];
+        const recommenderUrl = urls[i];
             
         return (
           <Fragment key={i}>
