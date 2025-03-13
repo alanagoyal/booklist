@@ -175,7 +175,7 @@ export function DataGrid({ data, columns, getRowClassName }: DataGridProps) {
   }, [data, sortConfig, filters]);
 
   return (
-    <div className="h-dvh w-full text-sm flex flex-col border border-[#121212]/70 dark:border-[#D4C4A3]/70 overflow-hidden">
+    <div className="h-dvh w-full text-xs flex flex-col border border-[#121212]/70 dark:border-[#D4C4A3]/70 overflow-hidden">
       <div className="flex flex-col flex-1 m-2 border border-[#121212]/70 dark:border-[#D4C4A3]/70 overflow-hidden">
         {/* Title - always visible, no scroll */}
         <div className="bg-background border-b">

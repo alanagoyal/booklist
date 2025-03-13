@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { siteConfig } from "@/config/site";
 import Providers from "./providers";
+import { GeistMono } from "geist/font/mono"
 import "./globals.css";
 
 export const viewport = {
@@ -39,7 +40,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning className={GeistMono.className}>
       <head>
         {/* Apple-specific meta tags for status bar appearance */}
         <meta name="apple-mobile-web-app-capable" content="yes" />

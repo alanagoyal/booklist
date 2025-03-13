@@ -14,8 +14,10 @@ export default {
         foreground: "var(--foreground)",
       },
       fontFamily: {
-        sans: ['ABC Whyte', 'system-ui', 'sans-serif'],
-        display: ["Playfair Display", "Georgia", "Cambria", "Times New Roman", "Times", "serif"],
+        sans: ["Geist Mono", "monospace"],
+        serif: ["Geist Mono", "monospace"],
+        display: ["Geist Mono", "monospace"],
+        mono: ["Geist Mono", "monospace"],
       },
     },
   },
