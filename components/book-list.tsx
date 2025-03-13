@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import { BookGrid } from './books';
-import { BookCount } from './book-count';
 import { getCache, setCache } from '@/lib/cache';
 
 interface Book {
