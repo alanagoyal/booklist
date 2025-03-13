@@ -53,6 +53,7 @@ export function DataGrid({ data, columns, getRowClassName }: DataGridProps) {
 
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const dropdownRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
+  const inputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
   const [expandedRows, setExpandedRows] = useState<Set<number>>(new Set());
 
   useEffect(() => {
@@ -119,6 +120,12 @@ export function DataGrid({ data, columns, getRowClassName }: DataGridProps) {
 
   const toggleDropdown = (field: string) => {
     setOpenDropdown(openDropdown === field ? null : field);
+    // Focus input when opening dropdown
+    if (openDropdown !== field) {
+      setTimeout(() => {
+        inputRefs.current[field]?.focus();
+      }, 0);
+    }
   };
 
   const toggleRowExpand = (rowIndex: number) => {
@@ -228,7 +235,8 @@ export function DataGrid({ data, columns, getRowClassName }: DataGridProps) {
                             <div className="relative">
                               <input
                                 type="text"
-                                className="w-full px-2 py-1 border rounded bg-background pr-7"
+                                ref={el => void (inputRefs.current[column.field] = el)}
+                                className="w-full px-2 py-1 border rounded bg-background pr-7 focus:outline-none focus:ring-1 focus:ring-[#121212]/70 dark:focus:ring-[#D4C4A3]/70"
                                 placeholder="Search"
                                 value={filters[column.field] || ''}
                                 onChange={(e) => handleFilterChange(column.field, e.target.value)}
