@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { useTheme } from 'next-themes';
-import { ChevronDown, ListFilter, Check, X } from 'lucide-react';
+import { ChevronDown, ListFilter, Check, X, ArrowUp, ArrowDown } from 'lucide-react';
 import { useSearchParams, usePathname, useRouter } from 'next/navigation';
 
 type SortDirection = 'asc' | 'desc' | null;
@@ -103,7 +103,10 @@ export function DataGrid({ data, columns, getRowClassName }: DataGridProps) {
   };
 
   const handleSort = (field: string, direction: SortDirection) => {
-    const newSortConfig = { field, direction };
+    const newSortConfig = {
+      field: sortConfig.field === field && sortConfig.direction === direction ? '' : field,
+      direction: sortConfig.field === field && sortConfig.direction === direction ? null : direction
+    };
     setSortConfig(newSortConfig);
     updateUrlParams(newSortConfig, filters);
     setOpenDropdown(null);
@@ -209,9 +212,16 @@ export function DataGrid({ data, columns, getRowClassName }: DataGridProps) {
                         className="flex items-center gap-1 hover:bg-accent rounded p-1"
                       >
                         {activeFilters.includes(column.field) && (
-                          <ListFilter className="w-3 h-3" />
+                          <ListFilter className="w-3 h-3 text-[#121212]/70 dark:text-[#D4C4A3]/70" />
                         )}
-                        <ChevronDown className="w-4 h-4" />
+                        {sortConfig.field === column.field && (
+                          sortConfig.direction === 'asc' ? (
+                            <ArrowUp className="w-3 h-3 text-[#121212]/70 dark:text-[#D4C4A3]/70" />
+                          ) : (
+                            <ArrowDown className="w-3 h-3 text-[#121212]/70 dark:text-[#D4C4A3]/70" />
+                          )
+                        )}
+                        <ChevronDown className="w-4 h-4 text-[#121212]/70 dark:text-[#D4C4A3]/70" />
                       </button>
                     </div>
                     
@@ -223,18 +233,24 @@ export function DataGrid({ data, columns, getRowClassName }: DataGridProps) {
                             className="w-full px-4 py-2 text-left hover:bg-accent/50 flex items-center justify-between"
                             onClick={() => handleSort(column.field, 'asc')}
                           >
-                            Sort ascending
+                            <div className="flex items-center gap-2">
+                              <ArrowUp className="w-3 h-3 text-[#121212]/70 dark:text-[#D4C4A3]/70" />
+                              Sort ascending
+                            </div>
                             {sortConfig.field === column.field && sortConfig.direction === 'asc' && (
-                              <Check className="w-3 h-3" />
+                              <Check className="w-3 h-3 text-[#121212]/70 dark:text-[#D4C4A3]/70" />
                             )}
                           </button>
                           <button
                             className="w-full px-4 py-2 text-left hover:bg-accent/50 flex items-center justify-between"
                             onClick={() => handleSort(column.field, 'desc')}
                           >
-                            Sort descending
+                            <div className="flex items-center gap-2">
+                              <ArrowDown className="w-3 h-3 text-[#121212]/70 dark:text-[#D4C4A3]/70" />
+                              Sort descending
+                            </div>
                             {sortConfig.field === column.field && sortConfig.direction === 'desc' && (
-                              <Check className="w-3 h-3" />
+                              <Check className="w-3 h-3 text-[#121212]/70 dark:text-[#D4C4A3]/70" />
                             )}
                           </button>
                           <div className="px-4 py-2">
