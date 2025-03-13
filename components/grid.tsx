@@ -55,13 +55,19 @@ export function DataGrid({ data, columns, getRowClassName }: DataGridProps) {
   const dropdownRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
   const inputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
   const [expandedRows, setExpandedRows] = useState<Set<number>>(new Set());
+  const isClosingDropdown = useRef(false);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (openDropdown) {
         const dropdownElement = dropdownRefs.current[openDropdown];
         if (dropdownElement && !dropdownElement.contains(event.target as Node)) {
+          isClosingDropdown.current = true;
           setOpenDropdown(null);
+          // Reset the flag after the current event loop
+          setTimeout(() => {
+            isClosingDropdown.current = false;
+          }, 0);
         }
       }
     }
@@ -271,9 +277,13 @@ export function DataGrid({ data, columns, getRowClassName }: DataGridProps) {
                 return (
                   <div
                     key={rowIndex}
-                    className={`grid cursor-pointer hover:bg-accent/50 transition-all duration-200 ${getRowClassName?.(row) || ''}`}
+                    className={`grid cursor-pointer hover:bg-accent/50 transition-colors duration-200 ${getRowClassName?.(row) || ''}`}
                     style={{ gridTemplateColumns: `repeat(${columns.length}, minmax(200px, 1fr))` }}
-                    onClick={() => toggleRowExpand(rowIndex)}
+                    onClick={() => {
+                      if (!isClosingDropdown.current) {
+                        toggleRowExpand(rowIndex);
+                      }
+                    }}
                   >
                     {columns.map((column) => (
                       <div 
