@@ -61,7 +61,7 @@ const SourceCell = ({ row: { original, isExpanded } }: CellProps) => {
       {!isExpanded && sources.length > displayCount && (
         <>
           {", "}
-          <span className="text-[#121212]/70 dark:text-[#D4C4A3]/70">
+          <span className="text-text/70">
             + {sources.length - displayCount} more
           </span>
         </>
@@ -129,7 +129,7 @@ const RecommenderCell = function Recommender({ row: { original, isExpanded } }: 
       {!isExpanded && recommenders.length > displayCount && (
         <>
           {", "}
-          <span className="text-[#121212]/70 dark:text-[#D4C4A3]/70">
+          <span className="text-text/70">
             + {recommenders.length - displayCount} more
           </span>
         </>
@@ -149,15 +149,18 @@ const getRecommendationCount = (recommender: string): number => {
 const getBackgroundColor = (count: number, maxCount: number): string => {
   if (count === 0) return '';
   
-  // Create 4 intensity levels like GitHub
-  const intensity = Math.ceil((count / maxCount) * 4);
+  // Create 6 intensity levels
+  const intensity = Math.ceil((count / maxCount) * 6);
   
-  // Use Tailwind's color opacity classes
+  // Light mode: Start at 95% and decrease to 75% to maintain readability
+  // Dark mode: Start at 5% and increase to 25% to maintain contrast
   switch (intensity) {
-    case 1: return 'bg-emerald-50 dark:bg-[#121212]/20';
-    case 2: return 'bg-emerald-100 dark:bg-[#121212]/40';
-    case 3: return 'bg-emerald-200 dark:bg-[#121212]/60';
-    case 4: return 'bg-emerald-300 dark:bg-[#121212]/80';
+    case 1: return 'bg-[hsl(151,80%,95%)] hover:bg-[hsl(151,80%,92%)] dark:bg-[hsl(160,84%,5%)] dark:hover:bg-[hsl(160,84%,7%)] transition-colors duration-200';
+    case 2: return 'bg-[hsl(151,80%,90%)] hover:bg-[hsl(151,80%,88%)] dark:bg-[hsl(160,84%,9%)] dark:hover:bg-[hsl(160,84%,11%)] transition-colors duration-200';
+    case 3: return 'bg-[hsl(151,80%,85%)] hover:bg-[hsl(151,80%,84%)] dark:bg-[hsl(160,84%,13%)] dark:hover:bg-[hsl(160,84%,15%)] transition-colors duration-200';
+    case 4: return 'bg-[hsl(151,80%,80%)] hover:bg-[hsl(151,80%,80%)] dark:bg-[hsl(160,84%,17%)] dark:hover:bg-[hsl(160,84%,19%)] transition-colors duration-200';
+    case 5: return 'bg-[hsl(151,80%,75%)] hover:bg-[hsl(151,80%,76%)] dark:bg-[hsl(160,84%,21%)] dark:hover:bg-[hsl(160,84%,23%)] transition-colors duration-200';
+    case 6: return 'bg-[hsl(151,80%,70%)] hover:bg-[hsl(151,80%,72%)] dark:bg-[hsl(160,84%,25%)] dark:hover:bg-[hsl(160,84%,27%)] transition-colors duration-200';
     default: return '';
   }
 };
@@ -207,7 +210,7 @@ export function BookGrid({ data }: BookGridProps) {
     <DataGrid
       data={enhancedData}
       columns={columns}
-      getRowClassName={(row) => 
+      getRowClassName={(row: EnhancedBook) =>
         getBackgroundColor(row._recommendationCount, maxRecommendations)
       }
     />

@@ -17,9 +17,11 @@ interface Book {
 
 export function BookList({ initialBooks }: { initialBooks: Book[] }) {
   return (
-    <div className="relative min-h-screen">
-      <BookGrid data={initialBooks} />
-      <div className="fixed bottom-4 right-4 text-[#121212/70] dark:text-[#d0fbed/70] transition-colors duration-200">
+    <div className="h-full flex flex-col relative">
+      <div className="flex-1 overflow-hidden">
+        <BookGrid data={initialBooks} />
+      </div>
+      <div className="absolute bottom-4 right-4 text-text/70 transition-colors duration-200">
         {`${initialBooks.length} books`}
       </div>
     </div>

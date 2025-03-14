@@ -3,6 +3,7 @@ import { siteConfig } from "@/config/site";
 import Providers from "./providers";
 import { GeistMono } from "geist/font/mono"
 import "./globals.css";
+import Header from "@/components/header";
 
 export const viewport = {
   themeColor: "#121212",
@@ -47,7 +48,16 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
       </head>
       <body className="antialiased">
-        <Providers>{children}</Providers>
+        <Providers>
+          <div className="h-dvh w-full text-xs flex flex-col border border-border overflow-hidden">
+            <div className="flex flex-col flex-1 m-4 border border-border overflow-hidden">
+              <Header />
+              <main className="flex-1 overflow-hidden">
+                {children}
+              </main>
+            </div>
+          </div>
+        </Providers>
       </body>
     </html>
   );
