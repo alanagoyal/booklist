@@ -61,7 +61,7 @@ const SourceCell = ({ row: { original, isExpanded } }: CellProps) => {
       {!isExpanded && sources.length > displayCount && (
         <>
           {", "}
-          <span className="text-[#121212]/70 dark:text-[#D4C4A3]/70">
+          <span className="text-text/70">
             + {sources.length - displayCount} more
           </span>
         </>
@@ -129,7 +129,7 @@ const RecommenderCell = function Recommender({ row: { original, isExpanded } }: 
       {!isExpanded && recommenders.length > displayCount && (
         <>
           {", "}
-          <span className="text-[#121212]/70 dark:text-[#D4C4A3]/70">
+          <span className="text-text/70">
             + {recommenders.length - displayCount} more
           </span>
         </>
@@ -152,12 +152,14 @@ const getBackgroundColor = (count: number, maxCount: number): string => {
   // Create 4 intensity levels like GitHub
   const intensity = Math.ceil((count / maxCount) * 4);
   
-  // Use Tailwind's color opacity classes
+  // Use emerald theme colors with carefully tuned opacity levels
+  // Light mode base: hsl(151, 80%, 95%)
+  // Dark mode base: hsl(160, 84%, 5%)
   switch (intensity) {
-    case 1: return 'bg-emerald-50 dark:bg-[#121212]/20';
-    case 2: return 'bg-emerald-100 dark:bg-[#121212]/40';
-    case 3: return 'bg-emerald-200 dark:bg-[#121212]/60';
-    case 4: return 'bg-emerald-300 dark:bg-[#121212]/80';
+    case 1: return 'bg-primary/10 hover:bg-primary/15 dark:bg-primary/20 dark:hover:bg-primary/25 transition-colors duration-200';
+    case 2: return 'bg-primary/20 hover:bg-primary/25 dark:bg-primary/35 dark:hover:bg-primary/40 transition-colors duration-200';
+    case 3: return 'bg-primary/30 hover:bg-primary/35 dark:bg-primary/50 dark:hover:bg-primary/55 transition-colors duration-200';
+    case 4: return 'bg-primary/40 hover:bg-primary/45 dark:bg-primary/65 dark:hover:bg-primary/70 transition-colors duration-200';
     default: return '';
   }
 };
@@ -207,7 +209,7 @@ export function BookGrid({ data }: BookGridProps) {
     <DataGrid
       data={enhancedData}
       columns={columns}
-      getRowClassName={(row) => 
+      getRowClassName={(row: EnhancedBook) =>
         getBackgroundColor(row._recommendationCount, maxRecommendations)
       }
     />

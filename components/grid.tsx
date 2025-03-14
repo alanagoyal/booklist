@@ -14,31 +14,31 @@ import { useSearchParams, usePathname, useRouter } from "next/navigation";
 
 type SortDirection = "asc" | "desc" | null;
 
-type ColumnDef = {
-  field: string;
+type ColumnDef<T> = {
+  field: keyof T;
   header: string;
   width?: number;
   cell?: (props: {
-    row: { original: any; isExpanded: boolean };
+    row: { original: T; isExpanded: boolean };
   }) => React.ReactNode;
   isExpandable?: boolean;
 };
 
-type DataItem = {
-  [key: string]: any;
+type DataGridProps<T extends Record<string, any>> = {
+  data: T[];
+  columns: ColumnDef<T>[];
+  getRowClassName?: (row: T) => string;
 };
 
-type DataGridProps = {
-  data: DataItem[];
-  columns: ColumnDef[];
-  getRowClassName?: (row: DataItem) => string;
-};
-
-export function DataGrid({ data, columns, getRowClassName }: DataGridProps) {
+export function DataGrid<T extends Record<string, any>>({ 
+  data, 
+  columns, 
+  getRowClassName 
+}: DataGridProps<T>) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
-  const { theme, setTheme } = useTheme();
+  const { theme } = useTheme();
 
   const [sortConfig, setSortConfig] = useState<{
     field: string;
@@ -51,9 +51,9 @@ export function DataGrid({ data, columns, getRowClassName }: DataGridProps) {
   const [filters, setFilters] = useState<{ [key: string]: string }>(() => {
     const urlFilters: { [key: string]: string } = {};
     columns.forEach((column) => {
-      const filterValue = searchParams.get(`filter_${column.field}`);
+      const filterValue = searchParams.get(`filter_${String(column.field)}`);
       if (filterValue) {
-        urlFilters[column.field] = filterValue;
+        urlFilters[String(column.field)] = filterValue;
       }
     });
     return urlFilters;
@@ -79,7 +79,6 @@ export function DataGrid({ data, columns, getRowClassName }: DataGridProps) {
         ) {
           isClosingDropdown.current = true;
           setOpenDropdown(null);
-          // Reset the flag after the current event loop
           setTimeout(() => {
             isClosingDropdown.current = false;
           }, 0);
@@ -99,7 +98,6 @@ export function DataGrid({ data, columns, getRowClassName }: DataGridProps) {
   ) => {
     const params = new URLSearchParams(searchParams);
 
-    // Update sort parameters
     if (newSortConfig.field && newSortConfig.direction) {
       params.set("sortField", newSortConfig.field);
       params.set("sortDir", newSortConfig.direction);
@@ -108,7 +106,6 @@ export function DataGrid({ data, columns, getRowClassName }: DataGridProps) {
       params.delete("sortDir");
     }
 
-    // Update filter parameters
     Object.entries(newFilters).forEach(([field, value]) => {
       if (value) {
         params.set(`filter_${field}`, value);
@@ -153,7 +150,6 @@ export function DataGrid({ data, columns, getRowClassName }: DataGridProps) {
 
   const toggleDropdown = (field: string) => {
     setOpenDropdown(openDropdown === field ? null : field);
-    // Focus input when opening dropdown
     if (openDropdown !== field) {
       setTimeout(() => {
         inputRefs.current[field]?.focus();
@@ -174,23 +170,20 @@ export function DataGrid({ data, columns, getRowClassName }: DataGridProps) {
   };
 
   const filteredAndSortedData = React.useMemo(() => {
-    // First apply filters
     let result = data.filter((item) => {
       return Object.entries(filters).every(([field, filterValue]) => {
         if (!filterValue) return true;
-        const value = item[field];
-        return value
-          ?.toString()
+        const value = item[field as keyof T];
+        return String(value)
           .toLowerCase()
           .includes(filterValue.toLowerCase());
       });
     });
 
-    // Then apply sorting
     if (sortConfig.direction) {
       result = [...result].sort((a, b) => {
-        const aValue = a[sortConfig.field];
-        const bValue = b[sortConfig.field];
+        const aValue = a[sortConfig.field as keyof T];
+        const bValue = b[sortConfig.field as keyof T];
 
         if (aValue === bValue) return 0;
         if (aValue === null || aValue === undefined) return 1;
@@ -218,57 +211,57 @@ export function DataGrid({ data, columns, getRowClassName }: DataGridProps) {
           >
             {columns.map((column) => (
               <div
-                key={column.field}
-                className="px-3 py-2 border-b select-none relative"
-                ref={(el) => void (dropdownRefs.current[column.field] = el)}
+                key={String(column.field)}
+                className="px-3 py-2 border-b border-border select-none relative"
+                ref={(el) => void (dropdownRefs.current[String(column.field)] = el)}
               >
                 <div className="flex items-center justify-between">
-                  <span className="font-bold">{column.header}</span>
+                  <span className="font-base text-text">{column.header}</span>
                   <button
-                    onClick={() => toggleDropdown(column.field)}
-                    className="flex items-center gap-1 hover:bg-accent rounded p-1"
+                    onClick={() => toggleDropdown(String(column.field))}
+                    className="flex items-center gap-1 hover:bg-accent/50 rounded-base transition-colors duration-200"
                   >
-                    {activeFilters.includes(column.field) && (
-                      <ListFilter className="w-3 h-3 text-[#121212]/70 dark:text-[#D4C4A3]/70" />
+                    {activeFilters.includes(String(column.field)) && (
+                      <ListFilter className="w-3 h-3 text-text/70" />
                     )}
-                    {sortConfig.field === column.field &&
+                    {sortConfig.field === String(column.field) &&
                       (sortConfig.direction === "asc" ? (
-                        <ArrowUp className="w-3 h-3 text-[#121212]/70 dark:text-[#D4C4A3]/70" />
+                        <ArrowUp className="w-3 h-3 text-text/70" />
                       ) : (
-                        <ArrowDown className="w-3 h-3 text-[#121212]/70 dark:text-[#D4C4A3]/70" />
+                        <ArrowDown className="w-3 h-3 text-text/70" />
                       ))}
-                    <ChevronDown className="w-4 h-4 text-[#121212]/70 dark:text-[#D4C4A3]/70" />
+                    <ChevronDown className="w-4 h-4 text-text/70" />
                   </button>
                 </div>
 
                 {/* Dropdown Menu */}
-                {openDropdown === column.field && (
-                  <div className="absolute top-full left-0 right-0 bg-background border shadow-lg z-50">
+                {openDropdown === String(column.field) && (
+                  <div className="absolute top-full left-0 right-0 bg-background border border-border shadow-lg z-50 rounded-base">
                     <div className="py-1">
                       <button
-                        className="w-full px-4 py-2 text-left hover:bg-accent/50 flex items-center justify-between"
-                        onClick={() => handleSort(column.field, "asc")}
+                        className="w-full px-4 py-2 text-left hover:bg-accent/50 transition-colors duration-200 flex items-center justify-between"
+                        onClick={() => handleSort(String(column.field), "asc")}
                       >
                         <div className="flex items-center gap-2">
-                          <ArrowUp className="w-3 h-3 text-[#121212]/70 dark:text-[#D4C4A3]/70" />
-                          Sort ascending
+                          <ArrowUp className="w-3 h-3 text-text/70" />
+                          <span className="text-text">Sort ascending</span>
                         </div>
-                        {sortConfig.field === column.field &&
+                        {sortConfig.field === String(column.field) &&
                           sortConfig.direction === "asc" && (
-                            <Check className="w-3 h-3 text-[#121212]/70 dark:text-[#D4C4A3]/70" />
+                            <Check className="w-3 h-3 text-text/70" />
                           )}
                       </button>
                       <button
-                        className="w-full px-4 py-2 text-left hover:bg-accent/50 flex items-center justify-between"
-                        onClick={() => handleSort(column.field, "desc")}
+                        className="w-full px-4 py-2 text-left hover:bg-accent/50 transition-colors duration-200 flex items-center justify-between"
+                        onClick={() => handleSort(String(column.field), "desc")}
                       >
                         <div className="flex items-center gap-2">
-                          <ArrowDown className="w-3 h-3 text-[#121212]/70 dark:text-[#D4C4A3]/70" />
-                          Sort descending
+                          <ArrowDown className="w-3 h-3 text-text/70" />
+                          <span className="text-text">Sort descending</span>
                         </div>
-                        {sortConfig.field === column.field &&
+                        {sortConfig.field === String(column.field) &&
                           sortConfig.direction === "desc" && (
-                            <Check className="w-3 h-3 text-[#121212]/70 dark:text-[#D4C4A3]/70" />
+                            <Check className="w-3 h-3 text-text/70" />
                           )}
                       </button>
                       <div className="px-4 py-2">
@@ -276,22 +269,22 @@ export function DataGrid({ data, columns, getRowClassName }: DataGridProps) {
                           <input
                             type="text"
                             ref={(el) =>
-                              void (inputRefs.current[column.field] = el)
+                              void (inputRefs.current[String(column.field)] = el)
                             }
-                            className="w-full px-2 py-1 border rounded bg-background pr-7 focus:outline-none focus:ring-1 focus:ring-[#121212]/70 dark:focus:ring-[#D4C4A3]/70"
+                            className="w-full px-2 py-1 border border-border rounded-base bg-background text-text selection:bg-main selection:text-mtext"
                             placeholder="Search"
-                            value={filters[column.field] || ""}
+                            value={filters[String(column.field)] || ""}
                             onChange={(e) =>
-                              handleFilterChange(column.field, e.target.value)
+                              handleFilterChange(String(column.field), e.target.value)
                             }
                             onClick={(e) => e.stopPropagation()}
                           />
-                          {filters[column.field] && (
+                          {filters[String(column.field)] && (
                             <button
-                              className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-muted-foreground/70"
+                              className="absolute right-2 top-1/2 -translate-y-1/2 text-text/70 hover:text-text transition-colors duration-200"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                handleFilterChange(column.field, "");
+                                handleFilterChange(String(column.field), "");
                               }}
                             >
                               <X className="w-3 h-3" />
@@ -329,10 +322,9 @@ export function DataGrid({ data, columns, getRowClassName }: DataGridProps) {
               >
                 {columns.map((column) => (
                   <div
-                    key={column.field}
-                    className="px-3 py-2 border-b"
+                    key={String(column.field)}
+                    className="px-3 py-2 border-b border-grid-border"
                     onClick={(e) => {
-                      // Allow links and interactive elements to work
                       if (
                         (e.target as HTMLElement).closest("a, button, input")
                       ) {
@@ -342,7 +334,7 @@ export function DataGrid({ data, columns, getRowClassName }: DataGridProps) {
                   >
                     {column.cell ? (
                       <div
-                        className={`whitespace-pre-line transition-all duration-200 ${
+                        className={`whitespace-pre-line transition-all duration-200 text-text selection:bg-main selection:text-mtext ${
                           !isExpanded ? "line-clamp-2" : ""
                         }`}
                       >
@@ -350,8 +342,10 @@ export function DataGrid({ data, columns, getRowClassName }: DataGridProps) {
                       </div>
                     ) : (
                       <div
-                        className={`whitespace-pre-line transition-all duration-200 ${
-                          !isExpanded ? "line-clamp-2" : ""
+                        className={`whitespace-pre-line transition-all duration-200 text-text selection:bg-main selection:text-mtext ${
+                          !isExpanded && column.isExpandable
+                            ? "line-clamp-2"
+                            : ""
                         }`}
                       >
                         {row[column.field]}

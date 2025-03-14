@@ -12,15 +12,16 @@ export function ThemeToggle() {
   }, []);
 
   if (!mounted) {
-    return <div className="w-24 h-8" />; // Placeholder with same dimensions
+    return <div className="w-8 h-8" />; // Placeholder with same dimensions
   }
 
   return (
     <button
       onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-      className="p-2 rounded-full bg-background border border-foreground/20 w-24 text-center text-xs"
+      className="p-2 rounded-base transition-colors duration-200 hover:text-text text-text/70"
+      aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
     >
-      {theme === 'dark' ? 'light mode' : 'dark mode'}
+      Theme
     </button>
   );
 }

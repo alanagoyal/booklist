@@ -48,14 +48,16 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
       </head>
       <body className="antialiased">
-      <div className="h-dvh w-full text-xs flex flex-col border border-border overflow-hidden">
-        <div className="flex flex-col flex-1 m-4 border border-border overflow-hidden">
-          <Header />
-          <main className="flex-1 overflow-hidden">
-            <Providers>{children}</Providers>
-          </main>
-        </div>
-      </div>
+        <Providers>
+          <div className="h-dvh w-full text-xs flex flex-col border border-border overflow-hidden">
+            <div className="flex flex-col flex-1 m-4 border border-border overflow-hidden">
+              <Header />
+              <main className="flex-1 overflow-hidden">
+                {children}
+              </main>
+            </div>
+          </div>
+        </Providers>
       </body>
     </html>
   );

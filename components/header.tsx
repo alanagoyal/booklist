@@ -2,11 +2,11 @@
 
 import { useTheme } from "next-themes";
 import Link from "next/link";
+import { ThemeToggle } from "./theme-toggle";
 
 export default function Header() {
-  const { theme, setTheme } = useTheme();
   return (
-    <div className="bg-background border-b">
+    <div className="bg-background border-b border-border">
       <div className="h-16 px-3 py-2 flex justify-between items-center">
         <div className="flex items-center gap-6">
           <Link
@@ -18,6 +18,7 @@ export default function Header() {
           <Link href="/about">About</Link>
           <Link href="/contribute">Contribute</Link>
         </div>
+        <ThemeToggle /> 
       </div>
     </div>
   );
