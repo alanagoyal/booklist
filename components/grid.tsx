@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
 
-type SortDirection = "asc" | "desc" | null;
+type SortDirection = "asc" | "desc" | "most" | null;
 
 type ColumnDef<T> = {
   field: keyof T;
@@ -189,6 +189,12 @@ export function DataGrid<T extends Record<string, any>>({
         if (aValue === null || aValue === undefined) return 1;
         if (bValue === null || bValue === undefined) return -1;
 
+        if (sortConfig.direction === "most" && sortConfig.field === "recommender") {
+          const aCount = String(aValue).split(',').filter(r => r.trim()).length;
+          const bCount = String(bValue).split(',').filter(r => r.trim()).length;
+          return bCount - aCount;
+        }
+
         const comparison = aValue < bValue ? -1 : 1;
         return sortConfig.direction === "asc" ? comparison : -comparison;
       });
@@ -219,7 +225,7 @@ export function DataGrid<T extends Record<string, any>>({
                   <span className="font-base text-text">{column.header}</span>
                   <button
                     onClick={() => toggleDropdown(String(column.field))}
-                    className="flex items-center gap-1 hover:bg-accent/50 rounded-base transition-colors duration-200"
+                    className="flex items-center gap-1 hover:bg-accent/50 transition-colors duration-200"
                   >
                     {activeFilters.includes(String(column.field)) && (
                       <ListFilter className="w-3 h-3 text-text/70" />
@@ -236,8 +242,23 @@ export function DataGrid<T extends Record<string, any>>({
 
                 {/* Dropdown Menu */}
                 {openDropdown === String(column.field) && (
-                  <div className="absolute top-full left-0 right-0 bg-background border border-border shadow-lg z-50 rounded-base">
+                  <div className="absolute top-full left-0 right-0 bg-background border border-border shadow-lg z-50">
                     <div className="py-1">
+                      {String(column.field) === "recommender" && (
+                        <button
+                          className="w-full px-4 py-2 text-left hover:bg-accent/50 transition-colors duration-200 flex items-center justify-between"
+                          onClick={() => handleSort(String(column.field), "most")}
+                        >
+                          <div className="flex items-center gap-2">
+                            <ArrowDown className="w-3 h-3 text-text/70" />
+                            <span className="text-text">Sort by most recommended</span>
+                          </div>
+                          {sortConfig.field === String(column.field) &&
+                            sortConfig.direction === "most" && (
+                              <Check className="w-3 h-3 text-text/70" />
+                            )}
+                        </button>
+                      )}
                       <button
                         className="w-full px-4 py-2 text-left hover:bg-accent/50 transition-colors duration-200 flex items-center justify-between"
                         onClick={() => handleSort(String(column.field), "asc")}
@@ -271,7 +292,7 @@ export function DataGrid<T extends Record<string, any>>({
                             ref={(el) =>
                               void (inputRefs.current[String(column.field)] = el)
                             }
-                            className="w-full px-2 py-1 border border-border rounded-base bg-background text-text selection:bg-main selection:text-mtext"
+                            className="w-full px-2 py-1 border border-border bg-background text-text selection:bg-main selection:text-mtext focus:outline-none"
                             placeholder="Search"
                             value={filters[String(column.field)] || ""}
                             onChange={(e) =>

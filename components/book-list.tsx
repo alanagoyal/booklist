@@ -21,7 +21,7 @@ export function BookList({ initialBooks }: { initialBooks: Book[] }) {
       <div className="flex-1 overflow-hidden">
         <BookGrid data={initialBooks} />
       </div>
-      <div className="absolute bottom-1 right-1 text-text/70 transition-colors duration-200 bg-background/80 px-2 py-1 rounded-base">
+      <div className="absolute bottom-1 right-1 text-text/70 transition-colors duration-200 bg-background/80 px-2 py-1">
         {`${initialBooks.length} books`}
       </div>
     </div>
