@@ -32,11 +32,7 @@ export const revalidate = 0; // Turn off automatic revalidation
 export const dynamic = "force-static";
 
 export default async function Home() {
-  let allBooks: any[] = [];
-  let page = 0;
-  const pageSize = 1000;
-  
-  while (true) {
+  try {
     const { data: books, error } = await supabase
       .from("books")
       .select(
@@ -52,41 +48,38 @@ export default async function Home() {
         )
       `)
       .order("title", { ascending: true })
-      .range(page * pageSize, (page + 1) * pageSize - 1);
-      
+      .limit(5000);
+
     if (error) {
-      console.error('Error fetching books:', error);
-      break;
+      throw error;
     }
-    
-    if (!books || books.length === 0) break;
-    
-    allBooks = [...allBooks, ...books];
-    page++;
+
+    const formattedBooks = (books || []).map((book: Book) => ({
+      id: book.id,
+      title: book.title || "n/a",
+      author: book.author || "n/a",
+      description: book.description || "n/a",
+      genres: book.genre?.join(", ") || "n/a",
+      recommender:
+        book.recommendations
+          ?.map((rec) => rec.recommender?.full_name)
+          .join(", ") || "n/a",
+      source:
+        book.recommendations
+          ?.map((rec) => rec.source)
+          .join(", ") || "n/a",
+      source_link: book.recommendations
+          ?.map((rec) => rec.source_link)
+          .join(",") || "",
+      url: book.recommendations
+          ?.map((rec) => rec.recommender?.url)
+          .join(",") || "",
+      amazon_url: book.amazon_url || "",
+    }));
+
+    return <BookList initialBooks={formattedBooks} />;
+  } catch (error) {
+    console.error('Error fetching books:', error);
+    return <div>Error loading books</div>;
   }
-
-  const formattedBooks = allBooks.map((book: Book) => ({
-    id: book.id,
-    title: book.title || "n/a",
-    author: book.author || "n/a",
-    description: book.description || "n/a",
-    genres: book.genre?.join(", ") || "n/a",
-    recommender:
-      book.recommendations
-        ?.map((rec) => rec.recommender?.full_name)
-        .join(", ") || "n/a",
-    source:
-      book.recommendations
-        ?.map((rec) => rec.source)
-        .join(", ") || "n/a",
-    source_link: book.recommendations
-        ?.map((rec) => rec.source_link)
-        .join(",") || "",
-    url: book.recommendations
-        ?.map((rec) => rec.recommender?.url)
-        .join(",") || "",
-    amazon_url: book.amazon_url || "",
-  }));
-
-  return <BookList initialBooks={formattedBooks} />;
 }
