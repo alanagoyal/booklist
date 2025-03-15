@@ -198,8 +198,18 @@ export function DataGrid<T extends Record<string, any>>({
   const handleDropdownClick = useCallback((field: string, e: React.MouseEvent) => {
     e.stopPropagation();
     if (isDropdownClosing) return;
+    
+    const isOpening = openDropdown !== field;
     setOpenDropdown(prev => prev === field ? null : field);
-  }, [isDropdownClosing]);
+    
+    // Focus input when opening dropdown
+    if (isOpening) {
+      // Use setTimeout to ensure the dropdown is rendered before focusing
+      setTimeout(() => {
+        inputRefs.current[field]?.focus();
+      }, 0);
+    }
+  }, [isDropdownClosing, openDropdown]);
 
   const handleSort = (field: string, direction: SortDirection) => {
     const newSortConfig = {
