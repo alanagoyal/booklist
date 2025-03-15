@@ -12,7 +12,7 @@ export async function GET() {
       (
         <div
           style={{
-            background: 'black',
+            background: 'hsl(151,80%,70%)',
             width: '100%',
             height: '100%',
             display: 'flex',
@@ -28,7 +28,7 @@ export async function GET() {
               letterSpacing: '-0.05em',
             }}
           >
-            booklist
+            Booklist.
           </div>
         </div>
       ),
