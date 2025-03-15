@@ -10,7 +10,6 @@ import {
   ArrowUp,
   ArrowDown,
 } from "lucide-react";
-import { useSearchParams, usePathname, useRouter } from "next/navigation";
 
 type SortDirection = "asc" | "desc" | "most" | null;
 
@@ -35,33 +34,28 @@ export function DataGrid<T extends Record<string, any>>({
   columns, 
   getRowClassName 
 }: DataGridProps<T>) {
-  const searchParams = useSearchParams();
-  const pathname = usePathname();
-  const router = useRouter();
   const { theme } = useTheme();
 
   const [sortConfig, setSortConfig] = useState<{
     field: string;
     direction: SortDirection;
-  }>(() => ({
-    field: searchParams.get("sortField") || "",
-    direction: (searchParams.get("sortDir") as SortDirection) || null,
-  }));
-
-  const [filters, setFilters] = useState<{ [key: string]: string }>(() => {
-    const urlFilters: { [key: string]: string } = {};
-    columns.forEach((column) => {
-      const filterValue = searchParams.get(`filter_${String(column.field)}`);
-      if (filterValue) {
-        urlFilters[String(column.field)] = filterValue;
-      }
-    });
-    return urlFilters;
+  }>(() => {
+    const saved = localStorage.getItem('gridSortConfig');
+    return saved ? JSON.parse(saved) : {
+      field: "",
+      direction: null,
+    };
   });
 
-  const [activeFilters, setActiveFilters] = useState<string[]>(() =>
-    Object.keys(filters).filter((key) => filters[key])
-  );
+  const [filters, setFilters] = useState<{ [key: string]: string }>(() => {
+    const saved = localStorage.getItem('gridFilters');
+    return saved ? JSON.parse(saved) : {};
+  });
+
+  const [activeFilters, setActiveFilters] = useState<string[]>(() => {
+    const saved = localStorage.getItem('gridActiveFilters');
+    return saved ? JSON.parse(saved) : [];
+  });
 
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const dropdownRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
@@ -92,30 +86,11 @@ export function DataGrid<T extends Record<string, any>>({
     };
   }, [openDropdown]);
 
-  const updateUrlParams = (
-    newSortConfig: typeof sortConfig,
-    newFilters: typeof filters
-  ) => {
-    const params = new URLSearchParams(searchParams);
-
-    if (newSortConfig.field && newSortConfig.direction) {
-      params.set("sortField", newSortConfig.field);
-      params.set("sortDir", newSortConfig.direction);
-    } else {
-      params.delete("sortField");
-      params.delete("sortDir");
-    }
-
-    Object.entries(newFilters).forEach(([field, value]) => {
-      if (value) {
-        params.set(`filter_${field}`, value);
-      } else {
-        params.delete(`filter_${field}`);
-      }
-    });
-
-    router.replace(`${pathname}?${params.toString()}`);
-  };
+  useEffect(() => {
+    localStorage.setItem('gridSortConfig', JSON.stringify(sortConfig));
+    localStorage.setItem('gridFilters', JSON.stringify(filters));
+    localStorage.setItem('gridActiveFilters', JSON.stringify(activeFilters));
+  }, [sortConfig, filters, activeFilters]);
 
   const handleSort = (field: string, direction: SortDirection) => {
     const newSortConfig = {
@@ -129,7 +104,6 @@ export function DataGrid<T extends Record<string, any>>({
           : direction,
     };
     setSortConfig(newSortConfig);
-    updateUrlParams(newSortConfig, filters);
     setOpenDropdown(null);
   };
 
@@ -139,7 +113,6 @@ export function DataGrid<T extends Record<string, any>>({
       [field]: value,
     };
     setFilters(newFilters);
-    updateUrlParams(sortConfig, newFilters);
 
     if (value && !activeFilters.includes(field)) {
       setActiveFilters([...activeFilters, field]);
@@ -201,7 +174,7 @@ export function DataGrid<T extends Record<string, any>>({
     }
 
     return result;
-  }, [data, sortConfig, filters]);
+  }, [data, filters, sortConfig]);
 
   return (
     <div className="h-full overflow-auto">
