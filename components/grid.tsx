@@ -36,61 +36,95 @@ export function DataGrid<T extends Record<string, any>>({
 }: DataGridProps<T>) {
   const { theme } = useTheme();
 
+  const [mounted, setMounted] = useState(false);
   const [sortConfig, setSortConfig] = useState<{
     field: string;
     direction: SortDirection;
-  }>(() => {
-    const saved = localStorage.getItem('gridSortConfig');
-    return saved ? JSON.parse(saved) : {
-      field: "",
-      direction: null,
-    };
+  }>({
+    field: "",
+    direction: null,
   });
 
-  const [filters, setFilters] = useState<{ [key: string]: string }>(() => {
-    const saved = localStorage.getItem('gridFilters');
-    return saved ? JSON.parse(saved) : {};
-  });
-
-  const [activeFilters, setActiveFilters] = useState<string[]>(() => {
-    const saved = localStorage.getItem('gridActiveFilters');
-    return saved ? JSON.parse(saved) : [];
-  });
-
+  const [filters, setFilters] = useState<{ [key: string]: string }>({});
+  const [activeFilters, setActiveFilters] = useState<string[]>([]);
+  const [expandedRows, setExpandedRows] = useState<Set<number>>(new Set());
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const [isDropdownClosing, setIsDropdownClosing] = useState(false);
+  
   const dropdownRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
   const inputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
-  const [expandedRows, setExpandedRows] = useState<Set<number>>(new Set());
-  const isClosingDropdown = useRef(false);
 
+  // Handle hydration and localStorage
   useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (openDropdown) {
-        const dropdownElement = dropdownRefs.current[openDropdown];
-        if (
-          dropdownElement &&
-          !dropdownElement.contains(event.target as Node)
-        ) {
-          isClosingDropdown.current = true;
-          setOpenDropdown(null);
-          setTimeout(() => {
-            isClosingDropdown.current = false;
-          }, 0);
-        }
-      }
-    }
+    const savedSortConfig = localStorage.getItem('gridSortConfig');
+    const savedFilters = localStorage.getItem('gridFilters');
+    const savedActiveFilters = localStorage.getItem('gridActiveFilters');
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [openDropdown]);
+    if (savedSortConfig) setSortConfig(JSON.parse(savedSortConfig));
+    if (savedFilters) setFilters(JSON.parse(savedFilters));
+    if (savedActiveFilters) setActiveFilters(JSON.parse(savedActiveFilters));
+    
+    setMounted(true);
+  }, []);
 
+  // Save state changes to localStorage
   useEffect(() => {
+    if (!mounted) return;
     localStorage.setItem('gridSortConfig', JSON.stringify(sortConfig));
     localStorage.setItem('gridFilters', JSON.stringify(filters));
     localStorage.setItem('gridActiveFilters', JSON.stringify(activeFilters));
-  }, [sortConfig, filters, activeFilters]);
+  }, [sortConfig, filters, activeFilters, mounted]);
+
+  // Handle clicks outside dropdown
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (!openDropdown) return;
+
+      const dropdownElement = dropdownRefs.current[openDropdown];
+      const target = event.target as HTMLElement;
+      
+      if (!dropdownElement?.contains(target) && !target.closest('[data-dropdown]')) {
+        setIsDropdownClosing(true);
+        setOpenDropdown(null);
+        // Reset after dropdown close animation
+        setTimeout(() => {
+          setIsDropdownClosing(false);
+        }, 200); // Match transition-all duration-200
+      }
+    }
+
+    document.addEventListener("click", handleClickOutside);
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+    };
+  }, [openDropdown]);
+
+  const handleRowClick = (rowIndex: number, e: React.MouseEvent) => {
+    const target = e.target as HTMLElement;
+    if (target.closest('[data-dropdown], button, input, a')) {
+      return;
+    }
+
+    // Don't expand row while dropdown is open or closing
+    if (openDropdown || isDropdownClosing) {
+      return;
+    }
+
+    setExpandedRows(prev => {
+      const next = new Set(prev);
+      if (next.has(rowIndex)) {
+        next.delete(rowIndex);
+      } else {
+        next.add(rowIndex);
+      }
+      return next;
+    });
+  };
+
+  const handleDropdownClick = (field: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setOpenDropdown(openDropdown === field ? null : field);
+  };
 
   const handleSort = (field: string, direction: SortDirection) => {
     const newSortConfig = {
@@ -119,27 +153,6 @@ export function DataGrid<T extends Record<string, any>>({
     } else if (!value && activeFilters.includes(field)) {
       setActiveFilters(activeFilters.filter((f) => f !== field));
     }
-  };
-
-  const toggleDropdown = (field: string) => {
-    setOpenDropdown(openDropdown === field ? null : field);
-    if (openDropdown !== field) {
-      setTimeout(() => {
-        inputRefs.current[field]?.focus();
-      }, 0);
-    }
-  };
-
-  const toggleRowExpand = (rowIndex: number) => {
-    setExpandedRows((prev) => {
-      const next = new Set(prev);
-      if (next.has(rowIndex)) {
-        next.delete(rowIndex);
-      } else {
-        next.add(rowIndex);
-      }
-      return next;
-    });
   };
 
   const filteredAndSortedData = React.useMemo(() => {
@@ -178,7 +191,11 @@ export function DataGrid<T extends Record<string, any>>({
 
   return (
     <div className="h-full overflow-auto">
-      <div className="min-w-full inline-block align-middle">
+      <div 
+        className={`min-w-full inline-block align-middle transition-opacity duration-200 ${
+          mounted ? 'opacity-100' : 'opacity-0'
+        }`}
+      >
         {/* Header section */}
         <div className="sticky top-0 min-w-full bg-background z-50">
           {/* Column headers */}
@@ -197,7 +214,8 @@ export function DataGrid<T extends Record<string, any>>({
                 <div className="flex items-center justify-between">
                   <span className="font-base text-text">{column.header}</span>
                   <button
-                    onClick={() => toggleDropdown(String(column.field))}
+                    data-dropdown={String(column.field)}
+                    onMouseDown={(e) => handleDropdownClick(String(column.field), e)}
                     className="flex items-center gap-1 hover:bg-accent/50 transition-colors duration-200"
                   >
                     {activeFilters.includes(String(column.field)) && (
@@ -220,7 +238,10 @@ export function DataGrid<T extends Record<string, any>>({
                       {String(column.field) === "recommender" && (
                         <button
                           className="w-full px-4 py-2 text-left hover:bg-accent/50 transition-colors duration-200 flex items-center justify-between"
-                          onClick={() => handleSort(String(column.field), "most")}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handleSort(String(column.field), "most");
+                          }}
                         >
                           <div className="flex items-center gap-2">
                             <ArrowDown className="w-3 h-3 text-text/70" />
@@ -234,7 +255,10 @@ export function DataGrid<T extends Record<string, any>>({
                       )}
                       <button
                         className="w-full px-4 py-2 text-left hover:bg-accent/50 transition-colors duration-200 flex items-center justify-between"
-                        onClick={() => handleSort(String(column.field), "asc")}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleSort(String(column.field), "asc");
+                        }}
                       >
                         <div className="flex items-center gap-2">
                           <ArrowUp className="w-3 h-3 text-text/70" />
@@ -247,7 +271,10 @@ export function DataGrid<T extends Record<string, any>>({
                       </button>
                       <button
                         className="w-full px-4 py-2 text-left hover:bg-accent/50 transition-colors duration-200 flex items-center justify-between"
-                        onClick={() => handleSort(String(column.field), "desc")}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleSort(String(column.field), "desc");
+                        }}
                       >
                         <div className="flex items-center gap-2">
                           <ArrowDown className="w-3 h-3 text-text/70" />
@@ -277,6 +304,7 @@ export function DataGrid<T extends Record<string, any>>({
                             <button
                               className="absolute right-2 top-1/2 -translate-y-1/2 text-text/70 hover:text-text transition-colors duration-200"
                               onClick={(e) => {
+                                e.preventDefault();
                                 e.stopPropagation();
                                 handleFilterChange(String(column.field), "");
                               }}
@@ -308,20 +336,15 @@ export function DataGrid<T extends Record<string, any>>({
                 style={{
                   gridTemplateColumns: `repeat(${columns.length}, minmax(200px, 1fr))`,
                 }}
-                onClick={() => {
-                  if (!isClosingDropdown.current) {
-                    toggleRowExpand(rowIndex);
-                  }
-                }}
+                onClick={(e) => handleRowClick(rowIndex, e)}
               >
                 {columns.map((column) => (
                   <div
                     key={String(column.field)}
                     className="px-3 py-2 border-b border-grid-border"
                     onClick={(e) => {
-                      if (
-                        (e.target as HTMLElement).closest("a, button, input")
-                      ) {
+                      const target = e.target as HTMLElement;
+                      if (target.closest("a, button, input")) {
                         e.stopPropagation();
                       }
                     }}
