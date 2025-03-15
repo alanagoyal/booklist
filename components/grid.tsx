@@ -216,7 +216,7 @@ export function DataGrid<T extends Record<string, any>>({
                   <button
                     data-dropdown={String(column.field)}
                     onMouseDown={(e) => handleDropdownClick(String(column.field), e)}
-                    className="flex items-center gap-1 hover:bg-accent/50 transition-colors duration-200"
+                    className="flex items-center gap-1 md:hover:bg-accent/50 transition-colors duration-200"
                   >
                     {activeFilters.includes(String(column.field)) && (
                       <ListFilter className="w-3 h-3 text-text/70" />
@@ -237,7 +237,7 @@ export function DataGrid<T extends Record<string, any>>({
                     <div className="py-1">
                       {String(column.field) === "recommender" && (
                         <button
-                          className="w-full px-4 py-2 text-left hover:bg-accent/50 transition-colors duration-200 flex items-center justify-between"
+                          className="w-full px-4 py-2 text-left md:hover:bg-accent/50 transition-colors duration-200 flex items-center justify-between"
                           onClick={(e) => {
                             e.preventDefault();
                             handleSort(String(column.field), "most");
@@ -254,7 +254,7 @@ export function DataGrid<T extends Record<string, any>>({
                         </button>
                       )}
                       <button
-                        className="w-full px-4 py-2 text-left hover:bg-accent/50 transition-colors duration-200 flex items-center justify-between"
+                        className="w-full px-4 py-2 text-left md:hover:bg-accent/50 transition-colors duration-200 flex items-center justify-between"
                         onClick={(e) => {
                           e.preventDefault();
                           handleSort(String(column.field), "asc");
@@ -270,7 +270,7 @@ export function DataGrid<T extends Record<string, any>>({
                           )}
                       </button>
                       <button
-                        className="w-full px-4 py-2 text-left hover:bg-accent/50 transition-colors duration-200 flex items-center justify-between"
+                        className="w-full px-4 py-2 text-left md:hover:bg-accent/50 transition-colors duration-200 flex items-center justify-between"
                         onClick={(e) => {
                           e.preventDefault();
                           handleSort(String(column.field), "desc");
@@ -302,7 +302,7 @@ export function DataGrid<T extends Record<string, any>>({
                           />
                           {filters[String(column.field)] && (
                             <button
-                              className="absolute right-2 top-1/2 -translate-y-1/2 text-text/70 hover:text-text transition-colors duration-200"
+                              className="absolute right-2 top-1/2 -translate-y-1/2 text-text/70 md:hover:text-text transition-colors duration-200"
                               onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
@@ -330,7 +330,7 @@ export function DataGrid<T extends Record<string, any>>({
             return (
               <div
                 key={rowIndex}
-                className={`grid cursor-pointer hover:bg-accent/50 transition-colors duration-200 ${
+                className={`grid cursor-pointer md:hover:bg-accent/50 transition-colors duration-200 ${
                   getRowClassName?.(row) || ""
                 }`}
                 style={{
