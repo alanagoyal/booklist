@@ -101,6 +101,11 @@ export function DataGrid<T extends Record<string, any>>({
   const scrollTimeout = useRef<number | null>(null);
   const resizeTimeout = useRef<number | null>(null);
 
+  // Constants for virtualization
+  const ROW_HEIGHT = 32;
+  const OVERSCAN_COUNT = 5;
+  const MIN_BATCH_SIZE = 25;
+
   // Memoize active filters to prevent unnecessary recalculations
   const activeFilters = useMemo(() => {
     return Object.entries(filters)
@@ -248,25 +253,41 @@ export function DataGrid<T extends Record<string, any>>({
     if (!container) return;
 
     const containerHeight = container.clientHeight;
-    const rowHeight = 32;
-    const visibleRowCount = Math.ceil(containerHeight / rowHeight) + 1; // Add 1 extra row
-    const bufferMultiplier = 1; // Increased buffer for smoother scrolling
-    const bufferRows = Math.ceil(visibleRowCount * bufferMultiplier);
+    const totalHeight = filteredAndSortedData.length * ROW_HEIGHT;
     
-    const scrollTop = Math.max(0, container.scrollTop);
-    const currentIndex = Math.floor(scrollTop / rowHeight);
-    const startIndex = Math.max(0, currentIndex - bufferRows);
+    // Calculate viewport
+    const scrollTop = Math.max(0, Math.min(container.scrollTop, totalHeight - containerHeight));
+    const viewportStart = Math.floor(scrollTop / ROW_HEIGHT);
+    const viewportItemCount = Math.ceil(containerHeight / ROW_HEIGHT);
+    
+    // Add overscan and ensure minimum batch size
+    const overscanStart = Math.max(0, viewportStart - OVERSCAN_COUNT);
+    const overscanEnd = Math.min(
+      filteredAndSortedData.length,
+      viewportStart + viewportItemCount + OVERSCAN_COUNT
+    );
+    
+    // Ensure we render at least MIN_BATCH_SIZE items for smooth scrolling
+    const batchSize = Math.max(
+      overscanEnd - overscanStart,
+      MIN_BATCH_SIZE
+    );
+    
+    const startIndex = Math.max(0, Math.min(
+      overscanStart,
+      filteredAndSortedData.length - batchSize
+    ));
+    
     const endIndex = Math.min(
-      filteredAndSortedData.length, 
-      currentIndex + visibleRowCount + bufferRows
+      startIndex + batchSize,
+      filteredAndSortedData.length
     );
 
-    // Only update if indices have changed significantly
     setVirtualState(prev => {
-      if (Math.abs(prev.startIndex - startIndex) < 5 && 
-          Math.abs(prev.endIndex - endIndex) < 5) {
+      if (prev.startIndex === startIndex && prev.endIndex === endIndex) {
         return prev;
       }
+
       return {
         ...prev,
         startIndex,
@@ -275,12 +296,15 @@ export function DataGrid<T extends Record<string, any>>({
     });
   }, [filteredAndSortedData.length]);
 
-  // Optimize scroll handling
+  // Optimize scroll handling with debounce for rapid scrolling
   const handleScroll = useCallback(() => {
-    if (scrollTimeout.current) {
-      cancelAnimationFrame(scrollTimeout.current);
+    // Use RAF for smooth scrolling
+    if (!scrollTimeout.current) {
+      scrollTimeout.current = requestAnimationFrame(() => {
+        updateVisibleRows();
+        scrollTimeout.current = null;
+      });
     }
-    scrollTimeout.current = requestAnimationFrame(updateVisibleRows);
   }, [updateVisibleRows]);
 
   // Optimize resize handling
@@ -391,16 +415,18 @@ export function DataGrid<T extends Record<string, any>>({
 
   const contentStyles = useMemo(() => ({
     position: "relative" as const,
-    height: filteredAndSortedData.length * 32,
+    height: `${filteredAndSortedData.length * ROW_HEIGHT}px`,
     opacity: mounted ? 1 : 0,
     transition: "opacity 200ms ease-in-out",
+    willChange: "transform" // Optimize for animations
   }), [filteredAndSortedData.length, mounted]);
 
   const rowsStyles = useMemo(() => ({
     position: "absolute" as const,
-    top: virtualState.startIndex * 32,
+    top: `${virtualState.startIndex * ROW_HEIGHT}px`,
     left: 0,
     right: 0,
+    willChange: "transform" // Optimize for animations
   }), [virtualState.startIndex]);
 
   // Optimize dropdown menu rendering with useCallback
