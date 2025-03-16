@@ -9,6 +9,8 @@ import {
   X,
   ArrowUp,
   ArrowDown,
+  Heart,
+  Award,
 } from "lucide-react";
 import { bookCountManager } from './book-counter';
 
@@ -464,7 +466,7 @@ export function DataGrid<T extends Record<string, any>>({
               }}
             >
               <div className="flex items-center gap-2">
-                <ArrowDown className="w-3 h-3 text-text/70" />
+                <Award className="w-3 h-3 text-text/70" />
                 <span>Sort by most recommended</span>
               </div>
               {sortConfig.field === String(column.field) &&
@@ -560,6 +562,8 @@ export function DataGrid<T extends Record<string, any>>({
             {sortConfig.field === String(column.field) &&
               (sortConfig.direction === "asc" ? (
                 <ArrowUp className="w-3 h-3 text-text/70" />
+              ) : sortConfig.direction === "most" ? (
+                <Award className="w-3 h-3 text-text/70" />
               ) : (
                 <ArrowDown className="w-3 h-3 text-text/70" />
               ))}
