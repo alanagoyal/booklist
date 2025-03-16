@@ -543,6 +543,7 @@ export function DataGrid<T extends Record<string, any>>({
       onScroll={handleScroll}
       className="scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent"
     >
+      <div className="min-w-[max-content]">
       <div style={headerStyles}>
         <div
           className="grid bg-background"
@@ -558,6 +559,7 @@ export function DataGrid<T extends Record<string, any>>({
         <div style={rowsStyles}>
           {renderedRows}
         </div>
+      </div>
       </div>
     </div>
   );
