@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { useTheme } from "next-themes";
 import {
   ChevronDown,
@@ -29,59 +29,321 @@ type DataGridProps<T extends Record<string, any>> = {
   getRowClassName?: (row: T) => string;
 };
 
+type SortConfig = {
+  field: string;
+  direction: SortDirection;
+};
+
+type VirtualState<T> = {
+  startIndex: number;
+  endIndex: number;
+  expandedRows: Record<number, boolean>;
+  visibleRows: T[];
+};
+
 export function DataGrid<T extends Record<string, any>>({ 
   data, 
   columns, 
   getRowClassName 
 }: DataGridProps<T>) {
   const { theme } = useTheme();
-
+  const gridRef = useRef<HTMLDivElement>(null);
   const [mounted, setMounted] = useState(false);
-  const [sortConfig, setSortConfig] = useState<{
-    field: string;
-    direction: SortDirection;
-  }>({
-    field: "",
-    direction: null,
+
+  // Initialize state with consistent defaults for SSR
+  const [sortConfig, setSortConfig] = useState<SortConfig>({ field: "", direction: null });
+  const [filters, setFilters] = useState<{ [key: string]: string }>({});
+  const [virtualState, setVirtualState] = useState<VirtualState<T>>({
+    startIndex: 0,
+    endIndex: 50,
+    expandedRows: {},
+    visibleRows: []
   });
 
-  const [filters, setFilters] = useState<{ [key: string]: string }>({});
-  const [activeFilters, setActiveFilters] = useState<string[]>([]);
-  const [expandedRows, setExpandedRows] = useState<Set<number>>(new Set());
+  // Load saved state on client-side only
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    try {
+      const savedSortConfig = localStorage.getItem('gridSortConfig');
+      if (savedSortConfig) {
+        setSortConfig(JSON.parse(savedSortConfig));
+      }
+
+      const savedFilters = localStorage.getItem('gridFilters');
+      if (savedFilters) {
+        setFilters(JSON.parse(savedFilters));
+      }
+    } catch (e) {
+      console.error('Failed to load saved grid state:', e);
+    }
+
+    setMounted(true);
+  }, []);
+
+  // Save state to localStorage when it changes
+  useEffect(() => {
+    if (!mounted) return;
+    
+    try {
+      localStorage.setItem('gridSortConfig', JSON.stringify(sortConfig));
+      localStorage.setItem('gridFilters', JSON.stringify(filters));
+    } catch (e) {
+      console.error('Failed to save grid state:', e);
+    }
+  }, [sortConfig, filters, mounted]);
+
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [isDropdownClosing, setIsDropdownClosing] = useState(false);
   
   const dropdownRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
   const inputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
+  const scrollTimeout = useRef<number | null>(null);
+  const resizeTimeout = useRef<number | null>(null);
 
-  // Handle hydration and localStorage
-  useEffect(() => {
-    const savedSortConfig = localStorage.getItem('gridSortConfig');
-    const savedFilters = localStorage.getItem('gridFilters');
-    const savedActiveFilters = localStorage.getItem('gridActiveFilters');
+  // Constants for virtualization
+  const ROW_HEIGHT = 32;
+  const OVERSCAN_COUNT = 5;
+  const MIN_BATCH_SIZE = 25;
 
-    if (savedSortConfig) setSortConfig(JSON.parse(savedSortConfig));
-    if (savedFilters) setFilters(JSON.parse(savedFilters));
-    if (savedActiveFilters) setActiveFilters(JSON.parse(savedActiveFilters));
+  // Memoize active filters to prevent unnecessary recalculations
+  const activeFilters = useMemo(() => {
+    return Object.entries(filters)
+      .filter(([_, value]) => value)
+      .map(([field]) => field);
+  }, [filters]);
+
+  // Memoize filtered data separately from sorting for better performance
+  const filteredData = useMemo(() => {
+    if (!Object.values(filters).some(Boolean)) return data;
     
-    setMounted(true);
+    const lowercaseFilters = Object.fromEntries(
+      Object.entries(filters).map(([key, value]) => [key, value?.toLowerCase()])
+    );
+    
+    return data.filter((item) => {
+      return Object.entries(lowercaseFilters).every(([field, filterValue]) => {
+        if (!filterValue) return true;
+        const value = String(item[field as keyof T]).toLowerCase();
+        return value.includes(filterValue);
+      });
+    });
+  }, [data, filters]);
+
+  // Memoize sorted data separately
+  const filteredAndSortedData = useMemo(() => {
+    if (!sortConfig.field || !sortConfig.direction) return filteredData;
+    
+    const field = sortConfig.field;
+    const direction = sortConfig.direction;
+    
+    return [...filteredData].sort((a, b) => {
+      const aValue = a[field as keyof T];
+      const bValue = b[field as keyof T];
+
+      if (direction === "most") {
+        const aCount = typeof aValue === "string" ? aValue.split(",").filter(Boolean).length : 0;
+        const bCount = typeof bValue === "string" ? bValue.split(",").filter(Boolean).length : 0;
+        return bCount - aCount;
+      }
+
+      if (aValue === bValue) return 0;
+      if (aValue === null || aValue === undefined) return 1;
+      if (bValue === null || bValue === undefined) return -1;
+
+      const sortDirection = direction === "asc" ? 1 : -1;
+      return aValue < bValue ? -sortDirection : sortDirection;
+    });
+  }, [filteredData, sortConfig.field, sortConfig.direction]);
+
+  // Memoize visible rows calculation
+  const visibleRows = useMemo(() => {
+    const startIndex = virtualState.startIndex;
+    const endIndex = virtualState.endIndex;
+    return filteredAndSortedData.slice(startIndex, endIndex);
+  }, [filteredAndSortedData, virtualState.startIndex, virtualState.endIndex]);
+
+  const handleRowClick = useCallback((rowIndex: number, e: React.MouseEvent) => {
+    const target = e.target as HTMLElement;
+    if (target.closest('[data-dropdown], button, input, a')) return;
+    if (openDropdown || isDropdownClosing) return;
+
+    setVirtualState(prev => ({
+      ...prev,
+      expandedRows: {
+        ...prev.expandedRows,
+        [rowIndex]: !prev.expandedRows[rowIndex]
+      }
+    }));
+  }, [openDropdown, isDropdownClosing]);
+
+  // Optimize cell rendering with useCallback
+  const renderCell = useCallback(({ 
+    column, 
+    row, 
+    isExpanded 
+  }: { 
+    column: ColumnDef<T>, 
+    row: T, 
+    isExpanded: boolean 
+  }) => {
+    return (
+      <div
+        key={String(column.field)}
+        className="px-3 py-2 border-b border-grid-border"
+        onClick={(e) => {
+          const target = e.target as HTMLElement;
+          if (target.closest("a, button, input")) {
+            e.stopPropagation();
+          }
+        }}
+      >
+        {column.cell ? (
+          <div
+            className={`whitespace-pre-line transition-all duration-200 text-text selection:bg-main selection:text-mtext ${
+              !isExpanded ? "line-clamp-2" : ""
+            }`}
+          >
+            {column.cell({ row: { original: row, isExpanded } })}
+          </div>
+        ) : (
+          <div
+            className={`whitespace-pre-line transition-all duration-200 text-text selection:bg-main selection:text-mtext ${
+              !isExpanded && column.isExpandable
+                ? "line-clamp-2"
+                : ""
+            }`}
+          >
+            {row[column.field]}
+          </div>
+        )}
+      </div>
+    );
   }, []);
 
-  // Save state changes to localStorage
-  useEffect(() => {
-    if (!mounted) return;
-    localStorage.setItem('gridSortConfig', JSON.stringify(sortConfig));
-    localStorage.setItem('gridFilters', JSON.stringify(filters));
-    localStorage.setItem('gridActiveFilters', JSON.stringify(activeFilters));
-  }, [sortConfig, filters, activeFilters, mounted]);
+  // Optimize row rendering with useCallback
+  const renderRow = useCallback((row: T, rowIndex: number) => {
+    const isExpanded = virtualState.expandedRows[rowIndex];
+    return (
+      <div
+        key={rowIndex}
+        className={`grid cursor-pointer transition-colors duration-200 md:hover:bg-accent/50 ${
+          getRowClassName?.(row) || ""
+        }`}
+        style={{
+          gridTemplateColumns: `repeat(${columns.length}, minmax(200px, 1fr))`,
+        }}
+        onClick={(e) => handleRowClick(rowIndex, e)}
+      >
+        {columns.map(column => renderCell({ column, row, isExpanded }))}
+      </div>
+    );
+  }, [columns, virtualState.expandedRows, getRowClassName, handleRowClick, renderCell]);
 
-  // Handle clicks outside dropdown
+  // Memoize rendered rows
+  const renderedRows = useMemo(() => {
+    return visibleRows.map((row, idx) => {
+      const rowIndex = virtualState.startIndex + idx;
+      return renderRow(row, rowIndex);
+    });
+  }, [visibleRows, virtualState.startIndex, renderRow]);
+
+  const updateVisibleRows = useCallback(() => {
+    const container = gridRef.current;
+    if (!container) return;
+
+    const containerHeight = container.clientHeight;
+    const totalHeight = filteredAndSortedData.length * ROW_HEIGHT;
+    
+    // Calculate viewport
+    const scrollTop = Math.max(0, Math.min(container.scrollTop, totalHeight - containerHeight));
+    const viewportStart = Math.floor(scrollTop / ROW_HEIGHT);
+    const viewportItemCount = Math.ceil(containerHeight / ROW_HEIGHT);
+    
+    // Add overscan and ensure minimum batch size
+    const overscanStart = Math.max(0, viewportStart - OVERSCAN_COUNT);
+    const overscanEnd = Math.min(
+      filteredAndSortedData.length,
+      viewportStart + viewportItemCount + OVERSCAN_COUNT
+    );
+    
+    // Ensure we render at least MIN_BATCH_SIZE items for smooth scrolling
+    const batchSize = Math.max(
+      overscanEnd - overscanStart,
+      MIN_BATCH_SIZE
+    );
+    
+    const startIndex = Math.max(0, Math.min(
+      overscanStart,
+      filteredAndSortedData.length - batchSize
+    ));
+    
+    const endIndex = Math.min(
+      startIndex + batchSize,
+      filteredAndSortedData.length
+    );
+
+    setVirtualState(prev => {
+      if (prev.startIndex === startIndex && prev.endIndex === endIndex) {
+        return prev;
+      }
+
+      return {
+        ...prev,
+        startIndex,
+        endIndex
+      };
+    });
+  }, [filteredAndSortedData.length]);
+
+  // Optimize scroll handling with debounce for rapid scrolling
+  const handleScroll = useCallback(() => {
+    // Use RAF for smooth scrolling
+    if (!scrollTimeout.current) {
+      scrollTimeout.current = requestAnimationFrame(() => {
+        updateVisibleRows();
+        scrollTimeout.current = null;
+      });
+    }
+  }, [updateVisibleRows]);
+
+  // Optimize resize handling
   useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
+    const observer = new ResizeObserver(() => {
+      if (resizeTimeout.current) {
+        cancelAnimationFrame(resizeTimeout.current);
+      }
+      resizeTimeout.current = requestAnimationFrame(updateVisibleRows);
+    });
+
+    const container = gridRef.current;
+    if (container) {
+      observer.observe(container);
+    }
+
+    return () => {
+      observer.disconnect();
+      if (resizeTimeout.current) {
+        cancelAnimationFrame(resizeTimeout.current);
+      }
+    };
+  }, [updateVisibleRows]);
+
+  // Clean up scroll timeout
+  useEffect(() => {
+    return () => {
+      if (scrollTimeout.current) {
+        cancelAnimationFrame(scrollTimeout.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
       if (!openDropdown) return;
 
       const dropdownElement = dropdownRefs.current[openDropdown];
-      const target = event.target as HTMLElement;
+      const target = e.target as HTMLElement;
       
       if (!dropdownElement?.contains(target) && !target.closest('[data-dropdown]')) {
         setIsDropdownClosing(true);
@@ -91,289 +353,246 @@ export function DataGrid<T extends Record<string, any>>({
           setIsDropdownClosing(false);
         }, 200); // Match transition-all duration-200
       }
-    }
-
-    document.addEventListener("click", handleClickOutside);
-    return () => {
-      document.removeEventListener("click", handleClickOutside);
     };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [openDropdown]);
 
-  const handleRowClick = (rowIndex: number, e: React.MouseEvent) => {
-    const target = e.target as HTMLElement;
-    if (target.closest('[data-dropdown], button, input, a')) {
-      return;
-    }
-
-    // Don't expand row while dropdown is open or closing
-    if (openDropdown || isDropdownClosing) {
-      return;
-    }
-
-    setExpandedRows(prev => {
-      const next = new Set(prev);
-      if (next.has(rowIndex)) {
-        next.delete(rowIndex);
-      } else {
-        next.add(rowIndex);
-      }
-      return next;
-    });
-  };
-
-  const handleDropdownClick = (field: string, e: React.MouseEvent) => {
+  const handleDropdownClick = useCallback((field: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    setOpenDropdown(openDropdown === field ? null : field);
+    if (isDropdownClosing) return;
+    
+    const isOpening = openDropdown !== field;
+    setOpenDropdown(prev => prev === field ? null : field);
+    
+    // Focus input when opening dropdown
+    if (isOpening) {
+      // Use setTimeout to ensure the dropdown is rendered before focusing
+      setTimeout(() => {
+        inputRefs.current[field]?.focus();
+      }, 0);
+    }
+  }, [isDropdownClosing, openDropdown]);
+
+  const handleFilterChange = (field: string, value: string) => {
+    setFilters((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
   };
 
   const handleSort = (field: string, direction: SortDirection) => {
     const newSortConfig = {
-      field:
-        sortConfig.field === field && sortConfig.direction === direction
-          ? ""
-          : field,
-      direction:
-        sortConfig.field === field && sortConfig.direction === direction
-          ? null
-          : direction,
+      field,
+      direction: sortConfig.field === field && sortConfig.direction === direction ? null : direction,
     };
     setSortConfig(newSortConfig);
     setOpenDropdown(null);
   };
 
-  const handleFilterChange = (field: string, value: string) => {
-    const newFilters = {
-      ...filters,
-      [field]: value,
-    };
-    setFilters(newFilters);
+  // Update visible rows when filtered data changes
+  useEffect(() => {
+    updateVisibleRows();
+  }, [filteredAndSortedData, updateVisibleRows]);
 
-    if (value && !activeFilters.includes(field)) {
-      setActiveFilters([...activeFilters, field]);
-    } else if (!value && activeFilters.includes(field)) {
-      setActiveFilters(activeFilters.filter((f) => f !== field));
-    }
-  };
+  // Memoize grid styles with opacity transition for hydration
+  const gridStyles = useMemo(() => ({
+    height: "100%",
+    overflowY: "auto" as const,
+    position: "relative" as const,
+    opacity: mounted ? 1 : 0,
+    transition: "opacity 200ms ease-in-out",
+  }), [mounted]);
 
-  const filteredAndSortedData = React.useMemo(() => {
-    let result = data.filter((item) => {
-      return Object.entries(filters).every(([field, filterValue]) => {
-        if (!filterValue) return true;
-        const value = item[field as keyof T];
-        return String(value)
-          .toLowerCase()
-          .includes(filterValue.toLowerCase());
-      });
-    });
+  const headerStyles = useMemo(() => ({
+    position: "sticky" as const,
+    top: 0,
+    zIndex: 10,
+    backgroundColor: "var(--background)",
+    borderBottom: "1px solid var(--border)",
+  }), []);
 
-    if (sortConfig.direction) {
-      result = [...result].sort((a, b) => {
-        const aValue = a[sortConfig.field as keyof T];
-        const bValue = b[sortConfig.field as keyof T];
+  const contentStyles = useMemo(() => ({
+    position: "relative" as const,
+    height: `${filteredAndSortedData.length * ROW_HEIGHT}px`,
+    opacity: mounted ? 1 : 0,
+    transition: "opacity 200ms ease-in-out",
+    willChange: "transform" // Optimize for animations
+  }), [filteredAndSortedData.length, mounted]);
 
-        if (aValue === bValue) return 0;
-        if (aValue === null || aValue === undefined) return 1;
-        if (bValue === null || bValue === undefined) return -1;
+  const rowsStyles = useMemo(() => ({
+    position: "absolute" as const,
+    top: `${virtualState.startIndex * ROW_HEIGHT}px`,
+    left: 0,
+    right: 0,
+    willChange: "transform" // Optimize for animations
+  }), [virtualState.startIndex]);
 
-        if (sortConfig.direction === "most" && sortConfig.field === "recommender") {
-          const aCount = String(aValue).split(',').filter(r => r.trim()).length;
-          const bCount = String(bValue).split(',').filter(r => r.trim()).length;
-          return bCount - aCount;
-        }
+  // Optimize dropdown menu rendering with useCallback
+  const renderDropdownMenu = useCallback((column: ColumnDef<T>) => {
+    if (openDropdown !== String(column.field)) return null;
 
-        const comparison = aValue < bValue ? -1 : 1;
-        return sortConfig.direction === "asc" ? comparison : -comparison;
-      });
-    }
-
-    return result;
-  }, [data, filters, sortConfig]);
-
-  return (
-    <div className="h-full overflow-auto">
+    return (
       <div 
-        className={`min-w-full inline-block align-middle transition-opacity duration-200 ${
-          mounted ? 'opacity-100' : 'opacity-0'
-        }`}
+        className="absolute top-full left-0 right-0 bg-background border border-border shadow-lg z-50 transition-all duration-200"
+        style={{
+          opacity: isDropdownClosing ? 0 : 1,
+          transform: isDropdownClosing ? 'translateY(-4px)' : 'translateY(0)',
+        }}
       >
-        {/* Header section */}
-        <div className="sticky top-0 min-w-full bg-background z-50">
-          {/* Column headers */}
-          <div
-            className="grid h-10 items-center"
-            style={{
-              gridTemplateColumns: `repeat(${columns.length}, minmax(200px, 1fr))`,
+        <div className="py-1">
+          {String(column.field) === "recommender" && (
+            <button
+              className="w-full px-4 py-2 text-left text-text transition-colors duration-200 md:hover:bg-accent/50 flex items-center justify-between"
+              onClick={(e) => {
+                e.preventDefault();
+                handleSort(String(column.field), "most");
+              }}
+            >
+              <div className="flex items-center gap-2">
+                <ArrowDown className="w-3 h-3 text-text/70" />
+                <span>Sort by most recommended</span>
+              </div>
+              {sortConfig.field === String(column.field) &&
+                sortConfig.direction === "most" && (
+                  <Check className="w-3 h-3 text-text/70" />
+                )}
+            </button>
+          )}
+          <button
+            className="w-full px-4 py-2 text-left text-text transition-colors duration-200 md:hover:bg-accent/50 flex items-center justify-between"
+            onClick={(e) => {
+              e.preventDefault();
+              handleSort(String(column.field), "asc");
             }}
           >
-            {columns.map((column) => (
-              <div
-                key={String(column.field)}
-                className="px-3 py-2 border-b border-border select-none relative"
-                ref={(el) => void (dropdownRefs.current[String(column.field)] = el)}
-              >
-                <div className="flex items-center justify-between">
-                  <span className="font-base text-text">{column.header}</span>
-                  <button
-                    data-dropdown={String(column.field)}
-                    onMouseDown={(e) => handleDropdownClick(String(column.field), e)}
-                    className="flex items-center gap-1 md:hover:bg-accent/50 transition-colors duration-200"
-                  >
-                    {activeFilters.includes(String(column.field)) && (
-                      <ListFilter className="w-3 h-3 text-text/70" />
-                    )}
-                    {sortConfig.field === String(column.field) &&
-                      (sortConfig.direction === "asc" ? (
-                        <ArrowUp className="w-3 h-3 text-text/70" />
-                      ) : (
-                        <ArrowDown className="w-3 h-3 text-text/70" />
-                      ))}
-                    <ChevronDown className="w-4 h-4 text-text/70" />
-                  </button>
-                </div>
-
-                {/* Dropdown Menu */}
-                {openDropdown === String(column.field) && (
-                  <div className="absolute top-full left-0 right-0 bg-background border border-border shadow-lg z-50">
-                    <div className="py-1">
-                      {String(column.field) === "recommender" && (
-                        <button
-                          className="w-full px-4 py-2 text-left md:hover:bg-accent/50 transition-colors duration-200 flex items-center justify-between"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            handleSort(String(column.field), "most");
-                          }}
-                        >
-                          <div className="flex items-center gap-2">
-                            <ArrowDown className="w-3 h-3 text-text/70" />
-                            <span className="text-text">Sort by most recommended</span>
-                          </div>
-                          {sortConfig.field === String(column.field) &&
-                            sortConfig.direction === "most" && (
-                              <Check className="w-3 h-3 text-text/70" />
-                            )}
-                        </button>
-                      )}
-                      <button
-                        className="w-full px-4 py-2 text-left md:hover:bg-accent/50 transition-colors duration-200 flex items-center justify-between"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          handleSort(String(column.field), "asc");
-                        }}
-                      >
-                        <div className="flex items-center gap-2">
-                          <ArrowUp className="w-3 h-3 text-text/70" />
-                          <span className="text-text">Sort ascending</span>
-                        </div>
-                        {sortConfig.field === String(column.field) &&
-                          sortConfig.direction === "asc" && (
-                            <Check className="w-3 h-3 text-text/70" />
-                          )}
-                      </button>
-                      <button
-                        className="w-full px-4 py-2 text-left md:hover:bg-accent/50 transition-colors duration-200 flex items-center justify-between"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          handleSort(String(column.field), "desc");
-                        }}
-                      >
-                        <div className="flex items-center gap-2">
-                          <ArrowDown className="w-3 h-3 text-text/70" />
-                          <span className="text-text">Sort descending</span>
-                        </div>
-                        {sortConfig.field === String(column.field) &&
-                          sortConfig.direction === "desc" && (
-                            <Check className="w-3 h-3 text-text/70" />
-                          )}
-                      </button>
-                      <div className="px-4 py-2">
-                        <div className="relative">
-                          <input
-                            type="text"
-                            ref={(el) =>
-                              void (inputRefs.current[String(column.field)] = el)
-                            }
-                            className="w-full px-2 py-1 border border-border bg-background text-text selection:bg-main selection:text-mtext focus:outline-none"
-                            placeholder="Search"
-                            value={filters[String(column.field)] || ""}
-                            onChange={(e) =>
-                              handleFilterChange(String(column.field), e.target.value)
-                            }
-                            onClick={(e) => e.stopPropagation()}
-                          />
-                          {filters[String(column.field)] && (
-                            <button
-                              className="absolute right-2 top-1/2 -translate-y-1/2 text-text/70 md:hover:text-text transition-colors duration-200"
-                              onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                handleFilterChange(String(column.field), "");
-                              }}
-                            >
-                              <X className="w-3 h-3" />
-                            </button>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            ))}
+            <div className="flex items-center gap-2">
+              <ArrowUp className="w-3 h-3 text-text/70" />
+              <span>Sort ascending</span>
+            </div>
+            {sortConfig.field === String(column.field) &&
+              sortConfig.direction === "asc" && (
+                <Check className="w-3 h-3 text-text/70" />
+              )}
+          </button>
+          <button
+            className="w-full px-4 py-2 text-left text-text transition-colors duration-200 md:hover:bg-accent/50 flex items-center justify-between"
+            onClick={(e) => {
+              e.preventDefault();
+              handleSort(String(column.field), "desc");
+            }}
+          >
+            <div className="flex items-center gap-2">
+              <ArrowDown className="w-3 h-3 text-text/70" />
+              <span>Sort descending</span>
+            </div>
+            {sortConfig.field === String(column.field) &&
+              sortConfig.direction === "desc" && (
+                <Check className="w-3 h-3 text-text/70" />
+              )}
+          </button>
+          <div className="px-4 py-2">
+            <div className="relative">
+              <input
+                type="text"
+                ref={(el) =>
+                  void (inputRefs.current[String(column.field)] = el)
+                }
+                className="w-full px-2 py-1 border border-border bg-background text-text selection:bg-main selection:text-mtext focus:outline-none"
+                placeholder="Search"
+                value={filters[String(column.field)] || ""}
+                onChange={(e) =>
+                  handleFilterChange(String(column.field), e.target.value)
+                }
+                onClick={(e) => e.stopPropagation()}
+              />
+              {filters[String(column.field)] && (
+                <button
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-text/70 transition-colors duration-200 md:hover:text-text"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleFilterChange(String(column.field), "");
+                  }}
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              )}
+            </div>
           </div>
         </div>
+      </div>
+    );
+  }, [openDropdown, isDropdownClosing, sortConfig, filters, handleSort, handleFilterChange]);
 
-        {/* Table body */}
-        <div className="overflow-auto">
-          {filteredAndSortedData.map((row, rowIndex) => {
-            const isExpanded = expandedRows.has(rowIndex);
-
-            return (
-              <div
-                key={rowIndex}
-                className={`grid cursor-pointer md:hover:bg-accent/50 transition-colors duration-200 ${
-                  getRowClassName?.(row) || ""
-                }`}
-                style={{
-                  gridTemplateColumns: `repeat(${columns.length}, minmax(200px, 1fr))`,
-                }}
-                onClick={(e) => handleRowClick(rowIndex, e)}
-              >
-                {columns.map((column) => (
-                  <div
-                    key={String(column.field)}
-                    className="px-3 py-2 border-b border-grid-border"
-                    onClick={(e) => {
-                      const target = e.target as HTMLElement;
-                      if (target.closest("a, button, input")) {
-                        e.stopPropagation();
-                      }
-                    }}
-                  >
-                    {column.cell ? (
-                      <div
-                        className={`whitespace-pre-line transition-all duration-200 text-text selection:bg-main selection:text-mtext ${
-                          !isExpanded ? "line-clamp-2" : ""
-                        }`}
-                      >
-                        {column.cell({ row: { original: row, isExpanded } })}
-                      </div>
-                    ) : (
-                      <div
-                        className={`whitespace-pre-line transition-all duration-200 text-text selection:bg-main selection:text-mtext ${
-                          !isExpanded && column.isExpandable
-                            ? "line-clamp-2"
-                            : ""
-                        }`}
-                      >
-                        {row[column.field]}
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            );
-          })}
+  // Optimize header rendering with useCallback
+  const renderHeader = useCallback((column: ColumnDef<T>) => {
+    return (
+      <div
+        key={String(column.field)}
+        className="px-3 py-2 border-b border-border select-none relative"
+        ref={(el) => void (dropdownRefs.current[String(column.field)] = el)}
+      >
+        <div className="flex items-center justify-between">
+          <span className="font-base text-text">{column.header}</span>
+          <button
+            data-dropdown={String(column.field)}
+            onMouseDown={(e) => handleDropdownClick(String(column.field), e)}
+            className="flex items-center gap-1 transition-colors duration-200 md:hover:bg-accent/50"
+          >
+            {activeFilters.includes(String(column.field)) && (
+              <ListFilter className="w-3 h-3 text-text/70" />
+            )}
+            {sortConfig.field === String(column.field) &&
+              (sortConfig.direction === "asc" ? (
+                <ArrowUp className="w-3 h-3 text-text/70" />
+              ) : (
+                <ArrowDown className="w-3 h-3 text-text/70" />
+              ))}
+            <ChevronDown className="w-4 h-4 text-text/70" />
+          </button>
         </div>
+        {renderDropdownMenu(column)}
+      </div>
+    );
+  }, [activeFilters, sortConfig, handleDropdownClick, renderDropdownMenu]);
+
+  // Don't render content until mounted to prevent hydration mismatch
+  if (!mounted) {
+    return (
+      <div 
+        ref={gridRef}
+        style={gridStyles}
+        className="scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent"
+      />
+    );
+  }
+
+  return (
+    <div 
+      ref={gridRef}
+      style={gridStyles}
+      onScroll={handleScroll}
+      className="scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent"
+    >
+      <div className="min-w-[max-content]">
+      <div style={headerStyles}>
+        <div
+          className="grid bg-background"
+          style={{
+            gridTemplateColumns: `repeat(${columns.length}, minmax(200px, 1fr))`,
+          }}
+        >
+          {columns.map(column => renderHeader(column))}
+        </div>
+      </div>
+
+      <div style={contentStyles}>
+        <div style={rowsStyles}>
+          {renderedRows}
+        </div>
+      </div>
       </div>
     </div>
   );
