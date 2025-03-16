@@ -14,12 +14,19 @@ type BookCountEvent = {
 
 // Singleton pattern for book count updates
 export const bookCountManager = {
+  _lastUpdate: { total: 0, filtered: 0 },
   update(total: number, filtered: number) {
-    window.dispatchEvent(
-      new CustomEvent<BookCountEvent>(BOOK_COUNT_UPDATE, {
-        detail: { total, filtered }
-      })
-    );
+    this._lastUpdate = { total, filtered };
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(
+        new CustomEvent<BookCountEvent>(BOOK_COUNT_UPDATE, {
+          detail: { total, filtered }
+        })
+      );
+    }
+  },
+  getLastUpdate() {
+    return this._lastUpdate;
   }
 };
 
@@ -33,7 +40,7 @@ export function LoadingState() {
 }
 
 export function BookCounter() {
-  const [counts, setCounts] = useState<BookCountEvent>({ total: 0, filtered: 0 });
+  const [counts, setCounts] = useState<BookCountEvent>(() => bookCountManager.getLastUpdate());
   const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
   const isHomePage = pathname === '/';
@@ -48,6 +55,9 @@ export function BookCounter() {
     const handleUpdate = (e: CustomEvent<BookCountEvent>) => {
       setCounts(e.detail);
     };
+
+    // Set initial state from last update
+    setCounts(bookCountManager.getLastUpdate());
 
     window.addEventListener(BOOK_COUNT_UPDATE, handleUpdate as EventListener);
     return () => {

@@ -1,7 +1,8 @@
 "use client";
 
-import { Fragment, useState } from 'react';
+import { Fragment, useState, useEffect } from 'react';
 import { DataGrid } from "@/components/grid";
+import { bookCountManager } from "@/components/book-counter";
 
 interface FormattedBook {
   id: number;
@@ -218,6 +219,24 @@ export function BookGrid({ data }: BookGridProps) {
 }
 
 export function BookList({ initialBooks }: { initialBooks: FormattedBook[] }) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    // Update initial book count immediately
+    bookCountManager.update(initialBooks.length, initialBooks.length);
+    setMounted(true);
+  }, [initialBooks]);
+
+  if (!mounted) {
+    return (
+      <div className="h-full flex flex-col relative">
+        <div className="flex-1 overflow-hidden">
+          <div className="text-text/70 transition-colors duration-200">Loading...</div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="h-full flex flex-col relative">
       <div className="flex-1 overflow-hidden">
