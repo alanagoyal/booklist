@@ -4,7 +4,6 @@ import Providers from "./providers";
 import { GeistMono } from "geist/font/mono";
 import "./globals.css";
 import Header from "@/components/header";
-import { BookCounter } from "@/components/book-counter";
 
 export const viewport = {
   themeColor: "#121212",
@@ -58,7 +57,6 @@ export default function RootLayout({
               </main>
             </div>
           </div>
-          <BookCounter />
         </Providers>
       </body>
     </html>

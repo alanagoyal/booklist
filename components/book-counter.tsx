@@ -39,8 +39,12 @@ export function LoadingState() {
   );
 }
 
-export function BookCounter() {
-  const [counts, setCounts] = useState<BookCountEvent>(() => bookCountManager.getLastUpdate());
+interface BookCounterProps {
+  total: number;
+  filtered: number;
+}
+
+export function BookCounter({ total, filtered }: BookCounterProps) {
   const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
   const isHomePage = pathname === '/';
@@ -49,30 +53,14 @@ export function BookCounter() {
     setMounted(true);
   }, []);
 
-  useEffect(() => {
-    if (!isHomePage) return;
-    
-    const handleUpdate = (e: CustomEvent<BookCountEvent>) => {
-      setCounts(e.detail);
-    };
-
-    // Set initial state from last update
-    setCounts(bookCountManager.getLastUpdate());
-
-    window.addEventListener(BOOK_COUNT_UPDATE, handleUpdate as EventListener);
-    return () => {
-      window.removeEventListener(BOOK_COUNT_UPDATE, handleUpdate as EventListener);
-    };
-  }, [isHomePage]);
-
   // Only show on home page
   if (!mounted || !isHomePage) return null;
 
   return createPortal(
     <div className="fixed bottom-5 right-5 text-text/70 text-xs whitespace-pre-line transition-all duration-200 bg-background/80 backdrop-blur-sm p-2 selection:bg-main selection:text-mtext md:hover:bg-accent/50">
-      {counts.filtered === counts.total 
-        ? `${counts.total} books`
-        : `${counts.filtered} of ${counts.total} books`}
+      {filtered === total 
+        ? `${total} books`
+        : `${filtered} of ${total} books`}
     </div>,
     document.body
   );

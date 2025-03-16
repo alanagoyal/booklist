@@ -1,8 +1,8 @@
 "use client";
 
-import { Fragment, useState, useEffect } from 'react';
+import { Fragment, useState, useEffect, useCallback } from 'react';
 import { DataGrid } from "@/components/grid";
-import { bookCountManager } from "@/components/book-counter";
+import { BookCounter } from "@/components/book-counter";
 
 interface FormattedBook {
   id: number;
@@ -141,6 +141,7 @@ const RecommenderCell = function Recommender({ row: { original, isExpanded } }: 
 
 interface BookGridProps {
   data: FormattedBook[];
+  onFilteredDataChange?: (count: number) => void;
 }
 
 const getRecommendationCount = (recommender: string): number => {
@@ -196,7 +197,7 @@ const columns: {
   },
 ];
 
-export function BookGrid({ data }: BookGridProps) {
+export function BookGrid({ data, onFilteredDataChange }: BookGridProps) {
   // Calculate max recommendation count
   const maxRecommendations = Math.max(
     ...data.map(book => getRecommendationCount(book.recommender))
@@ -214,18 +215,22 @@ export function BookGrid({ data }: BookGridProps) {
       getRowClassName={(row: EnhancedBook) =>
         getBackgroundColor(row._recommendationCount, maxRecommendations)
       }
+      onFilteredDataChange={onFilteredDataChange}
     />
   );
 }
 
 export function BookList({ initialBooks }: { initialBooks: FormattedBook[] }) {
   const [mounted, setMounted] = useState(false);
+  const [filteredCount, setFilteredCount] = useState(initialBooks.length);
 
   useEffect(() => {
-    // Update initial book count immediately
-    bookCountManager.update(initialBooks.length, initialBooks.length);
     setMounted(true);
-  }, [initialBooks]);
+  }, []);
+
+  const handleFilteredDataChange = useCallback((count: number) => {
+    setFilteredCount(count);
+  }, []);
 
   if (!mounted) {
     return (
@@ -240,8 +245,9 @@ export function BookList({ initialBooks }: { initialBooks: FormattedBook[] }) {
   return (
     <div className="h-full flex flex-col relative">
       <div className="flex-1 overflow-hidden">
-        <BookGrid data={initialBooks} />
+        <BookGrid data={initialBooks} onFilteredDataChange={handleFilteredDataChange} />
       </div>
+      <BookCounter total={initialBooks.length} filtered={filteredCount} />
     </div>
   );
 }
