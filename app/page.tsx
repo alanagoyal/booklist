@@ -28,58 +28,63 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
-export const revalidate = 0; // Turn off automatic revalidation
-export const dynamic = "force-static";
+// Force static generation and disable ISR
+export const dynamic = 'force-static';
+export const revalidate = false;
+
+// Fetch books at build time
+async function getBooks() {
+  const { data: books, error } = await supabase
+    .from("books")
+    .select(
+      `
+      *,
+      recommendations (
+        source,
+        source_link,
+        recommender:people(
+          full_name,
+          url
+        )
+      )
+    `)
+    .order("title", { ascending: true })
+    .limit(5000);
+
+  if (error) {
+    throw error;
+  }
+
+  return (books || []).map((book: Book) => ({
+    id: book.id,
+    title: book.title || "n/a",
+    author: book.author || "n/a",
+    description: book.description || "n/a",
+    genres: book.genre?.join(", ") || "n/a",
+    recommender:
+      book.recommendations
+        ?.map((rec) => rec.recommender?.full_name)
+        .join(", ") || "n/a",
+    source:
+      book.recommendations
+        ?.map((rec) => rec.source)
+        .join(", ") || "n/a",
+    source_link: book.recommendations
+        ?.map((rec) => rec.source_link)
+        .join(",") || "",
+    url: book.recommendations
+        ?.map((rec) => rec.recommender?.url)
+        .join(",") || "",
+    amazon_url: book.amazon_url || "",
+  }));
+}
 
 export default async function Home() {
   try {
-    const { data: books, error } = await supabase
-      .from("books")
-      .select(
-        `
-        *,
-        recommendations (
-          source,
-          source_link,
-          recommender:people(
-            full_name,
-            url
-          )
-        )
-      `)
-      .order("title", { ascending: true })
-      .limit(5000);
-
-    if (error) {
-      throw error;
-    }
-
-    const formattedBooks = (books || []).map((book: Book) => ({
-      id: book.id,
-      title: book.title || "n/a",
-      author: book.author || "n/a",
-      description: book.description || "n/a",
-      genres: book.genre?.join(", ") || "n/a",
-      recommender:
-        book.recommendations
-          ?.map((rec) => rec.recommender?.full_name)
-          .join(", ") || "n/a",
-      source:
-        book.recommendations
-          ?.map((rec) => rec.source)
-          .join(", ") || "n/a",
-      source_link: book.recommendations
-          ?.map((rec) => rec.source_link)
-          .join(",") || "",
-      url: book.recommendations
-          ?.map((rec) => rec.recommender?.url)
-          .join(",") || "",
-      amazon_url: book.amazon_url || "",
-    }));
-
+    const formattedBooks = await getBooks();
     return <BookList initialBooks={formattedBooks} />;
   } catch (error) {
     console.error('Error fetching books:', error);
-    return <div>Error loading books</div>;
+    return <div className="text-text">Error loading books</div>;
   }
 }
