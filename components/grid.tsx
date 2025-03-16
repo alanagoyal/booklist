@@ -520,6 +520,13 @@ export function DataGrid<T extends Record<string, any>>({
                 onChange={(e) =>
                   handleFilterChange(String(column.field), e.target.value)
                 }
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setOpenDropdown(null);
+                  }
+                }}
                 onClick={(e) => e.stopPropagation()}
               />
               {filters[String(column.field)] && (
