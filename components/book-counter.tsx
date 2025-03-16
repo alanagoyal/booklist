@@ -2,6 +2,7 @@
 
 import { createPortal } from 'react-dom';
 import { useEffect, useState } from 'react';
+import { usePathname } from 'next/navigation';
 
 // Global event for updating book counts
 const BOOK_COUNT_UPDATE = 'BOOK_COUNT_UPDATE';
@@ -34,9 +35,15 @@ export function LoadingState() {
 export function BookCounter() {
   const [counts, setCounts] = useState<BookCountEvent>({ total: 0, filtered: 0 });
   const [mounted, setMounted] = useState(false);
+  const pathname = usePathname();
+  const isHomePage = pathname === '/';
 
   useEffect(() => {
     setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isHomePage) return;
     
     const handleUpdate = (e: CustomEvent<BookCountEvent>) => {
       setCounts(e.detail);
@@ -46,9 +53,10 @@ export function BookCounter() {
     return () => {
       window.removeEventListener(BOOK_COUNT_UPDATE, handleUpdate as EventListener);
     };
-  }, []);
+  }, [isHomePage]);
 
-  if (!mounted) return null;
+  // Only show on home page
+  if (!mounted || !isHomePage) return null;
 
   return createPortal(
     <div className="fixed bottom-5 right-5 text-text/70 text-xs whitespace-pre-line transition-all duration-200 bg-background/80 backdrop-blur-sm p-2 selection:bg-main selection:text-mtext md:hover:bg-accent/50">
