@@ -10,20 +10,6 @@ if (!supabaseKey) {
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-// Helper function to handle CORS
-function corsHeaders() {
-  return {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-  };
-}
-
-// Handle OPTIONS requests for CORS
-export async function OPTIONS() {
-  return NextResponse.json({}, { headers: corsHeaders() });
-}
-
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const genre = searchParams.get('genre');
@@ -42,13 +28,8 @@ export async function GET(request: Request) {
     .order(sort, { ascending: order === 'asc' });
     
   if (error) {
-    return NextResponse.json({ error: error.message }, { 
-      status: 500,
-      headers: corsHeaders()
-    });
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
   
-  return NextResponse.json({ books }, { 
-    headers: corsHeaders()
-  });
+  return NextResponse.json({ books });
 }
