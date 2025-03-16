@@ -545,7 +545,7 @@ export function DataGrid<T extends Record<string, any>>({
     >
       <div style={headerStyles}>
         <div
-          className="grid"
+          className="grid bg-background"
           style={{
             gridTemplateColumns: `repeat(${columns.length}, minmax(200px, 1fr))`,
           }}
