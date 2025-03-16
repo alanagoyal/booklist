@@ -514,7 +514,7 @@ export function DataGrid<T extends Record<string, any>>({
                 ref={(el) =>
                   void (inputRefs.current[String(column.field)] = el)
                 }
-                className="w-full px-2 py-1 border border-border bg-background text-text selection:bg-main selection:text-mtext focus:outline-none appearance-none"
+                className="w-full px-2 py-1 border border-border bg-background text-text selection:bg-main selection:text-mtext focus:outline-none rounded-none"
                 placeholder="Search"
                 value={filters[String(column.field)] || ""}
                 onChange={(e) =>
