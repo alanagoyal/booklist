@@ -1,5 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
-import { BookList } from "@/components/book-list";
+import { BookList } from "@/components/books";
 
 interface Person {
   full_name: string;

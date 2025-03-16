@@ -216,3 +216,13 @@ export function BookGrid({ data }: BookGridProps) {
     />
   );
 }
+
+export function BookList({ initialBooks }: { initialBooks: FormattedBook[] }) {
+  return (
+    <div className="h-full flex flex-col relative">
+      <div className="flex-1 overflow-hidden">
+        <BookGrid data={initialBooks} />
+      </div>
+    </div>
+  );
+}
