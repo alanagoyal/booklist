@@ -514,7 +514,7 @@ export function DataGrid<T extends Record<string, any>>({
                 ref={(el) =>
                   void (inputRefs.current[String(column.field)] = el)
                 }
-                className="w-full px-2 py-1 border border-border bg-background text-text selection:bg-main selection:text-mtext focus:outline-none rounded-none"
+                className="w-full px-2 py-1 border border-border bg-background text-text text-base sm:text-sm placeholder:text-sm selection:bg-main selection:text-mtext focus:outline-none rounded-none"
                 placeholder="Search"
                 value={filters[String(column.field)] || ""}
                 onChange={(e) =>
@@ -524,7 +524,7 @@ export function DataGrid<T extends Record<string, any>>({
               />
               {filters[String(column.field)] && (
                 <button
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-text/70 transition-colors duration-200 md:hover:text-text"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-text/70 transition-colors duration-200 md:hover:text-text p-2 -mr-2"
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
