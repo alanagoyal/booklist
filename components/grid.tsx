@@ -249,11 +249,11 @@ export function DataGrid<T extends Record<string, any>>({
 
     const containerHeight = container.clientHeight;
     const rowHeight = 32;
-    const visibleRowCount = Math.ceil(containerHeight / rowHeight);
-    const bufferMultiplier = 0.5; // Smaller buffer for better performance
+    const visibleRowCount = Math.ceil(containerHeight / rowHeight) + 1; // Add 1 extra row
+    const bufferMultiplier = 1; // Increased buffer for smoother scrolling
     const bufferRows = Math.ceil(visibleRowCount * bufferMultiplier);
     
-    const scrollTop = container.scrollTop;
+    const scrollTop = Math.max(0, container.scrollTop);
     const currentIndex = Math.floor(scrollTop / rowHeight);
     const startIndex = Math.max(0, currentIndex - bufferRows);
     const endIndex = Math.min(
@@ -261,11 +261,18 @@ export function DataGrid<T extends Record<string, any>>({
       currentIndex + visibleRowCount + bufferRows
     );
 
-    setVirtualState(prev => ({
-      ...prev,
-      startIndex,
-      endIndex
-    }));
+    // Only update if indices have changed significantly
+    setVirtualState(prev => {
+      if (Math.abs(prev.startIndex - startIndex) < 5 && 
+          Math.abs(prev.endIndex - endIndex) < 5) {
+        return prev;
+      }
+      return {
+        ...prev,
+        startIndex,
+        endIndex
+      };
+    });
   }, [filteredAndSortedData.length]);
 
   // Optimize scroll handling
