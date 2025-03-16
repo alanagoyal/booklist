@@ -10,6 +10,7 @@ import {
   ArrowUp,
   ArrowDown,
 } from "lucide-react";
+import { bookCountManager } from './book-counter';
 
 type SortDirection = "asc" | "desc" | "most" | null;
 
@@ -27,6 +28,7 @@ type DataGridProps<T extends Record<string, any>> = {
   data: T[];
   columns: ColumnDef<T>[];
   getRowClassName?: (row: T) => string;
+  onFilteredDataChange?: (count: number) => void;
 };
 
 type SortConfig = {
@@ -44,7 +46,8 @@ type VirtualState<T> = {
 export function DataGrid<T extends Record<string, any>>({ 
   data, 
   columns, 
-  getRowClassName 
+  getRowClassName,
+  onFilteredDataChange
 }: DataGridProps<T>) {
   const { theme } = useTheme();
   const gridRef = useRef<HTMLDivElement>(null);
@@ -129,6 +132,16 @@ export function DataGrid<T extends Record<string, any>>({
       });
     });
   }, [data, filters]);
+
+  // Notify parent of filtered data changes
+  useEffect(() => {
+    onFilteredDataChange?.(filteredData.length);
+  }, [filteredData, onFilteredDataChange]);
+
+  // Update filtered data count
+  useEffect(() => {
+    bookCountManager.update(data.length, filteredData.length);
+  }, [data.length, filteredData.length]);
 
   // Memoize sorted data separately
   const filteredAndSortedData = useMemo(() => {
@@ -561,20 +574,18 @@ export function DataGrid<T extends Record<string, any>>({
   // Don't render content until mounted to prevent hydration mismatch
   if (!mounted) {
     return (
-      <div 
-        ref={gridRef}
-        style={gridStyles}
-        className="scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent"
-      />
+      <div className="h-full flex items-center justify-center">
+        <div className="animate-pulse text-text/70">Loading...</div>
+      </div>
     );
   }
 
   return (
     <div 
       ref={gridRef}
-      style={gridStyles}
+      className="relative h-full overflow-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent"
       onScroll={handleScroll}
-      className="scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent"
+      style={gridStyles}
     >
       <div className="min-w-[max-content]">
       <div style={headerStyles}>
