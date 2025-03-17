@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useRef, useEffect, useCallback, useMemo } from "react";
-import { useTheme } from "next-themes";
 import {
   ChevronDown,
   ListFilter,
@@ -9,7 +8,6 @@ import {
   X,
   ArrowUp,
   ArrowDown,
-  Heart,
   Award,
 } from "lucide-react";
 import { bookCountManager } from './book-counter';
@@ -51,7 +49,6 @@ export function DataGrid<T extends Record<string, any>>({
   getRowClassName,
   onFilteredDataChange
 }: DataGridProps<T>) {
-  const { theme } = useTheme();
   const gridRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
   const [mounted, setMounted] = useState(false);
@@ -584,24 +581,6 @@ export function DataGrid<T extends Record<string, any>>({
       </div>
     );
   }, [activeFilters, sortConfig, handleDropdownClick, renderDropdownMenu]);
-
-  const [containerHeight, setContainerHeight] = useState(0);
-
-  useEffect(() => {
-    const updateContainerHeight = () => {
-      if (gridRef.current) {
-        setContainerHeight(gridRef.current.clientHeight);
-      }
-    };
-
-    updateContainerHeight();
-    const resizeObserver = new ResizeObserver(updateContainerHeight);
-    if (gridRef.current) {
-      resizeObserver.observe(gridRef.current);
-    }
-
-    return () => resizeObserver.disconnect();
-  }, []);
 
   // Don't render content until mounted to prevent hydration mismatch
   if (!mounted) {
