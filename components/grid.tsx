@@ -53,6 +53,7 @@ export function DataGrid<T extends Record<string, any>>({
 }: DataGridProps<T>) {
   const { theme } = useTheme();
   const gridRef = useRef<HTMLDivElement>(null);
+  const headerRef = useRef<HTMLDivElement>(null);
   const [mounted, setMounted] = useState(false);
 
   // Initialize state with consistent defaults for SSR
@@ -205,7 +206,7 @@ export function DataGrid<T extends Record<string, any>>({
     return (
       <div
         key={String(column.field)}
-        className="px-3 py-2 border-b border-grid-border"
+        className="px-3 py-2"
         onClick={(e) => {
           const target = e.target as HTMLElement;
           if (target.closest("a, button, input")) {
@@ -354,6 +355,21 @@ export function DataGrid<T extends Record<string, any>>({
   }, []);
 
   useEffect(() => {
+    const updateHeaderWidth = () => {
+      if (gridRef.current?.firstElementChild && headerRef.current) {
+        headerRef.current.style.width = `${gridRef.current.firstElementChild.clientWidth}px`;
+      }
+    };
+
+    const resizeObserver = new ResizeObserver(updateHeaderWidth);
+    if (gridRef.current?.firstElementChild) {
+      resizeObserver.observe(gridRef.current.firstElementChild);
+    }
+
+    return () => resizeObserver.disconnect();
+  }, []);
+
+  useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (!openDropdown) return;
 
@@ -413,27 +429,15 @@ export function DataGrid<T extends Record<string, any>>({
 
   // Memoize grid styles with opacity transition for hydration
   const gridStyles = useMemo(() => ({
-    height: "100%",
-    overflowY: "auto" as const,
-    position: "relative" as const,
     opacity: mounted ? 1 : 0,
     transition: "opacity 200ms ease-in-out",
   }), [mounted]);
 
-  const headerStyles = useMemo(() => ({
-    position: "sticky" as const,
-    top: 0,
-    zIndex: 10,
-    backgroundColor: "var(--background)",
-    borderBottom: "1px solid var(--border)",
-  }), []);
-
   const contentStyles = useMemo(() => ({
     position: "relative" as const,
-    height: `${filteredAndSortedData.length * ROW_HEIGHT}px`,
+    height: `${filteredAndSortedData.length * ROW_HEIGHT + 48}px`, // Add header height to total content height
     opacity: mounted ? 1 : 0,
     transition: "opacity 200ms ease-in-out",
-    willChange: "transform" // Optimize for animations
   }), [filteredAndSortedData.length, mounted]);
 
   const rowsStyles = useMemo(() => ({
@@ -441,7 +445,6 @@ export function DataGrid<T extends Record<string, any>>({
     top: `${virtualState.startIndex * ROW_HEIGHT}px`,
     left: 0,
     right: 0,
-    willChange: "transform" // Optimize for animations
   }), [virtualState.startIndex]);
 
   // Optimize dropdown menu rendering with useCallback
@@ -582,6 +585,24 @@ export function DataGrid<T extends Record<string, any>>({
     );
   }, [activeFilters, sortConfig, handleDropdownClick, renderDropdownMenu]);
 
+  const [containerHeight, setContainerHeight] = useState(0);
+
+  useEffect(() => {
+    const updateContainerHeight = () => {
+      if (gridRef.current) {
+        setContainerHeight(gridRef.current.clientHeight);
+      }
+    };
+
+    updateContainerHeight();
+    const resizeObserver = new ResizeObserver(updateContainerHeight);
+    if (gridRef.current) {
+      resizeObserver.observe(gridRef.current);
+    }
+
+    return () => resizeObserver.disconnect();
+  }, []);
+
   // Don't render content until mounted to prevent hydration mismatch
   if (!mounted) {
     return (
@@ -594,27 +615,24 @@ export function DataGrid<T extends Record<string, any>>({
   return (
     <div 
       ref={gridRef}
-      className="relative h-full overflow-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent"
+      className="h-full overflow-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent"
       onScroll={handleScroll}
       style={gridStyles}
     >
-      <div className="min-w-[max-content]">
-      <div style={headerStyles}>
-        <div
-          className="grid bg-background"
-          style={{
-            gridTemplateColumns: `repeat(${columns.length}, minmax(200px, 1fr))`,
-          }}
-        >
-          {columns.map(column => renderHeader(column))}
+      <div className="inline-block min-w-full">
+        <div className="sticky top-0 z-10 bg-background">
+          <div
+            className="grid"
+            style={{
+              gridTemplateColumns: `repeat(${columns.length}, minmax(200px, 1fr))`,
+            }}
+          >
+            {columns.map(renderHeader)}
+          </div>
         </div>
-      </div>
-
-      <div style={contentStyles}>
-        <div style={rowsStyles}>
-          {renderedRows}
+        <div style={contentStyles}>
+          <div style={rowsStyles}>{renderedRows}</div>
         </div>
-      </div>
       </div>
     </div>
   );
