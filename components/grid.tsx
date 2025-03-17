@@ -222,9 +222,7 @@ export function DataGrid<T extends Record<string, any>>({
         ) : (
           <div
             className={`whitespace-pre-line transition-all duration-200 text-text selection:bg-main selection:text-mtext ${
-              !isExpanded && column.isExpandable
-                ? "line-clamp-2"
-                : ""
+              !isExpanded ? "line-clamp-2" : ""
             }`}
           >
             {row[column.field]}
