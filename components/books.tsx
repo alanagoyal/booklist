@@ -138,7 +138,7 @@ const RecommenderCell = function Recommender({
                   href={recommenderUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-text hover:text-text/70 transition-colors duration-200"
+                  className="text-text hover:text-text/70 hover:underline transition-colors duration-200"
                 >
                   {rec}
                 </a>
