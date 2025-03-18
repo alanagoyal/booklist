@@ -454,7 +454,7 @@ export function DataGrid<T extends Record<string, any>>({
           transform: isDropdownClosing ? 'translateY(-4px)' : 'translateY(0)',
         }}
       >
-        <div className="py-1">
+        <div>
           {String(column.field) === "recommender" && (
             <button
               className="w-full px-4 py-2 text-left text-text transition-colors duration-200 md:hover:bg-accent/50 flex items-center justify-between"
@@ -464,8 +464,8 @@ export function DataGrid<T extends Record<string, any>>({
               }}
             >
               <div className="flex items-center gap-2">
-                <Award className="w-3 h-3 text-text/70" />
-                <span>Sort by most recommended</span>
+                <Award className="w-3 h-3 text-text/70 flex-shrink-0" />
+                <span>Sort by popularity</span>
               </div>
               {sortConfig.field === String(column.field) &&
                 sortConfig.direction === "most" && (
@@ -551,29 +551,39 @@ export function DataGrid<T extends Record<string, any>>({
     return (
       <div
         key={String(column.field)}
-        className="px-3 py-2 border-b border-border select-none relative"
+        className="px-3 py-2 border-b border-border select-none relative cursor-pointer transition-colors duration-200 group"
         ref={(el) => void (dropdownRefs.current[String(column.field)] = el)}
+        data-dropdown={String(column.field)}
+        onMouseDown={(e) => {
+          const target = e.target as HTMLElement;
+          // Don't trigger dropdown toggle if clicking on a button or input
+          if (target.closest('button, input')) {
+            return;
+          }
+          handleDropdownClick(String(column.field), e);
+        }}
       >
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between flex-shrink-0">
           <span className="font-base text-text">{column.header}</span>
-          <button
-            data-dropdown={String(column.field)}
-            onMouseDown={(e) => handleDropdownClick(String(column.field), e)}
-            className="flex items-center gap-1 transition-colors duration-200 md:hover:bg-accent/50"
-          >
+          <div className="flex items-center gap-1">
             {activeFilters.includes(String(column.field)) && (
               <ListFilter className="w-3 h-3 text-text/70" />
             )}
-            {sortConfig.field === String(column.field) &&
-              (sortConfig.direction === "asc" ? (
-                <ArrowUp className="w-3 h-3 text-text/70" />
-              ) : sortConfig.direction === "most" ? (
-                <Award className="w-3 h-3 text-text/70" />
-              ) : (
-                <ArrowDown className="w-3 h-3 text-text/70" />
-              ))}
-            <ChevronDown className="w-4 h-4 text-text/70" />
-          </button>
+            <div>
+              {sortConfig.field === String(column.field) && (
+                <div className="md:group-hover:hidden">
+                  {sortConfig.direction === 'asc' ? (
+                    <ArrowUp className="w-4 h-4 text-text/70 p-0.5" />
+                  ) : sortConfig.direction === 'most' ? (
+                    <Award className="w-4 h-4 text-text/70 p-0.5" />
+                  ) : (
+                    <ArrowDown className="w-4 h-4 text-text/70 p-0.5" />
+                  )}
+                </div>
+              )}
+              <ChevronDown className="w-4 h-4 text-text/70 transition-colors duration-200 rounded p-0.5 md:group-hover:bg-accent/50 hidden md:group-hover:block" />
+            </div>
+          </div>
         </div>
         {renderDropdownMenu(column)}
       </div>
