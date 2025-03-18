@@ -6,8 +6,8 @@ import { ThemeToggle } from "./theme-toggle";
 export default function Header() {
   return (
     <div className="bg-background border-b border-border">
-      <div className="h-16 px-3 py-2 flex justify-between items-center">
-        <div className="flex items-center gap-6">
+      <div className="h-16 p-2 flex justify-between items-center">
+        <div className="flex items-center gap-4">
           <Link
             href="/"
             className="font-bold font-display text-xl cursor-pointer"
@@ -17,7 +17,7 @@ export default function Header() {
           <Link href="/about">About</Link>
           <Link href="/contribute">Contribute</Link>
         </div>
-        <ThemeToggle /> 
+          <ThemeToggle />
       </div>
     </div>
   );
