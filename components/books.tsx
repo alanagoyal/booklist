@@ -11,7 +11,7 @@ interface FormattedBook {
   author: string;
   description: string;
   genres: string;
-  recommender: string;
+  recommenders: string;
   source: string;
   source_link: string;
   url: string;
@@ -104,7 +104,7 @@ const RecommenderCell = function Recommender({
   tooltipOpen,
   setTooltipOpen,
 }: CellProps & { maxCount: number; tooltipOpen: boolean; setTooltipOpen: (open: boolean) => void }) {
-  const recommenderText = original.recommender || "";
+  const recommenderText = original.recommenders || "";
   const recommenders = recommenderText
     .split(",")
     .map((r) => r.trim())
@@ -223,12 +223,12 @@ const getBackgroundColor = (count: number, maxCount: number): string => {
 
 export function BookGrid({ data, onFilteredDataChange, tooltipOpen, setTooltipOpen }: BookGridProps) {
   const maxRecommendations = Math.max(
-    ...data.map((book) => getRecommendationCount(book.recommender))
+    ...data.map((book) => getRecommendationCount(book.recommenders))
   );
 
   const enhancedData: EnhancedBook[] = data.map((book) => ({
     ...book,
-    _recommendationCount: getRecommendationCount(book.recommender),
+    _recommendationCount: getRecommendationCount(book.recommenders),
   }));
 
   const columns = [
@@ -247,8 +247,8 @@ export function BookGrid({ data, onFilteredDataChange, tooltipOpen, setTooltipOp
     },
     { field: "genres" as keyof FormattedBook, header: "Genres", width: 150 },
     {
-      field: "recommender" as keyof FormattedBook,
-      header: "Recommender",
+      field: "recommenders" as keyof FormattedBook,
+      header: "Recommenders",
       width: 200,
       cell: (props: CellProps) => (
         <RecommenderCell {...props} maxCount={maxRecommendations} tooltipOpen={tooltipOpen} setTooltipOpen={setTooltipOpen} />

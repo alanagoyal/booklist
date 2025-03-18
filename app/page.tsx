@@ -61,7 +61,7 @@ async function getBooks() {
     author: book.author || "n/a",
     description: book.description || "n/a",
     genres: book.genre?.join(", ") || "n/a",
-    recommender:
+    recommenders:
       book.recommendations
         ?.map((rec) => rec.recommender?.full_name)
         .join(", ") || "n/a",
