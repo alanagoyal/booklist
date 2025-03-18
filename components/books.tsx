@@ -3,6 +3,7 @@
 import { Fragment, useState, useEffect, useCallback } from "react";
 import { DataGrid } from "@/components/grid";
 import { BookCounter } from "@/components/book-counter";
+import { PercentileTooltip } from "@/components/percentile-tooltip";
 
 interface FormattedBook {
   id: number;
@@ -26,6 +27,7 @@ interface CellProps {
     original: EnhancedBook;
     isExpanded: boolean;
   };
+  maxCount?: number;
 }
 
 const SourceCell = ({ row: { original, isExpanded } }: CellProps) => {
@@ -98,7 +100,10 @@ const TitleCell = function Title({ row: { original, isExpanded } }: CellProps) {
 
 const RecommenderCell = function Recommender({
   row: { original, isExpanded },
-}: CellProps) {
+  maxCount,
+  tooltipOpen,
+  setTooltipOpen,
+}: CellProps & { maxCount: number; tooltipOpen: boolean; setTooltipOpen: (open: boolean) => void }) {
   const recommenderText = original.recommender || "";
   const recommenders = recommenderText
     .split(",")
@@ -114,38 +119,46 @@ const RecommenderCell = function Recommender({
   }
 
   const displayCount = !isExpanded ? 2 : recommenders.length;
+  const percentile = getPercentile(original._recommendationCount, maxCount);
 
   return (
-    <span>
-      {recommenders.slice(0, displayCount).map((rec, i) => {
-        const recommenderUrl = urls[i];
+    <span
+      className="flex items-center gap-1"
+      onClick={(e) => tooltipOpen && e.stopPropagation()}
+    >
+      <span>
+        {recommenders.slice(0, displayCount).map((rec, i) => {
+          const recommenderUrl = urls[i];
 
-        return (
-          <Fragment key={i}>
-            {i > 0 && ", "}
-            {recommenderUrl ? (
-              <a
-                href={recommenderUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:underline"
-              >
-                {rec}
-              </a>
-            ) : (
-              <span>{rec}</span>
-            )}
-          </Fragment>
-        );
-      })}
-      {!isExpanded && recommenders.length > displayCount && (
-        <>
-          {", "}
+          return (
+            <Fragment key={rec}>
+              {i > 0 && ", "}
+              {recommenderUrl ? (
+                <a
+                  href={recommenderUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-text hover:text-text/70 transition-colors duration-200"
+                >
+                  {rec}
+                </a>
+              ) : (
+                <span>{rec}</span>
+              )}
+            </Fragment>
+          );
+        })}
+        {recommenders.length > displayCount && (
           <span className="text-text/70">
-            + {recommenders.length - displayCount} more
+            {" "}
+            +{recommenders.length - displayCount} more
           </span>
-        </>
-      )}
+        )}
+      </span>
+      <PercentileTooltip
+        percentile={percentile}
+        onTooltipOpenChange={setTooltipOpen}
+      />
     </span>
   );
 };
@@ -153,6 +166,8 @@ const RecommenderCell = function Recommender({
 interface BookGridProps {
   data: FormattedBook[];
   onFilteredDataChange?: (count: number) => void;
+  tooltipOpen: boolean;
+  setTooltipOpen: (open: boolean) => void;
 }
 
 const getRecommendationCount = (recommender: string): number => {
@@ -161,11 +176,30 @@ const getRecommendationCount = (recommender: string): number => {
     : 0;
 };
 
+const getPercentile = (count: number, maxCount: number): number => {
+  return Math.round((count / maxCount) * 100);
+};
+
 const getBackgroundColor = (count: number, maxCount: number): string => {
   if (count === 0) return "";
 
-  // Create 6 intensity levels
-  const intensity = Math.ceil((count / maxCount) * 6);
+  // Create 6 intensity levels based on percentiles
+  const percentile = (count / maxCount) * 100;
+
+  // Map to intensity levels based on percentiles:
+  // Level 1: > 10th percentile
+  // Level 2: > 25th percentile
+  // Level 3: > 50th percentile
+  // Level 4: > 75th percentile
+  // Level 5: > 95th percentile
+  // Level 6: > 99th percentile
+  let intensity = 0;
+  if (percentile > 10) intensity = 1;
+  if (percentile > 25) intensity = 2;
+  if (percentile > 50) intensity = 3;
+  if (percentile > 75) intensity = 4;
+  if (percentile > 95) intensity = 5;
+  if (percentile > 99) intensity = 6;
 
   // Light mode: Start at 95% and decrease to 75% to maintain readability
   // Dark mode: Start at 5% and increase to 25% to maintain contrast
@@ -187,43 +221,7 @@ const getBackgroundColor = (count: number, maxCount: number): string => {
   }
 };
 
-const columns: {
-  field: keyof FormattedBook;
-  header: string;
-  width?: number;
-  cell?: (props: CellProps) => React.ReactNode;
-  isExpandable?: boolean;
-}[] = [
-  {
-    field: "title",
-    header: "Title",
-    width: 150,
-    cell: TitleCell,
-  },
-  { field: "author", header: "Author", width: 120 },
-  {
-    field: "description",
-    header: "Description",
-    width: 200,
-    isExpandable: true,
-  },
-  { field: "genres", header: "Genres", width: 150 },
-  {
-    field: "recommender",
-    header: "Recommender",
-    width: 150,
-    cell: RecommenderCell,
-  },
-  {
-    field: "source",
-    header: "Source",
-    width: 150,
-    cell: SourceCell,
-  },
-];
-
-export function BookGrid({ data, onFilteredDataChange }: BookGridProps) {
-  // Calculate max recommendation count
+export function BookGrid({ data, onFilteredDataChange, tooltipOpen, setTooltipOpen }: BookGridProps) {
   const maxRecommendations = Math.max(
     ...data.map((book) => getRecommendationCount(book.recommender))
   );
@@ -233,6 +231,38 @@ export function BookGrid({ data, onFilteredDataChange }: BookGridProps) {
     _recommendationCount: getRecommendationCount(book.recommender),
   }));
 
+  const columns = [
+    {
+      field: "title" as keyof FormattedBook,
+      header: "Title",
+      width: 150,
+      cell: TitleCell,
+    },
+    { field: "author" as keyof FormattedBook, header: "Author", width: 120 },
+    {
+      field: "description" as keyof FormattedBook,
+      header: "Description",
+      width: 200,
+      isExpandable: true,
+    },
+    { field: "genres" as keyof FormattedBook, header: "Genres", width: 150 },
+    {
+      field: "recommender" as keyof FormattedBook,
+      header: "Recommender",
+      width: 200,
+      cell: (props: CellProps) => (
+        <RecommenderCell {...props} maxCount={maxRecommendations} tooltipOpen={tooltipOpen} setTooltipOpen={setTooltipOpen} />
+      ),
+      isExpandable: true,
+    },
+    {
+      field: "source" as keyof FormattedBook,
+      header: "Source",
+      width: 150,
+      cell: SourceCell,
+    },
+  ];
+
   return (
     <DataGrid
       data={enhancedData}
@@ -241,6 +271,7 @@ export function BookGrid({ data, onFilteredDataChange }: BookGridProps) {
         getBackgroundColor(row._recommendationCount, maxRecommendations)
       }
       onFilteredDataChange={onFilteredDataChange}
+      tooltipOpen={tooltipOpen}
     />
   );
 }
@@ -248,6 +279,7 @@ export function BookGrid({ data, onFilteredDataChange }: BookGridProps) {
 export function BookList({ initialBooks }: { initialBooks: FormattedBook[] }) {
   const [mounted, setMounted] = useState(false);
   const [filteredCount, setFilteredCount] = useState(initialBooks.length);
+  const [tooltipOpen, setTooltipOpen] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -267,6 +299,8 @@ export function BookList({ initialBooks }: { initialBooks: FormattedBook[] }) {
         <BookGrid
           data={initialBooks}
           onFilteredDataChange={handleFilteredDataChange}
+          tooltipOpen={tooltipOpen}
+          setTooltipOpen={setTooltipOpen}
         />
       </div>
       <BookCounter total={initialBooks.length} filtered={filteredCount} />
