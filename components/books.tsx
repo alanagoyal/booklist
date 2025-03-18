@@ -108,11 +108,11 @@ const RecommenderCell = function Recommender({
   const recommenders = recommenderText
     .split(",")
     .map((r) => r.trim())
-    .filter(Boolean);
+    .filter(Boolean)
+    .sort((a, b) => a.localeCompare(b));
 
-  const urls = (original.url?.split(",").map((url) => url.trim()) || []).concat(
-    Array(recommenders.length).fill(null)
-  );
+  const urls = (original.url?.split(",").map((url) => url.trim()) || [])
+    .concat(Array(recommenders.length).fill(null));
 
   if (recommenders.length === 0) {
     return <span></span>;
