@@ -34,7 +34,7 @@ export function PercentileTooltip({ percentile, onTooltipOpenChange }: Percentil
         </Tooltip.Trigger>
         <Tooltip.Portal>
           <Tooltip.Content
-            className="relative p-2 text-xs bg-background text-text text-center z-50 w-48 animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
+            className="relative p-2 text-xs bg-background text-text text-center z-50 w-48 shadow-lg animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
             sideOffset={5}
           >
             <div className="absolute -inset-[1px] border border-border -z-10">
