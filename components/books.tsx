@@ -31,45 +31,53 @@ interface CellProps {
 }
 
 const SourceCell = ({ row: { original, isExpanded } }: CellProps) => {
+  const recommenderText = original.recommenders || "";
   const sourceText = original.source || "";
-  const sources = sourceText
-    .split(",")
-    .map((s) => s.trim())
-    .filter(Boolean);
-  const sourceLinks = (
-    original.source_link?.split(",").map((l) => l.trim()) || []
-  ).concat(Array(sources.length).fill(null));
+  const sourceLinkText = original.source_link || "";
 
-  if (sources.length === 0) {
+  // Create pairs of recommenders and sources with their links
+  const pairs = recommenderText
+    .split(",")
+    .map((r, i) => ({
+      recommender: r.trim(),
+      source: sourceText.split(",")[i]?.trim() || "",
+      sourceLink: sourceLinkText.split(",")[i]?.trim() || null
+    }))
+    .filter(pair => pair.recommender && pair.source);
+
+  // Sort pairs by recommender name to match RecommenderCell order
+  pairs.sort((a, b) => a.recommender.localeCompare(b.recommender));
+
+  if (pairs.length === 0) {
     return <span></span>;
   }
 
-  const displayCount = !isExpanded ? 2 : sources.length;
+  const displayCount = !isExpanded ? 2 : pairs.length;
 
   return (
     <span>
-      {sources.slice(0, displayCount).map((source, i) => (
+      {pairs.slice(0, displayCount).map((pair, i) => (
         <Fragment key={i}>
           {i > 0 && ", "}
-          {sourceLinks[i] ? (
+          {pair.sourceLink ? (
             <a
-              href={sourceLinks[i]}
+              href={pair.sourceLink}
               target="_blank"
               rel="noopener noreferrer"
               className="hover:underline"
             >
-              {source}
+              {pair.source}
             </a>
           ) : (
-            <span>{source}</span>
+            <span>{pair.source}</span>
           )}
         </Fragment>
       ))}
-      {!isExpanded && sources.length > displayCount && (
+      {!isExpanded && pairs.length > displayCount && (
         <>
           {", "}
           <span className="text-text/70">
-            + {sources.length - displayCount} more
+            + {pairs.length - displayCount} more
           </span>
         </>
       )}
@@ -105,20 +113,23 @@ const RecommenderCell = function Recommender({
   setTooltipOpen,
 }: CellProps & { maxCount: number; tooltipOpen: boolean; setTooltipOpen: (open: boolean) => void }) {
   const recommenderText = original.recommenders || "";
-  const recommenders = recommenderText
+  const urlText = original.url || "";
+
+  const recommenderPairs = recommenderText
     .split(",")
-    .map((r) => r.trim())
-    .filter(Boolean)
-    .sort((a, b) => a.localeCompare(b));
+    .map((r, i) => ({
+      name: r.trim(),
+      url: urlText.split(",")[i]?.trim() || null,
+    }))
+    .filter((pair) => pair.name);
 
-  const urls = (original.url?.split(",").map((url) => url.trim()) || [])
-    .concat(Array(recommenders.length).fill(null));
+  recommenderPairs.sort((a, b) => a.name.localeCompare(b.name));
 
-  if (recommenders.length === 0) {
+  if (recommenderPairs.length === 0) {
     return <span></span>;
   }
 
-  const displayCount = !isExpanded ? 2 : recommenders.length;
+  const displayCount = !isExpanded ? 2 : recommenderPairs.length;
   const percentile = getPercentile(original._recommendationCount, maxCount);
 
   return (
@@ -127,31 +138,27 @@ const RecommenderCell = function Recommender({
       onClick={(e) => tooltipOpen && e.stopPropagation()}
     >
       <span>
-        {recommenders.slice(0, displayCount).map((rec, i) => {
-          const recommenderUrl = urls[i];
-
-          return (
-            <Fragment key={rec}>
-              {i > 0 && ", "}
-              {recommenderUrl ? (
-                <a
-                  href={recommenderUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-text hover:text-text/70 hover:underline transition-colors duration-200"
-                >
-                  {rec}
-                </a>
-              ) : (
-                <span>{rec}</span>
-              )}
-            </Fragment>
-          );
-        })}
-        {recommenders.length > displayCount && (
+        {recommenderPairs.slice(0, displayCount).map((pair, i) => (
+          <Fragment key={pair.name}>
+            {i > 0 && ", "}
+            {pair.url ? (
+              <a
+                href={pair.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-text hover:text-text/70 hover:underline transition-colors duration-200"
+              >
+                {pair.name}
+              </a>
+            ) : (
+              <span>{pair.name}</span>
+            )}
+          </Fragment>
+        ))}
+        {recommenderPairs.length > displayCount && (
           <span className="text-text/70">
             {" "}
-            +{recommenders.length - displayCount} more
+            +{recommenderPairs.length - displayCount} more
           </span>
         )}
       </span>
@@ -183,16 +190,8 @@ const getPercentile = (count: number, maxCount: number): number => {
 const getBackgroundColor = (count: number, maxCount: number): string => {
   if (count === 0) return "";
 
-  // Create 6 intensity levels based on percentiles
   const percentile = (count / maxCount) * 100;
 
-  // Map to intensity levels based on percentiles:
-  // Level 1: > 10th percentile
-  // Level 2: > 25th percentile
-  // Level 3: > 50th percentile
-  // Level 4: > 75th percentile
-  // Level 5: > 95th percentile
-  // Level 6: > 99th percentile
   let intensity = 0;
   if (percentile > 10) intensity = 1;
   if (percentile > 25) intensity = 2;
@@ -201,8 +200,6 @@ const getBackgroundColor = (count: number, maxCount: number): string => {
   if (percentile > 95) intensity = 5;
   if (percentile > 99) intensity = 6;
 
-  // Light mode: Start at 95% and decrease to 75% to maintain readability
-  // Dark mode: Start at 5% and increase to 25% to maintain contrast
   switch (intensity) {
     case 1:
       return "bg-[hsl(151,80%,95%)] hover:bg-[hsl(151,80%,92%)] dark:bg-[hsl(160,84%,5%)] dark:hover:bg-[hsl(160,84%,7%)] transition-colors duration-200";
