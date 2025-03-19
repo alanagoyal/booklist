@@ -449,7 +449,7 @@ export function DataGrid<T extends Record<string, any>>({
 
     return (
       <div 
-        className="absolute top-full -left-px right-0 bg-background border border-border shadow-lg z-50 transition-all duration-200"
+        className="absolute top-full -left-px -right-px bg-background border border-border shadow-lg z-50 transition-all duration-200"
         style={{
           opacity: isDropdownClosing ? 0 : 1,
           transform: isDropdownClosing ? 'translateY(-4px)' : 'translateY(0)',
