@@ -456,7 +456,7 @@ export function DataGrid<T extends Record<string, any>>({
         }}
       >
         <div>
-          {String(column.field) === "recommender" && (
+          {String(column.field) === "recommenders" && (
             <button
               className="w-full px-4 py-2 text-left text-text transition-colors duration-200 md:hover:bg-accent/50 flex items-center justify-between"
               onClick={(e) => {
