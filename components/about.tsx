@@ -10,7 +10,7 @@ export default function About() {
             <span className="font-bold">
               the most frequently recommended books on the internet
             </span>
-            . We've scoured the world wide web to find book recommendations from
+            . We&apos;ve scoured the world wide web to find book recommendations from
             artists, authors, economists, entrepreneurs, historians,
             philosophers, and more.
           </p>
