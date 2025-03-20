@@ -410,11 +410,17 @@ export function DataGrid<T extends Record<string, any>>({
   };
 
   const handleSort = (field: string, direction: SortDirection) => {
-    const newSortConfig = {
-      field,
-      direction: sortConfig.field === field && sortConfig.direction === direction ? null : direction,
-    };
-    setSortConfig(newSortConfig);
+    setSortConfig(prevConfig => {
+      // If clicking the same sort option that's currently active, disable sorting
+      if (prevConfig.field === field && prevConfig.direction === direction) {
+        return { field: "", direction: null };
+      }
+      // Otherwise apply the new sort
+      return {
+        field,
+        direction,
+      };
+    });
     setOpenDropdown(null);
   };
 
@@ -471,7 +477,7 @@ export function DataGrid<T extends Record<string, any>>({
               {sortConfig.field === String(column.field) &&
                 sortConfig.direction === "most" && (
                   <Check className="w-3 h-3 text-text/70" />
-                )}
+              )}
             </button>
           )}
           <button
@@ -488,7 +494,7 @@ export function DataGrid<T extends Record<string, any>>({
             {sortConfig.field === String(column.field) &&
               sortConfig.direction === "asc" && (
                 <Check className="w-3 h-3 text-text/70" />
-              )}
+            )}
           </button>
           <button
             className="w-full px-4 py-2 text-left text-text transition-colors duration-200 md:hover:bg-accent/50 flex items-center justify-between"
@@ -504,7 +510,7 @@ export function DataGrid<T extends Record<string, any>>({
             {sortConfig.field === String(column.field) &&
               sortConfig.direction === "desc" && (
                 <Check className="w-3 h-3 text-text/70" />
-              )}
+            )}
           </button>
           <div className="px-4 py-2">
             <div className="relative">
@@ -568,7 +574,7 @@ export function DataGrid<T extends Record<string, any>>({
           <span className="font-base text-text">{column.header}</span>
           <div className="flex items-center gap-1">
             {activeFilters.includes(String(column.field)) && (
-              <ListFilter className="w-3 h-3 text-text/70" />
+              <ListFilter className="w-3 h-3 text-text/70 md:group-hover:hidden" />
             )}
             <div>
               {sortConfig.field === String(column.field) && (
