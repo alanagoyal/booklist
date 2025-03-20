@@ -252,12 +252,6 @@ export function BookGrid({ data, onFilteredDataChange, tooltipOpen, setTooltipOp
       ),
       isExpandable: true,
     },
-    {
-      field: "source" as keyof FormattedBook,
-      header: "Source",
-      width: 150,
-      cell: SourceCell,
-    },
   ];
 
   return (
