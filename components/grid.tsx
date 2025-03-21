@@ -437,7 +437,7 @@ export function DataGrid<T extends Record<string, any>>({
 
   const contentStyles = useMemo(() => ({
     position: "relative" as const,
-    height: `${filteredAndSortedData.length * ROW_HEIGHT + 48}px`, // Add header height to total content height
+    height: `${filteredAndSortedData.length * ROW_HEIGHT + 128}px`, // Add header height to total content height
     opacity: mounted ? 1 : 0,
     transition: "opacity 200ms ease-in-out",
   }), [filteredAndSortedData.length, mounted]);

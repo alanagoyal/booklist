@@ -1,6 +1,7 @@
 "use client";
 
 import { Fragment, useState, useEffect, useCallback } from "react";
+import { X } from "lucide-react";
 import { DataGrid } from "@/components/grid";
 import { BookCounter } from "@/components/book-counter";
 import { PercentileTooltip } from "@/components/percentile-tooltip";
@@ -41,9 +42,9 @@ const SourceCell = ({ row: { original, isExpanded } }: CellProps) => {
     .map((r, i) => ({
       recommender: r.trim(),
       source: sourceText.split(",")[i]?.trim() || "",
-      sourceLink: sourceLinkText.split(",")[i]?.trim() || null
+      sourceLink: sourceLinkText.split(",")[i]?.trim() || null,
     }))
-    .filter(pair => pair.recommender && pair.source);
+    .filter((pair) => pair.recommender && pair.source);
 
   // Sort pairs by recommender name to match RecommenderCell order
   pairs.sort((a, b) => a.recommender.localeCompare(b.recommender));
@@ -111,7 +112,11 @@ const RecommenderCell = function Recommender({
   maxCount,
   tooltipOpen,
   setTooltipOpen,
-}: CellProps & { maxCount: number; tooltipOpen: boolean; setTooltipOpen: (open: boolean) => void }) {
+}: CellProps & {
+  maxCount: number;
+  tooltipOpen: boolean;
+  setTooltipOpen: (open: boolean) => void;
+}) {
   const recommenderText = original.recommenders || "";
   const urlText = original.url || "";
 
@@ -218,7 +223,12 @@ const getBackgroundColor = (count: number, maxCount: number): string => {
   }
 };
 
-export function BookGrid({ data, onFilteredDataChange, tooltipOpen, setTooltipOpen }: BookGridProps) {
+export function BookGrid({
+  data,
+  onFilteredDataChange,
+  tooltipOpen,
+  setTooltipOpen,
+}: BookGridProps) {
   const maxRecommendations = Math.max(
     ...data.map((book) => getRecommendationCount(book.recommenders))
   );
@@ -248,7 +258,12 @@ export function BookGrid({ data, onFilteredDataChange, tooltipOpen, setTooltipOp
       header: "Recommenders",
       width: 200,
       cell: (props: CellProps) => (
-        <RecommenderCell {...props} maxCount={maxRecommendations} tooltipOpen={tooltipOpen} setTooltipOpen={setTooltipOpen} />
+        <RecommenderCell
+          {...props}
+          maxCount={maxRecommendations}
+          tooltipOpen={tooltipOpen}
+          setTooltipOpen={setTooltipOpen}
+        />
       ),
       isExpandable: true,
     },
@@ -279,29 +294,34 @@ export function BookList({ initialBooks }: { initialBooks: FormattedBook[] }) {
     setMounted(true);
   }, []);
 
-  const handleSearch = useCallback(async (query: string) => {
-    if (!query.trim()) {
-      setBooks(initialBooks);
-      return;
-    }
-
-    setIsSearching(true);
-    try {
-      const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
-      const data = await response.json();
-      
-      if (data.error) {
-        console.error('Search error:', data.error);
+  const handleSearch = useCallback(
+    async (query: string) => {
+      if (!query.trim()) {
+        setBooks(initialBooks);
         return;
       }
-      
-      setBooks(data.books);
-    } catch (error) {
-      console.error('Error searching books:', error);
-    } finally {
-      setIsSearching(false);
-    }
-  }, [initialBooks]);
+
+      setIsSearching(true);
+      try {
+        const response = await fetch(
+          `/api/search?q=${encodeURIComponent(query)}`
+        );
+        const data = await response.json();
+
+        if (data.error) {
+          console.error("Search error:", data.error);
+          return;
+        }
+
+        setBooks(data.books);
+      } catch (error) {
+        console.error("Error searching books:", error);
+      } finally {
+        setIsSearching(false);
+      }
+    },
+    [initialBooks]
+  );
 
   // Debounce search to avoid too many API calls
   useEffect(() => {
@@ -322,14 +342,26 @@ export function BookList({ initialBooks }: { initialBooks: FormattedBook[] }) {
 
   return (
     <div className="h-full flex flex-col relative">
-      <div className="px-3 py-2 border-b border-border">
+      <div className="relative border-b border-border">
         <input
           type="text"
-          placeholder="Search books by title, author, description..."
+          placeholder="Semantic search"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full px-3 py-2 bg-background text-text border border-border rounded-none font-base selection:bg-main selection:text-mtext"
+          className="w-full p-2 bg-background text-text text-base sm:text-sm placeholder:text-sm selection:bg-main selection:text-mtext focus:outline-none rounded-none"
         />
+        {searchQuery && (
+          <button
+            className="absolute right-2 top-1/2 -translate-y-1/2 text-text/70 transition-colors duration-200 md:hover:text-text p-2 -mr-2"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setSearchQuery("");
+            }}
+          >
+            <X className="w-3 h-3" />
+          </button>
+        )}
       </div>
       <div className="flex-1 overflow-hidden">
         <BookGrid
