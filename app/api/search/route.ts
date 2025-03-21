@@ -13,19 +13,39 @@ interface Recommendation {
   recommender: Person;
 }
 
-interface Book {
-  id: number;
+interface SearchMatch {
+  id: string;
+  similarity: number;
+}
+
+interface DbBook {
+  id: string;
   title: string | null;
   author: string | null;
   description: string | null;
   genre: string[] | null;
   amazon_url: string | null;
-  recommendations: Recommendation[] | null;
+  recommendations: {
+    source: string;
+    source_link: string | null;
+    recommender: {
+      full_name: string;
+      url: string | null;
+    };
+  }[] | null;
 }
 
-interface SearchResult {
-  id: number;
-  similarity: number;
+interface FormattedBook {
+  id: string;
+  title: string;
+  author: string;
+  description: string;
+  genres: string;
+  recommenders: string;
+  source: string;
+  source_link: string;
+  url: string;
+  amazon_url: string;
 }
 
 const supabase = createClient(
@@ -37,80 +57,62 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-export async function GET(request: Request) {
-  console.log('Search API called with URL:', request.url);
-  const { searchParams } = new URL(request.url);
-  const query = searchParams.get('q');
-  
-  console.log('Search query:', query);
-  console.log('Environment variables present:', {
-    hasSupabaseUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
-    hasServiceKey: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
-    hasOpenAIKey: !!process.env.OPENAI_API_KEY
+async function createSearchEmbedding(query: string) {
+  const response = await openai.embeddings.create({
+    model: "text-embedding-ada-002",
+    input: query,
   });
-  
-  if (!query) {
-    console.log('No query provided');
-    return NextResponse.json({ error: 'Query parameter is required' }, { status: 400 });
-  }
+  return response.data[0].embedding;
+}
 
+export async function POST(request: Request) {
   try {
-    console.log('Generating embedding for query:', query);
-    const embeddingResponse = await openai.embeddings.create({
-      model: "text-embedding-ada-002",
-      input: query,
-    });
-    const embedding = embeddingResponse.data[0].embedding;
-    console.log('Generated embedding length:', embedding.length);
+    const body = await request.json();
+    const { query } = body;
+    
+    if (!query) {
+      return NextResponse.json({ error: 'Query parameter is required' }, { status: 400 });
+    }
 
-    console.log('Calling Supabase search_books function');
-    // Search books using the embedding
-    const { data: searchResults, error: searchError } = await supabase.rpc(
-      'search_books',
+    const searchEmbedding = await createSearchEmbedding(query);
+    
+    // Use weighted similarity for better search results
+    const weights = {
+      title_weight: 1.0,
+      author_weight: 0.8,
+      description_weight: 0.6
+    };
+
+    // First get the IDs of matching books with similarity scores
+    const { data: matches, error: matchError } = await supabase.rpc(
+      'match_documents_weighted',
       {
-        query_embedding: embedding,
-        match_count: 50,
-        similarity_threshold: 0.5
+        query_embedding: searchEmbedding,
+        ...weights,
+        match_threshold: 0.5,
+        match_count: 50
       }
-    ) as { data: SearchResult[] | null; error: any };
+    ) as { data: SearchMatch[] | null; error: any };
 
-    if (searchError) {
-      console.error('Supabase search error:', searchError);
-      return NextResponse.json({ error: searchError.message }, { status: 500 });
+    if (matchError) {
+      console.error('Error searching books:', matchError);
+      return NextResponse.json({ error: matchError.message }, { status: 500 });
     }
 
-    console.log('Search results count:', searchResults?.length ?? 0);
-    let finalResults = searchResults || [];
-
-    if (finalResults.length === 0) {
-      console.log('No results found with similarity threshold 0.5, trying with lower threshold');
-      const { data: fallbackResults, error: fallbackError } = await supabase.rpc(
-        'search_books',
-        {
-          query_embedding: embedding,
-          match_count: 50,
-          similarity_threshold: 0.3
-        }
-      ) as { data: SearchResult[] | null; error: any };
-      
-      if (fallbackError) {
-        console.error('Fallback search error:', fallbackError);
-        return NextResponse.json({ error: fallbackError.message }, { status: 500 });
-      }
-      
-      console.log('Fallback results count:', fallbackResults?.length ?? 0);
-      finalResults = fallbackResults || [];
-    }
-
-    if (finalResults.length === 0) {
+    if (!matches || matches.length === 0) {
       return NextResponse.json({ books: [] });
     }
 
-    // Fetch full book details including recommendations for the search results
+    // Then fetch full book details for the matched IDs
     const { data: books, error: detailsError } = await supabase
       .from("books")
       .select(`
-        *,
+        id,
+        title,
+        author,
+        description,
+        genre,
+        amazon_url,
         recommendations (
           source,
           source_link,
@@ -120,16 +122,16 @@ export async function GET(request: Request) {
           )
         )
       `)
-      .in('id', finalResults.map(r => r.id))
-      .order('title', { ascending: true });
+      .in('id', matches.map((m: SearchMatch) => m.id))
+      .order('id', { ascending: false }) as { data: DbBook[] | null; error: any };
 
     if (detailsError) {
       console.error('Error fetching book details:', detailsError);
       return NextResponse.json({ error: detailsError.message }, { status: 500 });
     }
 
-    // Format books to match the structure expected by the frontend
-    const formattedBooks = (books as Book[]).map(book => {
+    // Format books to match the frontend's FormattedBook interface
+    const formattedBooks = (books || []).map((book: DbBook): FormattedBook => {
       const recommendations = book.recommendations || [];
       return {
         id: book.id,
@@ -145,17 +147,15 @@ export async function GET(request: Request) {
       };
     });
 
-    return NextResponse.json({ books: formattedBooks });
-  } catch (error: any) {
+    // Limit the response size by truncating very long text fields
+    const truncatedBooks = formattedBooks.map(book => ({
+      ...book,
+      description: book.description.length > 300 ? book.description.slice(0, 300) + '...' : book.description
+    }));
+
+    return NextResponse.json({ books: truncatedBooks });
+  } catch (error) {
     console.error('Error in search:', error);
-    console.error('Error details:', {
-      name: error.name,
-      message: error.message,
-      stack: error.stack
-    });
-    return NextResponse.json(
-      { error: error.message || 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

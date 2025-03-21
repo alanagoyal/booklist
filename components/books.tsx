@@ -7,7 +7,7 @@ import { BookCounter } from "@/components/book-counter";
 import { PercentileTooltip } from "@/components/percentile-tooltip";
 
 interface FormattedBook {
-  id: number;
+  id: string;
   title: string;
   author: string;
   description: string;
@@ -298,14 +298,19 @@ export function BookList({ initialBooks }: { initialBooks: FormattedBook[] }) {
     async (query: string) => {
       if (!query.trim()) {
         setBooks(initialBooks);
+        setIsSearching(false);
         return;
       }
 
       setIsSearching(true);
       try {
-        const response = await fetch(
-          `/api/search?q=${encodeURIComponent(query)}`
-        );
+        const response = await fetch('/api/search', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ query }),
+        });
         const data = await response.json();
 
         if (data.error) {
@@ -323,15 +328,6 @@ export function BookList({ initialBooks }: { initialBooks: FormattedBook[] }) {
     [initialBooks]
   );
 
-  // Debounce search to avoid too many API calls
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      handleSearch(searchQuery);
-    }, 300);
-
-    return () => clearTimeout(timer);
-  }, [searchQuery, handleSearch]);
-
   const handleFilteredDataChange = useCallback((count: number) => {
     setFilteredCount(count);
   }, []);
@@ -348,8 +344,18 @@ export function BookList({ initialBooks }: { initialBooks: FormattedBook[] }) {
           placeholder="Semantic search"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              handleSearch(searchQuery);
+            }
+          }}
           className="w-full p-2 bg-background text-text text-base sm:text-sm placeholder:text-sm selection:bg-main selection:text-mtext focus:outline-none rounded-none"
         />
+        {isSearching && (
+          <div className="absolute right-8 top-1/2 -translate-y-1/2">
+            <div className="animate-spin rounded-full h-3 w-3 border-2 border-text/70 border-t-transparent" />
+          </div>
+        )}
         {searchQuery && (
           <button
             className="absolute right-2 top-1/2 -translate-y-1/2 text-text/70 transition-colors duration-200 md:hover:text-text p-2 -mr-2"
