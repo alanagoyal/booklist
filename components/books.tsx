@@ -269,12 +269,48 @@ export function BookGrid({ data, onFilteredDataChange, tooltipOpen, setTooltipOp
 
 export function BookList({ initialBooks }: { initialBooks: FormattedBook[] }) {
   const [mounted, setMounted] = useState(false);
+  const [books, setBooks] = useState(initialBooks);
   const [filteredCount, setFilteredCount] = useState(initialBooks.length);
   const [tooltipOpen, setTooltipOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  const handleSearch = useCallback(async (query: string) => {
+    if (!query.trim()) {
+      setBooks(initialBooks);
+      return;
+    }
+
+    setIsSearching(true);
+    try {
+      const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+      const data = await response.json();
+      
+      if (data.error) {
+        console.error('Search error:', data.error);
+        return;
+      }
+      
+      setBooks(data.books);
+    } catch (error) {
+      console.error('Error searching books:', error);
+    } finally {
+      setIsSearching(false);
+    }
+  }, [initialBooks]);
+
+  // Debounce search to avoid too many API calls
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      handleSearch(searchQuery);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery, handleSearch]);
 
   const handleFilteredDataChange = useCallback((count: number) => {
     setFilteredCount(count);
@@ -286,9 +322,18 @@ export function BookList({ initialBooks }: { initialBooks: FormattedBook[] }) {
 
   return (
     <div className="h-full flex flex-col relative">
+      <div className="px-3 py-2 border-b border-border">
+        <input
+          type="text"
+          placeholder="Search books by title, author, description..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="w-full px-3 py-2 bg-background text-text border border-border rounded-none font-base selection:bg-main selection:text-mtext"
+        />
+      </div>
       <div className="flex-1 overflow-hidden">
         <BookGrid
-          data={initialBooks}
+          data={books}
           onFilteredDataChange={handleFilteredDataChange}
           tooltipOpen={tooltipOpen}
           setTooltipOpen={setTooltipOpen}
