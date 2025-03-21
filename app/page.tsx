@@ -56,7 +56,7 @@ async function getBooks() {
   }
 
   return (books || []).map((book: Book) => ({
-    id: book.id,
+    id: book.id.toString(),
     title: book.title || "n/a",
     author: book.author || "n/a",
     description: book.description || "n/a",
