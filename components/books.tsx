@@ -378,7 +378,7 @@ export function BookList({ initialBooks }: { initialBooks: FormattedBook[] }) {
       <div className="relative border-b border-border">
         <input
           type="text"
-          placeholder="Semantic search"
+          placeholder="Search all"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="w-full p-2 bg-background text-text text-base sm:text-sm placeholder:text-sm selection:bg-main selection:text-mtext focus:outline-none rounded-none"
