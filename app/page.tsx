@@ -1,25 +1,23 @@
 import { createClient } from "@supabase/supabase-js";
 import { BookList } from "@/components/books";
 
-interface Person {
-  full_name: string;
-  url: string | null;
-}
-
-interface Recommendation {
+interface DatabaseRecommendation {
   source: string;
   source_link: string | null;
-  recommender: Person;
+  recommender: {
+    full_name: string;
+    url: string | null;
+  } | null;
 }
 
-interface Book {
-  id: number;
+interface DatabaseBook {
+  id: string;
   title: string | null;
   author: string | null;
   description: string | null;
   genre: string[] | null;
   amazon_url: string | null;
-  recommendations: Recommendation[] | null;
+  recommendations: DatabaseRecommendation[] | null;
 }
 
 // Create Supabase client
@@ -38,7 +36,12 @@ async function getBooks() {
     .from("books")
     .select(
       `
-      *,
+      id,
+      title,
+      author,
+      description,
+      genre,
+      amazon_url,
       recommendations (
         source,
         source_link,
@@ -48,15 +51,14 @@ async function getBooks() {
         )
       )
     `)
-    .order("title", { ascending: true })
-    .limit(5000);
+    .order("title", { ascending: true });  // No limit since this is static build time
 
   if (error) {
     throw error;
   }
 
-  return (books || []).map((book: Book) => ({
-    id: book.id.toString(),
+  return ((books || []) as unknown as DatabaseBook[]).map((book) => ({
+    id: book.id,
     title: book.title || "n/a",
     author: book.author || "n/a",
     description: book.description || "n/a",
@@ -64,6 +66,7 @@ async function getBooks() {
     recommenders:
       book.recommendations
         ?.map((rec) => rec.recommender?.full_name)
+        .filter(Boolean)
         .join(", ") || "n/a",
     source:
       book.recommendations
@@ -71,9 +74,11 @@ async function getBooks() {
         .join(", ") || "n/a",
     source_link: book.recommendations
         ?.map((rec) => rec.source_link)
+        .filter(Boolean)
         .join(",") || "",
     url: book.recommendations
         ?.map((rec) => rec.recommender?.url)
+        .filter(Boolean)
         .join(",") || "",
     amazon_url: book.amazon_url || "",
   }));
@@ -85,6 +90,13 @@ export default async function Home() {
     return <BookList initialBooks={formattedBooks} />;
   } catch (error) {
     console.error('Error fetching books:', error);
-    return <div className="text-text">Error loading books</div>;
+    return (
+      <div className="p-4">
+        <div className="text-text font-bold mb-2">Error loading books</div>
+        <pre className="text-text/70 text-sm whitespace-pre-wrap">
+          {JSON.stringify(error, null, 2)}
+        </pre>
+      </div>
+    );
   }
 }
