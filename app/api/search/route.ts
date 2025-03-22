@@ -2,20 +2,18 @@ import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
 
-interface Person {
-  full_name: string;
-  url: string | null;
-}
-
-interface Recommendation {
-  source: string;
-  source_link: string | null;
-  recommender: Person;
-}
-
 interface SearchMatch {
   id: string;
   similarity: number;
+}
+
+interface DbBookRecommendation {
+  source: string;
+  source_link: string | null;
+  recommender: {
+    full_name: string;
+    url: string | null;
+  };
 }
 
 interface DbBook {
@@ -25,14 +23,7 @@ interface DbBook {
   description: string | null;
   genre: string[] | null;
   amazon_url: string | null;
-  recommendations: {
-    source: string;
-    source_link: string | null;
-    recommender: {
-      full_name: string;
-      url: string | null;
-    };
-  }[] | null;
+  recommendations: DbBookRecommendation[] | null;
 }
 
 interface FormattedBook {
@@ -74,23 +65,16 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Query parameter is required' }, { status: 400 });
     }
 
+    console.log('Search query:', query);
     const searchEmbedding = await createSearchEmbedding(query);
     
-    // Use weighted similarity for better search results
-    const weights = {
-      title_weight: 1.0,
-      author_weight: 0.8,
-      description_weight: 0.6
-    };
-
-    // First get the IDs of matching books with similarity scores
+    // Search for semantically relevant books using weighted similarity
     const { data: matches, error: matchError } = await supabase.rpc(
       'match_documents_weighted',
       {
         query_embedding: searchEmbedding,
-        ...weights,
-        match_threshold: 0.5,
-        match_count: 50
+        similarity_threshold: 0.3,  // Return results with at least 30% similarity
+        match_count: 20 // Limit to top 20 most relevant results
       }
     ) as { data: SearchMatch[] | null; error: any };
 
@@ -100,10 +84,11 @@ export async function POST(request: Request) {
     }
 
     if (!matches || matches.length === 0) {
+      console.log('No semantically relevant matches found');
       return NextResponse.json({ books: [] });
     }
 
-    // Then fetch full book details for the matched IDs
+    // Fetch full book details for the matched IDs
     const { data: books, error: detailsError } = await supabase
       .from("books")
       .select(`
@@ -116,13 +101,13 @@ export async function POST(request: Request) {
         recommendations (
           source,
           source_link,
-          recommender:people(
+          recommender:people (
             full_name,
             url
           )
         )
       `)
-      .in('id', matches.map((m: SearchMatch) => m.id))
+      .in('id', matches.map(m => m.id))
       .order('id', { ascending: false }) as { data: DbBook[] | null; error: any };
 
     if (detailsError) {
@@ -130,32 +115,32 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: detailsError.message }, { status: 500 });
     }
 
-    // Format books to match the frontend's FormattedBook interface
-    const formattedBooks = (books || []).map((book: DbBook): FormattedBook => {
-      const recommendations = book.recommendations || [];
-      return {
+    if (!books || books.length === 0) {
+      return NextResponse.json({ books: [] });
+    }
+
+    // Create a map of similarity scores for sorting
+    const similarityMap = new Map(matches.map(m => [m.id, m.similarity]));
+
+    // Format and sort books by similarity score
+    const formattedBooks = (books as DbBook[])
+      .map((book: DbBook): FormattedBook => ({
         id: book.id,
         title: book.title || '',
         author: book.author || '',
         description: book.description || '',
-        genres: book.genre?.join(', ') || '',
-        recommenders: recommendations.map(r => r.recommender.full_name).join(', '),
-        source: recommendations.map(r => r.source).join(', '),
-        source_link: recommendations.map(r => r.source_link).join(', '),
-        url: recommendations.map(r => r.recommender.url).join(', '),
+        genres: (book.genre || []).join(', '),
+        recommenders: book.recommendations?.map(r => r.recommender.full_name).join(', ') || '',
+        source: book.recommendations?.[0]?.source || '',
+        source_link: book.recommendations?.[0]?.source_link || '',
+        url: book.recommendations?.[0]?.recommender?.url || '',
         amazon_url: book.amazon_url || ''
-      };
-    });
+      }))
+      .sort((a, b) => (similarityMap.get(b.id) || 0) - (similarityMap.get(a.id) || 0));
 
-    // Limit the response size by truncating very long text fields
-    const truncatedBooks = formattedBooks.map(book => ({
-      ...book,
-      description: book.description.length > 300 ? book.description.slice(0, 300) + '...' : book.description
-    }));
-
-    return NextResponse.json({ books: truncatedBooks });
+    return NextResponse.json({ books: formattedBooks });
   } catch (error) {
-    console.error('Error in search:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    console.error('Unexpected error:', error);
+    return NextResponse.json({ error: 'An unexpected error occurred' }, { status: 500 });
   }
 }

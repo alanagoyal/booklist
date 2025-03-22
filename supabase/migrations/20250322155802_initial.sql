@@ -106,29 +106,41 @@ AS $function$BEGIN
 END;$function$
 ;
 
-CREATE OR REPLACE FUNCTION public.match_documents_weighted(query_embedding vector, title_weight double precision DEFAULT 1.0, author_weight double precision DEFAULT 0.8, description_weight double precision DEFAULT 0.6, match_threshold double precision DEFAULT 0.5, match_count integer DEFAULT 50)
- RETURNS TABLE(id uuid, similarity double precision)
- LANGUAGE plpgsql
+CREATE OR REPLACE FUNCTION public.match_documents_weighted(
+  query_embedding vector,
+  similarity_threshold double precision DEFAULT 0.3,
+  match_count integer DEFAULT 50
+)
+RETURNS TABLE(id uuid, similarity double precision)
+LANGUAGE plpgsql
 AS $function$
+#variable_conflict use_column
 BEGIN
   RETURN QUERY
-  SELECT
-    books.id,
-    (
-      title_weight * (1 - (books.title_embedding <=> query_embedding)) +
-      author_weight * (1 - (books.author_embedding <=> query_embedding)) +
-      description_weight * (1 - (books.description_embedding <=> query_embedding))
-    ) / (title_weight + author_weight + description_weight) as similarity
-  FROM books
-  WHERE 
-    books.title_embedding IS NOT NULL AND
-    books.author_embedding IS NOT NULL AND
-    books.description_embedding IS NOT NULL
+  WITH similarity_scores AS (
+    SELECT
+      books.id,
+      (
+        -- Prioritize description matches as they contain the most semantic information
+        0.5 * (1 - (books.description_embedding <=> query_embedding)) +
+        -- Title is second most important for semantic matching
+        0.3 * (1 - (books.title_embedding <=> query_embedding)) +
+        -- Author has least weight as it's usually less semantically relevant
+        0.2 * (1 - (books.author_embedding <=> query_embedding))
+      ) as similarity
+    FROM books
+    WHERE 
+      books.title_embedding IS NOT NULL AND
+      books.author_embedding IS NOT NULL AND
+      books.description_embedding IS NOT NULL
+  )
+  SELECT id, similarity
+  FROM similarity_scores
+  WHERE similarity >= similarity_threshold
   ORDER BY similarity DESC
   LIMIT match_count;
 END;
-$function$
-;
+$function$;
 
 grant delete on table "public"."books" to "anon";
 
