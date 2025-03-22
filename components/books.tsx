@@ -6,7 +6,7 @@ import { BookCounter } from "@/components/book-counter";
 import { PercentileTooltip } from "@/components/percentile-tooltip";
 
 interface FormattedBook {
-  id: number;
+  id: string;
   title: string;
   author: string;
   description: string;

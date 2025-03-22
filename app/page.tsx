@@ -13,7 +13,7 @@ interface Recommendation {
 }
 
 interface Book {
-  id: number;
+  id: string;
   title: string | null;
   author: string | null;
   description: string | null;
@@ -85,6 +85,13 @@ export default async function Home() {
     return <BookList initialBooks={formattedBooks} />;
   } catch (error) {
     console.error('Error fetching books:', error);
-    return <div className="text-text">Error loading books</div>;
+    return (
+      <div className="p-4">
+        <div className="text-text font-bold mb-2">Error loading books</div>
+        <pre className="text-text/70 text-sm whitespace-pre-wrap">
+          {JSON.stringify(error, null, 2)}
+        </pre>
+      </div>
+    );
   }
 }
