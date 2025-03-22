@@ -22,6 +22,25 @@ interface Book {
   recommendations: Recommendation[] | null;
 }
 
+interface DatabaseRecommendation {
+  source: string;
+  source_link: string | null;
+  recommender: {
+    full_name: string;
+    url: string | null;
+  } | null;
+}
+
+interface DatabaseBook {
+  id: string;
+  title: string | null;
+  author: string | null;
+  description: string | null;
+  genre: string[] | null;
+  amazon_url: string | null;
+  recommendations: DatabaseRecommendation[] | null;
+}
+
 // Create Supabase client
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -38,7 +57,12 @@ async function getBooks() {
     .from("books")
     .select(
       `
-      *,
+      id,
+      title,
+      author,
+      description,
+      genre,
+      amazon_url,
       recommendations (
         source,
         source_link,
@@ -48,14 +72,13 @@ async function getBooks() {
         )
       )
     `)
-    .order("title", { ascending: true })
-    .limit(5000);
+    .order("title", { ascending: true });  // No limit since this is static build time
 
   if (error) {
     throw error;
   }
 
-  return (books || []).map((book: Book) => ({
+  return ((books || []) as unknown as DatabaseBook[]).map((book) => ({
     id: book.id,
     title: book.title || "n/a",
     author: book.author || "n/a",
@@ -64,6 +87,7 @@ async function getBooks() {
     recommenders:
       book.recommendations
         ?.map((rec) => rec.recommender?.full_name)
+        .filter(Boolean)
         .join(", ") || "n/a",
     source:
       book.recommendations
@@ -71,9 +95,11 @@ async function getBooks() {
         .join(", ") || "n/a",
     source_link: book.recommendations
         ?.map((rec) => rec.source_link)
+        .filter(Boolean)
         .join(",") || "",
     url: book.recommendations
         ?.map((rec) => rec.recommender?.url)
+        .filter(Boolean)
         .join(",") || "",
     amazon_url: book.amazon_url || "",
   }));
