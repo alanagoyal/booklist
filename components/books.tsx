@@ -363,6 +363,7 @@ export function BookList({ initialBooks }: { initialBooks: FormattedBook[] }) {
               e.preventDefault();
               e.stopPropagation();
               setSearchQuery("");
+              handleSearch("");
             }}
           >
             <X className="w-3 h-3" />
