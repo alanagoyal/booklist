@@ -65,26 +65,19 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Query parameter is required' }, { status: 400 });
     }
 
-    console.log('Search query:', query);
-    const searchEmbedding = await createSearchEmbedding(query);
+    const embedding = await createSearchEmbedding(query);
     
-    // Search for semantically relevant books using weighted similarity
-    const { data: matches, error: matchError } = await supabase.rpc(
-      'match_documents_weighted',
-      {
-        query_embedding: searchEmbedding,
-        similarity_threshold: 0.3,  // Return results with at least 30% similarity
-        match_count: 20 // Limit to top 20 most relevant results
-      }
-    ) as { data: SearchMatch[] | null; error: any };
+    // Search for semantically relevant books using description embedding similarity
+    const { data: matches, error } = await supabase.rpc('match_documents', {
+      query_embedding: embedding,
+    }) as { data: SearchMatch[] | null; error: any };
 
-    if (matchError) {
-      console.error('Error searching books:', matchError);
-      return NextResponse.json({ error: matchError.message }, { status: 500 });
+    if (error) {
+      console.error('Error searching books:', error);
+      return NextResponse.json({ error: 'Failed to search books' }, { status: 500 });
     }
 
     if (!matches || matches.length === 0) {
-      console.log('No semantically relevant matches found');
       return NextResponse.json({ books: [] });
     }
 
@@ -107,8 +100,7 @@ export async function POST(request: Request) {
           )
         )
       `)
-      .in('id', matches.map(m => m.id))
-      .order('id', { ascending: false }) as { data: DbBook[] | null; error: any };
+      .in('id', matches.map((m: SearchMatch) => m.id)) as { data: DbBook[] | null; error: any };
 
     if (detailsError) {
       console.error('Error fetching book details:', detailsError);
@@ -120,17 +112,17 @@ export async function POST(request: Request) {
     }
 
     // Create a map of similarity scores for sorting
-    const similarityMap = new Map(matches.map(m => [m.id, m.similarity]));
+    const similarityMap = new Map(matches.map((m: SearchMatch) => [m.id, m.similarity]));
 
     // Format and sort books by similarity score
-    const formattedBooks = (books as DbBook[])
+    const formattedBooks = books
       .map((book: DbBook): FormattedBook => ({
         id: book.id,
         title: book.title || '',
         author: book.author || '',
         description: book.description || '',
         genres: (book.genre || []).join(', '),
-        recommenders: book.recommendations?.map(r => r.recommender.full_name).join(', ') || '',
+        recommenders: book.recommendations?.map(r => r.recommender?.full_name).join(', ') || '',
         source: book.recommendations?.[0]?.source || '',
         source_link: book.recommendations?.[0]?.source_link || '',
         url: book.recommendations?.[0]?.recommender?.url || '',
