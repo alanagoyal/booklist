@@ -311,7 +311,8 @@ export function BookList({ initialBooks }: { initialBooks: FormattedBook[] }) {
 
   const handleSearch = useCallback(
     async (query: string) => {
-      if (!query.trim()) {
+      const trimmedQuery = query.trim();
+      if (!trimmedQuery) {
         setBooks(initialBooks);
         return;
       }
@@ -322,7 +323,7 @@ export function BookList({ initialBooks }: { initialBooks: FormattedBook[] }) {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ query: query.trim() }),
+          body: JSON.stringify({ query: trimmedQuery }),
         });
 
         if (!response.ok) {
@@ -349,11 +350,6 @@ export function BookList({ initialBooks }: { initialBooks: FormattedBook[] }) {
       clearTimeout(searchTimeoutRef.current);
     }
 
-    if (!searchQuery.trim()) {
-      setBooks(initialBooks);
-      return;
-    }
-
     searchTimeoutRef.current = setTimeout(() => {
       handleSearch(searchQuery);
     }, 300);
@@ -363,7 +359,7 @@ export function BookList({ initialBooks }: { initialBooks: FormattedBook[] }) {
         clearTimeout(searchTimeoutRef.current);
       }
     };
-  }, [searchQuery, handleSearch, initialBooks]);
+  }, [searchQuery]);
 
   const handleFilteredDataChange = useCallback((count: number) => {
     setFilteredCount(count);
