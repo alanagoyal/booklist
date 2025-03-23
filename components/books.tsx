@@ -1,6 +1,7 @@
 "use client";
 
-import { Fragment, useState, useEffect, useCallback } from "react";
+import { Fragment, useState, useEffect, useCallback, useRef } from "react";
+import { X } from "lucide-react";
 import { DataGrid } from "@/components/grid";
 import { BookCounter } from "@/components/book-counter";
 import { PercentileTooltip } from "@/components/percentile-tooltip";
@@ -41,9 +42,9 @@ const SourceCell = ({ row: { original, isExpanded } }: CellProps) => {
     .map((r, i) => ({
       recommender: r.trim(),
       source: sourceText.split(",")[i]?.trim() || "",
-      sourceLink: sourceLinkText.split(",")[i]?.trim() || null
+      sourceLink: sourceLinkText.split(",")[i]?.trim() || null,
     }))
-    .filter(pair => pair.recommender && pair.source);
+    .filter((pair) => pair.recommender && pair.source);
 
   // Sort pairs by recommender name to match RecommenderCell order
   pairs.sort((a, b) => a.recommender.localeCompare(b.recommender));
@@ -106,24 +107,31 @@ const TitleCell = function Title({ row: { original, isExpanded } }: CellProps) {
   );
 };
 
-const RecommenderCell = function Recommender({
+const RecommenderCell = ({
   row: { original, isExpanded },
   maxCount,
   tooltipOpen,
   setTooltipOpen,
-}: CellProps & { maxCount: number; tooltipOpen: boolean; setTooltipOpen: (open: boolean) => void }) {
+}: CellProps & {
+  maxCount: number;
+  tooltipOpen: boolean;
+  setTooltipOpen: (open: boolean) => void;
+}) => {
   const recommenderText = original.recommenders || "";
   const urlText = original.url || "";
 
   const recommenderPairs = recommenderText
     .split(",")
-    .map((r, i) => ({
-      name: r.trim(),
-      url: urlText.split(",")[i]?.trim() || null,
-    }))
-    .filter((pair) => pair.name);
-
-  recommenderPairs.sort((a, b) => a.name.localeCompare(b.name));
+    .map((r: string, i: number) => {
+      const url = urlText.split(",")[i] || "";
+      return { recommender: r.trim(), url: url.trim() };
+    })
+    .filter((pair: { recommender: string; url: string }) => pair.recommender)
+    .sort((a: { recommender: string }, b: { recommender: string }) => {
+      const countA = getRecommendationCount(a.recommender);
+      const countB = getRecommendationCount(b.recommender);
+      return countB - countA;
+    });
 
   if (recommenderPairs.length === 0) {
     return <span></span>;
@@ -133,40 +141,52 @@ const RecommenderCell = function Recommender({
   const percentile = getPercentile(original._recommendationCount, maxCount);
 
   return (
-    <span
-      className="flex items-center gap-1"
-      onClick={(e) => tooltipOpen && e.stopPropagation()}
+    <div
+      className={`whitespace-pre-line ${
+        isExpanded ? "" : "line-clamp-2"
+      } text-text`}
+      style={{
+        backgroundColor: getBackgroundColor(
+          getRecommendationCount(original.recommenders),
+          maxCount
+        ),
+      }}
     >
-      <span>
-        {recommenderPairs.slice(0, displayCount).map((pair, i) => (
-          <Fragment key={pair.name}>
-            {i > 0 && ", "}
-            {pair.url ? (
-              <a
-                href={pair.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-text hover:text-text/70 hover:underline transition-colors duration-200"
-              >
-                {pair.name}
-              </a>
-            ) : (
-              <span>{pair.name}</span>
-            )}
-          </Fragment>
-        ))}
-        {recommenderPairs.length > displayCount && (
-          <span className="text-text/70">
-            {" "}
-            +{recommenderPairs.length - displayCount} more
-          </span>
-        )}
+      <span
+        className="flex items-center gap-1"
+        onClick={(e) => tooltipOpen && e.stopPropagation()}
+      >
+        <span>
+          {recommenderPairs.slice(0, displayCount).map((pair, i) => (
+            <Fragment key={pair.recommender}>
+              {i > 0 && ", "}
+              {pair.url ? (
+                <a
+                  href={pair.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-text hover:text-text/70 hover:underline transition-colors duration-200"
+                >
+                  {pair.recommender}
+                </a>
+              ) : (
+                <span>{pair.recommender}</span>
+              )}
+            </Fragment>
+          ))}
+          {recommenderPairs.length > displayCount && (
+            <span className="text-text/70">
+              {" "}
+              +{recommenderPairs.length - displayCount} more
+            </span>
+          )}
+        </span>
+        <PercentileTooltip
+          percentile={percentile}
+          onTooltipOpenChange={setTooltipOpen}
+        />
       </span>
-      <PercentileTooltip
-        percentile={percentile}
-        onTooltipOpenChange={setTooltipOpen}
-      />
-    </span>
+    </div>
   );
 };
 
@@ -218,7 +238,12 @@ const getBackgroundColor = (count: number, maxCount: number): string => {
   }
 };
 
-export function BookGrid({ data, onFilteredDataChange, tooltipOpen, setTooltipOpen }: BookGridProps) {
+export function BookGrid({
+  data,
+  onFilteredDataChange,
+  tooltipOpen,
+  setTooltipOpen,
+}: BookGridProps) {
   const maxRecommendations = Math.max(
     ...data.map((book) => getRecommendationCount(book.recommenders))
   );
@@ -248,7 +273,12 @@ export function BookGrid({ data, onFilteredDataChange, tooltipOpen, setTooltipOp
       header: "Recommenders",
       width: 200,
       cell: (props: CellProps) => (
-        <RecommenderCell {...props} maxCount={maxRecommendations} tooltipOpen={tooltipOpen} setTooltipOpen={setTooltipOpen} />
+        <RecommenderCell
+          {...props}
+          maxCount={maxRecommendations}
+          tooltipOpen={tooltipOpen}
+          setTooltipOpen={setTooltipOpen}
+        />
       ),
       isExpandable: true,
     },
@@ -269,26 +299,102 @@ export function BookGrid({ data, onFilteredDataChange, tooltipOpen, setTooltipOp
 
 export function BookList({ initialBooks }: { initialBooks: FormattedBook[] }) {
   const [mounted, setMounted] = useState(false);
+  const [books, setBooks] = useState(initialBooks);
   const [filteredCount, setFilteredCount] = useState(initialBooks.length);
   const [tooltipOpen, setTooltipOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  const handleSearch = useCallback(
+    async (query: string) => {
+      const trimmedQuery = query.trim();
+      if (!trimmedQuery) {
+        setBooks(initialBooks);
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/search', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ query: trimmedQuery }),
+        });
+
+        if (!response.ok) {
+          throw new Error(`Search failed: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        if (data.error) {
+          console.error("Search error:", data.error);
+          return;
+        }
+
+        setBooks(data.books);
+      } catch (error) {
+        console.error("Error searching books:", error);
+        setBooks(initialBooks);
+      }
+    },
+    [initialBooks]
+  );
+
+  useEffect(() => {
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+
+    searchTimeoutRef.current = setTimeout(() => {
+      handleSearch(searchQuery);
+    }, 300);
+
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+    };
+  }, [searchQuery]);
 
   const handleFilteredDataChange = useCallback((count: number) => {
     setFilteredCount(count);
   }, []);
 
   if (!mounted) {
-    return;
+    return null;
   }
 
   return (
     <div className="h-full flex flex-col relative">
+      <div className="relative border-b border-border">
+        <input
+          type="text"
+          placeholder="Search all"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="w-full p-2 bg-background text-text text-base sm:text-sm placeholder:text-sm selection:bg-main selection:text-mtext focus:outline-none rounded-none"
+        />
+        {searchQuery && (
+          <button
+            className="absolute right-2 top-1/2 -translate-y-1/2 text-text/70 transition-colors duration-200 md:hover:text-text p-2 -mr-2"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setSearchQuery("");
+            }}
+          >
+            <X className="w-3 h-3" />
+          </button>
+        )}
+      </div>
       <div className="flex-1 overflow-hidden">
         <BookGrid
-          data={initialBooks}
+          data={books}
           onFilteredDataChange={handleFilteredDataChange}
           tooltipOpen={tooltipOpen}
           setTooltipOpen={setTooltipOpen}

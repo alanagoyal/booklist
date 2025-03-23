@@ -1,27 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import { BookList } from "@/components/books";
 
-interface Person {
-  full_name: string;
-  url: string | null;
-}
-
-interface Recommendation {
-  source: string;
-  source_link: string | null;
-  recommender: Person;
-}
-
-interface Book {
-  id: string;
-  title: string | null;
-  author: string | null;
-  description: string | null;
-  genre: string[] | null;
-  amazon_url: string | null;
-  recommendations: Recommendation[] | null;
-}
-
 interface DatabaseRecommendation {
   source: string;
   source_link: string | null;
