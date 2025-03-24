@@ -11,5 +11,6 @@ export interface Book {
     person_id: string;
     source: string;
     source_link?: string;
+    recommender_name?: string;
   }[];
 }

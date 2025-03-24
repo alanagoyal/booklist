@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Book } from "../app/types/book";
+import { Book } from "../types/book";
 
 interface RouletteProps {
   books: Book[];
@@ -63,14 +63,14 @@ export default function Roulette({ books }: RouletteProps) {
                 {selectedBook.genre.join(", ")}
               </div>
               <div className="text-text/70">
-                {getRecommendationCount(selectedBook.recommendations)} recommendations
+                {getRecommendationCount(selectedBook.recommendations)} {getRecommendationCount(selectedBook.recommendations) === 1 ? 'recommendation' : 'recommendations'}
               </div>
               {selectedBook.amazon_url && (
                 <a 
                   href={selectedBook.amazon_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-text hover:text-text/70 transition-colors duration-200"
+                  className="text-text hover:text-text/70 hover:underline transition-colors duration-200"
                 >
                   View on Amazon
                 </a>
@@ -82,7 +82,7 @@ export default function Roulette({ books }: RouletteProps) {
                 <ul className="space-y-2">
                   {selectedBook.recommendations?.map((rec, i) => (
                     <li key={i} className="text-text/70">
-                      {rec.source}
+                      {rec.recommender_name || rec.source}
                       {rec.source_link && (
                         <a 
                           href={rec.source_link}
@@ -90,7 +90,7 @@ export default function Roulette({ books }: RouletteProps) {
                           rel="noopener noreferrer"
                           className="ml-2 text-text hover:text-text/70 transition-colors duration-200"
                         >
-                          (source)
+                          (<span className="hover:underline">source</span>)
                         </a>
                       )}
                     </li>

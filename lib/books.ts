@@ -18,7 +18,12 @@ export async function getBooks(): Promise<Book[]> {
 
   const { data: recommendations, error: recsError } = await supabase
     .from("recommendations")
-    .select("*");
+    .select(`
+      *,
+      people:person_id (
+        full_name
+      )
+    `);
 
   if (recsError) {
     console.error("Error fetching recommendations:", recsError);
@@ -33,7 +38,8 @@ export async function getBooks(): Promise<Book[]> {
     acc[rec.book_id].push({
       person_id: rec.person_id,
       source: rec.source,
-      source_link: rec.source_link
+      source_link: rec.source_link,
+      recommender_name: rec.people?.full_name
     });
     return acc;
   }, {} as Record<string, Book['recommendations']>);
