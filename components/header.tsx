@@ -15,7 +15,7 @@ export default function Header() {
             BOOKLIST
           </Link>
           <Link href="/about">About</Link>
-          <Link href="/roulette" className="text-text hover:text-text/70 transition-colors duration-200">Book Roulette</Link>
+          <Link href="/roulette">Roulette</Link>
           <Link href="/contribute">Contribute</Link>
         </div>
           <ThemeToggle />
