@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { Book } from "../types/book";
 
 interface RouletteProps {
-  books: Book[];
   initialBook: Book;
 }
 
@@ -13,28 +12,37 @@ const getRecommendationCount = (recommendations?: Book['recommendations']): numb
   return recommendations?.length || 0;
 };
 
-export default function Roulette({ books, initialBook }: RouletteProps) {
+export default function Roulette({ initialBook }: RouletteProps) {
   const [selectedBook, setSelectedBook] = useState<Book>(initialBook);
   const [isSpinning, setIsSpinning] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const spinRoulette = () => {
+  const spinRoulette = async () => {
     setError(null);
     setIsSpinning(true);
     
-    if (books.length > 0) {
-      // Randomly select a book
-      setTimeout(() => {
-        const randomIndex = Math.floor(Math.random() * books.length);
-        const selected = books[randomIndex];
-        setSelectedBook(selected);
-        setIsSpinning(false);
-      }, 1000);
-    } else {
-      setError('No books found. Please try again later.');
+    try {
+      const response = await fetch('/api/random-book');
+      if (!response.ok) {
+        throw new Error('Failed to fetch random book');
+      }
+      const book = await response.json();
+      setSelectedBook(book);
+    } catch (err) {
+      setError('Failed to get a random book. Please try again.');
+      console.error('Error fetching random book:', err);
+    } finally {
       setIsSpinning(false);
     }
   };
+
+  if (!selectedBook) {
+    return (
+      <div className="flex flex-col items-center justify-center p-8 text-text">
+        {error || 'No book selected'}
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 overflow-auto h-[calc(100dvh-4rem)]">
