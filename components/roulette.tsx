@@ -16,8 +16,16 @@ const getRecommendationCount = (
 
 export default function Roulette({ initialBook }: RouletteProps) {
   const [selectedBook, setSelectedBook] = useState<Book>(initialBook);
-  const [isSpinning, setIsSpinning] = useState(false);
+  const [isSpinning, setIsSpinning] = useState(true);  
   const [error, setError] = useState<string | null>(null);
+
+  // Initial fade in with shorter delay
+  useEffect(() => {
+    setTimeout(() => {
+      setSelectedBook(initialBook);
+      setIsSpinning(false);
+    }, 100);
+  }, [initialBook]);
 
   const spinRoulette = async () => {
     setError(null);
@@ -29,6 +37,8 @@ export default function Roulette({ initialBook }: RouletteProps) {
         throw new Error("Failed to fetch random book");
       }
       const book = await response.json();
+      // Add a small delay to allow the fade out animation to complete
+      await new Promise(resolve => setTimeout(resolve, 100));
       setSelectedBook(book);
     } catch (err) {
       setError("Failed to get a random book. Please try again.");
