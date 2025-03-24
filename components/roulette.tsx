@@ -69,15 +69,9 @@ export default function Roulette({ initialBook }: RouletteProps) {
               </p>
             )}
           </div>
-          <div className="flex flex-wrap gap-4 min-h-[2rem]">
+          <div className="flex justify-between items-center mb-4 min-h-[2rem]">
             <div className="text-text/70">
               {selectedBook.genre.join(", ")}
-            </div>
-            <div className="text-text/70">
-              {getRecommendationCount(selectedBook.recommendations)}{" "}
-              {getRecommendationCount(selectedBook.recommendations) === 1
-                ? "recommendation"
-                : "recommendations"}
             </div>
             {selectedBook.amazon_url && (
               <a
@@ -86,34 +80,37 @@ export default function Roulette({ initialBook }: RouletteProps) {
                 rel="noopener noreferrer"
                 className="text-text md:hover:text-text/70 transition-colors duration-200"
               >
-                View on Amazon
+                Buy on Amazon
               </a>
             )}
           </div>
 
           <div className="mt-4 pt-4 border-t border-border min-h-[10rem]">
+            <div className="text-text/70 mb-2 font-bold">
+              {getRecommendationCount(selectedBook.recommendations)}{" "}
+              {getRecommendationCount(selectedBook.recommendations) === 1
+                ? "recommender"
+                : "recommenders"}
+            </div>
             {selectedBook.recommendations &&
               selectedBook.recommendations.length > 0 && (
-                <>
-                  <h3 className="font-bold mb-2">Recommendations</h3>
-                  <ul className="space-y-2">
-                    {selectedBook.recommendations.map((rec, i) => (
-                      <li key={i} className="text-text/70">
-                        {rec.recommender_name || rec.source}
-                        {rec.source_link && (
-                          <a
-                            href={rec.source_link}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="ml-2 text-text md:hover:text-text/70 transition-colors duration-200"
-                          >
-                            (<span className="hover:underline">source</span>)
-                          </a>
-                        )}
-                      </li>
-                    ))}
-                  </ul>
-                </>
+                <ul className="space-y-2">
+                  {selectedBook.recommendations.map((rec, i) => (
+                    <li key={i} className="text-text/70">
+                      {rec.recommender_name || rec.source}
+                      {rec.source_link && (
+                        <a
+                          href={rec.source_link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="ml-2 text-text md:hover:text-text/70 transition-colors duration-200"
+                        >
+                          (<span className="hover:underline">source</span>)
+                        </a>
+                      )}
+                    </li>
+                  ))}
+                </ul>
               )}
           </div>
         </div>
