@@ -5,6 +5,7 @@ import { Book } from "../types/book";
 
 interface RouletteProps {
   books: Book[];
+  initialBook: Book;
 }
 
 // Helper function to get recommendation count
@@ -12,9 +13,9 @@ const getRecommendationCount = (recommendations?: Book['recommendations']): numb
   return recommendations?.length || 0;
 };
 
-export default function Roulette({ books }: RouletteProps) {
-  const [selectedBook, setSelectedBook] = useState<Book | null>(null);
-  const [isSpinning, setIsSpinning] = useState(true); // Start with loading state
+export default function Roulette({ books, initialBook }: RouletteProps) {
+  const [selectedBook, setSelectedBook] = useState<Book>(initialBook);
+  const [isSpinning, setIsSpinning] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const spinRoulette = () => {
@@ -34,11 +35,6 @@ export default function Roulette({ books }: RouletteProps) {
       setIsSpinning(false);
     }
   };
-
-  // Show a random book on initial load
-  useEffect(() => {
-    spinRoulette();
-  }, []);
 
   return (
     <div className="p-6 overflow-auto h-[calc(100dvh-4rem)]">
