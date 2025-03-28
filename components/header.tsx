@@ -15,6 +15,7 @@ export default function Header() {
             BOOKLIST
           </Link>
           <Link href="/about">About</Link>
+          <Link href="/roulette">Roulette</Link>
           <Link href="/contribute">Contribute</Link>
         </div>
           <ThemeToggle />

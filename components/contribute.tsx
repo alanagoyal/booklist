@@ -24,10 +24,9 @@ export default function Contribute() {
   }
 
   return (
-
-      
-      <div className="p-6 overflow-auto h-[calc(100vh-4rem)]">
-        <form onSubmit={handleSubmit} className="max-w-lg mx-auto space-y-6">
+    <div className="h-full p-4 bg-background text-text overflow-y-auto">
+      <div className="max-w-2xl mx-auto">
+        <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
             <label htmlFor="name" className="block text-text">
               Your Name
@@ -96,5 +95,6 @@ export default function Contribute() {
           </button>
         </form>
       </div>
+    </div>
   )
 }
