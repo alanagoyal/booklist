@@ -124,7 +124,7 @@ export default function Roulette({ initialBook }: RouletteProps) {
           disabled={isSpinning}
           className="w-full p-2 bg-background border border-border text-text transition-colors duration-200 md:hover:bg-accent/50 font-base"
         >
-          {isSpinning ? "Finding a book..." : "Get Another Book"}
+          {isSpinning ? "Finding a book..." : "New Book"}
         </button>
       </div>
 
