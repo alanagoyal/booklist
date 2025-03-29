@@ -1,24 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import { BookList } from "@/components/books";
-
-interface DatabaseRecommendation {
-  source: string;
-  source_link: string | null;
-  recommender: {
-    full_name: string;
-    url: string | null;
-  } | null;
-}
-
-interface DatabaseBook {
-  id: string;
-  title: string | null;
-  author: string | null;
-  description: string | null;
-  genre: string[] | null;
-  amazon_url: string | null;
-  recommendations: DatabaseRecommendation[] | null;
-}
+import { DatabaseBook } from "@/types";
 
 // Create Supabase client
 const supabase = createClient(

@@ -5,33 +5,9 @@ import { X } from "lucide-react";
 import { DataGrid } from "@/components/grid";
 import { BookCounter } from "@/components/book-counter";
 import { PercentileTooltip } from "@/components/percentile-tooltip";
+import { FormattedBook, EnhancedBook } from "@/types";
 
-interface FormattedBook {
-  id: string;
-  title: string;
-  author: string;
-  description: string;
-  genres: string;
-  recommenders: string;
-  source: string;
-  source_link: string;
-  url: string;
-  amazon_url: string;
-}
-
-interface EnhancedBook extends FormattedBook {
-  _recommendationCount: number;
-}
-
-interface CellProps {
-  row: {
-    original: EnhancedBook;
-    isExpanded: boolean;
-  };
-  maxCount?: number;
-}
-
-const SourceCell = ({ row: { original, isExpanded } }: CellProps) => {
+const SourceCell = ({ row: { original, isExpanded } }: { row: { original: EnhancedBook; isExpanded: boolean } }) => {
   const recommenderText = original.recommenders || "";
   const sourceText = original.source || "";
   const sourceLinkText = original.source_link || "";
@@ -86,7 +62,7 @@ const SourceCell = ({ row: { original, isExpanded } }: CellProps) => {
   );
 };
 
-const TitleCell = function Title({ row: { original, isExpanded } }: CellProps) {
+const TitleCell = function Title({ row: { original, isExpanded } }: { row: { original: EnhancedBook; isExpanded: boolean } }) {
   const title = original.title || "";
   const amazonUrl = original.amazon_url;
 
@@ -112,7 +88,8 @@ const RecommenderCell = ({
   maxCount,
   tooltipOpen,
   setTooltipOpen,
-}: CellProps & {
+}: {
+  row: { original: EnhancedBook; isExpanded: boolean };
   maxCount: number;
   tooltipOpen: boolean;
   setTooltipOpen: (open: boolean) => void;
@@ -272,7 +249,7 @@ export function BookGrid({
       field: "recommenders" as keyof FormattedBook,
       header: "Recommenders",
       width: 200,
-      cell: (props: CellProps) => (
+      cell: (props: { row: { original: EnhancedBook; isExpanded: boolean } }) => (
         <RecommenderCell
           {...props}
           maxCount={maxRecommendations}

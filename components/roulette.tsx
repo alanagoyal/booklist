@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Book } from "../types/book";
+import { Book } from "@/types";
 
 interface RouletteProps {
   initialBook: Book;
