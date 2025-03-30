@@ -64,7 +64,7 @@ export default function RecommendationGraph() {
   const [highlightLinks, setHighlightLinks] = useState(new Set());
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
   const [hoveredNode, setHoveredNode] = useState<Node | null>(null);
-  const [dimensions, setDimensions] = useState({ width: 800, height: 500 });
+  const [dimensions, setDimensions] = useState({ width: 0, height: 500 }); // Default height for SSR
   const [minRecommendations, setMinRecommendations] = useState(1);
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
   const { theme } = useTheme();
@@ -72,17 +72,37 @@ export default function RecommendationGraph() {
   useEffect(() => {
     const updateDimensions = () => {
       if (containerRef.current) {
-        setDimensions({
-          width: containerRef.current.clientWidth,
-          height: Math.max(500, window.innerHeight * 0.6),
-        });
+        const width = containerRef.current.clientWidth;
+        const height = Math.max(500, window.innerHeight * 0.6);
+        setDimensions({ width, height });
       }
     };
 
-    window.addEventListener("resize", updateDimensions);
-    updateDimensions();
+    // Call immediately and set up observer
+    const resizeObserver = new ResizeObserver(updateDimensions);
+    if (containerRef.current) {
+      resizeObserver.observe(containerRef.current);
+      updateDimensions(); // Initial size
+    }
 
-    return () => window.removeEventListener("resize", updateDimensions);
+    window.addEventListener("resize", updateDimensions);
+
+    // Reset graph state when component mounts/remounts
+    setSelectedNode(null);
+    setHoveredNode(null);
+    setHighlightNodes(new Set());
+    setHighlightLinks(new Set());
+    setExpandedRows(new Set());
+
+    // Cleanup function
+    return () => {
+      window.removeEventListener("resize", updateDimensions);
+      resizeObserver.disconnect();
+      if (graphRef.current) {
+        // Force cleanup of graph instance
+        graphRef.current = null;
+      }
+    };
   }, []);
 
   useEffect(() => {
@@ -298,6 +318,7 @@ export default function RecommendationGraph() {
             <div
               ref={containerRef}
               className="relative w-2/3 border border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20 bg-[#f0f7f0] dark:bg-[#0a1a0a]"
+              style={{ minHeight: dimensions.height }}
             >
               {filteredData.nodes.length > 0 ? (
                 <ForceGraph2D
@@ -322,7 +343,21 @@ export default function RecommendationGraph() {
                   onNodeClick={handleNodeClick}
                   onBackgroundClick={handleBackgroundClick}
                   cooldownTicks={100}
-                  onEngineStop={() => graphRef.current?.zoomToFit(400, 50)}
+                  onEngineStop={() => {
+                    // Only zoom to fit if graph ref exists and no node is selected
+                    if (graphRef.current && !selectedNode) {
+                      graphRef.current.zoomToFit(400, 50);
+                    }
+                  }}
+                  onNodeDragEnd={(node: Node) => {
+                    // Update node position in filteredData to maintain position after re-renders
+                    setFilteredData(prev => ({
+                      ...prev,
+                      nodes: prev.nodes.map(n => 
+                        n.id === node.id ? { ...n, x: node.x, y: node.y } : n
+                      )
+                    }));
+                  }}
                   nodeCanvasObject={(node: Node, ctx: CanvasRenderingContext2D, globalScale: number) => {
                     const { x, y, name } = node as Node & {
                       x: number;
@@ -354,10 +389,18 @@ export default function RecommendationGraph() {
                   }}
                 />
               ) : (
-                <div className="flex items-center justify-center h-[500px]">
-                  <p className="text-sm">
-                    No data matches your current filters. Try adjusting your
-                    criteria.
+                <div 
+                  style={{ 
+                    width: dimensions.width,
+                    height: dimensions.height
+                  }}
+                  className="flex items-center justify-center bg-[#f0f7f0] dark:bg-[#0a1a0a]"
+                >
+                  <p className="text-sm text-text/70">
+                    {graphData.nodes.length === 0 ? 
+                      "Loading recommendation network..." :
+                      "No data matches your current filters. Try adjusting your criteria."
+                    }
                   </p>
                 </div>
               )}
