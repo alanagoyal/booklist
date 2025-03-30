@@ -306,168 +306,186 @@ export default function RecommendationGraph() {
         </div>
 
         <div className="space-y-4">
-          <div
-            ref={containerRef}
-            className="relative border border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20 bg-[#f0f7f0] dark:bg-[#0a1a0a]"
-          >
-            {filteredData.nodes.length > 0 ? (
-              <ForceGraph2D
-                ref={graphRef}
-                graphData={filteredData}
-                width={dimensions.width}
-                height={dimensions.height}
-                nodeLabel={(node: Node) => `${node.name} (${node.type})`}
-                nodeColor={getNodeColor}
-                nodeRelSize={6}
-                linkWidth={(link: Link) => (highlightLinks.has(link) ? 2 : 0.5)}
-                linkColor={() => (theme === "dark" ? "#f0f7f0" : "#0a1a0a")}
-                linkDirectionalParticles={(link: Link) =>
-                  highlightLinks.has(link) ? 4 : 0
-                }
-                linkDirectionalParticleWidth={(link: Link) =>
-                  highlightLinks.has(link) ? 2 : 0
-                }
-                linkDirectionalParticleSpeed={0.005}
-                linkOpacity={0.3}
-                onNodeHover={handleNodeHover}
-                onNodeClick={handleNodeClick}
-                onBackgroundClick={handleBackgroundClick}
-                cooldownTicks={100}
-                onEngineStop={() => graphRef.current?.zoomToFit(400, 50)}
-                nodeCanvasObject={(node: Node, ctx: CanvasRenderingContext2D, globalScale: number) => {
-                  const { x, y, name, type } = node as Node & {
-                    x: number;
-                    y: number;
-                  };
-                  const fontSize = 12 / globalScale;
-                  const textWidth = ctx.measureText(name).width;
-                  const isHighlighted = highlightNodes.has(node.id);
-
-                  // Draw node circle
-                  ctx.beginPath();
-                  ctx.arc(x, y, isHighlighted ? 8 : 6, 0, 2 * Math.PI);
-                  ctx.fillStyle = getNodeColor(node as Node);
-                  ctx.fill();
-
-                  // Draw node border
-                  ctx.strokeStyle = theme === "dark" ? "#f0f7f0" : "#0a1a0a";
-                  ctx.lineWidth = isHighlighted ? 2 : 1;
-                  ctx.stroke();
-
-                  // Draw node label if zoomed in or highlighted
-                  if (globalScale > 1.5 || isHighlighted) {
-                    ctx.fillStyle = theme === "dark" ? "#f0f7f0" : "#0a1a0a";
-                    ctx.font = `${fontSize}px monospace`;
-                    ctx.textAlign = "center";
-                    ctx.textBaseline = "top";
-                    ctx.fillText(name, x, y + 8);
+          <div className="flex gap-4">
+            <div
+              ref={containerRef}
+              className="relative w-2/3 border border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20 bg-[#f0f7f0] dark:bg-[#0a1a0a]"
+            >
+              {filteredData.nodes.length > 0 ? (
+                <ForceGraph2D
+                  ref={graphRef}
+                  graphData={filteredData}
+                  width={dimensions.width}
+                  height={dimensions.height}
+                  nodeLabel={(node: Node) => `${node.name} (${node.type})`}
+                  nodeColor={getNodeColor}
+                  nodeRelSize={4}
+                  linkWidth={(link: Link) => (highlightLinks.has(link) ? 2 : 0.5)}
+                  linkColor={() => (theme === "dark" ? "#f0f7f0" : "#0a1a0a")}
+                  linkDirectionalParticles={(link: Link) =>
+                    highlightLinks.has(link) ? 4 : 0
                   }
-                }}
-              />
-            ) : (
-              <div className="flex items-center justify-center h-[500px]">
-                <p className="text-sm">
-                  No data matches your current filters. Try adjusting your
-                  criteria.
-                </p>
-              </div>
-            )}
-          </div>
+                  linkDirectionalParticleWidth={(link: Link) =>
+                    highlightLinks.has(link) ? 2 : 0
+                  }
+                  linkDirectionalParticleSpeed={0.005}
+                  linkOpacity={0.3}
+                  onNodeHover={handleNodeHover}
+                  onNodeClick={handleNodeClick}
+                  onBackgroundClick={handleBackgroundClick}
+                  cooldownTicks={100}
+                  onEngineStop={() => graphRef.current?.zoomToFit(400, 50)}
+                  nodeCanvasObject={(node: Node, ctx: CanvasRenderingContext2D, globalScale: number) => {
+                    const { x, y, name, type } = node as Node & {
+                      x: number;
+                      y: number;
+                    };
+                    const fontSize = 12 / globalScale;
+                    const textWidth = ctx.measureText(name).width;
+                    const isHighlighted = highlightNodes.has(node.id);
 
-          {/* Node Details Panel */}
-          {(selectedNode || hoveredNode) && (() => {
-            const node = (selectedNode || hoveredNode)!;
-            return (
-              <div className="border border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20 p-4 bg-[#ecfdf5] dark:bg-[#022c22]">
-                <div className="text-xs uppercase">{node.type}</div>
-                <h3 className="text-lg font-bold">{node.name}</h3>
+                    // Draw node circle
+                    ctx.beginPath();
+                    ctx.arc(x, y, isHighlighted ? 5 : 3, 0, 2 * Math.PI);
+                    ctx.fillStyle = getNodeColor(node as Node);
+                    ctx.fill();
 
-                {node.type === "person" && (
-                  <>
-                    <p className="text-sm">
-                      Recommended {node.recommendationCount} books
-                    </p>
-                    {node.details?.personType && (
-                      <p className="text-sm mt-1">
-                        Type: {node.details.personType}
-                      </p>
-                    )}
-                  </>
-                )}
+                    // Draw node border
+                    ctx.strokeStyle = theme === "dark" ? "#f0f7f0" : "#0a1a0a";
+                    ctx.lineWidth = isHighlighted ? 1 : 0.5;
+                    ctx.stroke();
 
-                {node.type === "book" && (
-                  <>
-                    {node.details?.author && (
-                      <p className="text-sm mt-1">
-                        Author: {node.details.author}
-                      </p>
-                    )}
-                    {node.details?.genre && (
-                      <div className="flex flex-wrap gap-1 mt-1">
-                        <span className="text-sm">Genres: </span>
+                    // Draw node label if zoomed in or highlighted
+                    if (globalScale > 1.5 || isHighlighted) {
+                      ctx.fillStyle = theme === "dark" ? "#f0f7f0" : "#0a1a0a";
+                      ctx.font = `${fontSize}px monospace`;
+                      ctx.textAlign = "center";
+                      ctx.textBaseline = "top";
+                      ctx.fillText(name, x, y + 8);
+                    }
+                  }}
+                />
+              ) : (
+                <div className="flex items-center justify-center h-[500px]">
+                  <p className="text-sm">
+                    No data matches your current filters. Try adjusting your
+                    criteria.
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Node Details Panel */}
+            {(selectedNode || hoveredNode) && (() => {
+              const node = (selectedNode || hoveredNode)!;
+              return (
+                <div className="w-1/3 border border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20 p-4 bg-[#ecfdf5] dark:bg-[#022c22] overflow-y-auto" style={{ height: dimensions.height }}>
+                  <div className="space-y-4">
+                    <div>
+                      <div className="text-xs uppercase">{node.type}</div>
+                      <h3 className="text-lg font-bold">{node.name}</h3>
+
+                      {node.type === "person" && (
+                        <>
+                          <p className="text-sm">
+                            Recommended {node.recommendationCount} books
+                          </p>
+                          {node.details?.personType && (
+                            <p className="text-sm mt-1">
+                              Type: {node.details.personType}
+                            </p>
+                          )}
+                        </>
+                      )}
+
+                      {node.type === "book" && (
+                        <>
+                          {node.details?.author && (
+                            <p className="text-sm mt-1">
+                              Author: {node.details.author}
+                            </p>
+                          )}
+                          {node.details?.genre && (
+                            <div className="flex flex-wrap gap-1 mt-1">
+                              <span className="text-sm">Genres: </span>
+                              {(() => {
+                                const genres = node.details!.genre;
+                                return genres.map((g, i) => (
+                                  <span key={i} className="text-sm">
+                                    {g}
+                                    {i < genres.length - 1 ? ", " : ""}
+                                  </span>
+                                ));
+                              })()}
+                            </div>
+                          )}
+                          {node.details?.description && (
+                            <p className="text-sm mt-2 line-clamp-2">
+                              {node.details.description}
+                            </p>
+                          )}
+                        </>
+                      )}
+                    </div>
+
+                    <div>
+                      <h4 className="text-sm font-bold mb-2">
+                        {node.type === "person" ? "Recommended Books" : "Mutual Recommendations"}
+                      </h4>
+                      <div className="overflow-y-auto">
                         {(() => {
-                          const genres = node.details!.genre;
-                          return genres.map((g, i) => (
-                            <span key={i} className="text-sm">
-                              {g}
-                              {i < genres.length - 1 ? ", " : ""}
-                            </span>
-                          ));
+                          const connections = filteredData.links
+                            .filter(link => 
+                              (link.source as Node).id === node.id || (link.target as Node).id === node.id
+                            )
+                            .map(link => ({
+                              node: (link.source as Node).id === node.id 
+                                ? (link.target as Node) 
+                                : (link.source as Node),
+                              books: link.books
+                            }));
+                            
+                          return connections.length > 0 ? (
+                            <table className="w-full text-sm">
+                              <thead className="bg-[#d1fae5] dark:bg-[#064e3b]">
+                                <tr>
+                                  <th className="text-left p-2">
+                                    {node.type === "person" ? "Connected To" : "People"}
+                                  </th>
+                                  <th className="text-left p-2">Shared Books</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {connections.map(({ node: connectedNode, books }, index) => (
+                                  <tr
+                                    key={index}
+                                    className="border-b border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20 hover:bg-[#a7f3d0] dark:hover:bg-[#065f46]"
+                                  >
+                                    <td className="p-2">{connectedNode.name}</td>
+                                    <td className="p-2">
+                                      <div className="space-y-1">
+                                        {books.map((book, i) => (
+                                          <div key={i} className="text-sm">
+                                            {book}
+                                          </div>
+                                        ))}
+                                      </div>
+                                    </td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          ) : (
+                            <p className="text-sm text-text/70">No connections found.</p>
+                          );
                         })()}
                       </div>
-                    )}
-                    {node.details?.description && (
-                      <p className="text-sm mt-2 line-clamp-2">
-                        {node.details.description}
-                      </p>
-                    )}
-                  </>
-                )}
-
-                <div className="mt-4">
-                  <h4 className="text-sm font-bold mb-2">
-                    {node.type === "person" ? "Books Recommended" : "Recommended By"}
-                  </h4>
-                  <div className="max-h-48 overflow-y-auto">
-                    {(() => {
-                      const connectedNodes = getConnectedNodes(node.id);
-                      return connectedNodes.length > 0 ? (
-                        <table className="w-full text-sm">
-                          <thead className="bg-[#d1fae5] dark:bg-[#064e3b]">
-                            <tr>
-                              <th className="text-left p-2">
-                                {node.type === "person" ? "Book" : "Person"}
-                              </th>
-                              <th className="text-left p-2">
-                                {node.type === "person" ? "Author" : "Recommendations"}
-                              </th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {connectedNodes.map((connectedNode, index) => (
-                              <tr
-                                key={index}
-                                className="border-b border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20 hover:bg-[#a7f3d0] dark:hover:bg-[#065f46]"
-                              >
-                                <td className="p-2">{connectedNode.name}</td>
-                                <td className="p-2">
-                                  {node.type === "person"
-                                    ? connectedNode.details?.author || "-"
-                                    : connectedNode.recommendationCount}
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      ) : (
-                        <p className="text-sm text-text/70">No connections found.</p>
-                      );
-                    })()}
+                    </div>
                   </div>
                 </div>
-              </div>
-            );
-          })()}
+              );
+            })()}
+          </div>
         </div>
       </div>
     </div>
