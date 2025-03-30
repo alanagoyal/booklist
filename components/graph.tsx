@@ -67,6 +67,7 @@ export default function RecommendationGraph() {
   const [highlightNodes, setHighlightNodes] = useState(new Set());
   const [highlightLinks, setHighlightLinks] = useState(new Set());
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
+  const [hoveredNode, setHoveredNode] = useState<Node | null>(null);
   const [dimensions, setDimensions] = useState({ width: 800, height: 500 });
   const [minRecommendations, setMinRecommendations] = useState(1);
   const { theme } = useTheme();
@@ -202,11 +203,23 @@ export default function RecommendationGraph() {
   };
 
   const handleNodeHover = (node: Node | null) => {
-    setHighlightNodes(new Set(node ? [node.id] : []));
+    if (!selectedNode) {  // Only update hover state if no node is selected
+      setHoveredNode(node);
+      setHighlightNodes(new Set(node ? [node.id] : []));
+    }
   };
 
   const handleNodeClick = (node: Node | null) => {
-    setSelectedNode(node);
+    if (node?.id === selectedNode?.id) {
+      // If clicking the same node, deselect it
+      setSelectedNode(null);
+      setHoveredNode(node); // Restore hover state
+      setHighlightNodes(new Set(node ? [node.id] : []));
+    } else {
+      // Select new node
+      setSelectedNode(node);
+      setHighlightNodes(new Set(node ? [node.id] : []));
+    }
     if (node) {
       // Center view on clicked node
       const distance = 40;
@@ -218,6 +231,8 @@ export default function RecommendationGraph() {
 
   const handleBackgroundClick = () => {
     setSelectedNode(null);
+    setHoveredNode(null);
+    setHighlightNodes(new Set());
   };
 
   const handleResetZoom = () => {
@@ -359,102 +374,100 @@ export default function RecommendationGraph() {
             )}
           </div>
 
-          {/* Selected Node Details */}
-          {selectedNode && (
-            <div className="border border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20 p-4 bg-[#ecfdf5] dark:bg-[#022c22]">
-              <div className="text-xs uppercase">{selectedNode.type}</div>
-              <h3 className="text-lg font-bold">{selectedNode.name}</h3>
+          {/* Node Details Panel */}
+          {(selectedNode || hoveredNode) && (() => {
+            const node = (selectedNode || hoveredNode)!;
+            return (
+              <div className="border border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20 p-4 bg-[#ecfdf5] dark:bg-[#022c22]">
+                <div className="text-xs uppercase">{node.type}</div>
+                <h3 className="text-lg font-bold">{node.name}</h3>
 
-              {selectedNode.type === "person" && (
-                <>
-                  <p className="text-sm">
-                    Recommended {selectedNode.recommendationCount} books
-                  </p>
-                  {selectedNode.details?.personType && (
-                    <p className="text-sm mt-1">
-                      Type: {selectedNode.details.personType}
+                {node.type === "person" && (
+                  <>
+                    <p className="text-sm">
+                      Recommended {node.recommendationCount} books
                     </p>
-                  )}
-                </>
-              )}
+                    {node.details?.personType && (
+                      <p className="text-sm mt-1">
+                        Type: {node.details.personType}
+                      </p>
+                    )}
+                  </>
+                )}
 
-              {selectedNode.type === "book" && (
-                <>
-                  {selectedNode.details?.author && (
-                    <p className="text-sm mt-1">
-                      Author: {selectedNode.details.author}
-                    </p>
-                  )}
-                  {selectedNode.details?.genre && (
-                    <div className="flex flex-wrap gap-1 mt-1">
-                      <span className="text-sm">Genres: </span>
-                      {selectedNode.details.genre.map((g, i) => (
-                        <span key={i} className="text-sm">
-                          {g}
-                          {i < selectedNode.details!.genre!.length - 1
-                            ? ", "
-                            : ""}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                  {selectedNode.details?.description && (
-                    <p className="text-sm mt-2 line-clamp-2">
-                      {selectedNode.details.description}
-                    </p>
-                  )}
-                </>
-              )}
-              <div className="mt-4">
-                <h4 className="text-sm font-bold mb-2">
-                  {selectedNode.type === "person"
-                    ? "Books Recommended"
-                    : "Recommended By"}
-                </h4>
-                <div className="max-h-40 overflow-y-auto border border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20">
-                  {getConnectedNodes(selectedNode.id).length > 0 ? (
-                    <table className="w-full text-sm">
-                      <thead className="bg-[#d1fae5] dark:bg-[#064e3b]">
-                        <tr>
-                          <th className="text-left p-2">
-                            {selectedNode.type === "person" ? "Book" : "Person"}
-                          </th>
-                          <th className="text-left p-2">
-                            {selectedNode.type === "person"
-                              ? "Author"
-                              : "Recommendations"}
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {getConnectedNodes(selectedNode.id).map(
-                          (node, index) => (
-                            <tr
-                              key={index}
-                              className={
-                                index % 2 === 0
-                                  ? "bg-[#ecfdf5] dark:bg-[#022c22]"
-                                  : ""
-                              }
-                            >
-                              <td className="p-2">{node.name}</td>
-                              <td className="p-2">
-                                {selectedNode.type === "person"
-                                  ? node.details?.author || "-"
-                                  : node.recommendationCount}
-                              </td>
+                {node.type === "book" && (
+                  <>
+                    {node.details?.author && (
+                      <p className="text-sm mt-1">
+                        Author: {node.details.author}
+                      </p>
+                    )}
+                    {node.details?.genre && (
+                      <div className="flex flex-wrap gap-1 mt-1">
+                        <span className="text-sm">Genres: </span>
+                        {(() => {
+                          const genres = node.details!.genre;
+                          return genres.map((g, i) => (
+                            <span key={i} className="text-sm">
+                              {g}
+                              {i < genres.length - 1 ? ", " : ""}
+                            </span>
+                          ));
+                        })()}
+                      </div>
+                    )}
+                    {node.details?.description && (
+                      <p className="text-sm mt-2 line-clamp-2">
+                        {node.details.description}
+                      </p>
+                    )}
+                  </>
+                )}
+
+                <div className="mt-4">
+                  <h4 className="text-sm font-bold mb-2">
+                    {node.type === "person" ? "Books Recommended" : "Recommended By"}
+                  </h4>
+                  <div className="max-h-48 overflow-y-auto">
+                    {(() => {
+                      const connectedNodes = getConnectedNodes(node.id);
+                      return connectedNodes.length > 0 ? (
+                        <table className="w-full text-sm">
+                          <thead className="bg-[#d1fae5] dark:bg-[#064e3b]">
+                            <tr>
+                              <th className="text-left p-2">
+                                {node.type === "person" ? "Book" : "Person"}
+                              </th>
+                              <th className="text-left p-2">
+                                {node.type === "person" ? "Author" : "Recommendations"}
+                              </th>
                             </tr>
-                          )
-                        )}
-                      </tbody>
-                    </table>
-                  ) : (
-                    <p className="p-2 text-sm">No connections found.</p>
-                  )}
+                          </thead>
+                          <tbody>
+                            {connectedNodes.map((connectedNode, index) => (
+                              <tr
+                                key={index}
+                                className="border-b border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20 hover:bg-[#a7f3d0] dark:hover:bg-[#065f46]"
+                              >
+                                <td className="p-2">{connectedNode.name}</td>
+                                <td className="p-2">
+                                  {node.type === "person"
+                                    ? connectedNode.details?.author || "-"
+                                    : connectedNode.recommendationCount}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      ) : (
+                        <p className="text-sm text-text/70">No connections found.</p>
+                      );
+                    })()}
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
+            );
+          })()}
         </div>
       </div>
     </div>
