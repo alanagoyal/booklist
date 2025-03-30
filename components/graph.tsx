@@ -66,6 +66,7 @@ export default function RecommendationGraph() {
   const [hoveredNode, setHoveredNode] = useState<Node | null>(null);
   const [dimensions, setDimensions] = useState({ width: 800, height: 500 });
   const [minRecommendations, setMinRecommendations] = useState(1);
+  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
   const { theme } = useTheme();
 
   useEffect(() => {
@@ -383,53 +384,106 @@ export default function RecommendationGraph() {
 
                     <div>
                       <h4 className="text-sm font-bold mb-2">
-                        Mutual Recommendations
+                        Books and Recommenders
                       </h4>
                       <div className="overflow-y-auto">
                         {(() => {
                           const connections = filteredData.links
                             .filter(link => 
                               (link.source as Node).id === node.id || (link.target as Node).id === node.id
-                            )
-                            .map(link => ({
-                              node: (link.source as Node).id === node.id 
-                                ? (link.target as Node) 
-                                : (link.source as Node),
-                              books: link.books
-                            }));
+                            );
                             
-                          return connections.length > 0 ? (
+                          // Create a map of books to their recommenders
+                          const bookMap = new Map<string, Set<string>>();
+                          connections.forEach(link => {
+                            const otherNode = (link.source as Node).id === node.id 
+                              ? (link.target as Node) 
+                              : (link.source as Node);
+                            
+                            link.books.forEach(book => {
+                              if (!bookMap.has(book)) {
+                                bookMap.set(book, new Set());
+                              }
+                              bookMap.get(book)!.add(otherNode.name);
+                            });
+                          });
+
+                          // Convert to array and sort by number of recommenders, then alphabetically
+                          const bookEntries = Array.from(bookMap.entries())
+                            .sort((a, b) => {
+                              // First sort by number of recommenders (descending)
+                              const recommendersDiff = b[1].size - a[1].size;
+                              // If same number of recommenders, sort alphabetically
+                              return recommendersDiff !== 0 ? recommendersDiff : a[0].localeCompare(b[0]);
+                            });
+                            
+                          return bookEntries.length > 0 ? (
                             <table className="w-full text-sm">
                               <thead className="bg-[#d1fae5] dark:bg-[#064e3b]">
                                 <tr>
-                                  <th className="text-left p-2">
-                                    People
-                                  </th>
-                                  <th className="text-left p-2">Shared Books</th>
+                                  <th className="text-left p-2 w-1/2">Book</th>
+                                  <th className="text-left p-2 w-1/2">Recommended By</th>
                                 </tr>
                               </thead>
                               <tbody>
-                                {connections.map(({ node: connectedNode, books }, index) => (
-                                  <tr
-                                    key={index}
-                                    className="border-b border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20 hover:bg-[#a7f3d0] dark:hover:bg-[#065f46]"
-                                  >
-                                    <td className="p-2">{connectedNode.name}</td>
-                                    <td className="p-2">
-                                      <div className="space-y-1">
-                                        {books.map((book, i) => (
-                                          <div key={i} className="text-sm">
-                                            {book}
-                                          </div>
-                                        ))}
-                                      </div>
-                                    </td>
-                                  </tr>
-                                ))}
+                                {bookEntries.map(([book, recommenders], index) => {
+                                  const recommendersList = Array.from(recommenders);
+                                  const displayCount = 3;
+                                  const hasMore = recommendersList.length > displayCount;
+                                  const isExpanded = expandedRows.has(book);
+                                  
+                                  return (
+                                    <tr
+                                      key={index}
+                                      className="border-b border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20 hover:bg-[#a7f3d0] dark:hover:bg-[#065f46] cursor-pointer"
+                                      onClick={() => {
+                                        setExpandedRows(prev => {
+                                          const next = new Set(prev);
+                                          if (isExpanded) {
+                                            next.delete(book);
+                                          } else {
+                                            next.add(book);
+                                          }
+                                          return next;
+                                        });
+                                      }}
+                                    >
+                                      <td className="p-2 w-1/2">
+                                        <div
+                                          className={`whitespace-pre-line transition-all duration-200 break-words ${
+                                            !isExpanded ? "line-clamp-3" : ""
+                                          }`}
+                                        >
+                                          {book}
+                                        </div>
+                                      </td>
+                                      <td className="p-2 w-1/2">
+                                        <div
+                                          className={`whitespace-pre-line transition-all duration-200 break-words ${
+                                            !isExpanded ? "line-clamp-3" : ""
+                                          }`}
+                                        >
+                                          {isExpanded ? (
+                                            recommendersList.join(", ")
+                                          ) : (
+                                            <>
+                                              {recommendersList.slice(0, displayCount).join(", ")}
+                                              {hasMore && (
+                                                <span className="text-text/70">
+                                                  {" "}+ {recommendersList.length - displayCount} more
+                                                </span>
+                                              )}
+                                            </>
+                                          )}
+                                        </div>
+                                      </td>
+                                    </tr>
+                                  );
+                                })}
                               </tbody>
                             </table>
                           ) : (
-                            <p className="text-sm text-text/70">No connections found.</p>
+                            <p className="text-sm text-text/70">No books found.</p>
                           );
                         })()}
                       </div>
