@@ -54,7 +54,7 @@ const supabase = createClient(
 );
 
 export default function RecommendationGraph() {
-  const graphRef = useRef<ForceGraphMethods>();
+  const graphRef = useRef<ForceGraphMethods>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [graphData, setGraphData] = useState<GraphData>({
     nodes: [],
