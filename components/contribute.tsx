@@ -1,18 +1,20 @@
 'use client'
 
-import { useState } from 'react'
-import { Plus, X } from 'lucide-react'
+import { useState, useEffect, useCallback } from 'react'
+import { Plus, X, ExternalLink, Wand2 } from 'lucide-react'
+import { useDebounce } from '@/lib/hooks/use-debounce'
 
 interface BookRecommendation {
   title: string
   author: string
+  amazonUrl?: string
 }
 
 export default function Contribute() {
   const [formData, setFormData] = useState({
     name: '',
     url: '',
-    books: [{ title: '', author: '' }] as BookRecommendation[]
+    books: [{ title: '', author: '', amazonUrl: '' }] as BookRecommendation[]
   })
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
@@ -31,7 +33,7 @@ export default function Contribute() {
       if (!response.ok) throw new Error('Submission failed')
       
       setSubmitted(true)
-      setFormData({ name: '', url: '', books: [{ title: '', author: '' }] })
+      setFormData({ name: '', url: '', books: [{ title: '', author: '', amazonUrl: '' }] })
     } catch (error) {
       console.error('Error submitting form:', error)
     } finally {
@@ -59,7 +61,7 @@ export default function Contribute() {
   const addBook = () => {
     setFormData(prev => ({
       ...prev,
-      books: [...prev.books, { title: '', author: '' }]
+      books: [...prev.books, { title: '', author: '', amazonUrl: '' }]
     }))
   }
 
@@ -79,7 +81,7 @@ export default function Contribute() {
           <p>Your submission will be reviewed and added to the database once approved.</p>
           <button
             onClick={() => setSubmitted(false)}
-            className="px-4 py-2 bg-background hover:bg-accent/50 border border-border rounded transition-colors duration-200"
+            className="px-4 py-2 bg-background hover:bg-accent/50 border border-border transition-colors duration-200"
           >
             Submit Another
           </button>
@@ -127,7 +129,7 @@ export default function Contribute() {
               <button
                 type="button"
                 onClick={addBook}
-                className="flex items-center space-x-1 px-2 py-1 text-sm bg-background hover:bg-accent/50 border border-border rounded transition-colors duration-200"
+                className="flex items-center space-x-1 px-2 py-1 text-sm bg-background hover:bg-accent/50 border border-border transition-colors duration-200"
               >
                 <Plus className="h-4 w-4" />
                 <span>Add Book</span>
@@ -135,50 +137,126 @@ export default function Contribute() {
             </div>
             
             {formData.books.map((book, index) => (
-              <div key={index} className="space-y-2 p-4 border border-border rounded">
-                <div className="flex justify-between">
-                  <span className="text-sm text-text/70">Book {index + 1}</span>
-                  {formData.books.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={() => removeBook(index)}
-                      className="text-text/70 hover:text-text transition-colors duration-200"
-                    >
-                      <X className="h-4 w-4" />
-                    </button>
-                  )}
-                </div>
-                
-                <div className="space-y-2">
-                  <input
-                    type="text"
-                    placeholder="Book Title"
-                    required
-                    value={book.title}
-                    onChange={(e) => handleBookChange(index, 'title', e.target.value)}
-                    className="w-full bg-background text-text border-border border p-2 font-base selection:bg-main selection:text-mtext"
-                  />
-                  <input
-                    type="text"
-                    placeholder="Author"
-                    required
-                    value={book.author}
-                    onChange={(e) => handleBookChange(index, 'author', e.target.value)}
-                    className="w-full bg-background text-text border-border border p-2 font-base selection:bg-main selection:text-mtext"
-                  />
-                </div>
-              </div>
+              <BookInput
+                key={index}
+                book={book}
+                index={index}
+                canRemove={formData.books.length > 1}
+                onRemove={removeBook}
+                onChange={handleBookChange}
+              />
             ))}
           </div>
 
           <button
             type="submit"
             disabled={submitting}
-            className="w-full px-4 py-2 bg-background hover:bg-accent/50 border border-border rounded transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full px-4 py-2 bg-background hover:bg-accent/50 border border-border transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {submitting ? 'Submitting...' : 'Submit'}
           </button>
         </form>
+      </div>
+    </div>
+  )
+}
+
+interface BookInputProps {
+  book: BookRecommendation
+  index: number
+  canRemove: boolean
+  onRemove: (index: number) => void
+  onChange: (index: number, field: keyof BookRecommendation, value: string) => void
+}
+
+function BookInput({ book, index, canRemove, onRemove, onChange }: BookInputProps) {
+  const [loading, setLoading] = useState(false)
+
+  const generateAmazonUrl = async () => {
+    setLoading(true)
+    try {
+      const response = await fetch(
+        `/api/amazon-url?title=${encodeURIComponent(book.title)}${book.author ? `&author=${encodeURIComponent(book.author)}` : ''}`
+      )
+      if (response.ok) {
+        const data = await response.json()
+        onChange(index, 'amazonUrl', data.amazonUrl)
+      }
+    } catch (error) {
+      console.error('Error fetching Amazon URL:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div className="space-y-2 p-4 border border-border">
+      <div className="flex justify-between">
+        <span className="text-sm text-text/70">Book {index + 1}</span>
+        {canRemove && (
+          <button
+            type="button"
+            onClick={() => onRemove(index)}
+            className="text-text/70 hover:text-text transition-colors duration-200"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        )}
+      </div>
+      
+      <div className="space-y-2">
+        <input
+          type="text"
+          placeholder="Book Title"
+          required
+          value={book.title}
+          onChange={(e) => onChange(index, 'title', e.target.value)}
+          className="w-full bg-background text-text border-border border p-2 font-base selection:bg-main selection:text-mtext"
+        />
+        <input
+          type="text"
+          placeholder="Author"
+          required
+          value={book.author}
+          onChange={(e) => onChange(index, 'author', e.target.value)}
+          className="w-full bg-background text-text border-border border p-2 font-base selection:bg-main selection:text-mtext"
+        />
+        
+        <div className="relative">
+          <input
+            type="url"
+            placeholder="Amazon URL"
+            value={loading ? 'Generating link...' : book.amazonUrl || ''}
+            onChange={(e) => onChange(index, 'amazonUrl', e.target.value)}
+            className={`w-full bg-background text-text border-border border p-2 ${book.amazonUrl ? 'pr-24' : 'pr-28'} font-base selection:bg-main selection:text-mtext ${loading ? 'text-text/70' : ''}`}
+          />
+          <div className="absolute right-0 top-0 h-full flex items-center px-2">
+            {!loading && (
+              <>
+                {!book.amazonUrl && book.title && book.author ? (
+                  <button
+                    type="button"
+                    onClick={generateAmazonUrl}
+                    className="text-text/70 hover:text-text transition-colors duration-200 flex items-center space-x-1"
+                  >
+                    <Wand2 className="h-3 w-3" />
+                    <span className="text-sm">Generate</span>
+                  </button>
+                ) : book.amazonUrl ? (
+                  <a
+                    href={book.amazonUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="border border-border hover:border-text/70 rounded px-3 py-1 text-text/70 hover:text-text transition-all duration-200 flex items-center space-x-1"
+                  >
+                    <span className="text-sm">View</span>
+                    <ExternalLink className="h-3 w-3" />
+                  </a>
+                ) : null}
+              </>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   )
