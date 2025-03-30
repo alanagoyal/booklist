@@ -13,15 +13,11 @@ const ForceGraph2D = dynamic(() => import("react-force-graph-2d"), {
 interface Node {
   id: string;
   name: string;
-  type: string;
   recommendationCount: number;
   x?: number;
   y?: number;
   details?: {
-    author?: string;
-    genre?: string[];
     personType?: string;
-    description?: string;
   };
 }
 
@@ -114,7 +110,6 @@ export default function RecommendationGraph() {
           nodesMap.set(row.source_id, {
             id: row.source_id,
             name: row.source_name,
-            type: row.source_type,
             recommendationCount: 0,
             details: {
               personType: row.source_type,
@@ -127,7 +122,6 @@ export default function RecommendationGraph() {
           nodesMap.set(row.target_id, {
             id: row.target_id,
             name: row.target_name,
-            type: row.target_type,
             recommendationCount: 0,
             details: {
               personType: row.target_type,
@@ -163,14 +157,9 @@ export default function RecommendationGraph() {
 
   const getNodeColor = (node: Node) => {
     const isDark = theme === "dark";
-
-    if (node.type === "book") {
-      return isDark ? "#4ade80" : "#10b981";
-    }
-
     const maxRecommendations = Math.max(
       ...filteredData.nodes
-        .filter((n) => n.type === "person" && n.recommendationCount)
+        .filter((n) => n.recommendationCount)
         .map((n) => n.recommendationCount)
     );
 
@@ -299,9 +288,7 @@ export default function RecommendationGraph() {
             </button>
           </div>
           <div className="text-sm">
-            {filteredData.nodes.filter((n) => n.type === "person").length}{" "}
-            people |{" "}
-            {filteredData.nodes.filter((n) => n.type === "book").length} books
+            {filteredData.nodes.length} people
           </div>
         </div>
 
@@ -317,7 +304,7 @@ export default function RecommendationGraph() {
                   graphData={filteredData}
                   width={dimensions.width}
                   height={dimensions.height}
-                  nodeLabel={(node: Node) => `${node.name} (${node.type})`}
+                  nodeLabel={(node: Node) => node.name}
                   nodeColor={getNodeColor}
                   nodeRelSize={4}
                   linkWidth={(link: Link) => (highlightLinks.has(link) ? 2 : 0.5)}
@@ -336,7 +323,7 @@ export default function RecommendationGraph() {
                   cooldownTicks={100}
                   onEngineStop={() => graphRef.current?.zoomToFit(400, 50)}
                   nodeCanvasObject={(node: Node, ctx: CanvasRenderingContext2D, globalScale: number) => {
-                    const { x, y, name, type } = node as Node & {
+                    const { x, y, name } = node as Node & {
                       x: number;
                       y: number;
                     };
@@ -382,55 +369,21 @@ export default function RecommendationGraph() {
                 <div className="w-1/3 border border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20 p-4 bg-[#ecfdf5] dark:bg-[#022c22] overflow-y-auto" style={{ height: dimensions.height }}>
                   <div className="space-y-4">
                     <div>
-                      <div className="text-xs uppercase">{node.type}</div>
                       <h3 className="text-lg font-bold">{node.name}</h3>
 
-                      {node.type === "person" && (
-                        <>
-                          <p className="text-sm">
-                            Recommended {node.recommendationCount} books
-                          </p>
-                          {node.details?.personType && (
-                            <p className="text-sm mt-1">
-                              Type: {node.details.personType}
-                            </p>
-                          )}
-                        </>
-                      )}
-
-                      {node.type === "book" && (
-                        <>
-                          {node.details?.author && (
-                            <p className="text-sm mt-1">
-                              Author: {node.details.author}
-                            </p>
-                          )}
-                          {node.details?.genre && (
-                            <div className="flex flex-wrap gap-1 mt-1">
-                              <span className="text-sm">Genres: </span>
-                              {(() => {
-                                const genres = node.details!.genre;
-                                return genres.map((g, i) => (
-                                  <span key={i} className="text-sm">
-                                    {g}
-                                    {i < genres.length - 1 ? ", " : ""}
-                                  </span>
-                                ));
-                              })()}
-                            </div>
-                          )}
-                          {node.details?.description && (
-                            <p className="text-sm mt-2 line-clamp-2">
-                              {node.details.description}
-                            </p>
-                          )}
-                        </>
+                      <p className="text-sm">
+                        Recommended {node.recommendationCount} books
+                      </p>
+                      {node.details?.personType && (
+                        <p className="text-sm mt-1">
+                          Type: {node.details.personType}
+                        </p>
                       )}
                     </div>
 
                     <div>
                       <h4 className="text-sm font-bold mb-2">
-                        {node.type === "person" ? "Recommended Books" : "Mutual Recommendations"}
+                        Mutual Recommendations
                       </h4>
                       <div className="overflow-y-auto">
                         {(() => {
@@ -450,7 +403,7 @@ export default function RecommendationGraph() {
                               <thead className="bg-[#d1fae5] dark:bg-[#064e3b]">
                                 <tr>
                                   <th className="text-left p-2">
-                                    {node.type === "person" ? "Connected To" : "People"}
+                                    People
                                   </th>
                                   <th className="text-left p-2">Shared Books</th>
                                 </tr>
