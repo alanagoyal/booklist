@@ -362,61 +362,49 @@ export default function RecommendationGraph() {
           {/* Selected Node Details */}
           {selectedNode && (
             <div className="border border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20 p-4 bg-[#ecfdf5] dark:bg-[#022c22]">
-              <div className="flex justify-between items-start">
-                <div>
-                  <div className="text-xs uppercase">{selectedNode.type}</div>
-                  <h3 className="text-lg font-bold">{selectedNode.name}</h3>
+              <div className="text-xs uppercase">{selectedNode.type}</div>
+              <h3 className="text-lg font-bold">{selectedNode.name}</h3>
 
-                  {selectedNode.type === "person" && (
-                    <>
-                      <p className="text-sm">
-                        Recommended {selectedNode.recommendationCount} books
-                      </p>
-                      {selectedNode.details?.personType && (
-                        <p className="text-sm mt-1">
-                          Type: {selectedNode.details.personType}
-                        </p>
-                      )}
-                    </>
+              {selectedNode.type === "person" && (
+                <>
+                  <p className="text-sm">
+                    Recommended {selectedNode.recommendationCount} books
+                  </p>
+                  {selectedNode.details?.personType && (
+                    <p className="text-sm mt-1">
+                      Type: {selectedNode.details.personType}
+                    </p>
                   )}
+                </>
+              )}
 
-                  {selectedNode.type === "book" && (
-                    <>
-                      {selectedNode.details?.author && (
-                        <p className="text-sm mt-1">
-                          Author: {selectedNode.details.author}
-                        </p>
-                      )}
-                      {selectedNode.details?.genre && (
-                        <div className="flex flex-wrap gap-1 mt-1">
-                          <span className="text-sm">Genres: </span>
-                          {selectedNode.details.genre.map((g, i) => (
-                            <span key={i} className="text-sm">
-                              {g}
-                              {i < selectedNode.details!.genre!.length - 1
-                                ? ", "
-                                : ""}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-                      {selectedNode.details?.description && (
-                        <p className="text-sm mt-2 line-clamp-2">
-                          {selectedNode.details.description}
-                        </p>
-                      )}
-                    </>
+              {selectedNode.type === "book" && (
+                <>
+                  {selectedNode.details?.author && (
+                    <p className="text-sm mt-1">
+                      Author: {selectedNode.details.author}
+                    </p>
                   )}
-                </div>
-
-                <button
-                  onClick={handleResetZoom}
-                  className="px-2 py-1 text-xs border border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20 hover:bg-[#a7f3d0] dark:hover:bg-[#065f46]"
-                >
-                  Reset View
-                </button>
-              </div>
-
+                  {selectedNode.details?.genre && (
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      <span className="text-sm">Genres: </span>
+                      {selectedNode.details.genre.map((g, i) => (
+                        <span key={i} className="text-sm">
+                          {g}
+                          {i < selectedNode.details!.genre!.length - 1
+                            ? ", "
+                            : ""}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                  {selectedNode.details?.description && (
+                    <p className="text-sm mt-2 line-clamp-2">
+                      {selectedNode.details.description}
+                    </p>
+                  )}
+                </>
+              )}
               <div className="mt-4">
                 <h4 className="text-sm font-bold mb-2">
                   {selectedNode.type === "person"
