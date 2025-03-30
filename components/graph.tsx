@@ -502,22 +502,27 @@ export default function RecommendationGraph() {
                                       </td>
                                       <td className="p-2 w-1/2">
                                         <div
-                                          className={`whitespace-pre-line transition-all duration-200 break-words ${
-                                            !isExpanded ? "line-clamp-3" : ""
+                                          className={`whitespace-pre-line transition-all duration-200 ${
+                                            !isExpanded && hasMore ? "line-clamp-2" : ""
                                           }`}
                                         >
-                                          {isExpanded ? (
-                                            recommendersList.join(", ")
-                                          ) : (
-                                            <>
-                                              {recommendersList.slice(0, displayCount).join(", ")}
-                                              {hasMore && (
-                                                <span className="text-text/70">
-                                                  {" "}+ {recommendersList.length - displayCount} more
-                                                </span>
-                                              )}
-                                            </>
-                                          )}
+                                          {recommendersList.map((recommender, idx) => (
+                                            <span key={idx}>
+                                              <span 
+                                                className="hover:underline cursor-pointer md:hover:text-text"
+                                                onClick={(e) => {
+                                                  e.stopPropagation();
+                                                  const recommenderNode = filteredData.nodes.find(n => n.name === recommender);
+                                                  if (recommenderNode) {
+                                                    handleNodeClick(recommenderNode);
+                                                  }
+                                                }}
+                                              >
+                                                {recommender}
+                                              </span>
+                                              {idx < recommendersList.length - 1 && ", "}
+                                            </span>
+                                          ))}
                                         </div>
                                       </td>
                                     </tr>
