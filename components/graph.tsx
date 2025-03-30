@@ -1,31 +1,28 @@
-'use client';
+"use client";
 
-import { useEffect, useRef, useState } from 'react';
-import dynamic from 'next/dynamic';
-import type { ForceGraphMethods } from 'react-force-graph-2d';
-import { useTheme } from 'next-themes';
-import { createClient } from '@supabase/supabase-js';
+import { useEffect, useRef, useState } from "react";
+import dynamic from "next/dynamic";
+import type { ForceGraphMethods } from "react-force-graph-2d";
+import { useTheme } from "next-themes";
+import { createClient } from "@supabase/supabase-js";
 
-// Dynamically import ForceGraph2D with no SSR
-const ForceGraph2D = dynamic(
-  () => import('react-force-graph-2d'),
-  { ssr: false }
-) as any; // Using any for the component type to avoid type conflicts
+const ForceGraph2D = dynamic(() => import("react-force-graph-2d"), {
+  ssr: false,
+}) as any;
 
-// Define our node and link types
 interface Node {
   id: string;
   name: string;
   type: string;
-  connections: number;
+  recommendationCount: number;
   x?: number;
   y?: number;
-  z?: number;
-  vx?: number;
-  vy?: number;
-  fx?: number;
-  fy?: number;
-  [key: string]: any;
+  details?: {
+    author?: string;
+    genre?: string[];
+    personType?: string;
+    description?: string;
+  };
 }
 
 interface Link {
@@ -33,7 +30,6 @@ interface Link {
   target: string | Node;
   value: number;
   books: string[];
-  [key: string]: any;
 }
 
 interface GraphData {
@@ -58,202 +54,421 @@ const supabase = createClient(
 );
 
 export default function RecommendationGraph() {
-  const graphRef = useRef<{ centerAt: (x: number, y: number, ms: number) => void; zoom: (k: number, ms: number) => void }>(null);
-  const [graphData, setGraphData] = useState<GraphData>({ nodes: [], links: [] });
-  const [hoveredNode, setHoveredNode] = useState<Node | null>(null);
-  const [hoveredLink, setHoveredLink] = useState<Link | null>(null);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [minSharedBooks, setMinSharedBooks] = useState(2);
+  const graphRef = useRef<ForceGraphMethods>();
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [graphData, setGraphData] = useState<GraphData>({
+    nodes: [],
+    links: [],
+  });
+  const [filteredData, setFilteredData] = useState<GraphData>({
+    nodes: [],
+    links: [],
+  });
+  const [highlightNodes, setHighlightNodes] = useState(new Set());
+  const [highlightLinks, setHighlightLinks] = useState(new Set());
+  const [selectedNode, setSelectedNode] = useState<Node | null>(null);
+  const [dimensions, setDimensions] = useState({ width: 800, height: 500 });
+  const [minRecommendations, setMinRecommendations] = useState(1);
   const { theme } = useTheme();
-  const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
 
   useEffect(() => {
-    // Update dimensions based on window size
     const updateDimensions = () => {
-      setDimensions({
-        width: window.innerWidth,
-        height: window.innerHeight
-      });
+      if (containerRef.current) {
+        setDimensions({
+          width: containerRef.current.clientWidth,
+          height: Math.max(500, window.innerHeight * 0.6),
+        });
+      }
     };
 
-    // Set initial dimensions
+    window.addEventListener("resize", updateDimensions);
     updateDimensions();
 
-    // Add resize listener
-    window.addEventListener('resize', updateDimensions);
-
-    return () => {
-      window.removeEventListener('resize', updateDimensions);
-    };
+    return () => window.removeEventListener("resize", updateDimensions);
   }, []);
 
   useEffect(() => {
     const fetchGraphData = async () => {
-      const { data, error } = await supabase
-        .rpc('get_recommendation_network', {
-          min_shared_books: minSharedBooks
-        });
+      console.log(
+        "Fetching graph data with min recommendations:",
+        minRecommendations
+      );
+      const { data, error } = await supabase.rpc("get_recommendation_network", {
+        min_shared_books: minRecommendations,
+      });
 
       if (error) {
-        console.error('Error fetching graph data:', error);
+        console.error("Error fetching graph data:", error);
         return;
       }
 
-      // Process data into nodes and links
+      console.log("Raw data from Supabase:", data);
+
       const nodesMap = new Map<string, Node>();
       const links: Link[] = [];
 
       (data as QueryResult[]).forEach((row) => {
-        // Add source node if not exists
+        // Add source node
         if (!nodesMap.has(row.source_id)) {
           nodesMap.set(row.source_id, {
             id: row.source_id,
             name: row.source_name,
             type: row.source_type,
-            connections: 0
+            recommendationCount: 0,
+            details: {
+              personType: row.source_type,
+            },
           });
         }
 
-        // Add target node if not exists
+        // Add target node
         if (!nodesMap.has(row.target_id)) {
           nodesMap.set(row.target_id, {
             id: row.target_id,
             name: row.target_name,
             type: row.target_type,
-            connections: 0
+            recommendationCount: 0,
+            details: {
+              personType: row.target_type,
+            },
           });
         }
 
-        // Increment connection count for both nodes
         const sourceNode = nodesMap.get(row.source_id)!;
         const targetNode = nodesMap.get(row.target_id)!;
-        sourceNode.connections++;
-        targetNode.connections++;
+        sourceNode.recommendationCount++;
+        targetNode.recommendationCount++;
 
-        // Add link
         links.push({
           source: row.source_id,
           target: row.target_id,
           value: row.shared_book_count,
-          books: row.shared_book_titles
+          books: row.shared_book_titles,
         });
       });
 
-      setGraphData({
+      const newData = {
         nodes: Array.from(nodesMap.values()),
-        links
-      });
+        links,
+      };
+
+      console.log("Processed graph data:", newData);
+      setGraphData(newData);
+      setFilteredData(newData);
     };
 
     fetchGraphData();
-  }, [minSharedBooks]);
+  }, [minRecommendations]);
 
-  // Color scale based on connection count
   const getNodeColor = (node: Node) => {
-    const maxConnections = Math.max(...graphData.nodes.map(n => n.connections));
-    const intensity = node.connections / maxConnections;
-    
-    return theme === 'dark'
-      ? `hsla(160, 84%, ${5 + intensity * 20}%, 1)`  // Dark mode: 5% to 25% lightness
-      : `hsla(151, 80%, ${95 - intensity * 20}%, 1)`; // Light mode: 95% to 75% lightness
+    const isDark = theme === "dark";
+
+    if (node.type === "book") {
+      return isDark ? "#4ade80" : "#10b981";
+    }
+
+    const maxRecommendations = Math.max(
+      ...filteredData.nodes
+        .filter((n) => n.type === "person" && n.recommendationCount)
+        .map((n) => n.recommendationCount)
+    );
+
+    const count = node.recommendationCount;
+    const percentile = maxRecommendations > 0 ? count / maxRecommendations : 0;
+    const level = Math.min(6, Math.max(1, Math.ceil(percentile * 6)));
+    const isHighlighted = highlightNodes.has(node.id);
+
+    if (isDark) {
+      const baseColors = [
+        "#064e3b", // Level 1 (darkest)
+        "#065f46",
+        "#047857",
+        "#059669",
+        "#10b981",
+        "#34d399", // Level 6 (lightest)
+      ];
+      return isHighlighted ? "#6ee7b7" : baseColors[level - 1];
+    } else {
+      const baseColors = [
+        "#d1fae5", // Level 1 (lightest)
+        "#a7f3d0",
+        "#6ee7b7",
+        "#34d399",
+        "#10b981",
+        "#059669", // Level 6 (darkest)
+      ];
+      return isHighlighted ? "#047857" : baseColors[level - 1];
+    }
   };
 
-  // Filter nodes based on search
-  const filteredData = {
-    nodes: graphData.nodes.filter(node => 
-      searchTerm === '' || 
-      node.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      node.type.toLowerCase().includes(searchTerm.toLowerCase())
-    ),
-    links: graphData.links.filter(link => {
-      const sourceNode = graphData.nodes.find(n => n.id === (typeof link.source === 'string' ? link.source : link.source.id));
-      const targetNode = graphData.nodes.find(n => n.id === (typeof link.target === 'string' ? link.target : link.target.id));
-      return (
-        searchTerm === '' ||
-        (sourceNode && sourceNode.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        (targetNode && targetNode.name.toLowerCase().includes(searchTerm.toLowerCase()))
+  const handleNodeHover = (node: Node | null) => {
+    setHighlightNodes(new Set(node ? [node.id] : []));
+  };
+
+  const handleNodeClick = (node: Node | null) => {
+    setSelectedNode(node);
+    if (node) {
+      // Center view on clicked node
+      const distance = 40;
+      const distRatio = 1 + distance/Math.hypot(node.x!, node.y!);
+      graphRef.current?.centerAt(node.x, node.y, 1000);
+      graphRef.current?.zoom(2.5, 1000);
+    }
+  };
+
+  const handleBackgroundClick = () => {
+    setSelectedNode(null);
+  };
+
+  const handleResetZoom = () => {
+    graphRef.current?.zoomToFit(400, 50);
+  };
+
+  const getConnectedNodes = (id: string) => {
+    console.log("Getting connected nodes for:", id);
+    console.log("Current filtered data:", filteredData);
+
+    const node = filteredData.nodes.find((n) => n.id === id);
+    if (!node) {
+      console.log("Node not found:", id);
+      return [];
+    }
+
+    const connectedNodes = filteredData.nodes.filter((n) => {
+      const link = filteredData.links.find(
+        (l) =>
+          ((typeof l.source === "string"
+            ? l.source === node.id
+            : l.source.id === node.id) &&
+            (typeof l.target === "string"
+              ? l.target === n.id
+              : l.target.id === n.id)) ||
+          ((typeof l.source === "string"
+            ? l.source === n.id
+            : l.source.id === n.id) &&
+            (typeof l.target === "string"
+              ? l.target === node.id
+              : l.target.id === node.id))
       );
-    })
-  };
+      return link !== undefined;
+    });
 
-  const handleNodeHover = (node: Node | null, prev: Node | null) => {
-    setHoveredNode(node);
-  };
-
-  const handleLinkHover = (link: Link | null, prev: Link | null) => {
-    setHoveredLink(link);
+    console.log("Found connected nodes:", connectedNodes);
+    return connectedNodes;
   };
 
   return (
-    <div className="relative h-dvh w-full overflow-hidden bg-background">
-      {/* Controls */}
-      <div className="absolute top-4 left-4 z-10 flex flex-col gap-4 bg-background/80 p-4 rounded-base backdrop-blur">
-        <input
-          type="text"
-          placeholder="Search people or types..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-64 px-3 py-2 bg-background border-border text-text selection:bg-main selection:text-mtext"
-        />
-        <div className="flex items-center gap-2">
-          <label className="text-text">Min shared books:</label>
-          <input
-            type="range"
-            min="2"
-            max="10"
-            value={minSharedBooks}
-            onChange={(e) => setMinSharedBooks(parseInt(e.target.value))}
-            className="w-32"
-          />
-          <span className="text-text/70">{minSharedBooks}</span>
+    <div className="flex flex-col space-y-4">
+      <div className="flex flex-col space-y-2">
+        <div className="flex justify-between items-center">
+          <div className="flex items-center gap-4">
+            <div>
+              <label className="text-xs block mb-1">Min Recommendations</label>
+              <select
+                value={minRecommendations}
+                onChange={(e) => setMinRecommendations(Number(e.target.value))}
+                className="w-32 p-1 text-sm bg-[#f0f7f0] dark:bg-[#0a1a0a] border border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20"
+              >
+                {[1, 2, 3, 5, 10, 15, 20].map((value) => (
+                  <option key={value} value={value}>
+                    {value}+
+                  </option>
+                ))}
+              </select>
+            </div>
+            <button
+              onClick={handleResetZoom}
+              className="px-3 py-1 text-sm border border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20 hover:bg-[#a7f3d0] dark:hover:bg-[#065f46]"
+            >
+              Reset View
+            </button>
+          </div>
+          <div className="text-sm">
+            {filteredData.nodes.filter((n) => n.type === "person").length}{" "}
+            people |{" "}
+            {filteredData.nodes.filter((n) => n.type === "book").length} books
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <div
+            ref={containerRef}
+            className="relative border border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20 bg-[#f0f7f0] dark:bg-[#0a1a0a]"
+          >
+            {filteredData.nodes.length > 0 ? (
+              <ForceGraph2D
+                ref={graphRef}
+                graphData={filteredData}
+                width={dimensions.width}
+                height={dimensions.height}
+                nodeLabel={(node: Node) => `${node.name} (${node.type})`}
+                nodeColor={getNodeColor}
+                nodeRelSize={6}
+                linkWidth={(link: Link) => (highlightLinks.has(link) ? 2 : 0.5)}
+                linkColor={() => (theme === "dark" ? "#f0f7f0" : "#0a1a0a")}
+                linkDirectionalParticles={(link: Link) =>
+                  highlightLinks.has(link) ? 4 : 0
+                }
+                linkDirectionalParticleWidth={(link: Link) =>
+                  highlightLinks.has(link) ? 2 : 0
+                }
+                linkDirectionalParticleSpeed={0.005}
+                linkOpacity={0.3}
+                onNodeHover={handleNodeHover}
+                onNodeClick={handleNodeClick}
+                onBackgroundClick={handleBackgroundClick}
+                cooldownTicks={100}
+                onEngineStop={() => graphRef.current?.zoomToFit(400, 50)}
+                nodeCanvasObject={(node: Node, ctx: CanvasRenderingContext2D, globalScale: number) => {
+                  const { x, y, name, type } = node as Node & {
+                    x: number;
+                    y: number;
+                  };
+                  const fontSize = 12 / globalScale;
+                  const textWidth = ctx.measureText(name).width;
+                  const isHighlighted = highlightNodes.has(node.id);
+
+                  // Draw node circle
+                  ctx.beginPath();
+                  ctx.arc(x, y, isHighlighted ? 8 : 6, 0, 2 * Math.PI);
+                  ctx.fillStyle = getNodeColor(node as Node);
+                  ctx.fill();
+
+                  // Draw node border
+                  ctx.strokeStyle = theme === "dark" ? "#f0f7f0" : "#0a1a0a";
+                  ctx.lineWidth = isHighlighted ? 2 : 1;
+                  ctx.stroke();
+
+                  // Draw node label if zoomed in or highlighted
+                  if (globalScale > 1.5 || isHighlighted) {
+                    ctx.fillStyle = theme === "dark" ? "#f0f7f0" : "#0a1a0a";
+                    ctx.font = `${fontSize}px monospace`;
+                    ctx.textAlign = "center";
+                    ctx.textBaseline = "top";
+                    ctx.fillText(name, x, y + 8);
+                  }
+                }}
+              />
+            ) : (
+              <div className="flex items-center justify-center h-[500px]">
+                <p className="text-sm">
+                  No data matches your current filters. Try adjusting your
+                  criteria.
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Selected Node Details */}
+          {selectedNode && (
+            <div className="border border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20 p-4 bg-[#ecfdf5] dark:bg-[#022c22]">
+              <div className="flex justify-between items-start">
+                <div>
+                  <div className="text-xs uppercase">{selectedNode.type}</div>
+                  <h3 className="text-lg font-bold">{selectedNode.name}</h3>
+
+                  {selectedNode.type === "person" && (
+                    <>
+                      <p className="text-sm">
+                        Recommended {selectedNode.recommendationCount} books
+                      </p>
+                      {selectedNode.details?.personType && (
+                        <p className="text-sm mt-1">
+                          Type: {selectedNode.details.personType}
+                        </p>
+                      )}
+                    </>
+                  )}
+
+                  {selectedNode.type === "book" && (
+                    <>
+                      {selectedNode.details?.author && (
+                        <p className="text-sm mt-1">
+                          Author: {selectedNode.details.author}
+                        </p>
+                      )}
+                      {selectedNode.details?.genre && (
+                        <div className="flex flex-wrap gap-1 mt-1">
+                          <span className="text-sm">Genres: </span>
+                          {selectedNode.details.genre.map((g, i) => (
+                            <span key={i} className="text-sm">
+                              {g}
+                              {i < selectedNode.details!.genre!.length - 1
+                                ? ", "
+                                : ""}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                      {selectedNode.details?.description && (
+                        <p className="text-sm mt-2 line-clamp-2">
+                          {selectedNode.details.description}
+                        </p>
+                      )}
+                    </>
+                  )}
+                </div>
+
+                <button
+                  onClick={handleResetZoom}
+                  className="px-2 py-1 text-xs border border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20 hover:bg-[#a7f3d0] dark:hover:bg-[#065f46]"
+                >
+                  Reset View
+                </button>
+              </div>
+
+              <div className="mt-4">
+                <h4 className="text-sm font-bold mb-2">
+                  {selectedNode.type === "person"
+                    ? "Books Recommended"
+                    : "Recommended By"}
+                </h4>
+                <div className="max-h-40 overflow-y-auto border border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20">
+                  {getConnectedNodes(selectedNode.id).length > 0 ? (
+                    <table className="w-full text-sm">
+                      <thead className="bg-[#d1fae5] dark:bg-[#064e3b]">
+                        <tr>
+                          <th className="text-left p-2">
+                            {selectedNode.type === "person" ? "Book" : "Person"}
+                          </th>
+                          <th className="text-left p-2">
+                            {selectedNode.type === "person"
+                              ? "Author"
+                              : "Recommendations"}
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {getConnectedNodes(selectedNode.id).map(
+                          (node, index) => (
+                            <tr
+                              key={index}
+                              className={
+                                index % 2 === 0
+                                  ? "bg-[#ecfdf5] dark:bg-[#022c22]"
+                                  : ""
+                              }
+                            >
+                              <td className="p-2">{node.name}</td>
+                              <td className="p-2">
+                                {selectedNode.type === "person"
+                                  ? node.details?.author || "-"
+                                  : node.recommendationCount}
+                              </td>
+                            </tr>
+                          )
+                        )}
+                      </tbody>
+                    </table>
+                  ) : (
+                    <p className="p-2 text-sm">No connections found.</p>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
-
-      {/* Tooltips */}
-      {hoveredNode && (
-        <div className="absolute top-4 right-4 z-10 p-4 bg-background/80 backdrop-blur rounded-base">
-          <h3 className="font-base text-text">{hoveredNode.name}</h3>
-          <p className="text-text/70">{hoveredNode.type}</p>
-          <p className="text-text/70">{hoveredNode.connections} connections</p>
-        </div>
-      )}
-
-      {hoveredLink && (
-        <div className="absolute bottom-4 right-4 z-10 p-4 bg-background/80 backdrop-blur rounded-base max-w-md">
-          <h3 className="font-base text-text">{hoveredLink.value} books in common</h3>
-          <ul className="mt-2 text-text/70 whitespace-pre-line line-clamp-2">
-            {hoveredLink.books.map((book, i) => (
-              <li key={i}>{book}</li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      {/* Graph */}
-      <ForceGraph2D
-        ref={graphRef}
-        graphData={filteredData}
-        nodeId="id"
-        nodeLabel="name"
-        nodeColor={getNodeColor}
-        nodeRelSize={6}
-        nodeVal={(node: Node) => node.connections}
-        linkWidth={(link: Link) => Math.sqrt(link.value)}
-        linkColor={() => theme === 'dark' ? '#d0fbed70' : '#12121270'}
-        onNodeHover={handleNodeHover}
-        onLinkHover={handleLinkHover}
-        onNodeClick={(node: Node) => {
-          if (!node.x || !node.y) return;
-          const distance = 100;
-          const distRatio = 1 + distance/Math.hypot(node.x, node.y, node.z || 0);
-          graphRef.current?.centerAt(node.x * distRatio, node.y * distRatio, 1000);
-          graphRef.current?.zoom(2, 1000);
-        }}
-        warmupTicks={100}
-        cooldownTicks={0}
-        width={dimensions.width}
-        height={dimensions.height}
-      />
     </div>
   );
 }
