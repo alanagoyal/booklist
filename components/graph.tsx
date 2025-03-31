@@ -237,7 +237,6 @@ export default function RecommendationGraph() {
       <div className="flex flex-col space-y-2">
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-4">
-            <div className="text-sm">{graphData.nodes.length} people</div>
           </div>
         </div>
 
@@ -255,6 +254,10 @@ export default function RecommendationGraph() {
               >
                 Reset View
               </button>
+              {/* People count overlay */}
+              <div className="absolute bottom-5 right-5 z-10 text-text/70 text-xs whitespace-pre-line transition-all duration-200 bg-[#f0f7f0]/80 dark:bg-[#0a1a0a]/80 backdrop-blur-sm p-2 selection:bg-main selection:text-mtext">
+                {graphData.nodes.length} people
+              </div>
               <ForceGraph2D
                 ref={graphRef}
                 graphData={graphData}
