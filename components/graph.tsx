@@ -306,7 +306,7 @@ export default function RecommendationGraph() {
                 nodeLabel={(node: Node) => node.name}
                 nodeColor={getNodeColor}
                 nodeRelSize={4}
-                linkWidth={(link: Link) => (highlightLinks.has(link) ? 2 : 0.5)}
+                linkWidth={(link: Link) => (highlightLinks.has(link) ? 2 : 0.3)}
                 linkColor={() => (theme === "dark" ? "#f0f7f0" : "#0a1a0a")}
                 linkDirectionalParticles={(link: Link) =>
                   highlightLinks.has(link) ? 4 : 0
@@ -315,7 +315,7 @@ export default function RecommendationGraph() {
                   highlightLinks.has(link) ? 2 : 0
                 }
                 linkDirectionalParticleSpeed={0.005}
-                linkOpacity={0.3}
+                linkOpacity={0.15}
                 onNodeHover={handleNodeHover}
                 onNodeClick={handleNodeClick}
                 onBackgroundClick={handleBackgroundClick}
