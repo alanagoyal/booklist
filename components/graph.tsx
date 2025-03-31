@@ -60,6 +60,7 @@ export default function RecommendationGraph() {
   const [highlightLinks, setHighlightLinks] = useState(new Set());
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
   const [hoveredNode, setHoveredNode] = useState<Node | null>(null);
+  const [lastInteractedNode, setLastInteractedNode] = useState<Node | null>(null);
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
   const { theme } = useTheme();
 
@@ -68,6 +69,7 @@ export default function RecommendationGraph() {
   useEffect(() => {
     setSelectedNode(null);
     setHoveredNode(null);
+    setLastInteractedNode(null);
     setHighlightNodes(new Set());
     setHighlightLinks(new Set());
     setExpandedRows(new Set());
@@ -180,8 +182,10 @@ export default function RecommendationGraph() {
   // Handle node hover
   const handleNodeHover = (node: Node | null) => {
     if (!selectedNode) {
-      // Only update hover state if no node is selected
       setHoveredNode(node);
+      if (node) {
+        setLastInteractedNode(node);
+      }
       setHighlightNodes(new Set(node ? [node.id] : []));
     }
   };
@@ -189,13 +193,17 @@ export default function RecommendationGraph() {
   // Handle node click
   const handleNodeClick = (node: Node | null) => {
     if (node?.id === selectedNode?.id) {
-      // If clicking the same node, deselect it
       setSelectedNode(null);
-      setHoveredNode(node); // Restore hover state
+      setHoveredNode(node);
+      if (node) {
+        setLastInteractedNode(node);
+      }
       setHighlightNodes(new Set(node ? [node.id] : []));
     } else {
-      // Select new node
       setSelectedNode(node);
+      if (node) {
+        setLastInteractedNode(node);
+      }
       setHighlightNodes(new Set(node ? [node.id] : []));
     }
     if (node) {
@@ -314,172 +322,181 @@ export default function RecommendationGraph() {
             </div>
 
             {/* Node Details Panel */}
-            {(selectedNode || hoveredNode) &&
-              (() => {
-                const node = (selectedNode || hoveredNode)!;
-                return (
-                  <div className="col-span-2 min-h-[500px] h-[70vh] border border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20 p-4 bg-[#ecfdf5] dark:bg-[#022c22] overflow-y-auto">
-                    <div className="space-y-4">
-                      <div>
-                        <h3 className="text-lg font-bold">{node.name}</h3>
+            <div className="col-span-2 min-h-[500px] h-[70vh] border border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20 p-4 bg-[#ecfdf5] dark:bg-[#022c22] overflow-y-auto">
+              <div className="relative h-full">
+                <div className={`absolute inset-0 transition-opacity duration-200 ${!lastInteractedNode ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+                  <div className="flex flex-col items-center justify-center h-full text-text/70">
+                    <p className="text-base">Hover or click to explore connections</p>
+                    <p className="text-sm mt-2">Scroll to zoom in/out</p>
+                  </div>
+                </div>
 
-                        <p className="text-sm">
-                          Recommended {node.recommendationCount} books
-                        </p>
-                        {node.details?.personType && (
-                          <p className="text-sm mt-1">
-                            Type: {node.details.personType}
+                <div className={`absolute inset-0 transition-opacity duration-200 ${lastInteractedNode ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+                  {lastInteractedNode && (() => {
+                    const node = selectedNode || hoveredNode || lastInteractedNode;
+                    return (
+                      <div className="space-y-4">
+                        <div>
+                          <h3 className="text-lg font-bold">{node.name}</h3>
+                          <p className="text-sm">
+                            Recommended {node.recommendationCount} books
                           </p>
-                        )}
-                      </div>
+                          {node.details?.personType && (
+                            <p className="text-sm mt-1">
+                              Type: {node.details.personType}
+                            </p>
+                          )}
+                        </div>
 
-                      <div>
-                        <h4 className="text-sm font-bold mb-2">
-                          Books and Recommenders
-                        </h4>
-                        <div className="overflow-y-auto">
-                          {(() => {
-                            const connections = graphData.links.filter(
-                              (link) =>
-                                (link.source as Node).id === node.id ||
-                                (link.target as Node).id === node.id
-                            );
+                        <div>
+                          <h4 className="text-sm font-bold mb-2">
+                            Books and Recommenders
+                          </h4>
+                          <div className="overflow-y-auto">
+                            {(() => {
+                              const connections = graphData.links.filter(
+                                (link) =>
+                                  (link.source as Node).id === node.id ||
+                                  (link.target as Node).id === node.id
+                              );
 
-                            // Create a map of books to their recommenders
-                            const bookMap = new Map<string, Set<string>>();
-                            connections.forEach((link) => {
-                              const otherNode =
-                                (link.source as Node).id === node.id
-                                  ? (link.target as Node)
-                                  : (link.source as Node);
+                              // Create a map of books to their recommenders
+                              const bookMap = new Map<string, Set<string>>();
+                              connections.forEach((link) => {
+                                const otherNode =
+                                  (link.source as Node).id === node.id
+                                    ? (link.target as Node)
+                                    : (link.source as Node);
 
-                              link.books.forEach((book) => {
-                                if (!bookMap.has(book)) {
-                                  bookMap.set(book, new Set());
-                                }
-                                bookMap.get(book)!.add(otherNode.name);
+                                link.books.forEach((book) => {
+                                  if (!bookMap.has(book)) {
+                                    bookMap.set(book, new Set());
+                                  }
+                                  bookMap.get(book)!.add(otherNode.name);
+                                });
                               });
-                            });
 
-                            // Convert to array and sort by number of recommenders, then alphabetically
-                            const bookEntries = Array.from(
-                              bookMap.entries()
-                            ).sort((a, b) => {
-                              // First sort by number of recommenders (descending)
-                              const recommendersDiff = b[1].size - a[1].size;
-                              // If same number of recommenders, sort alphabetically
-                              return recommendersDiff !== 0
-                                ? recommendersDiff
-                                : a[0].localeCompare(b[0]);
-                            });
+                              // Convert to array and sort by number of recommenders, then alphabetically
+                              const bookEntries = Array.from(
+                                bookMap.entries()
+                              ).sort((a, b) => {
+                                // First sort by number of recommenders (descending)
+                                const recommendersDiff = b[1].size - a[1].size;
+                                // If same number of recommenders, sort alphabetically
+                                return recommendersDiff !== 0
+                                  ? recommendersDiff
+                                  : a[0].localeCompare(b[0]);
+                              });
 
-                            return bookEntries.length > 0 ? (
-                              <table className="w-full text-sm">
-                                <thead className="bg-[#d1fae5] dark:bg-[#064e3b]">
-                                  <tr>
-                                    <th className="text-left p-2 w-1/2">
-                                      Book
-                                    </th>
-                                    <th className="text-left p-2 w-1/2">
-                                      Recommended By
-                                    </th>
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                  {bookEntries.map(
-                                    ([book, recommenders], index) => {
-                                      const recommendersList =
-                                        Array.from(recommenders);
-                                      const displayCount = 3;
-                                      const hasMore =
-                                        recommendersList.length > displayCount;
-                                      const isExpanded = expandedRows.has(book);
+                              return bookEntries.length > 0 ? (
+                                <table className="w-full text-sm">
+                                  <thead className="bg-[#d1fae5] dark:bg-[#064e3b]">
+                                    <tr>
+                                      <th className="text-left p-2 w-1/2">
+                                        Book
+                                      </th>
+                                      <th className="text-left p-2 w-1/2">
+                                        Recommended By
+                                      </th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {bookEntries.map(
+                                      ([book, recommenders], index) => {
+                                        const recommendersList =
+                                          Array.from(recommenders);
+                                        const displayCount = 3;
+                                        const hasMore =
+                                          recommendersList.length > displayCount;
+                                        const isExpanded = expandedRows.has(book);
 
-                                      return (
-                                        <tr
-                                          key={index}
-                                          className="border-b border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20 hover:bg-[#a7f3d0] dark:hover:bg-[#065f46] cursor-pointer"
-                                          onClick={() => {
-                                            setExpandedRows((prev) => {
-                                              const next = new Set(prev);
-                                              if (isExpanded) {
-                                                next.delete(book);
-                                              } else {
-                                                next.add(book);
-                                              }
-                                              return next;
-                                            });
-                                          }}
-                                        >
-                                          <td className="p-2 w-1/2">
-                                            <div
-                                              className={`whitespace-pre-line transition-all duration-200 break-words overflow-hidden ${
-                                                !isExpanded
-                                                  ? "line-clamp-2"
-                                                  : ""
-                                              }`}
-                                            >
-                                              {book}
-                                            </div>
-                                          </td>
-                                          <td className="p-2 w-1/2">
-                                            <div
-                                              className={`whitespace-pre-line transition-all duration-200 overflow-hidden ${
-                                                !isExpanded
-                                                  ? "line-clamp-2"
-                                                  : ""
-                                              }`}
-                                            >
-                                              <div className="inline">
-                                                {recommendersList.map(
-                                                  (recommender, idx) => (
-                                                    <span key={idx}>
-                                                      <span
-                                                        className="hover:underline cursor-pointer md:hover:text-text"
-                                                        onClick={(e) => {
-                                                          e.stopPropagation();
-                                                          const recommenderNode =
-                                                            graphData.nodes.find(
-                                                              (n) =>
-                                                                n.name ===
-                                                                recommender
-                                                            );
-                                                          if (recommenderNode) {
-                                                            handleNodeClick(
-                                                              recommenderNode
-                                                            );
-                                                          }
-                                                        }}
-                                                      >
-                                                        {recommender}
-                                                      </span>
-                                                      {idx <
-                                                        recommendersList.length -
-                                                          1 && ", "}
-                                                    </span>
-                                                  )
-                                                )}
+                                        return (
+                                          <tr
+                                            key={index}
+                                            className="border-b border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20 hover:bg-[#a7f3d0] dark:hover:bg-[#065f46] cursor-pointer"
+                                            onClick={() => {
+                                              setExpandedRows((prev) => {
+                                                const next = new Set(prev);
+                                                if (isExpanded) {
+                                                  next.delete(book);
+                                                } else {
+                                                  next.add(book);
+                                                }
+                                                return next;
+                                              });
+                                            }}
+                                          >
+                                            <td className="p-2 w-1/2">
+                                              <div
+                                                className={`whitespace-pre-line transition-all duration-200 break-words overflow-hidden ${
+                                                  !isExpanded
+                                                    ? "line-clamp-2"
+                                                    : ""
+                                                }`}
+                                              >
+                                                {book}
                                               </div>
-                                            </div>
-                                          </td>
-                                        </tr>
-                                      );
-                                    }
-                                  )}
-                                </tbody>
-                              </table>
-                            ) : (
-                              <p className="text-sm text-text/70">
-                                No books found.
-                              </p>
-                            );
-                          })()}
+                                            </td>
+                                            <td className="p-2 w-1/2">
+                                              <div
+                                                className={`whitespace-pre-line transition-all duration-200 overflow-hidden ${
+                                                  !isExpanded
+                                                    ? "line-clamp-2"
+                                                    : ""
+                                                }`}
+                                              >
+                                                <div className="inline">
+                                                  {recommendersList.map(
+                                                    (recommender, idx) => (
+                                                      <span key={idx}>
+                                                        <span
+                                                          className="hover:underline cursor-pointer md:hover:text-text"
+                                                          onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            const recommenderNode =
+                                                              graphData.nodes.find(
+                                                                (n) =>
+                                                                  n.name ===
+                                                                  recommender
+                                                              );
+                                                            if (recommenderNode) {
+                                                              handleNodeClick(
+                                                                recommenderNode
+                                                              );
+                                                            }
+                                                          }}
+                                                        >
+                                                          {recommender}
+                                                        </span>
+                                                        {idx <
+                                                          recommendersList.length -
+                                                            1 && ", "}
+                                                      </span>
+                                                    )
+                                                  )}
+                                                </div>
+                                              </div>
+                                            </td>
+                                          </tr>
+                                        );
+                                      }
+                                    )}
+                                  </tbody>
+                                </table>
+                              ) : (
+                                <p className="text-sm text-text/70">
+                                  No books found.
+                                </p>
+                              );
+                            })()}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </div>
-                );
-              })()}
+                    );
+                  })()}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
