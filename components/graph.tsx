@@ -423,7 +423,7 @@ export default function RecommendationGraph() {
                                         return (
                                           <tr
                                             key={index}
-                                            className="border-b border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20 hover:bg-[#a7f3d0] dark:hover:bg-[#065f46] cursor-pointer"
+                                            className="border-b last:border-b-0 border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20 hover:bg-[#a7f3d0] dark:hover:bg-[#065f46] cursor-pointer"
                                             onClick={() => {
                                               setExpandedRows((prev) => {
                                                 const next = new Set(prev);
