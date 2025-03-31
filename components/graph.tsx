@@ -65,7 +65,6 @@ export default function RecommendationGraph() {
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
   const [hoveredNode, setHoveredNode] = useState<Node | null>(null);
   const [dimensions, setDimensions] = useState({ width: 0, height: 500 }); // Default height for SSR
-  const [minRecommendations, setMinRecommendations] = useState(1);
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
   const { theme } = useTheme();
 
@@ -107,13 +106,7 @@ export default function RecommendationGraph() {
 
   useEffect(() => {
     const fetchGraphData = async () => {
-      console.log(
-        "Fetching graph data with min recommendations:",
-        minRecommendations
-      );
-      const { data, error } = await supabase.rpc("get_recommendation_network", {
-        min_shared_books: minRecommendations,
-      });
+      const { data, error } = await supabase.rpc("get_recommendation_network");
 
       if (error) {
         console.error("Error fetching graph data:", error);
@@ -174,7 +167,7 @@ export default function RecommendationGraph() {
     };
 
     fetchGraphData();
-  }, [minRecommendations]);
+  }, []);
 
   const getNodeColor = (node: Node) => {
     const isDark = theme === "dark";
@@ -287,20 +280,6 @@ export default function RecommendationGraph() {
       <div className="flex flex-col space-y-2">
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-4">
-            <div>
-              <label className="text-xs block mb-1">Min Recommendations</label>
-              <select
-                value={minRecommendations}
-                onChange={(e) => setMinRecommendations(Number(e.target.value))}
-                className="w-32 p-1 text-sm bg-[#f0f7f0] dark:bg-[#0a1a0a] border border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20"
-              >
-                {[1, 2, 3, 5, 10, 15, 20].map((value) => (
-                  <option key={value} value={value}>
-                    {value}+
-                  </option>
-                ))}
-              </select>
-            </div>
             <button
               onClick={handleResetZoom}
               className="px-3 py-1 text-sm border border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20 hover:bg-[#a7f3d0] dark:hover:bg-[#065f46]"
