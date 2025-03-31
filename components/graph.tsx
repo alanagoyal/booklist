@@ -64,16 +64,15 @@ export default function RecommendationGraph() {
   const [highlightLinks, setHighlightLinks] = useState(new Set());
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
   const [hoveredNode, setHoveredNode] = useState<Node | null>(null);
-  const [dimensions, setDimensions] = useState({ width: 0, height: 500 }); // Default height for SSR
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
   const { theme } = useTheme();
 
   useEffect(() => {
+    // Update dimensions once on client-side hydration
     const updateDimensions = () => {
       if (containerRef.current) {
         const width = containerRef.current.clientWidth;
-        const height = Math.max(500, window.innerHeight * 0.6);
-        setDimensions({ width, height });
+        const height = containerRef.current.clientHeight;
       }
     };
 
@@ -292,17 +291,16 @@ export default function RecommendationGraph() {
         </div>
 
         <div className="space-y-4">
-          <div className="flex gap-4">
+          <div className="grid grid-cols-5 gap-4">
             <div
               ref={containerRef}
-              className="relative w-2/3 border border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20 bg-[#f0f7f0] dark:bg-[#0a1a0a]"
-              style={{ minHeight: dimensions.height }}
+              className="relative col-span-3 min-h-[500px] h-[70vh] border border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20 bg-[#f0f7f0] dark:bg-[#0a1a0a]"
             >
               <ForceGraph2D
                 ref={graphRef}
                 graphData={filteredData}
-                width={dimensions.width}
-                height={dimensions.height}
+                width={containerRef.current?.clientWidth ?? 0}
+                height={containerRef.current?.clientHeight ?? 0}
                 nodeLabel={(node: Node) => node.name}
                 nodeColor={getNodeColor}
                 nodeRelSize={4}
@@ -377,8 +375,7 @@ export default function RecommendationGraph() {
                 const node = (selectedNode || hoveredNode)!;
                 return (
                   <div
-                    className="w-1/3 border border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20 p-4 bg-[#ecfdf5] dark:bg-[#022c22] overflow-y-auto"
-                    style={{ height: dimensions.height }}
+                    className="col-span-2 min-h-[500px] h-[70vh] border border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20 p-4 bg-[#ecfdf5] dark:bg-[#022c22] overflow-y-auto"
                   >
                     <div className="space-y-4">
                       <div>
