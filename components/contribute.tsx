@@ -228,9 +228,9 @@ function BookInput({ book, index, canRemove, onRemove, onChange }: BookInputProp
             placeholder="Amazon URL"
             value={loading ? 'Generating link...' : book.amazonUrl || ''}
             onChange={(e) => onChange(index, 'amazonUrl', e.target.value)}
-            className={`w-full bg-background text-text border-border border p-2 ${book.amazonUrl ? 'pr-24' : 'pr-28'} font-base selection:bg-main selection:text-mtext ${loading ? 'text-text/70' : ''}`}
+            className={`w-full bg-background text-text border-border border p-2 ${book.amazonUrl ? 'pr-16' : 'pr-2'} font-base selection:bg-main selection:text-mtext truncate ${loading ? 'text-text/70' : ''}`}
           />
-          <div className="absolute right-0 top-0 h-full flex items-center px-2">
+          <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center">
             {!loading && (
               <>
                 {!book.amazonUrl && book.title && book.author ? (
@@ -247,7 +247,7 @@ function BookInput({ book, index, canRemove, onRemove, onChange }: BookInputProp
                     href={book.amazonUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="border border-border hover:border-text/70 rounded px-3 py-1 text-text/70 hover:text-text transition-all duration-200 flex items-center space-x-1"
+                    className="text-text/70 hover:text-text transition-all duration-200 flex items-center space-x-1"
                   >
                     <span className="text-sm">View</span>
                     <ExternalLink className="h-3 w-3" />
