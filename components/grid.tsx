@@ -10,6 +10,7 @@ import {
   ArrowDown,
   Award,
 } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { bookCountManager } from './book-counter';
 
 type SortDirection = "asc" | "desc" | "most" | null;
@@ -50,52 +51,87 @@ export function DataGrid<T extends Record<string, any>>({
   onFilteredDataChange,
   tooltipOpen,
 }: DataGridProps<T> & { tooltipOpen: boolean }) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const gridRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
   const [mounted, setMounted] = useState(false);
 
-  // Initialize state with consistent defaults for SSR
-  const [sortConfig, setSortConfig] = useState<SortConfig>({ field: "", direction: null });
-  const [filters, setFilters] = useState<{ [key: string]: string }>({});
-  const [virtualState, setVirtualState] = useState<VirtualState<T>>({
-    startIndex: 0,
-    endIndex: 50,
-    expandedRows: {},
-    visibleRows: []
+  // Update state when URL params change
+  useEffect(() => {
+    const field = searchParams.get('sort') || "";
+    const direction = searchParams.get('dir') as SortDirection || null;
+    setSortConfig({ field, direction });
+
+    const params = Object.fromEntries(searchParams.entries());
+    const filterParams: { [key: string]: string } = {};
+    Object.entries(params).forEach(([key, value]) => {
+      if (key !== 'sort' && key !== 'dir') {
+        filterParams[key] = value;
+      }
+    });
+    setFilters(filterParams);
+  }, [searchParams]);
+
+  // Initialize state with URL params or defaults
+  const [sortConfig, setSortConfig] = useState<SortConfig>(() => {
+    const field = searchParams.get('sort') || "";
+    const direction = searchParams.get('dir') as SortDirection || null;
+    return { field, direction };
+  });
+  
+  const [filters, setFilters] = useState<{ [key: string]: string }>(() => {
+    const params = Object.fromEntries(searchParams.entries());
+    const filterParams: { [key: string]: string } = {};
+    Object.entries(params).forEach(([key, value]) => {
+      if (key !== 'sort' && key !== 'dir') {
+        filterParams[key] = value;
+      }
+    });
+    return filterParams;
   });
 
-  // Load saved state on client-side only
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-
-    try {
-      const savedSortConfig = localStorage.getItem('gridSortConfig');
-      if (savedSortConfig) {
-        setSortConfig(JSON.parse(savedSortConfig));
-      }
-
-      const savedFilters = localStorage.getItem('gridFilters');
-      if (savedFilters) {
-        setFilters(JSON.parse(savedFilters));
-      }
-    } catch (e) {
-      console.error('Failed to load saved grid state:', e);
-    }
-
-    setMounted(true);
-  }, []);
-
-  // Save state to localStorage when it changes
+  // Update URL when sort/filter changes
   useEffect(() => {
     if (!mounted) return;
     
-    try {
-      localStorage.setItem('gridSortConfig', JSON.stringify(sortConfig));
-      localStorage.setItem('gridFilters', JSON.stringify(filters));
-    } catch (e) {
-      console.error('Failed to save grid state:', e);
+    const currentParams = new URLSearchParams(searchParams.toString());
+    const newParams = new URLSearchParams(currentParams.toString());
+
+    // Update sort params
+    if (sortConfig.field) {
+      newParams.set('sort', sortConfig.field);
+      if (sortConfig.direction) {
+        newParams.set('dir', sortConfig.direction);
+      } else {
+        newParams.delete('dir');
+      }
+    } else {
+      newParams.delete('sort');
+      newParams.delete('dir');
     }
-  }, [sortConfig, filters, mounted]);
+    
+    // Update filter params
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value) {
+        newParams.set(key, value);
+      } else {
+        newParams.delete(key);
+      }
+    });
+
+    const queryString = newParams.toString();
+    const newPath = queryString ? `/?${queryString}` : '/';
+    
+    // Only update URL if params have changed
+    if (newParams.toString() !== currentParams.toString()) {
+      router.push(newPath, { scroll: false });
+    }
+  }, [sortConfig, filters, mounted, router, searchParams]);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [isDropdownClosing, setIsDropdownClosing] = useState(false);
@@ -172,23 +208,23 @@ export function DataGrid<T extends Record<string, any>>({
 
   // Memoize visible rows calculation
   const visibleRows = useMemo(() => {
-    const startIndex = virtualState.startIndex;
-    const endIndex = virtualState.endIndex;
+    const startIndex = 0;
+    const endIndex = 50;
     return filteredAndSortedData.slice(startIndex, endIndex);
-  }, [filteredAndSortedData, virtualState.startIndex, virtualState.endIndex]);
+  }, [filteredAndSortedData]);
 
   const handleRowClick = useCallback((rowIndex: number, e: React.MouseEvent) => {
     const target = e.target as HTMLElement;
     if (target.closest('[data-dropdown], button, input, a')) return;
     if (openDropdown || isDropdownClosing || tooltipOpen) return;
 
-    setVirtualState(prev => ({
-      ...prev,
-      expandedRows: {
-        ...prev.expandedRows,
-        [rowIndex]: !prev.expandedRows[rowIndex]
-      }
-    }));
+    // setVirtualState(prev => ({
+    //   ...prev,
+    //   expandedRows: {
+    //     ...prev.expandedRows,
+    //     [rowIndex]: !prev.expandedRows[rowIndex]
+    //   }
+    // }));
   }, [openDropdown, isDropdownClosing, tooltipOpen]);
 
   // Optimize cell rendering with useCallback
@@ -235,7 +271,7 @@ export function DataGrid<T extends Record<string, any>>({
 
   // Optimize row rendering with useCallback
   const renderRow = useCallback((row: T, rowIndex: number) => {
-    const isExpanded = virtualState.expandedRows[rowIndex];
+    const isExpanded = false; // virtualState.expandedRows[rowIndex];
     return (
       <div
         key={rowIndex}
@@ -250,15 +286,15 @@ export function DataGrid<T extends Record<string, any>>({
         {columns.map(column => renderCell({ column, row, isExpanded }))}
       </div>
     );
-  }, [columns, virtualState.expandedRows, getRowClassName, handleRowClick, renderCell]);
+  }, [columns, getRowClassName, handleRowClick, renderCell]);
 
   // Memoize rendered rows
   const renderedRows = useMemo(() => {
     return visibleRows.map((row, idx) => {
-      const rowIndex = virtualState.startIndex + idx;
+      const rowIndex = 0 + idx;
       return renderRow(row, rowIndex);
     });
-  }, [visibleRows, virtualState.startIndex, renderRow]);
+  }, [visibleRows, renderRow]);
 
   const updateVisibleRows = useCallback(() => {
     const container = gridRef.current;
@@ -295,17 +331,17 @@ export function DataGrid<T extends Record<string, any>>({
       filteredAndSortedData.length
     );
 
-    setVirtualState(prev => {
-      if (prev.startIndex === startIndex && prev.endIndex === endIndex) {
-        return prev;
-      }
+    // setVirtualState(prev => {
+    //   if (prev.startIndex === startIndex && prev.endIndex === endIndex) {
+    //     return prev;
+    //   }
 
-      return {
-        ...prev,
-        startIndex,
-        endIndex
-      };
-    });
+    //   return {
+    //     ...prev,
+    //     startIndex,
+    //     endIndex
+    //   };
+    // });
   }, [filteredAndSortedData.length]);
 
   // Optimize scroll handling with debounce for rapid scrolling
@@ -444,10 +480,10 @@ export function DataGrid<T extends Record<string, any>>({
 
   const rowsStyles = useMemo(() => ({
     position: "absolute" as const,
-    top: `${virtualState.startIndex * ROW_HEIGHT}px`,
+    top: `0px`,
     left: 0,
     right: 0,
-  }), [virtualState.startIndex]);
+  }), []);
 
   // Optimize dropdown menu rendering with useCallback
   const renderDropdownMenu = useCallback((column: ColumnDef<T>) => {
