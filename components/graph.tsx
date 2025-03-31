@@ -348,7 +348,7 @@ export default function RecommendationGraph() {
                     const node = selectedNode || hoveredNode || lastInteractedNode;
                     return (
                       <div className="space-y-4">
-                        <div className="flex justify-between items-center">
+                        <div className="flex justify-between items-start">
                           <div>
                             <h3 className="text-lg font-bold">{node.name}</h3>
                             <p className="text-sm">
