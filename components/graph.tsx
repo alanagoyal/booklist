@@ -5,6 +5,8 @@ import dynamic from "next/dynamic";
 import type { ForceGraphMethods } from "react-force-graph-2d";
 import { useTheme } from "next-themes";
 import { createClient } from "@supabase/supabase-js";
+import Link from "next/link";
+import { Expand } from "lucide-react";
 
 const ForceGraph2D = dynamic(() => import("react-force-graph-2d"), {
   ssr: false,
@@ -346,16 +348,24 @@ export default function RecommendationGraph() {
                     const node = selectedNode || hoveredNode || lastInteractedNode;
                     return (
                       <div className="space-y-4">
-                        <div>
-                          <h3 className="text-lg font-bold">{node.name}</h3>
-                          <p className="text-sm">
-                            Recommended {node.recommendationCount} books
-                          </p>
-                          {node.details?.personType && (
-                            <p className="text-sm mt-1">
-                              Type: {node.details.personType}
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <h3 className="text-lg font-bold">{node.name}</h3>
+                            <p className="text-sm">
+                              Recommended {node.recommendationCount} books
                             </p>
-                          )}
+                            {node.details?.personType && (
+                              <p className="text-sm mt-1">
+                                Type: {node.details.personType}
+                              </p>
+                            )}
+                          </div>
+                          <Link 
+                            href={`/?recommenders=${encodeURIComponent(node.name)}`}
+                            className="text-text/70 transition-colors duration-200 hover:text-text"
+                          >
+                            <Expand className="w-5 h-5" />
+                          </Link>
                         </div>
 
                         <div>
