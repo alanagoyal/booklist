@@ -310,17 +310,17 @@ export default function RecommendationGraph() {
 
                   // Draw node circle
                   ctx.beginPath();
-                  ctx.arc(x, y, isHighlighted ? 5 : 3, 0, 2 * Math.PI);
+                  ctx.arc(x, y, 3, 0, 2 * Math.PI);
                   ctx.fillStyle = getNodeColor(node as Node);
                   ctx.fill();
 
-                  // Draw node border
+                  // Draw node border with width scaled by zoom
                   ctx.strokeStyle = theme === "dark" ? "#f0f7f0" : "#0a1a0a";
-                  ctx.lineWidth = isHighlighted ? 1 : 0.5;
+                  ctx.lineWidth = isHighlighted ? 0.5 / globalScale : 0.2 / globalScale;
                   ctx.stroke();
 
-                  // Draw node label if zoomed in or highlighted
-                  if (globalScale > 1.5 || isHighlighted) {
+                  // Draw node label only when significantly zoomed in
+                  if (globalScale > 2.5) {
                     ctx.fillStyle = theme === "dark" ? "#f0f7f0" : "#0a1a0a";
                     ctx.font = `${fontSize}px monospace`;
                     ctx.textAlign = "center";
