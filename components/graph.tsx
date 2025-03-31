@@ -63,8 +63,9 @@ export default function RecommendationGraph() {
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
   const { theme } = useTheme();
 
+  // Add comment for htis
+  // Reset graph state when component mounts/remounts
   useEffect(() => {
-    // Reset graph state when component mounts/remounts
     setSelectedNode(null);
     setHoveredNode(null);
     setHighlightNodes(new Set());
@@ -139,6 +140,7 @@ export default function RecommendationGraph() {
     fetchGraphData();
   }, []);
 
+  // Get node color based on recommendation count
   const getNodeColor = (node: Node) => {
     const isDark = theme === "dark";
     const maxRecommendations = Math.max(
@@ -175,6 +177,7 @@ export default function RecommendationGraph() {
     }
   };
 
+  // Handle node hover
   const handleNodeHover = (node: Node | null) => {
     if (!selectedNode) {
       // Only update hover state if no node is selected
@@ -183,6 +186,7 @@ export default function RecommendationGraph() {
     }
   };
 
+  // Handle node click
   const handleNodeClick = (node: Node | null) => {
     if (node?.id === selectedNode?.id) {
       // If clicking the same node, deselect it
@@ -201,12 +205,14 @@ export default function RecommendationGraph() {
     }
   };
 
+  // Handle background click
   const handleBackgroundClick = () => {
     setSelectedNode(null);
     setHoveredNode(null);
     setHighlightNodes(new Set());
   };
 
+  // Handle reset zoom
   const handleResetZoom = () => {
     graphRef.current?.zoomToFit(400, 50);
   };
@@ -216,6 +222,7 @@ export default function RecommendationGraph() {
       <div className="flex flex-col space-y-2">
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-4">
+            {/* Reset view button */}
             <button
               onClick={handleResetZoom}
               className="px-3 py-1 text-sm border border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20 hover:bg-[#a7f3d0] dark:hover:bg-[#065f46]"
