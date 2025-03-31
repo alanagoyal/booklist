@@ -493,8 +493,8 @@ export default function RecommendationGraph() {
                                     >
                                       <td className="p-2 w-1/2">
                                         <div
-                                          className={`whitespace-pre-line transition-all duration-200 break-words ${
-                                            !isExpanded ? "line-clamp-3" : ""
+                                          className={`whitespace-pre-line transition-all duration-200 break-words overflow-hidden ${
+                                            !isExpanded ? "line-clamp-2" : ""
                                           }`}
                                         >
                                           {book}
@@ -502,27 +502,29 @@ export default function RecommendationGraph() {
                                       </td>
                                       <td className="p-2 w-1/2">
                                         <div
-                                          className={`whitespace-pre-line transition-all duration-200 ${
-                                            !isExpanded && hasMore ? "line-clamp-2" : ""
+                                          className={`whitespace-pre-line transition-all duration-200 overflow-hidden ${
+                                            !isExpanded ? "line-clamp-2" : ""
                                           }`}
                                         >
-                                          {recommendersList.map((recommender, idx) => (
-                                            <span key={idx}>
-                                              <span 
-                                                className="hover:underline cursor-pointer md:hover:text-text"
-                                                onClick={(e) => {
-                                                  e.stopPropagation();
-                                                  const recommenderNode = filteredData.nodes.find(n => n.name === recommender);
-                                                  if (recommenderNode) {
-                                                    handleNodeClick(recommenderNode);
-                                                  }
-                                                }}
-                                              >
-                                                {recommender}
+                                          <div className="inline">
+                                            {recommendersList.map((recommender, idx) => (
+                                              <span key={idx}>
+                                                <span 
+                                                  className="hover:underline cursor-pointer md:hover:text-text"
+                                                  onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    const recommenderNode = filteredData.nodes.find(n => n.name === recommender);
+                                                    if (recommenderNode) {
+                                                      handleNodeClick(recommenderNode);
+                                                    }
+                                                  }}
+                                                >
+                                                  {recommender}
+                                                </span>
+                                                {idx < recommendersList.length - 1 && ", "}
                                               </span>
-                                              {idx < recommendersList.length - 1 && ", "}
-                                            </span>
-                                          ))}
+                                            ))}
+                                          </div>
                                         </div>
                                       </td>
                                     </tr>
