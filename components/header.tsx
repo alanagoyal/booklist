@@ -23,10 +23,10 @@ function HeaderContent() {
         >
           BOOKLIST
         </Link>
-        <Link href={getHrefWithParams("/about")}>About</Link>
         <Link href={getHrefWithParams("/graph")}>Graph</Link>
         <Link href={getHrefWithParams("/roulette")}>Roulette</Link>
         <Link href={getHrefWithParams("/contribute")}>Contribute</Link>
+        <Link href={getHrefWithParams("/about")}>About</Link>
       </div>
       <ThemeToggle />
     </div>
