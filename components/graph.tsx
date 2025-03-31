@@ -56,10 +56,6 @@ export default function RecommendationGraph() {
     nodes: [],
     links: [],
   });
-  const [filteredData, setFilteredData] = useState<GraphData>({
-    nodes: [],
-    links: [],
-  });
   const [highlightNodes, setHighlightNodes] = useState(new Set());
   const [highlightLinks, setHighlightLinks] = useState(new Set());
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
@@ -68,23 +64,6 @@ export default function RecommendationGraph() {
   const { theme } = useTheme();
 
   useEffect(() => {
-    // Update dimensions once on client-side hydration
-    const updateDimensions = () => {
-      if (containerRef.current) {
-        const width = containerRef.current.clientWidth;
-        const height = containerRef.current.clientHeight;
-      }
-    };
-
-    // Call immediately and set up observer
-    const resizeObserver = new ResizeObserver(updateDimensions);
-    if (containerRef.current) {
-      resizeObserver.observe(containerRef.current);
-      updateDimensions(); // Initial size
-    }
-
-    window.addEventListener("resize", updateDimensions);
-
     // Reset graph state when component mounts/remounts
     setSelectedNode(null);
     setHoveredNode(null);
@@ -92,10 +71,7 @@ export default function RecommendationGraph() {
     setHighlightLinks(new Set());
     setExpandedRows(new Set());
 
-    // Cleanup function
     return () => {
-      window.removeEventListener("resize", updateDimensions);
-      resizeObserver.disconnect();
       if (graphRef.current) {
         // Force cleanup of graph instance
         graphRef.current = null;
@@ -111,8 +87,6 @@ export default function RecommendationGraph() {
         console.error("Error fetching graph data:", error);
         return;
       }
-
-      console.log("Raw data from Supabase:", data);
 
       const nodesMap = new Map<string, Node>();
       const links: Link[] = [];
@@ -159,10 +133,7 @@ export default function RecommendationGraph() {
         nodes: Array.from(nodesMap.values()),
         links,
       };
-
-      console.log("Processed graph data:", newData);
       setGraphData(newData);
-      setFilteredData(newData);
     };
 
     fetchGraphData();
@@ -171,7 +142,7 @@ export default function RecommendationGraph() {
   const getNodeColor = (node: Node) => {
     const isDark = theme === "dark";
     const maxRecommendations = Math.max(
-      ...filteredData.nodes
+      ...graphData.nodes
         .filter((n) => n.recommendationCount)
         .map((n) => n.recommendationCount)
     );
@@ -225,8 +196,6 @@ export default function RecommendationGraph() {
     }
     if (node) {
       // Center view on clicked node
-      const distance = 40;
-      const distRatio = 1 + distance / Math.hypot(node.x!, node.y!);
       graphRef.current?.centerAt(node.x, node.y, 1000);
       graphRef.current?.zoom(2.5, 1000);
     }
@@ -242,39 +211,6 @@ export default function RecommendationGraph() {
     graphRef.current?.zoomToFit(400, 50);
   };
 
-  const getConnectedNodes = (id: string) => {
-    console.log("Getting connected nodes for:", id);
-    console.log("Current filtered data:", filteredData);
-
-    const node = filteredData.nodes.find((n) => n.id === id);
-    if (!node) {
-      console.log("Node not found:", id);
-      return [];
-    }
-
-    const connectedNodes = filteredData.nodes.filter((n) => {
-      const link = filteredData.links.find(
-        (l) =>
-          ((typeof l.source === "string"
-            ? l.source === node.id
-            : l.source.id === node.id) &&
-            (typeof l.target === "string"
-              ? l.target === n.id
-              : l.target.id === n.id)) ||
-          ((typeof l.source === "string"
-            ? l.source === n.id
-            : l.source.id === n.id) &&
-            (typeof l.target === "string"
-              ? l.target === node.id
-              : l.target.id === node.id))
-      );
-      return link !== undefined;
-    });
-
-    console.log("Found connected nodes:", connectedNodes);
-    return connectedNodes;
-  };
-
   return (
     <div className="flex flex-col space-y-4">
       <div className="flex flex-col space-y-2">
@@ -287,9 +223,10 @@ export default function RecommendationGraph() {
               Reset View
             </button>
           </div>
-          <div className="text-sm">{filteredData.nodes.length} people</div>
+          <div className="text-sm">{graphData.nodes.length} people</div>
         </div>
 
+        {/* Graph */}
         <div className="space-y-4">
           <div className="grid grid-cols-5 gap-4">
             <div
@@ -298,7 +235,7 @@ export default function RecommendationGraph() {
             >
               <ForceGraph2D
                 ref={graphRef}
-                graphData={filteredData}
+                graphData={graphData}
                 width={containerRef.current?.clientWidth ?? 0}
                 height={containerRef.current?.clientHeight ?? 0}
                 nodeLabel={(node: Node) => node.name}
@@ -325,8 +262,8 @@ export default function RecommendationGraph() {
                   }
                 }}
                 onNodeDragEnd={(node: Node) => {
-                  // Update node position in filteredData to maintain position after re-renders
-                  setFilteredData((prev) => ({
+                  // Update node position in graphData to maintain position after re-renders
+                  setGraphData((prev) => ({
                     ...prev,
                     nodes: prev.nodes.map((n) =>
                       n.id === node.id ? { ...n, x: node.x, y: node.y } : n
@@ -374,9 +311,7 @@ export default function RecommendationGraph() {
               (() => {
                 const node = (selectedNode || hoveredNode)!;
                 return (
-                  <div
-                    className="col-span-2 min-h-[500px] h-[70vh] border border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20 p-4 bg-[#ecfdf5] dark:bg-[#022c22] overflow-y-auto"
-                  >
+                  <div className="col-span-2 min-h-[500px] h-[70vh] border border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20 p-4 bg-[#ecfdf5] dark:bg-[#022c22] overflow-y-auto">
                     <div className="space-y-4">
                       <div>
                         <h3 className="text-lg font-bold">{node.name}</h3>
@@ -397,7 +332,7 @@ export default function RecommendationGraph() {
                         </h4>
                         <div className="overflow-y-auto">
                           {(() => {
-                            const connections = filteredData.links.filter(
+                            const connections = graphData.links.filter(
                               (link) =>
                                 (link.source as Node).id === node.id ||
                                 (link.target as Node).id === node.id
@@ -497,7 +432,7 @@ export default function RecommendationGraph() {
                                                         onClick={(e) => {
                                                           e.stopPropagation();
                                                           const recommenderNode =
-                                                            filteredData.nodes.find(
+                                                            graphData.nodes.find(
                                                               (n) =>
                                                                 n.name ===
                                                                 recommender
