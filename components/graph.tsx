@@ -220,9 +220,16 @@ export default function RecommendationGraph() {
     setHighlightNodes(new Set());
   };
 
-  // Handle reset zoom
   const handleResetZoom = () => {
-    graphRef.current?.zoomToFit(400, 50);
+    setSelectedNode(null);
+    setHoveredNode(null);
+    setLastInteractedNode(null);
+    setHighlightNodes(new Set());
+    setHighlightLinks(new Set());
+    setExpandedRows(new Set());
+    if (graphRef.current) {
+      graphRef.current.zoomToFit(400);
+    }
   };
 
   return (
@@ -230,15 +237,8 @@ export default function RecommendationGraph() {
       <div className="flex flex-col space-y-2">
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-4">
-            {/* Reset view button */}
-            <button
-              onClick={handleResetZoom}
-              className="px-3 py-1 text-sm border border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20 hover:bg-[#a7f3d0] dark:hover:bg-[#065f46]"
-            >
-              Reset View
-            </button>
+            <div className="text-sm">{graphData.nodes.length} people</div>
           </div>
-          <div className="text-sm">{graphData.nodes.length} people</div>
         </div>
 
         {/* Graph */}
@@ -248,6 +248,13 @@ export default function RecommendationGraph() {
               ref={containerRef}
               className="relative col-span-3 min-h-[500px] h-[70vh] border border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20 bg-[#f0f7f0] dark:bg-[#0a1a0a]"
             >
+              {/* Reset button overlay */}
+              <button
+                onClick={handleResetZoom}
+                className="absolute top-3 right-3 z-10 px-3 py-1 text-sm border border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20 hover:bg-[#a7f3d0] dark:hover:bg-[#065f46]"
+              >
+                Reset View
+              </button>
               <ForceGraph2D
                 ref={graphRef}
                 graphData={graphData}
