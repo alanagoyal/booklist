@@ -2,6 +2,7 @@
 
 import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 
 function NotFoundContent() {
   const searchParams = useSearchParams();
@@ -13,12 +14,12 @@ function NotFoundContent() {
       <p className="text-text/70 text-center mb-8">
         {from ? `The page "${from}" could not be found.` : 'The requested page could not be found'}
       </p>
-      <a
+      <Link
         href="/"
         className="px-4 py-2 transition-colors duration-200 md:hover:bg-accent/50 border border-border"
       >
         Return Home
-      </a>
+      </Link>
     </div>
   );
 }
