@@ -206,25 +206,33 @@ export function DataGrid<T extends Record<string, any>>({
     });
   }, [filteredData, sortConfig.field, sortConfig.direction]);
 
+  // Add virtualState to component state
+  const [virtualState, setVirtualState] = useState<VirtualState<T>>({
+    startIndex: 0,
+    endIndex: 50,
+    expandedRows: {},
+    visibleRows: []
+  });
+
   // Memoize visible rows calculation
   const visibleRows = useMemo(() => {
-    const startIndex = 0;
-    const endIndex = 50;
+    const startIndex = virtualState.startIndex;
+    const endIndex = virtualState.endIndex;
     return filteredAndSortedData.slice(startIndex, endIndex);
-  }, [filteredAndSortedData]);
+  }, [filteredAndSortedData, virtualState.startIndex, virtualState.endIndex]);
 
   const handleRowClick = useCallback((rowIndex: number, e: React.MouseEvent) => {
     const target = e.target as HTMLElement;
     if (target.closest('[data-dropdown], button, input, a')) return;
     if (openDropdown || isDropdownClosing || tooltipOpen) return;
 
-    // setVirtualState(prev => ({
-    //   ...prev,
-    //   expandedRows: {
-    //     ...prev.expandedRows,
-    //     [rowIndex]: !prev.expandedRows[rowIndex]
-    //   }
-    // }));
+    setVirtualState(prev => ({
+      ...prev,
+      expandedRows: {
+        ...prev.expandedRows,
+        [rowIndex]: !prev.expandedRows[rowIndex]
+      }
+    }));
   }, [openDropdown, isDropdownClosing, tooltipOpen]);
 
   // Optimize cell rendering with useCallback
@@ -271,7 +279,7 @@ export function DataGrid<T extends Record<string, any>>({
 
   // Optimize row rendering with useCallback
   const renderRow = useCallback((row: T, rowIndex: number) => {
-    const isExpanded = false; // virtualState.expandedRows[rowIndex];
+    const isExpanded = virtualState.expandedRows[rowIndex];
     return (
       <div
         key={rowIndex}
@@ -286,15 +294,15 @@ export function DataGrid<T extends Record<string, any>>({
         {columns.map(column => renderCell({ column, row, isExpanded }))}
       </div>
     );
-  }, [columns, getRowClassName, handleRowClick, renderCell]);
+  }, [columns, getRowClassName, handleRowClick, renderCell, virtualState.expandedRows]);
 
   // Memoize rendered rows
   const renderedRows = useMemo(() => {
     return visibleRows.map((row, idx) => {
-      const rowIndex = 0 + idx;
+      const rowIndex = virtualState.startIndex + idx;
       return renderRow(row, rowIndex);
     });
-  }, [visibleRows, renderRow]);
+  }, [visibleRows, renderRow, virtualState.startIndex]);
 
   const updateVisibleRows = useCallback(() => {
     const container = gridRef.current;
@@ -331,18 +339,19 @@ export function DataGrid<T extends Record<string, any>>({
       filteredAndSortedData.length
     );
 
-    // setVirtualState(prev => {
-    //   if (prev.startIndex === startIndex && prev.endIndex === endIndex) {
-    //     return prev;
-    //   }
+    setVirtualState(prev => {
+      if (prev.startIndex === startIndex && prev.endIndex === endIndex) {
+        return prev;
+      }
 
-    //   return {
-    //     ...prev,
-    //     startIndex,
-    //     endIndex
-    //   };
-    // });
-  }, [filteredAndSortedData.length]);
+      return {
+        ...prev,
+        startIndex,
+        endIndex,
+        visibleRows: filteredAndSortedData.slice(startIndex, endIndex)
+      };
+    });
+  }, [filteredAndSortedData]);
 
   // Optimize scroll handling with debounce for rapid scrolling
   const handleScroll = useCallback(() => {
@@ -480,10 +489,10 @@ export function DataGrid<T extends Record<string, any>>({
 
   const rowsStyles = useMemo(() => ({
     position: "absolute" as const,
-    top: `0px`,
+    top: `${virtualState.startIndex * ROW_HEIGHT}px`,
     left: 0,
     right: 0,
-  }), []);
+  }), [virtualState.startIndex]);
 
   // Optimize dropdown menu rendering with useCallback
   const renderDropdownMenu = useCallback((column: ColumnDef<T>) => {
