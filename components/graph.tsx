@@ -271,7 +271,7 @@ export default function RecommendationGraph() {
         <div className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
             {/* Node Details Panel */}
-            <div className="order-1 md:order-2 col-span-1 md:col-span-2 h-[300px] md:h-[70vh] border border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20 p-4 bg-[#ecfdf5] dark:bg-[#022c22] overflow-y-auto">
+            <div className="order-1 md:order-2 col-span-1 md:col-span-2 h-[300px] md:h-[70vh] border border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20 p-4 bg-[#ecfdf5] dark:bg-[#0a1a0a] overflow-y-auto">
               <div className="relative h-full">
                 <div className={`absolute inset-0 transition-opacity duration-200 ${!lastInteractedNode ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
                   <div className="flex flex-col items-center justify-center h-full text-text/70">
@@ -347,7 +347,7 @@ export default function RecommendationGraph() {
 
                               return bookEntries.length > 0 ? (
                                 <table className="w-full text-sm">
-                                  <thead className="bg-[#d1fae5] dark:bg-[#064e3b]">
+                                  <thead className="bg-[#d1fae5] dark:bg-[#0a1a0a]">
                                     <tr>
                                       <th className="text-left p-2 w-1/2">
                                         Book
@@ -370,7 +370,7 @@ export default function RecommendationGraph() {
                                         return (
                                           <tr
                                             key={index}
-                                            className="border-b last:border-b-0 border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20 hover:bg-[#a7f3d0] dark:hover:bg-[#065f46] cursor-pointer"
+                                            className="border-b last:border-b-0 border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20 hover:bg-[#a7f3d0] dark:hover:bg-[#0a1a0a]/50 cursor-pointer"
                                             onClick={() => {
                                               setExpandedRows((prev) => {
                                                 const next = new Set(prev);
@@ -463,7 +463,7 @@ export default function RecommendationGraph() {
               {/* Reset button overlay */}
               <button
                 onClick={handleResetZoom}
-                className="absolute top-3 right-3 z-10 px-3 py-1 text-sm border border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20 hover:bg-[#a7f3d0] dark:hover:bg-[#065f46]"
+                className="absolute top-3 right-3 z-10 px-3 py-1 text-sm border border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20 hover:bg-[#a7f3d0] dark:hover:bg-[#0a1a0a]/50 bg-[#f0f7f0]/80 dark:bg-[#0a1a0a]/80 backdrop-blur-sm"
               >
                 Reset View
               </button>
