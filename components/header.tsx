@@ -94,12 +94,12 @@ function HeaderContent() {
           >
             About
           </Link>
-          <button
-            className="px-3 py-3 text-text text-left transition-colors duration-200 md:hover:bg-accent/50 w-full"
-            onClick={handleMenuItemClick}
-          >
-            Theme
-          </button>
+          <div className="px-3 py-3">
+            <ThemeToggle 
+              className="text-text transition-colors duration-200 md:hover:bg-accent/50 w-full text-left" 
+              onClick={handleMenuItemClick}
+            />
+          </div>
         </div>
       </div>
     </div>
