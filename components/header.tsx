@@ -12,6 +12,7 @@ function HeaderContent() {
   const homeHref = currentParams ? `/?${currentParams}` : "/";
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
 
   const getHrefWithParams = (path: string) => {
     return currentParams ? `${path}?${currentParams}` : path;
@@ -19,7 +20,12 @@ function HeaderContent() {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+      if (
+        menuRef.current && 
+        !menuRef.current.contains(event.target as Node) &&
+        menuButtonRef.current &&
+        !menuButtonRef.current.contains(event.target as Node)
+      ) {
         setIsMenuOpen(false);
       }
     };
@@ -64,6 +70,7 @@ function HeaderContent() {
           <ThemeToggle className="min-w-[48px] p-2 h-10 md:hover:text-text text-text/70" />
         </div>
         <button
+          ref={menuButtonRef}
           className="md:hidden p-2 text-text/70 transition-colors duration-200 md:hover:text-text"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
         >
