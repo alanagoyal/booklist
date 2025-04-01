@@ -64,6 +64,7 @@ export default function RecommendationGraph() {
   const [hoveredNode, setHoveredNode] = useState<Node | null>(null);
   const [lastInteractedNode, setLastInteractedNode] = useState<Node | null>(null);
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const { theme } = useTheme();
 
   // Add comment for htis
@@ -142,6 +143,30 @@ export default function RecommendationGraph() {
     };
 
     fetchGraphData();
+  }, []);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (containerRef.current) {
+        // Update dimensions
+        setDimensions({
+          width: containerRef.current.clientWidth,
+          height: containerRef.current.clientHeight
+        });
+        
+        // Trigger graph update
+        if (graphRef.current) {
+          graphRef.current.d3ReheatSimulation();
+        }
+      }
+    };
+
+    // Initial dimensions
+    handleResize();
+
+    // Update on resize
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   // Get node color based on recommendation count
@@ -244,102 +269,14 @@ export default function RecommendationGraph() {
 
         {/* Graph */}
         <div className="space-y-4">
-          <div className="grid grid-cols-5 gap-4">
-            <div
-              ref={containerRef}
-              className="relative col-span-3 min-h-[500px] h-[70vh] border border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20 bg-[#f0f7f0] dark:bg-[#0a1a0a]"
-            >
-              {/* Reset button overlay */}
-              <button
-                onClick={handleResetZoom}
-                className="absolute top-3 right-3 z-10 px-3 py-1 text-sm border border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20 hover:bg-[#a7f3d0] dark:hover:bg-[#065f46]"
-              >
-                Reset View
-              </button>
-              {/* People count overlay */}
-              <div className="absolute bottom-5 right-5 z-10 text-text/70 text-xs whitespace-pre-line transition-all duration-200 bg-[#f0f7f0]/80 dark:bg-[#0a1a0a]/80 backdrop-blur-sm p-2 selection:bg-main selection:text-mtext">
-                {graphData.nodes.length} people
-              </div>
-              <ForceGraph2D
-                ref={graphRef}
-                graphData={graphData}
-                width={containerRef.current?.clientWidth ?? 0}
-                height={containerRef.current?.clientHeight ?? 0}
-                nodeLabel={(node: Node) => node.name}
-                nodeColor={getNodeColor}
-                nodeRelSize={4}
-                linkWidth={(link: Link) => (highlightLinks.has(link) ? 2 : 0.3)}
-                linkColor={() => (theme === "dark" ? "#f0f7f0" : "#0a1a0a")}
-                linkDirectionalParticles={(link: Link) =>
-                  highlightLinks.has(link) ? 4 : 0
-                }
-                linkDirectionalParticleWidth={(link: Link) =>
-                  highlightLinks.has(link) ? 2 : 0
-                }
-                linkDirectionalParticleSpeed={0.005}
-                linkOpacity={0.15}
-                onNodeHover={handleNodeHover}
-                onNodeClick={handleNodeClick}
-                onBackgroundClick={handleBackgroundClick}
-                cooldownTicks={100}
-                onEngineStop={() => {
-                  // Only zoom to fit if graph ref exists and no node is selected
-                  if (graphRef.current && !selectedNode) {
-                    graphRef.current.zoomToFit(400, 50);
-                  }
-                }}
-                onNodeDragEnd={(node: Node) => {
-                  // Update node position in graphData to maintain position after re-renders
-                  setGraphData((prev) => ({
-                    ...prev,
-                    nodes: prev.nodes.map((n) =>
-                      n.id === node.id ? { ...n, x: node.x, y: node.y } : n
-                    ),
-                  }));
-                }}
-                nodeCanvasObject={(
-                  node: Node,
-                  ctx: CanvasRenderingContext2D,
-                  globalScale: number
-                ) => {
-                  const { x, y, name } = node as Node & {
-                    x: number;
-                    y: number;
-                  };
-                  const fontSize = 12 / globalScale;
-                  const textWidth = ctx.measureText(name).width;
-                  const isHighlighted = highlightNodes.has(node.id);
-
-                  // Draw node circle
-                  ctx.beginPath();
-                  ctx.arc(x, y, 3, 0, 2 * Math.PI);
-                  ctx.fillStyle = getNodeColor(node as Node);
-                  ctx.fill();
-
-                  // Draw node border with width scaled by zoom
-                  ctx.strokeStyle = theme === "dark" ? "#f0f7f0" : "#0a1a0a";
-                  ctx.lineWidth = isHighlighted ? 0.5 / globalScale : 0.2 / globalScale;
-                  ctx.stroke();
-
-                  // Draw node label only when significantly zoomed in
-                  if (globalScale > 2.5) {
-                    ctx.fillStyle = theme === "dark" ? "#f0f7f0" : "#0a1a0a";
-                    ctx.font = `${fontSize}px monospace`;
-                    ctx.textAlign = "center";
-                    ctx.textBaseline = "top";
-                    ctx.fillText(name, x, y + 8);
-                  }
-                }}
-              />
-            </div>
-
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
             {/* Node Details Panel */}
-            <div className="col-span-2 min-h-[500px] h-[70vh] border border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20 p-4 bg-[#ecfdf5] dark:bg-[#022c22] overflow-y-auto">
+            <div className="order-1 md:order-2 col-span-1 md:col-span-2 h-[300px] md:h-[70vh] border border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20 p-4 bg-[#ecfdf5] dark:bg-[#022c22] overflow-y-auto">
               <div className="relative h-full">
                 <div className={`absolute inset-0 transition-opacity duration-200 ${!lastInteractedNode ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
                   <div className="flex flex-col items-center justify-center h-full text-text/70">
-                    <p className="text-base">Hover or click to explore connections</p>
-                    <p className="text-sm mt-2">Scroll to zoom in/out</p>
+                    <p className="text-base text-center">Hover or click to explore connections</p>
+                    <p className="text-sm mt-2 text-center">Scroll to zoom in/out</p>
                   </div>
                 </div>
 
@@ -516,6 +453,95 @@ export default function RecommendationGraph() {
                   })()}
                 </div>
               </div>
+            </div>
+
+            {/* Graph Container */}
+            <div
+              ref={containerRef}
+              className="relative order-2 md:order-1 col-span-1 md:col-span-3 min-h-[500px] h-[70vh] border border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20 bg-[#f0f7f0] dark:bg-[#0a1a0a] overflow-hidden"
+            >
+              {/* Reset button overlay */}
+              <button
+                onClick={handleResetZoom}
+                className="absolute top-3 right-3 z-10 px-3 py-1 text-sm border border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20 hover:bg-[#a7f3d0] dark:hover:bg-[#065f46]"
+              >
+                Reset View
+              </button>
+              {/* People count overlay */}
+              <div className="absolute bottom-5 right-5 z-10 text-text/70 text-xs whitespace-pre-line transition-all duration-200 bg-[#f0f7f0]/80 dark:bg-[#0a1a0a]/80 backdrop-blur-sm p-2 selection:bg-main selection:text-mtext">
+                {graphData.nodes.length} people
+              </div>
+              <ForceGraph2D
+                ref={graphRef}
+                graphData={graphData}
+                width={dimensions.width}
+                height={dimensions.height}
+                nodeLabel={(node: Node) => node.name}
+                nodeColor={getNodeColor}
+                nodeRelSize={4}
+                linkWidth={(link: Link) => (highlightLinks.has(link) ? 2 : 0.3)}
+                linkColor={() => (theme === "dark" ? "#f0f7f0" : "#0a1a0a")}
+                linkDirectionalParticles={(link: Link) =>
+                  highlightLinks.has(link) ? 4 : 0
+                }
+                linkDirectionalParticleWidth={(link: Link) =>
+                  highlightLinks.has(link) ? 2 : 0
+                }
+                linkDirectionalParticleSpeed={0.005}
+                linkOpacity={0.15}
+                onNodeHover={handleNodeHover}
+                onNodeClick={handleNodeClick}
+                onBackgroundClick={handleBackgroundClick}
+                cooldownTicks={100}
+                onEngineStop={() => {
+                  // Only zoom to fit if graph ref exists and no node is selected
+                  if (graphRef.current && !selectedNode) {
+                    graphRef.current.zoomToFit(400, 50);
+                  }
+                }}
+                onNodeDragEnd={(node: Node) => {
+                  // Update node position in graphData to maintain position after re-renders
+                  setGraphData((prev) => ({
+                    ...prev,
+                    nodes: prev.nodes.map((n) =>
+                      n.id === node.id ? { ...n, x: node.x, y: node.y } : n
+                    ),
+                  }));
+                }}
+                nodeCanvasObject={(
+                  node: Node,
+                  ctx: CanvasRenderingContext2D,
+                  globalScale: number
+                ) => {
+                  const { x, y, name } = node as Node & {
+                    x: number;
+                    y: number;
+                  };
+                  const fontSize = 12 / globalScale;
+                  const textWidth = ctx.measureText(name).width;
+                  const isHighlighted = highlightNodes.has(node.id);
+
+                  // Draw node circle
+                  ctx.beginPath();
+                  ctx.arc(x, y, 3, 0, 2 * Math.PI);
+                  ctx.fillStyle = getNodeColor(node as Node);
+                  ctx.fill();
+
+                  // Draw node border with width scaled by zoom
+                  ctx.strokeStyle = theme === "dark" ? "#f0f7f0" : "#0a1a0a";
+                  ctx.lineWidth = isHighlighted ? 0.5 / globalScale : 0.2 / globalScale;
+                  ctx.stroke();
+
+                  // Draw node label only when significantly zoomed in
+                  if (globalScale > 2.5) {
+                    ctx.fillStyle = theme === "dark" ? "#f0f7f0" : "#0a1a0a";
+                    ctx.font = `${fontSize}px monospace`;
+                    ctx.textAlign = "center";
+                    ctx.textBaseline = "top";
+                    ctx.fillText(name, x, y + 8);
+                  }
+                }}
+              />
             </div>
           </div>
         </div>
