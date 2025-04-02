@@ -266,6 +266,9 @@ export default function RecommendationGraph() {
     if (!query) {
       setSelectedNode(null);
       setHighlightNodes(new Set());
+      if (graphRef.current) {
+        graphRef.current.zoomToFit(400);
+      }
       return;
     }
 
