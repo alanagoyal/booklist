@@ -499,7 +499,7 @@ export default function RecommendationGraph() {
             {/* Reset button overlay */}
             <button
               onClick={handleResetZoom}
-              className="absolute top-3 right-3 z-10 px-3 py-1 text-sm border border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20 hover:bg-[#a7f3d0] dark:hover:bg-[#0a1a0a]/50 bg-[#f0f7f0]/80 dark:bg-[#0a1a0a]/80 backdrop-blur-sm"
+              className="absolute top-3 right-3 z-10 px-3 py-1 text-sm border border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20 hover:bg-[#a7f3d0] dark:hover:bg-accent/50 bg-[#f0f7f0]/80 dark:bg-[#0a1a0a]/80 backdrop-blur-sm transition-colors duration-200"
             >
               Reset View
             </button>
