@@ -271,8 +271,8 @@ export default function RecommendationGraph() {
         <div className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
             {/* Node Details Panel */}
-            <div className="order-1 md:order-2 col-span-1 md:col-span-2 h-[300px] md:h-[70vh] border border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20 p-4 bg-[#ecfdf5] dark:bg-[#0a1a0a] overflow-y-auto">
-              <div className="relative h-full">
+            <div className="order-1 md:order-2 col-span-1 md:col-span-2 h-[300px] md:h-[70vh] border border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20 p-4 bg-[#ecfdf5] dark:bg-[#0a1a0a] flex flex-col">
+              <div className="relative flex-1 overflow-hidden">
                 <div className={`absolute inset-0 transition-opacity duration-200 ${!lastInteractedNode ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
                   <div className="flex flex-col items-center justify-center h-full text-text/70">
                     <p className="text-base text-center">Hover or click to explore connections</p>
@@ -280,85 +280,87 @@ export default function RecommendationGraph() {
                   </div>
                 </div>
 
-                <div className={`absolute inset-0 transition-opacity duration-200 ${lastInteractedNode ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+                <div className={`absolute inset-0 transition-opacity duration-200 ${lastInteractedNode ? 'opacity-100' : 'opacity-0 pointer-events-none'} flex flex-col`}>
                   {lastInteractedNode && (() => {
                     const node = selectedNode || hoveredNode || lastInteractedNode;
                     return (
-                      <div className="space-y-4">
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <h3 className="text-lg font-bold">{node.name}</h3>
-                            <p className="text-sm">
-                              Recommended {node.recommendationCount} books
-                            </p>
-                            {node.details?.personType && (
-                              <p className="text-sm mt-1">
-                                Type: {node.details.personType}
+                      <div className="flex flex-col h-full">
+                        <div className="flex-none pb-4 bg-[#ecfdf5] dark:bg-[#0a1a0a]">
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <h3 className="text-lg font-bold">{node.name}</h3>
+                              <p className="text-sm">
+                                Recommended {node.recommendationCount} books
                               </p>
-                            )}
+                              {node.details?.personType && (
+                                <p className="text-sm mt-1">
+                                  Type: {node.details.personType}
+                                </p>
+                              )}
+                            </div>
+                            <Link 
+                              href={`/?recommenders=${encodeURIComponent(node.name)}`}
+                              className="text-text/70 transition-colors duration-200 hover:text-text"
+                            >
+                              <Expand className="w-5 h-5" />
+                            </Link>
                           </div>
-                          <Link 
-                            href={`/?recommenders=${encodeURIComponent(node.name)}`}
-                            className="text-text/70 transition-colors duration-200 hover:text-text"
-                          >
-                            <Expand className="w-5 h-5" />
-                          </Link>
-                        </div>
-
-                        <div>
-                          <h4 className="text-sm font-bold mb-2">
+                          <h4 className="text-sm font-bold mt-4">
                             Books and Recommenders
                           </h4>
-                          <div className="overflow-y-auto">
-                            {(() => {
-                              const connections = graphData.links.filter(
-                                (link) =>
-                                  (link.source as Node).id === node.id ||
-                                  (link.target as Node).id === node.id
-                              );
+                        </div>
 
-                              // Create a map of books to their recommenders
-                              const bookMap = new Map<string, Set<string>>();
-                              connections.forEach((link) => {
-                                const otherNode =
-                                  (link.source as Node).id === node.id
-                                    ? (link.target as Node)
-                                    : (link.source as Node);
+                        <div className="overflow-y-auto flex-1">
+                          <div>
+                            <table className="w-full text-sm">
+                              <thead className="bg-[#d1fae5] dark:bg-[#0a1a0a] sticky top-0">
+                                <tr>
+                                  <th className="text-left p-2 w-1/2">
+                                    Book
+                                  </th>
+                                  <th className="text-left p-2 w-1/2">
+                                    Recommender
+                                  </th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {(() => {
+                                  const connections = graphData.links.filter(
+                                    (link) =>
+                                      (link.source as Node).id === node.id ||
+                                      (link.target as Node).id === node.id
+                                  );
 
-                                link.books.forEach((book) => {
-                                  if (!bookMap.has(book)) {
-                                    bookMap.set(book, new Set());
-                                  }
-                                  bookMap.get(book)!.add(otherNode.name);
-                                });
-                              });
+                                  // Create a map of books to their recommenders
+                                  const bookMap = new Map<string, Set<string>>();
+                                  connections.forEach((link) => {
+                                    const otherNode =
+                                      (link.source as Node).id === node.id
+                                        ? (link.target as Node)
+                                        : (link.source as Node);
 
-                              // Convert to array and sort by number of recommenders, then alphabetically
-                              const bookEntries = Array.from(
-                                bookMap.entries()
-                              ).sort((a, b) => {
-                                // First sort by number of recommenders (descending)
-                                const recommendersDiff = b[1].size - a[1].size;
-                                // If same number of recommenders, sort alphabetically
-                                return recommendersDiff !== 0
-                                  ? recommendersDiff
-                                  : a[0].localeCompare(b[0]);
-                              });
+                                    link.books.forEach((book) => {
+                                      if (!bookMap.has(book)) {
+                                        bookMap.set(book, new Set());
+                                      }
+                                      bookMap.get(book)!.add(otherNode.name);
+                                    });
+                                  });
 
-                              return bookEntries.length > 0 ? (
-                                <table className="w-full text-sm">
-                                  <thead className="bg-[#d1fae5] dark:bg-[#0a1a0a]">
-                                    <tr>
-                                      <th className="text-left p-2 w-1/2">
-                                        Book
-                                      </th>
-                                      <th className="text-left p-2 w-1/2">
-                                        Recommended By
-                                      </th>
-                                    </tr>
-                                  </thead>
-                                  <tbody>
-                                    {bookEntries.map(
+                                  // Convert to array and sort by number of recommenders, then alphabetically
+                                  const bookEntries = Array.from(
+                                    bookMap.entries()
+                                  ).sort((a, b) => {
+                                    // First sort by number of recommenders (descending)
+                                    const recommendersDiff = b[1].size - a[1].size;
+                                    // If same number of recommenders, sort alphabetically
+                                    return recommendersDiff !== 0
+                                      ? recommendersDiff
+                                      : a[0].localeCompare(b[0]);
+                                  });
+
+                                  return bookEntries.length > 0 ? (
+                                    bookEntries.map(
                                       ([book, recommenders], index) => {
                                         const recommendersList =
                                           Array.from(recommenders);
@@ -437,15 +439,15 @@ export default function RecommendationGraph() {
                                           </tr>
                                         );
                                       }
-                                    )}
-                                  </tbody>
-                                </table>
-                              ) : (
-                                <p className="text-sm text-text/70">
-                                  No books found.
-                                </p>
-                              );
-                            })()}
+                                    )
+                                  ) : (
+                                    <p className="text-sm text-text/70">
+                                      No books found.
+                                    </p>
+                                  );
+                                })()}
+                              </tbody>
+                            </table>
                           </div>
                         </div>
                       </div>
