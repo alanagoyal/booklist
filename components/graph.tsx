@@ -313,7 +313,7 @@ export default function RecommendationGraph() {
                         <div className="overflow-y-auto flex-1">
                           <div>
                             <table className="w-full text-sm">
-                              <thead className="bg-[#d1fae5] dark:bg-[#0a1a0a] sticky top-0">
+                              <thead className="bg-[#d1fae5] dark:bg-[#065f46] sticky top-0">
                                 <tr>
                                   <th className="text-left p-2 w-1/2">
                                     Book
@@ -372,7 +372,7 @@ export default function RecommendationGraph() {
                                         return (
                                           <tr
                                             key={index}
-                                            className="border-b last:border-b-0 border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20 hover:bg-[#a7f3d0] dark:hover:bg-[#0a1a0a]/50 cursor-pointer"
+                                            className="border-b last:border-b-0 border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20 hover:bg-[#a7f3d0] dark:hover:bg-accent/50 cursor-pointer transition-colors duration-200"
                                             onClick={() => {
                                               setExpandedRows((prev) => {
                                                 const next = new Set(prev);
