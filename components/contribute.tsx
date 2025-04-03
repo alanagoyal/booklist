@@ -95,8 +95,8 @@ export default function Contribute() {
       <div className="max-w-2xl mx-auto">
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
-            <label htmlFor="name" className="block text-text">
-              Your Name
+            <label htmlFor="name" className="block text-text font-bold">
+              Name
             </label>
             <input
               type="text"
@@ -110,8 +110,8 @@ export default function Contribute() {
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="url" className="block text-text">
-              Your URL (optional)
+            <label htmlFor="url" className="block text-text font-bold">
+              URL
             </label>
             <input
               type="url"
@@ -125,7 +125,7 @@ export default function Contribute() {
 
           <div className="space-y-4">
             <div className="flex justify-between items-center">
-              <label className="block text-text">Book Recommendations</label>
+              <label className="block text-text font-bold">Recommendations</label>
               <button
                 type="button"
                 onClick={addBook}
@@ -207,11 +207,11 @@ function BookInput({ book, index, canRemove, onRemove, onChange }: BookInputProp
       <div className="space-y-2">
         <input
           type="text"
-          placeholder="Book Title"
+          placeholder="Title"
           required
           value={book.title}
           onChange={(e) => onChange(index, 'title', e.target.value)}
-          className="w-full bg-background text-text border-border border p-2 font-base selection:bg-main selection:text-mtext"
+          className="w-full bg-background text-text border-border border p-2 font-base selection:bg-main selection:text-mtext rounded-none"
         />
         <input
           type="text"
@@ -219,7 +219,7 @@ function BookInput({ book, index, canRemove, onRemove, onChange }: BookInputProp
           required
           value={book.author}
           onChange={(e) => onChange(index, 'author', e.target.value)}
-          className="w-full bg-background text-text border-border border p-2 font-base selection:bg-main selection:text-mtext"
+          className="w-full bg-background text-text border-border border p-2 font-base selection:bg-main selection:text-mtext rounded-none"
         />
         
         <div className="relative">
@@ -228,7 +228,7 @@ function BookInput({ book, index, canRemove, onRemove, onChange }: BookInputProp
             placeholder="Amazon URL"
             value={loading ? 'Generating link...' : book.amazonUrl || ''}
             onChange={(e) => onChange(index, 'amazonUrl', e.target.value)}
-            className={`w-full bg-background text-text border-border border p-2 ${book.amazonUrl ? 'pr-16' : 'pr-2'} font-base selection:bg-main selection:text-mtext truncate ${loading ? 'text-text/70' : ''}`}
+            className={`w-full bg-background text-text border-border border p-2 ${book.amazonUrl ? 'pr-16' : 'pr-2'} font-base selection:bg-main selection:text-mtext truncate ${loading ? 'text-text/70' : ''} rounded-none`}
           />
           <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center">
             {!loading && (

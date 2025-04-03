@@ -486,7 +486,7 @@ export default function RecommendationGraph() {
                   placeholder="Search by recommender"
                   value={searchQuery}
                   onChange={(e) => handleSearch(e.target.value)}
-                  className="w-full px-3 py-1 text-sm border border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20 bg-[#f0f7f0]/80 dark:bg-[#0a1a0a]/80 backdrop-blur-sm text-text placeholder:text-text/70 selection:bg-main selection:text-mtext focus:outline-none text-ellipsis"
+                  className="w-full px-3 py-1 text-sm border border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20 bg-[#f0f7f0]/80 dark:bg-[#0a1a0a]/80 backdrop-blur-sm text-text placeholder:text-text/70 selection:bg-main selection:text-mtext focus:outline-none text-ellipsis rounded-none"
                 />
                 {searchQuery && (
                   <button
