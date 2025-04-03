@@ -98,8 +98,8 @@ function HeaderContent() {
       </div>
       <div 
         ref={menuRef}
-        className={`absolute top-[63px] inset-x-0 bg-background border-y border-border z-50 transform transition-all duration-300 origin-top ${
-          isMenuOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2 pointer-events-none'
+        className={`absolute top-16 inset-x-0 bg-background border-y border-border z-50 transition-opacity duration-300 ${
+          isMenuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
         }`}
       >
         <div className="flex flex-col p-3 gap-3">
