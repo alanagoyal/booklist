@@ -6,9 +6,10 @@ import { useEffect, useState } from 'react';
 type ThemeToggleProps = {
   className?: string;
   onClick?: () => void;
+  children?: React.ReactNode;
 };
 
-export function ThemeToggle({ className = "", onClick }: ThemeToggleProps) {
+export function ThemeToggle({ className = "", onClick, children }: ThemeToggleProps) {
   const [mounted, setMounted] = useState(false);
   const { theme, setTheme, resolvedTheme } = useTheme();
 

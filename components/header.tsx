@@ -1,13 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, usePathname } from "next/navigation";
 import { ThemeToggle } from "./theme-toggle";
 import { Suspense, useState, useRef, useEffect } from "react";
 import { Menu } from "lucide-react";
 
 function HeaderContent() {
   const searchParams = useSearchParams();
+  const pathname = usePathname();
   const currentParams = searchParams.toString();
   const homeHref = currentParams ? `/?${currentParams}` : "/";
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -16,6 +17,13 @@ function HeaderContent() {
 
   const getHrefWithParams = (path: string) => {
     return currentParams ? `${path}?${currentParams}` : path;
+  };
+
+  const getLinkClasses = (path: string) => {
+    const isActive = pathname === path;
+    return path === '/' 
+      ? 'transition-colors duration-200' 
+      : `transition-colors duration-200 border-b-2 ${isActive ? 'border-text' : 'border-transparent'}`;
   };
 
   useEffect(() => {
@@ -46,7 +54,10 @@ function HeaderContent() {
   }, []);
 
   const handleMenuItemClick = () => {
-    setIsMenuOpen(false);
+    // Add a delay before closing to allow for transition
+    setTimeout(() => {
+      setIsMenuOpen(false);
+    }, 150);
   };
 
   return (
@@ -54,15 +65,23 @@ function HeaderContent() {
       <div className="flex items-center gap-4 px-3">
         <Link
           href={homeHref}
-          className="font-bold font-display text-xl cursor-pointer"
+          className={`font-bold font-display text-xl cursor-pointer ${getLinkClasses('/')}`}
         >
           BOOKLIST
         </Link>
         <div className="hidden md:flex items-center gap-4">
-          <Link href={getHrefWithParams("/graph")}>Graph</Link>
-          <Link href={getHrefWithParams("/roulette")}>Roulette</Link>
-          <Link href={getHrefWithParams("/contribute")}>Contribute</Link>
-          <Link href={getHrefWithParams("/about")}>About</Link>
+          <div className="flex">
+            <Link href={getHrefWithParams("/graph")} className={`text-width ${getLinkClasses('/graph')}`}>Graph</Link>
+          </div>
+          <div className="flex">
+            <Link href={getHrefWithParams("/roulette")} className={`text-width ${getLinkClasses('/roulette')}`}>Roulette</Link>
+          </div>
+          <div className="flex">
+            <Link href={getHrefWithParams("/contribute")} className={`text-width ${getLinkClasses('/contribute')}`}>Contribute</Link>
+          </div>
+          <div className="flex">
+            <Link href={getHrefWithParams("/about")} className={`text-width ${getLinkClasses('/about')}`}>About</Link>
+          </div>
         </div>
       </div>
       <div className="flex items-center gap-2 px-3">
@@ -79,44 +98,54 @@ function HeaderContent() {
       </div>
       <div 
         ref={menuRef}
-        className={`absolute top-[63px] inset-x-0 bg-background border-y border-border z-50 transform transition-[opacity,transform] duration-200 origin-top ${
+        className={`absolute top-[63px] inset-x-0 bg-background border-y border-border z-50 transform transition-all duration-300 origin-top ${
           isMenuOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2 pointer-events-none'
         }`}
       >
-        <div className="flex flex-col divide-y divide-border">
-          <Link
-            href={getHrefWithParams("/graph")}
-            className="px-3 py-3 text-text transition-colors duration-200 md:hover:bg-accent/50"
-            onClick={handleMenuItemClick}
-          >
-            Graph
-          </Link>
-          <Link
-            href={getHrefWithParams("/roulette")}
-            className="px-3 py-3 text-text transition-colors duration-200 md:hover:bg-accent/50"
-            onClick={handleMenuItemClick}
-          >
-            Roulette
-          </Link>
-          <Link
-            href={getHrefWithParams("/contribute")}
-            className="px-3 py-3 text-text transition-colors duration-200 md:hover:bg-accent/50"
-            onClick={handleMenuItemClick}
-          >
-            Contribute
-          </Link>
-          <Link
-            href={getHrefWithParams("/about")}
-            className="px-3 py-3 text-text transition-colors duration-200 md:hover:bg-accent/50"
-            onClick={handleMenuItemClick}
-          >
-            About
-          </Link>
-          <div className="px-3 py-3">
-            <ThemeToggle 
-              className="text-text transition-colors duration-200 md:hover:bg-accent/50 w-full text-left" 
+        <div className="flex flex-col p-3 gap-3">
+          <div className="flex">
+            <Link
+              href={getHrefWithParams("/graph")}
+              className={`text-text transition-colors duration-200 ${getLinkClasses('/graph')}`}
               onClick={handleMenuItemClick}
-            />
+            >
+              Graph
+            </Link>
+          </div>
+          <div className="flex">
+            <Link
+              href={getHrefWithParams("/roulette")}
+              className={`text-text transition-colors duration-200 ${getLinkClasses('/roulette')}`}
+              onClick={handleMenuItemClick}
+            >
+              Roulette
+            </Link>
+          </div>
+          <div className="flex">
+            <Link
+              href={getHrefWithParams("/contribute")}
+              className={`text-text transition-colors duration-200 ${getLinkClasses('/contribute')}`}
+              onClick={handleMenuItemClick}
+            >
+              Contribute
+            </Link>
+          </div>
+          <div className="flex">
+            <Link
+              href={getHrefWithParams("/about")}
+              className={`text-text transition-colors duration-200 ${getLinkClasses('/about')}`}
+              onClick={handleMenuItemClick}
+            >
+              About
+            </Link>
+          </div>
+          <div className="flex">
+            <ThemeToggle 
+              className={`text-text transition-colors duration-200 ${getLinkClasses('theme')}`}
+              onClick={handleMenuItemClick}
+            >
+              Theme
+            </ThemeToggle>
           </div>
         </div>
       </div>
