@@ -479,14 +479,14 @@ export default function RecommendationGraph() {
             className="relative order-2 md:order-1 col-span-1 md:col-span-3 min-h-[500px] h-[70vh] border border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20 bg-[#f0f7f0] dark:bg-[#0a1a0a] overflow-hidden"
           >
             {/* Search input overlay */}
-            <div className="absolute top-3 left-3 z-10 w-64">
-              <div className="relative">
+            <div className="absolute top-3 left-3 right-3 z-10 flex gap-2">
+              <div className="flex-1 relative">
                 <input
                   type="text"
-                  placeholder="Search for a recommender"
+                  placeholder="Search by recommender"
                   value={searchQuery}
                   onChange={(e) => handleSearch(e.target.value)}
-                  className="w-full px-3 py-1 text-sm border border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20 bg-[#f0f7f0]/80 dark:bg-[#0a1a0a]/80 backdrop-blur-sm text-text placeholder:text-text/70 selection:bg-main selection:text-mtext focus:outline-none"
+                  className="w-full px-3 py-1 text-sm border border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20 bg-[#f0f7f0]/80 dark:bg-[#0a1a0a]/80 backdrop-blur-sm text-text placeholder:text-text/70 selection:bg-main selection:text-mtext focus:outline-none text-ellipsis"
                 />
                 {searchQuery && (
                   <button
@@ -497,15 +497,14 @@ export default function RecommendationGraph() {
                   </button>
                 )}
               </div>
+              <button
+                onClick={handleResetZoom}
+                className="w-28 px-3 py-1 text-sm border border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20 bg-[#f0f7f0]/80 dark:bg-[#0a1a0a]/80 backdrop-blur-sm text-text/70 transition-colors duration-200 md:hover:text-text md:hover:bg-accent/50"
+              >
+                Reset View
+              </button>
             </div>
 
-            {/* Reset button overlay */}
-            <button
-              onClick={handleResetZoom}
-              className="absolute top-3 right-3 z-10 px-3 py-1 text-sm border border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20 hover:bg-[#a7f3d0] dark:hover:bg-accent/50 bg-[#f0f7f0]/80 dark:bg-[#0a1a0a]/80 backdrop-blur-sm transition-colors duration-200"
-            >
-              Reset View
-            </button>
             {/* People count overlay */}
             <div className="absolute bottom-5 right-5 z-10 text-text/70 text-xs whitespace-pre-line transition-all duration-200 bg-[#f0f7f0]/80 dark:bg-[#0a1a0a]/80 backdrop-blur-sm p-2 selection:bg-main selection:text-mtext">
               {graphData.nodes.length} people
