@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import { siteConfig } from "@/config/site";
 import Providers from "./providers";
-import { GeistMono } from "geist/font/mono";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/header";
+
+const inter = Inter({ subsets: ["latin"] });
 
 export const viewport = {
   themeColor: "#121212",
@@ -41,7 +43,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning className={GeistMono.className}>
+    <html lang="en" suppressHydrationWarning className={inter.className}>
       <head>
         {/* Apple-specific meta tags for status bar appearance */}
         <meta name="apple-mobile-web-app-capable" content="yes" />
