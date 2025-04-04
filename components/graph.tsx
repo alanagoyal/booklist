@@ -473,33 +473,35 @@ export default function RecommendationGraph() {
           }`}
         >
           {lastInteractedNode && (
-            <div className="p-4 overflow-y-auto" style={{ maxHeight: "calc(70vh)" }}>
-              <div className="flex justify-between items-start mb-4">
-                <div>
-                  <h3 className="text-lg font-bold">{lastInteractedNode.name}</h3>
-                  <p className="text-sm">
-                    Recommended {lastInteractedNode.recommendationCount} books
-                  </p>
-                  {lastInteractedNode.details?.personType && (
-                    <p className="text-sm mt-1">
-                      Type: {lastInteractedNode.details.personType}
+            <div className="p-4 flex flex-col h-[70vh]">
+              <div className="sticky top-0 bg-background z-10 pb-4">
+                <div className="flex justify-between items-start mb-4">
+                  <div>
+                    <h3 className="text-lg font-bold">{lastInteractedNode.name}</h3>
+                    <p className="text-sm">
+                      Recommended {lastInteractedNode.recommendationCount} books
                     </p>
-                  )}
+                    {lastInteractedNode.details?.personType && (
+                      <p className="text-sm mt-1">
+                        Type: {lastInteractedNode.details.personType}
+                      </p>
+                    )}
+                  </div>
+                  <Link 
+                    href={`/?recommenders=${encodeURIComponent(lastInteractedNode.name)}`}
+                    className="text-text/70 transition-colors duration-200 hover:text-text"
+                  >
+                    <Expand className="w-5 h-5" />
+                  </Link>
                 </div>
-                <Link 
-                  href={`/?recommenders=${encodeURIComponent(lastInteractedNode.name)}`}
-                  className="text-text/70 transition-colors duration-200 hover:text-text"
-                >
-                  <Expand className="w-5 h-5" />
-                </Link>
-              </div>
 
-              <div>
-                <h4 className="text-sm font-bold mb-4">
-                  Books and Recommenders
-                </h4>
+                <div>
+                  <h4 className="text-sm font-bold">
+                    Books and Recommenders
+                  </h4>
+                </div>
               </div>
-              <div className="overflow-hidden">
+              <div className="overflow-y-auto flex-1">
                 <table className="w-full text-sm">
                   <thead className="bg-[#d1fae5] dark:bg-[#065f46] sticky top-0">
                     <tr>
