@@ -233,16 +233,15 @@ export default function RecommendationGraph() {
       setHighlightNodes(new Set(node ? [node.id] : []));
     } else {
       setSelectedNode(node);
-      setIsMobileDrawerOpen(true);
       if (node) {
         setLastInteractedNode(node);
       }
       setHighlightNodes(new Set(node ? [node.id] : []));
+      setIsMobileDrawerOpen(true);
     }
     if (node) {
       // Center view on clicked node
-      graphRef.current?.centerAt(node.x, node.y, 1000);
-      graphRef.current?.zoom(2.5, 1000);
+      centerOnNode(node);
     }
   };
 
@@ -271,20 +270,34 @@ export default function RecommendationGraph() {
     setSearchQuery(query);
     if (!query) {
       setSelectedNode(null);
+      setHoveredNode(null);
+      setLastInteractedNode(null);
       setHighlightNodes(new Set());
+      setIsMobileDrawerOpen(false);
       if (graphRef.current) {
         graphRef.current.zoomToFit(400);
       }
       return;
     }
 
-    const lowerQuery = query.toLowerCase();
     const matchedNode = graphData.nodes.find((node) =>
-      node.name.toLowerCase().includes(lowerQuery)
+      node.name.toLowerCase().includes(query.toLowerCase())
     );
 
     if (matchedNode) {
-      handleNodeClick(matchedNode);
+      setSelectedNode(null);
+      setHoveredNode(matchedNode);
+      setLastInteractedNode(matchedNode);
+      setHighlightNodes(new Set([matchedNode.id]));
+      setIsMobileDrawerOpen(false);
+      centerOnNode(matchedNode);
+    }
+  };
+
+  const centerOnNode = (node: Node) => {
+    if (graphRef.current) {
+      graphRef.current.centerAt(node.x, node.y, 1000);
+      graphRef.current.zoom(2.5, 1000);
     }
   };
 
@@ -307,12 +320,12 @@ export default function RecommendationGraph() {
                     </p>
                   )}
                 </div>
-                <button
-                  onClick={handleBackgroundClick}
+                <Link 
+                  href={`/?recommenders=${encodeURIComponent(lastInteractedNode.name)}`}
                   className="text-text/70 transition-colors duration-200 hover:text-text"
                 >
-                  <X className="w-5 h-5" />
-                </button>
+                  <Expand className="w-5 h-5" />
+                </Link>
               </div>
               <h4 className="text-sm font-bold mt-4">
                 Books and Recommenders
@@ -418,7 +431,8 @@ export default function RecommendationGraph() {
                                         >
                                           {recommender}
                                         </span>
-                                        {idx < recommendersList.length - 1 && ", "}
+                                        {idx < recommendersList.length - 1 &&
+                                          ", "}
                                       </span>
                                     ))}
                                   </div>
@@ -454,12 +468,12 @@ export default function RecommendationGraph() {
           onClick={handleBackgroundClick}
         />
         <div
-          className={`absolute bottom-0 left-0 right-0 bg-[#ecfdf5] dark:bg-[#0a1a0a] border-t border-border transition-transform duration-200 max-h-[90vh] ${
+          className={`absolute bottom-0 left-0 right-0 bg-[#ecfdf5] dark:bg-[#0a1a0a] border-t border-border transition-transform duration-200 max-h-[70vh] ${
             isMobileDrawerOpen ? "translate-y-0" : "translate-y-full"
           }`}
         >
           {lastInteractedNode && (
-            <div className="p-4 overflow-y-auto" style={{ maxHeight: "calc(90vh)" }}>
+            <div className="p-4 overflow-y-auto" style={{ maxHeight: "calc(70vh)" }}>
               <div className="flex justify-between items-start mb-4">
                 <div>
                   <h3 className="text-lg font-bold">{lastInteractedNode.name}</h3>
@@ -472,12 +486,12 @@ export default function RecommendationGraph() {
                     </p>
                   )}
                 </div>
-                <button
-                  onClick={handleBackgroundClick}
+                <Link 
+                  href={`/?recommenders=${encodeURIComponent(lastInteractedNode.name)}`}
                   className="text-text/70 transition-colors duration-200 hover:text-text"
                 >
-                  <X className="w-5 h-5" />
-                </button>
+                  <Expand className="w-5 h-5" />
+                </Link>
               </div>
 
               <div>
