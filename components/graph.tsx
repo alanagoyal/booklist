@@ -223,24 +223,11 @@ export default function RecommendationGraph() {
 
   // Handle node click
   const handleNodeClick = (node: Node | null) => {
-    if (node?.id === selectedNode?.id) {
-      setSelectedNode(null);
-      setHoveredNode(node);
-      setIsMobileDrawerOpen(false);
-      if (node) {
-        setLastInteractedNode(node);
-      }
-      setHighlightNodes(new Set(node ? [node.id] : []));
-    } else {
-      setSelectedNode(node);
-      if (node) {
-        setLastInteractedNode(node);
-      }
-      setHighlightNodes(new Set(node ? [node.id] : []));
-      setIsMobileDrawerOpen(true);
-    }
     if (node) {
-      // Center view on clicked node
+      setSelectedNode(node);
+      setLastInteractedNode(node);
+      setHighlightNodes(new Set([node.id]));
+      setIsMobileDrawerOpen(true);
       centerOnNode(node);
     }
   };
@@ -286,11 +273,10 @@ export default function RecommendationGraph() {
     );
 
     if (matchedNode) {
-      setSelectedNode(null);
+      setSelectedNode(matchedNode);
       setHoveredNode(matchedNode);
       setLastInteractedNode(matchedNode);
       setHighlightNodes(new Set([matchedNode.id]));
-      setIsMobileDrawerOpen(false);
       centerOnNode(matchedNode);
     }
   };
