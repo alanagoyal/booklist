@@ -260,6 +260,7 @@ export default function RecommendationGraph() {
     setHighlightNodes(new Set());
     setHighlightLinks(new Set());
     setExpandedRows(new Set());
+    setSearchQuery("");
     if (graphRef.current) {
       graphRef.current.zoomToFit(400);
     }
