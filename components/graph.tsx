@@ -62,10 +62,13 @@ export default function RecommendationGraph() {
   const [highlightLinks, setHighlightLinks] = useState(new Set());
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
   const [hoveredNode, setHoveredNode] = useState<Node | null>(null);
-  const [lastInteractedNode, setLastInteractedNode] = useState<Node | null>(null);
+  const [lastInteractedNode, setLastInteractedNode] = useState<Node | null>(
+    null
+  );
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const [searchQuery, setSearchQuery] = useState("");
+  const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
   const { theme } = useTheme();
 
   // Add comment for htis
@@ -152,9 +155,9 @@ export default function RecommendationGraph() {
         // Update dimensions
         setDimensions({
           width: containerRef.current.clientWidth,
-          height: containerRef.current.clientHeight
+          height: containerRef.current.clientHeight,
         });
-        
+
         // Trigger graph update
         if (graphRef.current) {
           graphRef.current.d3ReheatSimulation();
@@ -166,8 +169,8 @@ export default function RecommendationGraph() {
     handleResize();
 
     // Update on resize
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   // Get node color based on recommendation count
@@ -220,24 +223,12 @@ export default function RecommendationGraph() {
 
   // Handle node click
   const handleNodeClick = (node: Node | null) => {
-    if (node?.id === selectedNode?.id) {
-      setSelectedNode(null);
-      setHoveredNode(node);
-      if (node) {
-        setLastInteractedNode(node);
-      }
-      setHighlightNodes(new Set(node ? [node.id] : []));
-    } else {
-      setSelectedNode(node);
-      if (node) {
-        setLastInteractedNode(node);
-      }
-      setHighlightNodes(new Set(node ? [node.id] : []));
-    }
     if (node) {
-      // Center view on clicked node
-      graphRef.current?.centerAt(node.x, node.y, 1000);
-      graphRef.current?.zoom(2.5, 1000);
+      setSelectedNode(node);
+      setLastInteractedNode(node);
+      setHighlightNodes(new Set([node.id]));
+      setIsMobileDrawerOpen(true);
+      centerOnNode(node);
     }
   };
 
@@ -246,6 +237,7 @@ export default function RecommendationGraph() {
     setSelectedNode(null);
     setHoveredNode(null);
     setHighlightNodes(new Set());
+    setIsMobileDrawerOpen(false);
   };
 
   const handleResetZoom = () => {
@@ -255,6 +247,7 @@ export default function RecommendationGraph() {
     setHighlightNodes(new Set());
     setHighlightLinks(new Set());
     setExpandedRows(new Set());
+    setSearchQuery("");
     if (graphRef.current) {
       graphRef.current.zoomToFit(400);
     }
@@ -265,323 +258,474 @@ export default function RecommendationGraph() {
     setSearchQuery(query);
     if (!query) {
       setSelectedNode(null);
+      setHoveredNode(null);
+      setLastInteractedNode(null);
       setHighlightNodes(new Set());
+      setIsMobileDrawerOpen(false);
       if (graphRef.current) {
         graphRef.current.zoomToFit(400);
       }
       return;
     }
 
-    const lowerQuery = query.toLowerCase();
-    const matchedNode = graphData.nodes.find(node => 
-      node.name.toLowerCase().includes(lowerQuery)
+    const matchedNode = graphData.nodes.find((node) =>
+      node.name.toLowerCase().includes(query.toLowerCase())
     );
 
     if (matchedNode) {
-      handleNodeClick(matchedNode);
+      setSelectedNode(matchedNode);
+      setHoveredNode(matchedNode);
+      setLastInteractedNode(matchedNode);
+      setHighlightNodes(new Set([matchedNode.id]));
+      centerOnNode(matchedNode);
+    }
+  };
+
+  const centerOnNode = (node: Node) => {
+    if (graphRef.current) {
+      graphRef.current.centerAt(node.x, node.y, 1000);
+      graphRef.current.zoom(2.5, 1000);
     }
   };
 
   return (
-    <div className="flex flex-col space-y-4">
-      <div className="flex flex-col space-y-2">
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-          {/* Node Details Panel */}
-          <div className="order-1 md:order-2 col-span-1 md:col-span-2 h-[300px] md:h-[70vh] border border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20 p-4 bg-[#ecfdf5] dark:bg-[#0a1a0a] flex flex-col">
-            <div className="relative flex-1 overflow-hidden">
-              <div className={`absolute inset-0 transition-opacity duration-200 ${!lastInteractedNode ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
-                <div className="flex flex-col items-center justify-center h-full text-text/70">
-                  <p className="text-base text-center">Hover or click to explore connections</p>
-                  <p className="text-sm mt-2 text-center">Scroll to zoom in/out</p>
+    <div className="h-full grid grid-cols-1 md:grid-cols-5">
+      {/* Node Details Panel - Desktop */}
+      <div className="hidden md:flex order-2 col-span-2 h-full border-l border-border bg-[#ecfdf5] dark:bg-[#0a1a0a] flex-col overflow-hidden">
+        {lastInteractedNode ? (
+          <div className="flex flex-col min-h-0 flex-1">
+            <div className="p-4 bg-background z-10">
+              <div className="flex justify-between items-start">
+                <div>
+                  <h3 className="text-lg font-bold">{lastInteractedNode.name}</h3>
+                  <p className="text-sm">
+                    Recommended {lastInteractedNode.recommendationCount} books
+                  </p>
+                  {lastInteractedNode.details?.personType && (
+                    <p className="text-sm mt-1">
+                      Type: {lastInteractedNode.details.personType}
+                    </p>
+                  )}
+                </div>
+                <Link 
+                  href={`/?recommenders=${encodeURIComponent(lastInteractedNode.name)}`}
+                  className="text-text/70 transition-colors duration-200 hover:text-text"
+                >
+                  <Expand className="w-5 h-5" />
+                </Link>
+              </div>
+              <h4 className="text-sm font-bold mt-4">
+                Books and Recommenders
+              </h4>
+            </div>
+
+            <div className="overflow-y-auto flex-1 px-4 pb-4">
+              <table className="w-full text-sm">
+                <thead className="bg-[#d1fae5] dark:bg-[#065f46] sticky top-0 z-10">
+                  <tr>
+                    <th className="text-left p-2 w-1/2">Book</th>
+                    <th className="text-left p-2 w-1/2">Recommender</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(() => {
+                    const connections = graphData.links.filter(
+                      (link) =>
+                        (link.source as Node).id === lastInteractedNode.id ||
+                        (link.target as Node).id === lastInteractedNode.id
+                    );
+
+                    // Create a map of books to their recommenders
+                    const bookMap = new Map<string, Set<string>>();
+                    connections.forEach((link) => {
+                      const otherNode =
+                        (link.source as Node).id === lastInteractedNode.id
+                          ? (link.target as Node)
+                          : (link.source as Node);
+
+                      link.books.forEach((book) => {
+                        if (!bookMap.has(book)) {
+                          bookMap.set(book, new Set());
+                        }
+                        bookMap.get(book)!.add(otherNode.name);
+                      });
+                    });
+
+                    // Convert to array and sort by number of recommenders, then alphabetically
+                    const bookEntries = Array.from(bookMap.entries()).sort(
+                      (a, b) => {
+                        // First sort by number of recommenders (descending)
+                        const recommendersDiff = b[1].size - a[1].size;
+                        // If same number of recommenders, sort alphabetically
+                        return recommendersDiff !== 0
+                          ? recommendersDiff
+                          : a[0].localeCompare(b[0]);
+                      }
+                    );
+
+                    return bookEntries.length > 0 ? (
+                      bookEntries.map(([book, recommenders], index) => {
+                        const recommendersList = Array.from(recommenders);
+                        const isExpanded = expandedRows.has(book);
+
+                        return (
+                          <tr
+                            key={index}
+                            className="border-b last:border-b-0 border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20 hover:bg-[#a7f3d0] dark:hover:bg-[#0a1a0a]/50 cursor-pointer transition-colors duration-200"
+                            onClick={() => {
+                              setExpandedRows((prev) => {
+                                const next = new Set(prev);
+                                if (isExpanded) {
+                                  next.delete(book);
+                                } else {
+                                  next.add(book);
+                                }
+                                return next;
+                              });
+                            }}
+                          >
+                            <td className="p-2 w-1/2">
+                              <div
+                                className={`whitespace-pre-line transition-all duration-200 break-words overflow-hidden ${
+                                  !isExpanded ? "line-clamp-2" : ""
+                                }`}
+                              >
+                                {book}
+                              </div>
+                            </td>
+                            <td className="p-2 w-1/2">
+                              <div
+                                className={`whitespace-pre-line transition-all duration-200 overflow-hidden ${
+                                  !isExpanded ? "line-clamp-2" : ""
+                                }`}
+                              >
+                                <div className="inline">
+                                  {recommendersList.map((recommender, idx) => (
+                                    <span key={idx}>
+                                      <span
+                                        className="hover:underline cursor-pointer hover:text-text"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          const recommenderNode =
+                                            graphData.nodes.find(
+                                              (n) => n.name === recommender
+                                            );
+                                          if (recommenderNode) {
+                                            handleNodeClick(recommenderNode);
+                                          }
+                                        }}
+                                      >
+                                        {recommender}
+                                      </span>
+                                      {idx < recommendersList.length - 1 &&
+                                        ", "}
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })
+                    ) : (
+                      <tr>
+                        <td colSpan={2} className="p-2">
+                          <p className="text-sm text-text/70">No books found.</p>
+                        </td>
+                      </tr>
+                    );
+                  })()}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        ) : (
+          <div className="flex flex-col min-h-0 flex-1">
+            <div className="flex flex-col items-center justify-center h-full text-text/70 p-4">
+              <p className="text-base text-center">Click to explore connections</p>
+              <p className="text-sm mt-2 text-center">Scroll to zoom in/out</p>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Node Details Panel - Mobile Drawer */}
+      <div
+        className={`md:hidden fixed inset-0 z-50 transition-all duration-200 ${
+          isMobileDrawerOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
+      >
+        <div
+          className="absolute inset-0 bg-[#0a1a0a]/50 backdrop-blur-sm"
+          onClick={handleBackgroundClick}
+        />
+        <div
+          className={`absolute bottom-0 left-0 right-0 bg-[#ecfdf5] dark:bg-[#0a1a0a] border-t border-border transition-transform duration-200 max-h-[70vh] overflow-hidden flex flex-col ${
+            isMobileDrawerOpen ? "translate-y-0" : "translate-y-full"
+          }`}
+        >
+          {lastInteractedNode && (
+            <div className="flex flex-col min-h-0 flex-1">
+              <div className="p-4 bg-background z-10">
+                <div className="flex justify-between items-start mb-4">
+                  <div>
+                    <h3 className="text-lg font-bold">{lastInteractedNode.name}</h3>
+                    <p className="text-sm">
+                      Recommended {lastInteractedNode.recommendationCount} books
+                    </p>
+                    {lastInteractedNode.details?.personType && (
+                      <p className="text-sm mt-1">
+                        Type: {lastInteractedNode.details.personType}
+                      </p>
+                    )}
+                  </div>
+                  <Link 
+                    href={`/?recommenders=${encodeURIComponent(lastInteractedNode.name)}`}
+                    className="text-text/70 transition-colors duration-200 hover:text-text"
+                  >
+                    <Expand className="w-5 h-5" />
+                  </Link>
+                </div>
+
+                <div>
+                  <h4 className="text-sm font-bold">
+                    Books and Recommenders
+                  </h4>
                 </div>
               </div>
+              <div className="overflow-y-auto flex-1 px-4 pb-4">
+                <table className="w-full text-sm">
+                  <thead className="bg-[#d1fae5] dark:bg-[#065f46] sticky top-0 z-10">
+                    <tr>
+                      <th className="text-left p-2 w-1/2">Book</th>
+                      <th className="text-left p-2 w-1/2">Recommender</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {(() => {
+                      const connections = graphData.links.filter(
+                        (link) =>
+                          (link.source as Node).id === lastInteractedNode.id ||
+                          (link.target as Node).id === lastInteractedNode.id
+                      );
 
-              <div className={`absolute inset-0 transition-opacity duration-200 ${lastInteractedNode ? 'opacity-100' : 'opacity-0 pointer-events-none'} flex flex-col`}>
-                {lastInteractedNode && (() => {
-                  const node = selectedNode || hoveredNode || lastInteractedNode;
-                  return (
-                    <div className="flex flex-col h-full">
-                      <div className="flex-none pb-4 bg-[#ecfdf5] dark:bg-[#0a1a0a]">
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <h3 className="text-lg font-bold">{node.name}</h3>
-                            <p className="text-sm">
-                              Recommended {node.recommendationCount} books
-                            </p>
-                            {node.details?.personType && (
-                              <p className="text-sm mt-1">
-                                Type: {node.details.personType}
-                              </p>
-                            )}
-                          </div>
-                          <Link 
-                            href={`/?recommenders=${encodeURIComponent(node.name)}`}
-                            className="text-text/70 transition-colors duration-200 hover:text-text"
-                          >
-                            <Expand className="w-5 h-5" />
-                          </Link>
-                        </div>
-                        <h4 className="text-sm font-bold mt-4">
-                          Books and Recommenders
-                        </h4>
-                      </div>
+                      // Create a map of books to their recommenders
+                      const bookMap = new Map<string, Set<string>>();
+                      connections.forEach((link) => {
+                        const otherNode =
+                          (link.source as Node).id === lastInteractedNode.id
+                            ? (link.target as Node)
+                            : (link.source as Node);
 
-                      <div className="overflow-y-auto flex-1">
-                        <div>
-                          <table className="w-full text-sm">
-                            <thead className="bg-[#d1fae5] dark:bg-[#065f46] sticky top-0">
-                              <tr>
-                                <th className="text-left p-2 w-1/2">
-                                  Book
-                                </th>
-                                <th className="text-left p-2 w-1/2">
-                                  Recommender
-                                </th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {(() => {
-                                const connections = graphData.links.filter(
-                                  (link) =>
-                                    (link.source as Node).id === node.id ||
-                                    (link.target as Node).id === node.id
-                                );
+                        link.books.forEach((book) => {
+                          if (!bookMap.has(book)) {
+                            bookMap.set(book, new Set());
+                          }
+                          bookMap.get(book)!.add(otherNode.name);
+                        });
+                      });
 
-                                // Create a map of books to their recommenders
-                                const bookMap = new Map<string, Set<string>>();
-                                connections.forEach((link) => {
-                                  const otherNode =
-                                    (link.source as Node).id === node.id
-                                      ? (link.target as Node)
-                                      : (link.source as Node);
+                      // Convert to array and sort by number of recommenders, then alphabetically
+                      const bookEntries = Array.from(bookMap.entries()).sort(
+                        (a, b) => {
+                          // First sort by number of recommenders (descending)
+                          const recommendersDiff = b[1].size - a[1].size;
+                          // If same number of recommenders, sort alphabetically
+                          return recommendersDiff !== 0
+                            ? recommendersDiff
+                            : a[0].localeCompare(b[0]);
+                        }
+                      );
 
-                                  link.books.forEach((book) => {
-                                    if (!bookMap.has(book)) {
-                                      bookMap.set(book, new Set());
-                                    }
-                                    bookMap.get(book)!.add(otherNode.name);
-                                  });
+                      return bookEntries.length > 0 ? (
+                        bookEntries.map(([book, recommenders], index) => {
+                          const recommendersList = Array.from(recommenders);
+                          const isExpanded = expandedRows.has(book);
+
+                          return (
+                            <tr
+                              key={index}
+                              className="border-b last:border-b-0 border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20 hover:bg-[#a7f3d0] dark:hover:bg-[#0a1a0a]/50 cursor-pointer transition-colors duration-200"
+                              onClick={() => {
+                                setExpandedRows((prev) => {
+                                  const next = new Set(prev);
+                                  if (isExpanded) {
+                                    next.delete(book);
+                                  } else {
+                                    next.add(book);
+                                  }
+                                  return next;
                                 });
-
-                                // Convert to array and sort by number of recommenders, then alphabetically
-                                const bookEntries = Array.from(
-                                  bookMap.entries()
-                                ).sort((a, b) => {
-                                  // First sort by number of recommenders (descending)
-                                  const recommendersDiff = b[1].size - a[1].size;
-                                  // If same number of recommenders, sort alphabetically
-                                  return recommendersDiff !== 0
-                                    ? recommendersDiff
-                                    : a[0].localeCompare(b[0]);
-                                });
-
-                                return bookEntries.length > 0 ? (
-                                  bookEntries.map(
-                                    ([book, recommenders], index) => {
-                                      const recommendersList =
-                                        Array.from(recommenders);
-                                      const displayCount = 3;
-                                      const hasMore =
-                                        recommendersList.length > displayCount;
-                                      const isExpanded = expandedRows.has(book);
-
-                                      return (
-                                        <tr
-                                          key={index}
-                                          className="border-b last:border-b-0 border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20 hover:bg-[#a7f3d0] dark:hover:bg-[#0a1a0a]/50 cursor-pointer transition-colors duration-200"
-                                          onClick={() => {
-                                            setExpandedRows((prev) => {
-                                              const next = new Set(prev);
-                                              if (isExpanded) {
-                                                next.delete(book);
-                                              } else {
-                                                next.add(book);
-                                              }
-                                              return next;
-                                            });
+                              }}
+                            >
+                              <td className="p-2 w-1/2">
+                                <div
+                                  className={`whitespace-pre-line transition-all duration-200 break-words overflow-hidden ${
+                                    !isExpanded ? "line-clamp-2" : ""
+                                  }`}
+                                >
+                                  {book}
+                                </div>
+                              </td>
+                              <td className="p-2 w-1/2">
+                                <div
+                                  className={`whitespace-pre-line transition-all duration-200 overflow-hidden ${
+                                    !isExpanded ? "line-clamp-2" : ""
+                                  }`}
+                                >
+                                  <div className="inline">
+                                    {recommendersList.map((recommender, idx) => (
+                                      <span key={idx}>
+                                        <span
+                                          className="hover:underline cursor-pointer hover:text-text"
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            const recommenderNode =
+                                              graphData.nodes.find(
+                                                (n) => n.name === recommender
+                                              );
+                                            if (recommenderNode) {
+                                              handleNodeClick(recommenderNode);
+                                            }
                                           }}
                                         >
-                                          <td className="p-2 w-1/2">
-                                            <div
-                                              className={`whitespace-pre-line transition-all duration-200 break-words overflow-hidden ${
-                                                !isExpanded
-                                                  ? "line-clamp-2"
-                                                  : ""
-                                              }`}
-                                            >
-                                              {book}
-                                            </div>
-                                          </td>
-                                          <td className="p-2 w-1/2">
-                                            <div
-                                              className={`whitespace-pre-line transition-all duration-200 overflow-hidden ${
-                                                !isExpanded
-                                                  ? "line-clamp-2"
-                                                  : ""
-                                              }`}
-                                            >
-                                              <div className="inline">
-                                                {recommendersList.map(
-                                                  (recommender, idx) => (
-                                                    <span key={idx}>
-                                                      <span
-                                                        className="hover:underline cursor-pointer md:hover:text-text"
-                                                        onClick={(e) => {
-                                                          e.stopPropagation();
-                                                          const recommenderNode =
-                                                            graphData.nodes.find(
-                                                              (n) =>
-                                                                n.name ===
-                                                                recommender
-                                                            );
-                                                          if (recommenderNode) {
-                                                            handleNodeClick(
-                                                              recommenderNode
-                                                            );
-                                                          }
-                                                        }}
-                                                      >
-                                                        {recommender}
-                                                      </span>
-                                                      {idx <
-                                                        recommendersList.length -
-                                                          1 && ", "}
-                                                    </span>
-                                                  )
-                                                )}
-                                              </div>
-                                            </div>
-                                          </td>
-                                        </tr>
-                                      );
-                                    }
-                                  )
-                                ) : (
-                                  <p className="text-sm text-text/70">
-                                    No books found.
-                                  </p>
-                                );
-                              })()}
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })()}
+                                          {recommender}
+                                        </span>
+                                        {idx < recommendersList.length - 1 &&
+                                          ", "}
+                                      </span>
+                                    ))}
+                                  </div>
+                                </div>
+                              </td>
+                            </tr>
+                          );
+                        })
+                      ) : (
+                        <tr>
+                          <td colSpan={2} className="p-2">
+                            <p className="text-sm text-text/70">No books found.</p>
+                          </td>
+                        </tr>
+                      );
+                    })()}
+                  </tbody>
+                </table>
               </div>
             </div>
-          </div>
-
-          {/* Graph Container */}
-          <div
-            ref={containerRef}
-            className="relative order-2 md:order-1 col-span-1 md:col-span-3 min-h-[500px] h-[70vh] border border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20 bg-[#f0f7f0] dark:bg-[#0a1a0a] overflow-hidden"
-          >
-            {/* Search input overlay */}
-            <div className="absolute top-3 left-3 right-3 z-10 flex gap-2">
-              <div className="flex-1 relative">
-                <input
-                  type="text"
-                  placeholder="Search by recommender"
-                  value={searchQuery}
-                  onChange={(e) => handleSearch(e.target.value)}
-                  className="w-full px-3 py-1 text-sm border border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20 bg-[#f0f7f0]/80 dark:bg-[#0a1a0a]/80 backdrop-blur-sm text-text placeholder:text-text/70 selection:bg-main selection:text-mtext focus:outline-none text-ellipsis rounded-none"
-                />
-                {searchQuery && (
-                  <button
-                    className="absolute right-2 top-1/2 -translate-y-1/2 text-text/70 transition-colors duration-200 md:hover:text-text p-1 -mr-1"
-                    onClick={() => handleSearch("")}
-                  >
-                    <X className="w-3 h-3" />
-                  </button>
-                )}
-              </div>
-              <button
-                onClick={handleResetZoom}
-                className="w-28 px-3 py-1 text-sm border border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20 bg-[#f0f7f0]/80 dark:bg-[#0a1a0a]/80 backdrop-blur-sm text-text/70 transition-colors duration-200 md:hover:text-text md:hover:bg-accent/50"
-              >
-                Reset View
-              </button>
-            </div>
-
-            {/* People count overlay */}
-            <div className="absolute bottom-5 right-5 z-10 text-text/70 text-xs whitespace-pre-line transition-all duration-200 bg-[#f0f7f0]/80 dark:bg-[#0a1a0a]/80 backdrop-blur-sm p-2 selection:bg-main selection:text-mtext">
-              {graphData.nodes.length} people
-            </div>
-            <ForceGraph2D
-              ref={graphRef}
-              graphData={graphData}
-              width={dimensions.width}
-              height={dimensions.height}
-              nodeLabel={(node: Node) => node.name}
-              nodeColor={getNodeColor}
-              nodeRelSize={4}
-              linkWidth={(link: Link) => (highlightLinks.has(link) ? 2 : 0.3)}
-              linkColor={() => (theme === "dark" ? "#f0f7f0" : "#0a1a0a")}
-              linkDirectionalParticles={(link: Link) =>
-                highlightLinks.has(link) ? 4 : 0
-              }
-              linkDirectionalParticleWidth={(link: Link) =>
-                highlightLinks.has(link) ? 2 : 0
-              }
-              linkDirectionalParticleSpeed={0.005}
-              linkOpacity={0.15}
-              onNodeHover={handleNodeHover}
-              onNodeClick={handleNodeClick}
-              onBackgroundClick={handleBackgroundClick}
-              cooldownTicks={100}
-              onEngineStop={() => {
-                // Only zoom to fit if graph ref exists and no node is selected
-                if (graphRef.current && !selectedNode) {
-                  graphRef.current.zoomToFit(400);
-                }
-              }}
-              onNodeDragEnd={(node: Node) => {
-                // Update node position in graphData to maintain position after re-renders
-                setGraphData((prev) => ({
-                  ...prev,
-                  nodes: prev.nodes.map((n) =>
-                    n.id === node.id ? { ...n, x: node.x, y: node.y } : n
-                  ),
-                }));
-              }}
-              nodeCanvasObject={(
-                node: Node,
-                ctx: CanvasRenderingContext2D,
-                globalScale: number
-              ) => {
-                const { x, y, name } = node as Node & {
-                  x: number;
-                  y: number;
-                };
-                const fontSize = 12 / globalScale;
-                const textWidth = ctx.measureText(name).width;
-                const isHighlighted = highlightNodes.has(node.id);
-
-                // Draw node circle
-                ctx.beginPath();
-                ctx.arc(x, y, 3, 0, 2 * Math.PI);
-                ctx.fillStyle = getNodeColor(node as Node);
-                ctx.fill();
-
-                // Draw node border with width scaled by zoom
-                ctx.strokeStyle = theme === "dark" ? "#f0f7f0" : "#0a1a0a";
-                ctx.lineWidth = isHighlighted ? 0.5 / globalScale : 0.2 / globalScale;
-                ctx.stroke();
-
-                // Draw node label only when significantly zoomed in
-                if (globalScale > 2.5) {
-                  ctx.fillStyle = theme === "dark" ? "#f0f7f0" : "#0a1a0a";
-                  ctx.font = `${fontSize}px monospace`;
-                  ctx.textAlign = "center";
-                  ctx.textBaseline = "top";
-                  ctx.fillText(name, x, y + 8);
-                }
-              }}
-            />
-          </div>
+          )}
         </div>
+      </div>
+
+      {/* Graph Container */}
+      <div
+        ref={containerRef}
+        className="relative order-1 col-span-1 md:col-span-3 h-full bg-[#f0f7f0] dark:bg-[#0a1a0a] overflow-hidden"
+      >
+        {/* Search input overlay */}
+        <div className="absolute top-3 left-3 right-3 z-10 flex gap-2">
+          <div className="flex-1 relative">
+            <input
+              type="text"
+              placeholder="Search by recommender"
+              value={searchQuery}
+              onChange={(e) => handleSearch(e.target.value)}
+              className="w-full px-3 py-1 text-base md:text-sm border border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20 bg-[#f0f7f0]/80 dark:bg-[#0a1a0a]/80 backdrop-blur-sm text-text placeholder:text-text/70 selection:bg-main selection:text-mtext focus:outline-none text-ellipsis rounded-none"
+            />
+            {searchQuery && (
+              <button
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-text/70 transition-colors duration-200 hover:text-text p-1 -mr-1"
+                onClick={() => handleSearch("")}
+              >
+                <X className="w-3 h-3" />
+              </button>
+            )}
+          </div>
+          <button
+            onClick={handleResetZoom}
+            className="w-28 px-3 py-1 text-sm border border-[#0a1a0a]/20 dark:border-[#f0f7f0]/20 bg-[#f0f7f0]/80 dark:bg-[#0a1a0a]/80 backdrop-blur-sm text-text/70 transition-colors duration-200 hover:text-text hover:bg-accent/50"
+          >
+            Reset View
+          </button>
+        </div>
+
+        {/* People count overlay */}
+        <div className="absolute bottom-5 right-5 z-10 text-text/70 text-xs whitespace-pre-line transition-all duration-200 bg-[#f0f7f0]/80 dark:bg-[#0a1a0a]/80 backdrop-blur-sm p-2 selection:bg-main selection:text-mtext">
+          {graphData.nodes.length} people
+        </div>
+        <ForceGraph2D
+          ref={graphRef}
+          graphData={graphData}
+          width={dimensions.width}
+          height={dimensions.height}
+          nodeLabel={(node: Node) => node.name}
+          nodeColor={getNodeColor}
+          nodeRelSize={4}
+          linkWidth={(link: Link) => (highlightLinks.has(link) ? 2 : 0.3)}
+          linkColor={() => (theme === "dark" ? "#f0f7f0" : "#0a1a0a")}
+          linkDirectionalParticles={(link: Link) =>
+            highlightLinks.has(link) ? 4 : 0
+          }
+          linkDirectionalParticleWidth={(link: Link) =>
+            highlightLinks.has(link) ? 2 : 0
+          }
+          linkDirectionalParticleSpeed={0.005}
+          linkOpacity={0.15}
+          onNodeHover={handleNodeHover}
+          onNodeClick={handleNodeClick}
+          onBackgroundClick={handleBackgroundClick}
+          cooldownTicks={100}
+          onEngineStop={() => {
+            // Only zoom to fit if graph ref exists and no node is selected
+            if (graphRef.current && !selectedNode) {
+              graphRef.current.zoomToFit(400);
+            }
+          }}
+          onNodeDragEnd={(node: Node) => {
+            // Update node position in graphData to maintain position after re-renders
+            setGraphData((prev) => ({
+              ...prev,
+              nodes: prev.nodes.map((n) =>
+                n.id === node.id ? { ...n, x: node.x, y: node.y } : n
+              ),
+            }));
+          }}
+          nodeCanvasObject={(
+            node: Node,
+            ctx: CanvasRenderingContext2D,
+            globalScale: number
+          ) => {
+            const { x, y, name } = node as Node & {
+              x: number;
+              y: number;
+            };
+            const fontSize = 12 / globalScale;
+            const textWidth = ctx.measureText(name).width;
+            const isHighlighted = highlightNodes.has(node.id);
+
+            // Draw node circle
+            ctx.beginPath();
+            ctx.arc(x, y, 3, 0, 2 * Math.PI);
+            ctx.fillStyle = getNodeColor(node as Node);
+            ctx.fill();
+
+            // Draw node border with width scaled by zoom
+            ctx.strokeStyle = theme === "dark" ? "#f0f7f0" : "#0a1a0a";
+            ctx.lineWidth = isHighlighted
+              ? 0.5 / globalScale
+              : 0.2 / globalScale;
+            ctx.stroke();
+
+            // Draw node label only when significantly zoomed in
+            if (globalScale > 2.5) {
+              ctx.fillStyle = theme === "dark" ? "#f0f7f0" : "#0a1a0a";
+              ctx.font = `${fontSize}px monospace`;
+              ctx.textAlign = "center";
+              ctx.textBaseline = "top";
+              ctx.fillText(name, x, y + 8);
+            }
+          }}
+        />
       </div>
     </div>
   );
