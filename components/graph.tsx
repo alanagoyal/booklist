@@ -304,8 +304,8 @@ export default function RecommendationGraph() {
   return (
     <div className="h-full grid grid-cols-1 md:grid-cols-5">
       {/* Node Details Panel - Desktop */}
-      <div className="hidden md:flex order-2 col-span-2 h-full border-l border-border p-4 bg-[#ecfdf5] dark:bg-[#0a1a0a] flex-col">
-        {lastInteractedNode && (
+      <div className="hidden md:flex order-2 col-span-2 h-full border-l border-border p-4 bg-[#ecfdf5] dark:bg-[#0a1a0a] flex-col relative">
+        {lastInteractedNode ? (
           <div className="flex flex-col h-full">
             <div className="flex-none pb-4">
               <div className="flex justify-between items-start">
@@ -345,15 +345,15 @@ export default function RecommendationGraph() {
                     {(() => {
                       const connections = graphData.links.filter(
                         (link) =>
-                          (link.source as Node).id === lastInteractedNode?.id ||
-                          (link.target as Node).id === lastInteractedNode?.id
+                          (link.source as Node).id === lastInteractedNode.id ||
+                          (link.target as Node).id === lastInteractedNode.id
                       );
 
                       // Create a map of books to their recommenders
                       const bookMap = new Map<string, Set<string>>();
                       connections.forEach((link) => {
                         const otherNode =
-                          (link.source as Node).id === lastInteractedNode?.id
+                          (link.source as Node).id === lastInteractedNode.id
                             ? (link.target as Node)
                             : (link.source as Node);
 
@@ -452,6 +452,13 @@ export default function RecommendationGraph() {
                   </tbody>
                 </table>
               </div>
+            </div>
+          </div>
+        ) : (
+          <div className="absolute inset-0 transition-opacity duration-200">
+            <div className="flex flex-col items-center justify-center h-full text-text/70">
+              <p className="text-base text-center">Click to explore connections</p>
+              <p className="text-sm mt-2 text-center">Scroll to zoom in/out</p>
             </div>
           </div>
         )}
