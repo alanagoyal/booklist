@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;700&display=swap');
+
 @layer base {
   :root {
     /* Base colors inspired by GitHub contribution graph */
@@ -100,6 +102,7 @@
   body {
     @apply bg-background text-foreground antialiased font-sans;
     touch-action: pan-y pinch-zoom;
+    font-family: 'Geist Mono', monospace;
   }
 
   .border, .border-b {

@@ -65,7 +65,7 @@ function HeaderContent() {
       <div className="flex items-center gap-4 px-3">
         <Link
           href={homeHref}
-          className={`font-bold font-display text-xl cursor-pointer ${getLinkClasses('/')}`}
+          className={`font-bold text-xl cursor-pointer ${getLinkClasses('/')}`}
         >
           BOOKLIST
         </Link>
