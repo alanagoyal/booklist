@@ -144,29 +144,18 @@ $function$;
 
 -- Create function to get books ordered by recommendation count
 create or replace function get_books_by_recommendation_count()
-returns table (
-  id uuid,
-  title text,
-  author text,
-  description text,
-  genre text[],
-  amazon_url text,
-  recommendation_count bigint
-)
+returns setof books
 language sql
+stable
 as $$
-  select 
-    b.id,
-    b.title,
-    b.author,
-    b.description,
-    b.genre,
-    b.amazon_url,
-    count(r.id) as recommendation_count
+  select distinct on (recommendation_count, b.title) b.*
   from books b
-  left join recommendations r on r.book_id = b.id
-  group by b.id
-  order by recommendation_count desc, b.title asc;
+  left join lateral (
+    select count(*) as recommendation_count
+    from recommendations r
+    where r.book_id = b.id
+  ) counts on true
+  order by recommendation_count desc nulls last, b.title asc;
 $$;
 
 grant delete on table "public"."books" to "anon";
