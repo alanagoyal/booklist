@@ -53,10 +53,10 @@ const config = {
         },
       },
       fontFamily: {
-        sans: ['Geist Mono', 'monospace'],
-        serif: ['Geist Mono', 'serif'],
-        display: ['Geist Mono', 'sans-serif'],
-        mono: ['Geist Mono', 'monospace'],
+        sans: ['Special Elite', 'monospace'],
+        serif: ['Special Elite', 'serif'],
+        display: ['Special Elite', 'sans-serif'],
+        mono: ['Special Elite', 'monospace'],
       },
       borderRadius: {
         base: "var(--radius)",

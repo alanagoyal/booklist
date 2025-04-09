@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
 import { siteConfig } from "@/config/site";
 import Providers from "./providers";
-import { Inter } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import Header from "@/components/header";
 
-const inter = Inter({ subsets: ["latin"] });
+const specialElite = localFont({
+  src: '../public/fonts/SpecialElite-Regular.ttf',
+  variable: '--font-special-elite',
+});
 
 export const viewport = {
   themeColor: "#121212",
@@ -43,13 +46,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning className={inter.className}>
+    <html lang="en" suppressHydrationWarning>
       <head>
         {/* Apple-specific meta tags for status bar appearance */}
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
       </head>
-      <body className="antialiased">
+      <body className={`antialiased ${specialElite.className}`}>
         <Providers>
           <div className="h-dvh w-full text-sm flex flex-col border border-border overflow-hidden">
             <div className="flex flex-col flex-1 m-4 border border-border overflow-hidden">
