@@ -348,7 +348,7 @@ export function BookList({ initialBooks }: { initialBooks: FormattedBook[] }) {
 
   return (
     <div className="h-full flex flex-col relative">
-      <div className="relative border-b border-border">
+{/*       <div className="relative border-b border-border">
         <input
           type="text"
           placeholder="Search all"
@@ -368,7 +368,7 @@ export function BookList({ initialBooks }: { initialBooks: FormattedBook[] }) {
             <X className="w-3 h-3" />
           </button>
         )}
-      </div>
+      </div> */}
       <div className="flex-1 overflow-hidden">
         <BookGrid
           data={books}
