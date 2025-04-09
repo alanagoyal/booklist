@@ -16,23 +16,7 @@ export const revalidate = false;
 async function getBooks() {
   // Get sorted books
   const { data: books, error } = await supabase
-    .rpc('get_books_by_recommendation_count')
-    .select(`
-      id,
-      title,
-      author,
-      description,
-      genre,
-      amazon_url,
-      recommendations (
-        source,
-        source_link,
-        recommender:people(
-          full_name,
-          url
-        )
-      )
-    `);
+    .rpc('get_books_by_recommendation_count');
 
   if (error) {
     throw error;
