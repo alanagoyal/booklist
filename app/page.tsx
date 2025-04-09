@@ -14,10 +14,21 @@ export const revalidate = false;
 
 // Fetch books at build time
 async function getBooks() {
+  // Get sorted books
+  const { data: sortedBooks, error: sortError } = await supabase
+    .rpc('get_books_by_recommendation_count') as { 
+      data: Array<{ id: string }> | null;
+      error: any;
+    };
+
+  if (sortError) {
+    throw sortError;
+  }
+
+  // Get recommendations for the sorted books
   const { data: books, error } = await supabase
-    .from("books")
-    .select(
-      `
+    .from('books')
+    .select(`
       id,
       title,
       author,
@@ -33,13 +44,18 @@ async function getBooks() {
         )
       )
     `)
-    .order("title", { ascending: true });  // No limit since this is static build time
+    .in('id', (sortedBooks || []).map((b: { id: string }) => b.id));
 
   if (error) {
     throw error;
   }
 
-  return ((books || []) as unknown as DatabaseBook[]).map((book) => ({
+  // Reorder books to match the sorted order
+  const orderedBooks = (sortedBooks || []).map(sortedBook => 
+    books?.find(b => b.id === sortedBook.id)
+  ).filter((b): b is NonNullable<typeof b> => b != null);
+
+  return (orderedBooks as unknown as DatabaseBook[]).map((book) => ({
     id: book.id,
     title: book.title || "n/a",
     author: book.author || "n/a",
