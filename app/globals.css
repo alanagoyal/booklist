@@ -2,7 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;700&display=swap');
+@font-face {
+  font-family: 'Special Elite';
+  src: url('/fonts/SpecialElite-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
 
 @layer base {
   :root {
@@ -102,7 +107,7 @@
   body {
     @apply bg-background text-foreground antialiased font-sans;
     touch-action: pan-y pinch-zoom;
-    font-family: 'Geist Mono', monospace;
+    font-family: 'Special Elite', monospace;
   }
 
   .border, .border-b {
