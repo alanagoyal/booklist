@@ -1,6 +1,6 @@
 export default function About() {
   return (
-    <div className="space-y-4 text-text/70">
+    <div className="p-1 text-text/70">
       <p>
         Booklist is a curated collection of{" "}
         <span className="font-bold">
