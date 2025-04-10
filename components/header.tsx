@@ -23,13 +23,17 @@ function HeaderContent() {
         </Link>
       </div>
       <div className="flex items-center gap-4 px-3">
-        <button
-          onClick={() => setIsAboutOpen(true)}
-          className="text-text/70 transition-colors duration-200 md:hover:text-text"
-        >
-          About
-        </button>
-        <ThemeToggle className="min-w-[48px] p-2 h-10 md:hover:text-text text-text/70" />
+        <div className="min-w-[60px]">
+          <button
+            onClick={() => setIsAboutOpen(true)}
+            className="text-text/70 transition-colors duration-200 md:hover:text-text p-2 w-full"
+          >
+            About
+          </button>
+        </div>
+        <div className="min-w-[60px]">
+          <ThemeToggle className="p-2 h-10 md:hover:text-text text-text/70 w-full" />
+        </div>
       </div>
       <AboutDialog open={isAboutOpen} onOpenChange={setIsAboutOpen} />
     </div>
