@@ -1,13 +1,16 @@
 "use client";
 
 import { Fragment, useState, useEffect, useCallback, useRef } from "react";
-import { X } from "lucide-react";
 import { DataGrid } from "@/components/grid";
 import { BookCounter } from "@/components/book-counter";
 import { PercentileTooltip } from "@/components/percentile-tooltip";
 import { FormattedBook, EnhancedBook } from "@/types";
 
-const SourceCell = ({ row: { original, isExpanded } }: { row: { original: EnhancedBook; isExpanded: boolean } }) => {
+const SourceCell = ({
+  row: { original, isExpanded },
+}: {
+  row: { original: EnhancedBook; isExpanded: boolean };
+}) => {
   const recommenderText = original.recommenders || "";
   const sourceText = original.source || "";
   const sourceLinkText = original.source_link || "";
@@ -62,7 +65,11 @@ const SourceCell = ({ row: { original, isExpanded } }: { row: { original: Enhanc
   );
 };
 
-const TitleCell = function Title({ row: { original, isExpanded } }: { row: { original: EnhancedBook; isExpanded: boolean } }) {
+const TitleCell = function Title({
+  row: { original, isExpanded },
+}: {
+  row: { original: EnhancedBook; isExpanded: boolean };
+}) {
   const title = original.title || "";
   const amazonUrl = original.amazon_url;
 
@@ -234,22 +241,15 @@ export function BookGrid({
     {
       field: "title" as keyof FormattedBook,
       header: "Title",
-      width: 150,
       cell: TitleCell,
     },
-    { field: "author" as keyof FormattedBook, header: "Author", width: 120 },
-    {
-      field: "description" as keyof FormattedBook,
-      header: "Description",
-      width: 200,
-      isExpandable: true,
-    },
-    { field: "genres" as keyof FormattedBook, header: "Genres", width: 150 },
+    { field: "author" as keyof FormattedBook, header: "Author" },
     {
       field: "recommenders" as keyof FormattedBook,
       header: "Recommenders",
-      width: 200,
-      cell: (props: { row: { original: EnhancedBook; isExpanded: boolean } }) => (
+      cell: (props: {
+        row: { original: EnhancedBook; isExpanded: boolean };
+      }) => (
         <RecommenderCell
           {...props}
           maxCount={maxRecommendations}
@@ -259,6 +259,12 @@ export function BookGrid({
       ),
       isExpandable: true,
     },
+    {
+      field: "description" as keyof FormattedBook,
+      header: "Description",
+      isExpandable: true,
+    },
+    { field: "genres" as keyof FormattedBook, header: "Genre" },
   ];
 
   return (
@@ -295,10 +301,10 @@ export function BookList({ initialBooks }: { initialBooks: FormattedBook[] }) {
       }
 
       try {
-        const response = await fetch('/api/search', {
-          method: 'POST',
+        const response = await fetch("/api/search", {
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({ query: trimmedQuery }),
         });
@@ -348,7 +354,7 @@ export function BookList({ initialBooks }: { initialBooks: FormattedBook[] }) {
 
   return (
     <div className="h-full flex flex-col relative">
-{/*       <div className="relative border-b border-border">
+      {/*       <div className="relative border-b border-border">
         <input
           type="text"
           placeholder="Search all"
