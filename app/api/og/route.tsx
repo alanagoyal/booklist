@@ -3,9 +3,12 @@ import { ImageResponse } from 'next/og';
 export const runtime = 'edge';
 
 export async function GET() {
+  if (!process.env.NEXT_PUBLIC_VERCEL_URL) {
+    return new Response('Missing NEXT_PUBLIC_VERCEL_URL', { status: 500 });
+  }
   try {
     const fontData = await fetch(
-      'https://cdn.jsdelivr.net/npm/@fontsource/space-mono/files/space-mono-latin-400-normal.woff'
+      new URL('/fonts/SpecialElite-Regular.ttf', process.env.NEXT_PUBLIC_VERCEL_URL)
     ).then((res) => res.arrayBuffer());
 
     return new ImageResponse(
@@ -22,7 +25,7 @@ export async function GET() {
         >
           <div
             style={{
-              fontFamily: 'Space Mono',
+              fontFamily: 'Special Elite',
               fontSize: 72,
               color: 'white',
               letterSpacing: '-0.05em',
@@ -37,7 +40,7 @@ export async function GET() {
         height: 630,
         fonts: [
           {
-            name: 'Space Mono',
+            name: 'Special Elite',
             data: fontData,
             style: 'normal',
             weight: 400,
@@ -46,6 +49,7 @@ export async function GET() {
       }
     );
   } catch (error) {
+    console.error('Failed to generate OG image:', error);
     return new Response('Failed to generate the image', { status: 500 });
   }
 }
