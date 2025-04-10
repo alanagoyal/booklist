@@ -12,11 +12,11 @@ interface AboutDialogProps {
 export default function AboutDialog({ open, onOpenChange }: AboutDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl p-6" aria-describedby="about-description">
+      <DialogContent className="max-w-2xl p-6">
         <DialogTitle asChild>
           <VisuallyHidden>About</VisuallyHidden>
         </DialogTitle>
-        <DialogDescription id="about-description" asChild>
+        <DialogDescription>
           <About />
         </DialogDescription>
       </DialogContent>
