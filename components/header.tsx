@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { ThemeToggle } from "./theme-toggle";
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import AboutDialog from "./about-dialog";
 
 function HeaderContent() {
@@ -39,7 +39,9 @@ function HeaderContent() {
 export default function Header() {
   return (
     <div className="bg-background border-b border-border">
-      <HeaderContent />
+      <Suspense fallback={<div className="h-16" />}>
+        <HeaderContent />
+      </Suspense>
     </div>
   );
 }
