@@ -1,4 +1,4 @@
-import { X, BookOpen, Tag, LayoutList, AlignJustify, ChevronLeft } from "lucide-react";
+import { X, BookOpen, Tag, LayoutList, AlignJustify, ChevronLeft, User } from "lucide-react";
 import { EnhancedBook, RelatedBook } from "@/types";
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/utils/supabase/client";
@@ -167,44 +167,65 @@ export default function BookDetail({ book, onClose }: BookDetailProps) {
                   </div>
                 </div>
                 
-                {showSummary ? (
+                {!showSummary ? (
+                  <div className="text-text space-y-4 max-h-[300px] overflow-y-auto">
+                    {(() => {
+                      const pairs = book.recommenders.split(",").map((recommender, i) => ({
+                        name: recommender.trim(),
+                        type: book.recommender_types.split(",")[i]?.trim() || "",
+                        url: book.url?.split(",")[i]?.trim() || "",
+                        source: book.source?.split(",")[i]?.trim() || "",
+                        source_link: book.source_link?.split(",")[i]?.trim() || ""
+                      }));
+
+                      return pairs.map((pair) => (
+                        <div key={pair.name} className="flex items-start gap-3">
+                          <User className="w-5 h-5 mt-0.5 text-text/70 shrink-0" />
+                          <div className="space-y-1 min-w-0">
+                            <div className="flex items-baseline gap-2">
+                              {pair.url ? (
+                                <a 
+                                  href={pair.url}
+                                  target="_blank"
+                                  rel="noopener noreferrer" 
+                                  className="text-text md:hover:underline"
+                                >
+                                  {pair.name}
+                                </a>
+                              ) : (
+                                <span className="text-text">{pair.name}</span>
+                              )}
+                              <span className="text-sm text-text/70">({pair.type})</span>
+                            </div>
+                            {pair.source && (
+                              <div className="text-sm text-text/70">
+                                via{" "}
+                                {pair.source_link ? (
+                                  <a 
+                                    href={pair.source_link}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="md:hover:underline"
+                                  >
+                                    {pair.source}
+                                  </a>
+                                ) : (
+                                  pair.source
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      ));
+                    })()}
+                  </div>
+                ) : (
                   <div className="text-text whitespace-pre-line leading-relaxed max-h-[300px] overflow-y-auto">
                     {isLoadingSummary ? (
                       <p className="text-text/70">Generating summary...</p>
                     ) : (
                       recommenderSummary
                     )}
-                  </div>
-                ) : (
-                  <div className="text-text space-y-3 max-h-[300px] overflow-y-auto">
-                    {(() => {
-                      const pairs = book.recommenders.split(",").map((recommender, i) => ({
-                        name: recommender.trim(),
-                        type: book.recommender_types.split(",")[i]?.trim() || ""
-                      }));
-
-                      const groupedByType = pairs.reduce((acc, pair) => {
-                        if (!acc[pair.type]) {
-                          acc[pair.type] = [];
-                        }
-                        acc[pair.type].push(pair.name);
-                        return acc;
-                      }, {} as Record<string, string[]>);
-
-                      return Object.entries(groupedByType)
-                        .sort(([, namesA], [, namesB]) => namesB.length - namesA.length)
-                        .map(([type, names]) => (
-                          <div key={type} className="whitespace-pre-line">
-                            <span className="text-text/70">{names.length} {type.toLowerCase()}: </span>
-                            {names.map((name, j) => (
-                              <span key={name}>
-                                {j > 0 && ", "}
-                                {name}
-                              </span>
-                            ))}
-                          </div>
-                        ));
-                    })()}
                   </div>
                 )}
               </div>
