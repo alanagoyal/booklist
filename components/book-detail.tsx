@@ -1,6 +1,7 @@
 import { ArrowLeft, X, BookOpen, Tag, Users } from "lucide-react";
-import { EnhancedBook } from "@/types";
-import { useCallback } from "react";
+import { EnhancedBook, RelatedBook } from "@/types";
+import { useCallback, useEffect, useState } from "react";
+import { createClient } from "@/utils/supabase/client";
 
 type BookDetailProps = {
   book: EnhancedBook;
@@ -8,6 +9,31 @@ type BookDetailProps = {
 };
 
 export default function BookDetail({ book, onClose }: BookDetailProps) {
+  const [relatedBooks, setRelatedBooks] = useState<RelatedBook[]>([]);
+  const supabase = createClient();
+
+  useEffect(() => {
+    async function fetchRelatedBooks() {
+      console.log('Fetching related books for book ID:', book.id);
+      const { data, error } = await supabase
+        .rpc('get_books_by_shared_recommenders', {
+          p_book_id: book.id,
+          p_limit: 10
+        });
+
+      console.log('Related books response:', { data, error });
+
+      if (!error && data) {
+        setRelatedBooks(data);
+        console.log('Set related books:', data);
+      } else if (error) {
+        console.error('Error fetching related books:', error);
+      }
+    }
+
+    fetchRelatedBooks();
+  }, [book.id]);
+
   const handleBackdropClick = useCallback(
     (e: React.MouseEvent) => {
       if (e.target === e.currentTarget) {
@@ -79,13 +105,11 @@ export default function BookDetail({ book, onClose }: BookDetailProps) {
                 <h2 className="text-sm text-text font-bold">Recommended By</h2>
                 <div className="text-text space-y-3">
                   {(() => {
-                  // Create pairs of recommenders and their types
                     const pairs = book.recommenders.split(",").map((recommender, i) => ({
                       name: recommender.trim(),
                       type: book.recommender_types.split(",")[i]?.trim() || ""
                     }));
 
-                  // Group by type
                     const groupedByType = pairs.reduce((acc, pair) => {
                       if (!acc[pair.type]) {
                         acc[pair.type] = [];
@@ -94,7 +118,6 @@ export default function BookDetail({ book, onClose }: BookDetailProps) {
                       return acc;
                     }, {} as Record<string, string[]>);
 
-                  // Sort types by count in descending order
                     return Object.entries(groupedByType)
                       .sort(([, namesA], [, namesB]) => namesB.length - namesA.length)
                       .map(([type, names]) => (
@@ -109,6 +132,23 @@ export default function BookDetail({ book, onClose }: BookDetailProps) {
                         </div>
                       ));
                   })()}
+                </div>
+              </div>
+            )}
+
+            {relatedBooks.length > 0 && (
+              <div className="space-y-2">
+                <h2 className="text-sm text-text font-bold">You Might Also Enjoy</h2>
+                <div className="space-y-4">
+                  {relatedBooks.map((relatedBook) => (
+                    <div key={relatedBook.id} className="space-y-1">
+                      <div className="flex items-baseline justify-between gap-2">
+                        <h3 className="text-text font-base">{relatedBook.title}</h3>
+                        <span className="text-sm text-text/70">{relatedBook.recommender_count} shared recommenders</span>
+                      </div>
+                      <p className="text-text/70">{relatedBook.author}</p>
+                    </div>
+                  ))}
                 </div>
               </div>
             )}

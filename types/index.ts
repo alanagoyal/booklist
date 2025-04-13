@@ -52,6 +52,16 @@ export interface FormattedBook {
   amazon_url: string;
 }
 
-export interface EnhancedBook extends FormattedBook {
+export type RelatedBook = {
+  id: string;  // UUID
+  title: string;
+  author: string;
+  genres: string[];
+  amazon_url: string | null;
+  recommender_count: number;
+}
+
+export type EnhancedBook = FormattedBook & {
   _recommendationCount: number;
+  related_books?: RelatedBook[];
 }
