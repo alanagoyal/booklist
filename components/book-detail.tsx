@@ -27,7 +27,7 @@ export default function BookDetail({ book, onClose }: BookDetailProps) {
       const { data, error } = await supabase
         .rpc('get_books_by_shared_recommenders', {
           p_book_id: book.id,
-          p_limit: 10
+          p_limit: 3
         });
 
       if (!error && data) {
@@ -232,8 +232,8 @@ export default function BookDetail({ book, onClose }: BookDetailProps) {
             )}
 
             {relatedBooks.length > 0 && (
-              <div className="space-y-2">
-                <h2 className="text-sm text-text font-bold">You Might Also Enjoy</h2>
+              <div className="space-y-4">
+                <h2 className="text-lg text-text font-base">You Might Also Enjoy</h2>
                 <div className="space-y-4">
                   {relatedBooks.map((relatedBook) => (
                     <div key={relatedBook.id} className="space-y-1">
@@ -241,9 +241,14 @@ export default function BookDetail({ book, onClose }: BookDetailProps) {
                         <h3 className="text-text font-base">{relatedBook.title}</h3>
                         <span className="text-sm text-text/70">{relatedBook.author}</span>
                       </div>
-                      <p className="text-sm text-text/70">
-                        Also recommended by {relatedBook.recommenders}
-                      </p>
+                      <div className="flex items-start gap-3">
+                        <User className="w-5 h-5 mt-0.5 text-text/70 shrink-0" />
+                        <p className="text-sm text-text/70">
+                          {relatedBook.recommenders.split(",").slice(0, 3).join(", ")}
+                          {relatedBook.recommenders.split(",").length > 3 && 
+                            ` and ${relatedBook.recommenders.split(",").length - 3} more`}
+                        </p>
+                      </div>
                     </div>
                   ))}
                 </div>
