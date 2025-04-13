@@ -100,28 +100,18 @@ export default function BookDetail({ book, onClose }: BookDetailProps) {
                 <h2 className="text-sm text-text font-bold">Recommended By</h2>
                 <div className="text-text space-y-3">
                   {(() => {
-                    console.log('Raw recommenders:', book.recommenders);
-                    console.log('Raw recommender_types:', book.recommender_types);
-                    
-                    const pairs = book.recommenders.split(",").map((recommender, i) => {
-                      const pair = {
-                        name: recommender.trim(),
-                        type: book.recommender_types.split(",")[i]?.trim() || ""
-                      };
-                      console.log('Mapped pair:', pair);
-                      return pair;
-                    });
+                    const pairs = book.recommenders.split(",").map((recommender, i) => ({
+                      name: recommender.trim(),
+                      type: book.recommender_types.split(",")[i]?.trim() || ""
+                    }));
 
                     const groupedByType = pairs.reduce((acc, pair) => {
-                      console.log('Grouping pair:', pair);
                       if (!acc[pair.type]) {
                         acc[pair.type] = [];
                       }
                       acc[pair.type].push(pair.name);
                       return acc;
                     }, {} as Record<string, string[]>);
-
-                    console.log('Final grouped data:', groupedByType);
 
                     return Object.entries(groupedByType)
                       .sort(([, namesA], [, namesB]) => namesB.length - namesA.length)
