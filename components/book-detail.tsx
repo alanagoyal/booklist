@@ -13,18 +13,14 @@ export default function BookDetail({ book, onClose }: BookDetailProps) {
 
   useEffect(() => {
     async function fetchRelatedBooks() {
-      console.log('Fetching related books for book ID:', book.id);
       const { data, error } = await supabase
         .rpc('get_books_by_shared_recommenders', {
           p_book_id: book.id,
           p_limit: 10
         });
 
-      console.log('Related books response:', { data, error });
-
       if (!error && data) {
         setRelatedBooks(data);
-        console.log('Set related books:', data);
       } else if (error) {
         console.error('Error fetching related books:', error);
       }
@@ -104,18 +100,28 @@ export default function BookDetail({ book, onClose }: BookDetailProps) {
                 <h2 className="text-sm text-text font-bold">Recommended By</h2>
                 <div className="text-text space-y-3">
                   {(() => {
-                    const pairs = book.recommenders.split(",").map((recommender, i) => ({
-                      name: recommender.trim(),
-                      type: book.recommender_types.split(",")[i]?.trim() || ""
-                    }));
+                    console.log('Raw recommenders:', book.recommenders);
+                    console.log('Raw recommender_types:', book.recommender_types);
+                    
+                    const pairs = book.recommenders.split(",").map((recommender, i) => {
+                      const pair = {
+                        name: recommender.trim(),
+                        type: book.recommender_types.split(",")[i]?.trim() || ""
+                      };
+                      console.log('Mapped pair:', pair);
+                      return pair;
+                    });
 
                     const groupedByType = pairs.reduce((acc, pair) => {
+                      console.log('Grouping pair:', pair);
                       if (!acc[pair.type]) {
                         acc[pair.type] = [];
                       }
                       acc[pair.type].push(pair.name);
                       return acc;
                     }, {} as Record<string, string[]>);
+
+                    console.log('Final grouped data:', groupedByType);
 
                     return Object.entries(groupedByType)
                       .sort(([, namesA], [, namesB]) => namesB.length - namesA.length)
