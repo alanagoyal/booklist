@@ -5,6 +5,7 @@ import { DataGrid } from "@/components/grid";
 import { BookCounter } from "@/components/book-counter";
 import { PercentileTooltip } from "@/components/percentile-tooltip";
 import { FormattedBook, EnhancedBook } from "@/types";
+import BookDetail from "@/components/book-detail";
 
 const SourceCell = ({
   row: { original, isExpanded },
@@ -67,26 +68,27 @@ const SourceCell = ({
 
 const TitleCell = function Title({
   row: { original, isExpanded },
+  onSelect,
 }: {
   row: { original: EnhancedBook; isExpanded: boolean };
+  onSelect: (book: EnhancedBook) => void;
 }) {
   const title = original.title || "";
-  const amazonUrl = original.amazon_url;
 
   const displayTitle =
     !isExpanded && title.length > 50 ? `${title.slice(0, 50)}...` : title;
 
-  return amazonUrl ? (
-    <a
-      href={amazonUrl}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="hover:underline"
+  return (
+    <button
+      onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        onSelect(original);
+      }}
+      className="text-left hover:underline transition-colors duration-200 md:hover:text-text"
     >
       {displayTitle}
-    </a>
-  ) : (
-    <span>{displayTitle}</span>
+    </button>
   );
 };
 
@@ -179,6 +181,7 @@ interface BookGridProps {
   onFilteredDataChange?: (count: number) => void;
   tooltipOpen: boolean;
   setTooltipOpen: (open: boolean) => void;
+  onSelectBook: (book: EnhancedBook) => void;
 }
 
 const getRecommendationCount = (recommender: string): number => {
@@ -227,6 +230,7 @@ export function BookGrid({
   onFilteredDataChange,
   tooltipOpen,
   setTooltipOpen,
+  onSelectBook,
 }: BookGridProps) {
   const maxRecommendations = Math.max(
     ...data.map((book) => getRecommendationCount(book.recommenders))
@@ -241,7 +245,11 @@ export function BookGrid({
     {
       field: "title" as keyof FormattedBook,
       header: "Title",
-      cell: TitleCell,
+      cell: (props: {
+        row: { original: EnhancedBook; isExpanded: boolean };
+      }) => (
+        <TitleCell {...props} onSelect={onSelectBook} />
+      ),
     },
     { field: "author" as keyof FormattedBook, header: "Author" },
     {
@@ -286,6 +294,7 @@ export function BookList({ initialBooks }: { initialBooks: FormattedBook[] }) {
   const [filteredCount, setFilteredCount] = useState(initialBooks.length);
   const [tooltipOpen, setTooltipOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedBook, setSelectedBook] = useState<EnhancedBook | null>(null);
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -354,36 +363,22 @@ export function BookList({ initialBooks }: { initialBooks: FormattedBook[] }) {
 
   return (
     <div className="h-full flex flex-col relative">
-      {/*       <div className="relative border-b border-border">
-        <input
-          type="text"
-          placeholder="Search all"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full p-2 bg-background text-text text-base sm:text-sm placeholder:text-sm selection:bg-main selection:text-mtext focus:outline-none rounded-none"
-        />
-        {searchQuery && (
-          <button
-            className="absolute right-2 top-1/2 -translate-y-1/2 text-text/70 transition-colors duration-200 md:hover:text-text p-2 -mr-2"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              setSearchQuery("");
-            }}
-          >
-            <X className="w-3 h-3" />
-          </button>
-        )}
-      </div> */}
       <div className="flex-1 overflow-hidden">
         <BookGrid
           data={books}
           onFilteredDataChange={handleFilteredDataChange}
           tooltipOpen={tooltipOpen}
           setTooltipOpen={setTooltipOpen}
+          onSelectBook={setSelectedBook}
         />
       </div>
       <BookCounter total={initialBooks.length} filtered={filteredCount} />
+      {selectedBook && (
+        <BookDetail
+          book={selectedBook}
+          onClose={() => setSelectedBook(null)}
+        />
+      )}
     </div>
   );
 }
