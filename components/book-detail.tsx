@@ -1,7 +1,7 @@
 import { ArrowLeft, X, BookOpen, Tag, Users } from "lucide-react";
 import { EnhancedBook, RelatedBook } from "@/types";
 import { useCallback, useEffect, useState } from "react";
-import { createClient } from "@/utils/supabase/client";
+import { supabase } from "@/utils/supabase/client";
 
 type BookDetailProps = {
   book: EnhancedBook;
@@ -10,7 +10,6 @@ type BookDetailProps = {
 
 export default function BookDetail({ book, onClose }: BookDetailProps) {
   const [relatedBooks, setRelatedBooks] = useState<RelatedBook[]>([]);
-  const supabase = createClient();
 
   useEffect(() => {
     async function fetchRelatedBooks() {
