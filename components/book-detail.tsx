@@ -1,5 +1,5 @@
 import { X, BookOpen, Tag, LayoutList, AlignJustify, ChevronLeft, User } from "lucide-react";
-import { EnhancedBook, RelatedBook } from "@/types";
+import { EnhancedBook, RelatedBook, RecommenderType } from "@/types";
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/utils/supabase/client";
 import { initLogger } from "braintrust";
@@ -170,12 +170,12 @@ export default function BookDetail({ book, onClose }: BookDetailProps) {
                 {!showSummary ? (
                   <div className="text-text space-y-4 max-h-[300px] overflow-y-auto">
                     {(() => {
-                      const pairs = book.recommenders.split(",").map((recommender, i) => ({
+                      const pairs = book.recommenders.split(", ").map((recommender, i) => ({
                         name: recommender.trim(),
-                        type: book.recommender_types.split(",")[i]?.trim() || "",
-                        url: book.url?.split(",")[i]?.trim() || "",
-                        source: book.source?.split(",")[i]?.trim() || "",
-                        source_link: book.source_link?.split(",")[i]?.trim() || ""
+                        type: book.recommender_types.split(", ")[i]?.trim() as RecommenderType,
+                        url: book.url?.split(", ")[i]?.trim() || "",
+                        source: book.source?.split(", ")[i]?.trim() || "",
+                        source_link: book.source_link?.split(", ")[i]?.trim() || ""
                       }));
 
                       return pairs.map((pair) => (
@@ -244,9 +244,9 @@ export default function BookDetail({ book, onClose }: BookDetailProps) {
                       <div className="flex items-start gap-3">
                         <User className="w-5 h-5 mt-0.5 text-text/70 shrink-0" />
                         <p className="text-sm text-text/70">
-                          {relatedBook.recommenders.split(",").slice(0, 3).join(", ")}
-                          {relatedBook.recommenders.split(",").length > 3 && 
-                            ` and ${relatedBook.recommenders.split(",").length - 3} more`}
+                          {relatedBook.recommenders.split(", ").slice(0, 3).join(", ")}
+                          {relatedBook.recommenders.split(", ").length > 3 && 
+                            ` and ${relatedBook.recommenders.split(", ").length - 3} more`}
                         </p>
                       </div>
                     </div>

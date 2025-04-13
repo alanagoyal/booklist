@@ -22,7 +22,7 @@ async function getBooks() {
     throw error;
   }
 
-  const formattedBooks = ((books || []) as unknown as DatabaseBook[]).map((book) => {
+  const formattedBooks = ((books || []) as DatabaseBook[]).map((book) => {
     const formatted = {
       id: book.id,
       title: book.title || "n/a",
@@ -33,24 +33,24 @@ async function getBooks() {
         book.recommendations
           ?.map((rec) => rec.recommender?.full_name)
           .filter(Boolean)
-          .join(", ") || "n/a",
+          .join(', ') || "n/a",
       recommender_types:
         book.recommendations
           ?.map((rec) => rec.recommender?.type)
           .filter(Boolean)
-          .join(", ") || "n/a",
+          .join(', ') || "n/a",
       source:
         book.recommendations
           ?.map((rec) => rec.source)
-          .join(", ") || "n/a",
+          .join(', ') || "n/a",
       source_link: book.recommendations
           ?.map((rec) => rec.source_link)
           .filter(Boolean)
-          .join(",") || "",
+          .join(', ') || "",
       url: book.recommendations
           ?.map((rec) => rec.recommender?.url)
           .filter(Boolean)
-          .join(",") || "",
+          .join(', ') || "",
       amazon_url: book.amazon_url || "",
     };
     

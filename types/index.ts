@@ -16,6 +16,26 @@ export interface Book {
   }[];
 }
 
+export type RecommenderType =
+  | "Technologist or Mathematician"
+  | "Librarian or Teacher"
+  | "Entrepreneur or Startup Founder"
+  | "Historian, Philosopher, or Theologian"
+  | "Anthropologist or Social Scientist"
+  | "Biologist, Physicist, or Medical Scientist"
+  | "Economist or Policy Expert"
+  | "Architect or Design Expert"
+  | "Broadcaster, Journalist, or Media Commentator"
+  | "Venture Capitalist or Investor"
+  | "Author or Writer"
+  | "Musician, Music Critic, or Filmmaker"
+  | "Biographer or Memoirist"
+  | "Cook, Food Writer, or Culinary Expert"
+  | "Comedian, Magician, or Entertainer"
+  | "Business Leader or Executive"
+  | "Product Manager, Designer, or Engineer"
+  | "Art Historian, Critic, or Visual Artist";
+
 // Database layer types
 export interface DatabaseRecommendation {
   source: string;

@@ -1,5 +1,4 @@
 -- Drop existing functions
-DROP FUNCTION IF EXISTS get_related_books(UUID, INTEGER);
 DROP FUNCTION IF EXISTS get_books_by_shared_recommenders(UUID, INTEGER);
 
 CREATE OR REPLACE FUNCTION get_books_by_shared_recommenders(p_book_id UUID, p_limit INTEGER DEFAULT 10)
@@ -30,8 +29,8 @@ BEGIN
       b.genre as genres,
       b.amazon_url,
       COUNT(DISTINCT r.person_id)::INTEGER as recommender_count,
-      string_agg(DISTINCT p.full_name, ', ' ORDER BY p.full_name) as recommenders,
-      string_agg(DISTINCT p.type, ', ' ORDER BY p.type) as recommender_types
+      string_agg(DISTINCT p.full_name, ', ') as recommenders,
+      string_agg(DISTINCT p.type::TEXT, ', ') as recommender_types
     FROM books b
     INNER JOIN recommendations r ON r.book_id = b.id
     INNER JOIN people p ON p.id = r.person_id
