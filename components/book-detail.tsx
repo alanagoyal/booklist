@@ -110,6 +110,7 @@ export default function BookDetail({ book, onClose }: BookDetailProps) {
 
         <div className="px-12 py-8">
           <div className="space-y-8">
+          {/* Book metadata */}
             <div className="flex justify-between items-center">
               {book.genres && (
                 <div className="flex items-center gap-2 text-text">
@@ -132,9 +133,10 @@ export default function BookDetail({ book, onClose }: BookDetailProps) {
               )}
             </div>
 
+            {/* Book description */}
             {book.description && (
               <div className="space-y-2">
-                <h2 className="text-sm text-text font-bold">About</h2>
+                <h2 className="text-base text-text font-bold">About</h2>
                 <p className="text-text whitespace-pre-line leading-relaxed">
                   {book.description}
                 </p>
@@ -144,7 +146,7 @@ export default function BookDetail({ book, onClose }: BookDetailProps) {
             {book.recommenders && book.recommender_types && (
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-sm text-text font-bold">Recommenders</h2>
+                  <h2 className="text-base text-text font-bold">Recommenders</h2>
                   <div className="flex gap-2">
                     <button
                       onClick={() => setShowSummary(false)}
@@ -232,8 +234,8 @@ export default function BookDetail({ book, onClose }: BookDetailProps) {
             )}
 
             {relatedBooks.length > 0 && (
-              <div className="space-y-4">
-                <h2 className="text-lg text-text font-base">You Might Also Enjoy</h2>
+              <div className="space-y-2">
+                <h2 className="text-base text-text font-bold">You Might Also Enjoy</h2>
                 <div className="space-y-4">
                   {relatedBooks.map((relatedBook) => (
                     <div key={relatedBook.id} className="space-y-1">
