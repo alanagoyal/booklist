@@ -23,6 +23,7 @@ export interface DatabaseRecommendation {
   recommender: {
     full_name: string;
     url: string | null;
+    type: string;
   } | null;
 }
 
@@ -44,6 +45,7 @@ export interface FormattedBook {
   description: string;
   genres: string;
   recommenders: string;
+  recommender_types: string;
   source: string;
   source_link: string;
   url: string;

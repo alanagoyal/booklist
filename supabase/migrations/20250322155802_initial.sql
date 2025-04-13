@@ -156,37 +156,36 @@ returns table (
 language sql
 stable
 as $$
-  with book_counts as (
-    select b.*, count(r.id) as recommendation_count
-    from books b
-    left join recommendations r on r.book_id = b.id
-    group by b.id
-  )
-  select 
-    bc.id,
-    bc.title,
-    bc.author,
-    bc.description,
-    bc.genre,
-    bc.amazon_url,
-    coalesce(
+  SELECT 
+    books.id,
+    books.title,
+    books.author,
+    books.description,
+    books.genre,
+    books.amazon_url,
+    COALESCE(
       json_agg(
         json_build_object(
-          'source', r.source,
-          'source_link', r.source_link,
-          'recommender', json_build_object(
-            'full_name', p.full_name,
-            'url', p.url
-          )
+          'source', recommendations.source,
+          'source_link', recommendations.source_link,
+          'recommender', CASE 
+            WHEN people.id IS NOT NULL THEN
+              json_build_object(
+                'full_name', people.full_name,
+                'url', people.url,
+                'type', people.type
+              )
+            ELSE NULL
+          END
         )
-      ) filter (where r.id is not null),
-      '[]'
+      ) FILTER (WHERE recommendations.id IS NOT NULL),
+      '[]'::json
     ) as recommendations
-  from book_counts bc
-  left join recommendations r on r.book_id = bc.id
-  left join people p on p.id = r.person_id
-  group by bc.id, bc.title, bc.author, bc.description, bc.genre, bc.amazon_url, bc.recommendation_count
-  order by bc.recommendation_count desc, bc.title asc;
+  FROM books
+  LEFT JOIN recommendations ON books.id = recommendations.book_id
+  LEFT JOIN people ON recommendations.person_id = people.id
+  GROUP BY books.id
+  ORDER BY COUNT(recommendations.id) DESC;
 $$;
 
 grant delete on table "public"."books" to "anon";

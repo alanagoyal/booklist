@@ -22,31 +22,42 @@ async function getBooks() {
     throw error;
   }
 
-  return ((books || []) as unknown as DatabaseBook[]).map((book) => ({
-    id: book.id,
-    title: book.title || "n/a",
-    author: book.author || "n/a",
-    description: book.description || "n/a",
-    genres: book.genre?.join(", ") || "n/a",
-    recommenders:
-      book.recommendations
-        ?.map((rec) => rec.recommender?.full_name)
-        .filter(Boolean)
-        .join(", ") || "n/a",
-    source:
-      book.recommendations
-        ?.map((rec) => rec.source)
-        .join(", ") || "n/a",
-    source_link: book.recommendations
-        ?.map((rec) => rec.source_link)
-        .filter(Boolean)
-        .join(",") || "",
-    url: book.recommendations
-        ?.map((rec) => rec.recommender?.url)
-        .filter(Boolean)
-        .join(",") || "",
-    amazon_url: book.amazon_url || "",
-  }));
+  const formattedBooks = ((books || []) as unknown as DatabaseBook[]).map((book) => {
+    const formatted = {
+      id: book.id,
+      title: book.title || "n/a",
+      author: book.author || "n/a",
+      description: book.description || "n/a",
+      genres: book.genre?.join(", ") || "n/a",
+      recommenders:
+        book.recommendations
+          ?.map((rec) => rec.recommender?.full_name)
+          .filter(Boolean)
+          .join(", ") || "n/a",
+      recommender_types:
+        book.recommendations
+          ?.map((rec) => rec.recommender?.type)
+          .filter(Boolean)
+          .join(", ") || "n/a",
+      source:
+        book.recommendations
+          ?.map((rec) => rec.source)
+          .join(", ") || "n/a",
+      source_link: book.recommendations
+          ?.map((rec) => rec.source_link)
+          .filter(Boolean)
+          .join(",") || "",
+      url: book.recommendations
+          ?.map((rec) => rec.recommender?.url)
+          .filter(Boolean)
+          .join(",") || "",
+      amazon_url: book.amazon_url || "",
+    };
+    
+    return formatted;
+  });
+
+  return formattedBooks;
 }
 
 export default async function Home() {

@@ -1,4 +1,4 @@
-import { ArrowLeft, X } from "lucide-react";
+import { ArrowLeft, X, BookOpen, Tag, Users } from "lucide-react";
 import { EnhancedBook } from "@/types";
 import { useCallback } from "react";
 
@@ -27,58 +27,92 @@ export default function BookDetail({ book, onClose }: BookDetailProps) {
           onClick={onClose}
           className="absolute top-4 left-4 md:hidden text-text/70 transition-colors duration-200 md:hover:text-text"
         >
-          <ArrowLeft className="w-6 h-6" />
+          <ArrowLeft className="w-5 h-5" />
         </button>
         <button
           onClick={onClose}
           className="absolute top-4 right-4 hidden md:block text-text/70 transition-colors duration-200 md:hover:text-text"
         >
-          <X className="w-4 h-4" />
+          <X className="w-5 h-5" />
         </button>
-        <div className="p-8 space-y-6">
-          <div>
-            <h1 className="text-xl font-base text-text">{book.title}</h1>
-            <p className="text-text/70">{book.author}</p>
-          </div>
 
-          <div className="flex justify-between items-center">
-            {book.genres && (
-              <p className="text-text">{book.genres}</p>
-            )}
-            {book.amazon_url && (
-              <a
-                href={book.amazon_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block text-text/70 transition-colors duration-200 hover:underline"
-              >
-                View on Amazon
-              </a>
-            )}
-          </div>
-
-          {book.description && (
-            <div>
-              <h2 className="text-sm text-text/70 mb-2">Description</h2>
-              <p className="text-text whitespace-pre-line">
-                {book.description}
-              </p>
+        <div className="px-12 py-4 md:p-8">
+          <div className="space-y-8">
+            <div className="space-y-2">
+              <h1 className="text-2xl font-base text-text">{book.title}</h1>
+              <p className="text-text/70 text-lg">{book.author}</p>
             </div>
-          )}
 
-          {book.recommenders && (
-            <div>
-              <h2 className="text-sm text-text/70 mb-2">Recommended by</h2>
-              <div className="text-text whitespace-pre-line">
-                {book.recommenders.split(",").map((recommender, i) => (
-                  <span key={recommender}>
-                    {i > 0 && ", "}
-                    {recommender.trim()}
-                  </span>
-                ))}
+            <div className="flex justify-between items-center">
+              {book.genres && (
+                <div className="flex items-center gap-2 text-text">
+                  <Tag className="w-4 h-4 text-text/70" />
+                  <span>{book.genres}</span>
+                </div>
+              )}
+              {book.amazon_url && (
+                <div className="flex items-center gap-2">
+                  <BookOpen className="w-4 h-4 text-text/70" />
+                  <a
+                    href={book.amazon_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-text transition-colors duration-200 md:hover:text-text/70"
+                  >
+                    View on Amazon
+                  </a>
+                </div>
+              )}
+            </div>
+
+            {book.description && (
+              <div className="space-y-2">
+                <h2 className="text-sm text-text font-bold">About</h2>
+                <p className="text-text whitespace-pre-line leading-relaxed">
+                  {book.description}
+                </p>
               </div>
-            </div>
-          )}
+            )}
+
+            {book.recommenders && book.recommender_types && (
+              <div className="space-y-2">
+                <h2 className="text-sm text-text font-bold">Recommended By</h2>
+                <div className="text-text space-y-3">
+                  {(() => {
+                  // Create pairs of recommenders and their types
+                    const pairs = book.recommenders.split(",").map((recommender, i) => ({
+                      name: recommender.trim(),
+                      type: book.recommender_types.split(",")[i]?.trim() || ""
+                    }));
+
+                  // Group by type
+                    const groupedByType = pairs.reduce((acc, pair) => {
+                      if (!acc[pair.type]) {
+                        acc[pair.type] = [];
+                      }
+                      acc[pair.type].push(pair.name);
+                      return acc;
+                    }, {} as Record<string, string[]>);
+
+                  // Sort types by count in descending order
+                    return Object.entries(groupedByType)
+                      .sort(([, namesA], [, namesB]) => namesB.length - namesA.length)
+                      .map(([type, names]) => (
+                        <div key={type} className="whitespace-pre-line">
+                          <span className="text-text/70">{names.length} {type.toLowerCase()}: </span>
+                          {names.map((name, j) => (
+                            <span key={name}>
+                              {j > 0 && ", "}
+                              {name}
+                            </span>
+                          ))}
+                        </div>
+                      ));
+                  })()}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
