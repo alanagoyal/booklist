@@ -1,7 +1,15 @@
-import { ArrowLeft, X, BookOpen, Tag, Users } from "lucide-react";
+import { ArrowLeft, X, BookOpen, Tag, Users, LayoutList, AlignJustify } from "lucide-react";
 import { EnhancedBook, RelatedBook } from "@/types";
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/utils/supabase/client";
+import { initLogger } from "braintrust";
+
+// Initialize Braintrust logger
+initLogger({
+  projectName: "booklist",
+  apiKey: process.env.BRAINTRUST_API_KEY,
+});
+  
 
 type BookDetailProps = {
   book: EnhancedBook;
@@ -10,6 +18,9 @@ type BookDetailProps = {
 
 export default function BookDetail({ book, onClose }: BookDetailProps) {
   const [relatedBooks, setRelatedBooks] = useState<RelatedBook[]>([]);
+  const [showSummary, setShowSummary] = useState(false);
+  const [recommenderSummary, setRecommenderSummary] = useState<string>("");
+  const [isLoadingSummary, setIsLoadingSummary] = useState(false);
 
   useEffect(() => {
     async function fetchRelatedBooks() {
@@ -28,6 +39,39 @@ export default function BookDetail({ book, onClose }: BookDetailProps) {
 
     fetchRelatedBooks();
   }, [book.id]);
+
+  useEffect(() => {
+    async function fetchRecommenderSummary() {
+      if (showSummary && !recommenderSummary && book.recommenders && book.recommender_types) {
+        setIsLoadingSummary(true);
+        try {
+          const response = await fetch('/api/recommenders/explain', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              book: `${book.title} by ${book.author}`,
+              recommenders: book.recommenders,
+            }),
+          });
+
+          if (!response.ok) {
+            throw new Error('Failed to fetch recommender summary');
+          }
+
+          const data = await response.json();
+          setRecommenderSummary(data.summary);
+        } catch (error) {
+          console.error('Error fetching recommender summary:', error);
+        } finally {
+          setIsLoadingSummary(false);
+        }
+      }
+    }
+
+    fetchRecommenderSummary();
+  }, [showSummary, book, recommenderSummary]);
 
   const handleBackdropClick = useCallback(
     (e: React.MouseEvent) => {
@@ -97,37 +141,70 @@ export default function BookDetail({ book, onClose }: BookDetailProps) {
 
             {book.recommenders && book.recommender_types && (
               <div className="space-y-2">
-                <h2 className="text-sm text-text font-bold">Recommended By</h2>
-                <div className="text-text space-y-3">
-                  {(() => {
-                    const pairs = book.recommenders.split(",").map((recommender, i) => ({
-                      name: recommender.trim(),
-                      type: book.recommender_types.split(",")[i]?.trim() || ""
-                    }));
-
-                    const groupedByType = pairs.reduce((acc, pair) => {
-                      if (!acc[pair.type]) {
-                        acc[pair.type] = [];
-                      }
-                      acc[pair.type].push(pair.name);
-                      return acc;
-                    }, {} as Record<string, string[]>);
-
-                    return Object.entries(groupedByType)
-                      .sort(([, namesA], [, namesB]) => namesB.length - namesA.length)
-                      .map(([type, names]) => (
-                        <div key={type} className="whitespace-pre-line">
-                          <span className="text-text/70">{names.length} {type.toLowerCase()}: </span>
-                          {names.map((name, j) => (
-                            <span key={name}>
-                              {j > 0 && ", "}
-                              {name}
-                            </span>
-                          ))}
-                        </div>
-                      ));
-                  })()}
+                <div className="flex items-center justify-between">
+                  <h2 className="text-sm text-text font-bold">Recommenders</h2>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => setShowSummary(false)}
+                      className={`p-1.5 transition-colors duration-200 ${
+                        !showSummary ? 'text-text bg-accent/50' : 'text-text/70 md:hover:text-text'
+                      }`}
+                      title="List View"
+                    >
+                      <LayoutList className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => setShowSummary(true)}
+                      className={`p-1.5 transition-colors duration-200 ${
+                        showSummary ? 'text-text bg-accent/50' : 'text-text/70 md:hover:text-text'
+                      }`}
+                      title="Summary View"
+                    >
+                      <AlignJustify className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
+                
+                {showSummary ? (
+                  <div className="text-text whitespace-pre-line leading-relaxed max-h-[300px] overflow-y-auto">
+                    {isLoadingSummary ? (
+                      <p className="text-text/70">Generating summary...</p>
+                    ) : (
+                      recommenderSummary
+                    )}
+                  </div>
+                ) : (
+                  <div className="text-text space-y-3 max-h-[300px] overflow-y-auto">
+                    {(() => {
+                      const pairs = book.recommenders.split(",").map((recommender, i) => ({
+                        name: recommender.trim(),
+                        type: book.recommender_types.split(",")[i]?.trim() || ""
+                      }));
+
+                      const groupedByType = pairs.reduce((acc, pair) => {
+                        if (!acc[pair.type]) {
+                          acc[pair.type] = [];
+                        }
+                        acc[pair.type].push(pair.name);
+                        return acc;
+                      }, {} as Record<string, string[]>);
+
+                      return Object.entries(groupedByType)
+                        .sort(([, namesA], [, namesB]) => namesB.length - namesA.length)
+                        .map(([type, names]) => (
+                          <div key={type} className="whitespace-pre-line">
+                            <span className="text-text/70">{names.length} {type.toLowerCase()}: </span>
+                            {names.map((name, j) => (
+                              <span key={name}>
+                                {j > 0 && ", "}
+                                {name}
+                              </span>
+                            ))}
+                          </div>
+                        ));
+                    })()}
+                  </div>
+                )}
               </div>
             )}
 
