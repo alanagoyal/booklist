@@ -124,7 +124,7 @@ export default function BookDetail({ book, onClose }: BookDetailProps) {
                     href={book.amazon_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-text transition-colors duration-200 md:hover:text-text/70"
+                    className="text-text transition-colors duration-200 hover:underline"
                   >
                     View on Amazon
                   </a>
@@ -181,7 +181,7 @@ export default function BookDetail({ book, onClose }: BookDetailProps) {
                       return pairs.map((pair) => (
                         <div key={pair.name} className="flex items-start gap-3">
                           <User className="w-5 h-5 mt-0.5 text-text/70 shrink-0" />
-                          <div className="space-y-1 min-w-0">
+                          <div className="space-y-1 min-w-0 flex-1">
                             <div className="flex items-baseline gap-2">
                               {pair.url ? (
                                 <a 
@@ -195,25 +195,25 @@ export default function BookDetail({ book, onClose }: BookDetailProps) {
                               ) : (
                                 <span className="text-text">{pair.name}</span>
                               )}
-                              <span className="text-sm text-text/70">({pair.type})</span>
+                              {pair.source && (
+                                <span className="text-sm text-text/70">
+                                  via{" "}
+                                  {pair.source_link ? (
+                                    <a 
+                                      href={pair.source_link}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="md:hover:underline"
+                                    >
+                                      {pair.source}
+                                    </a>
+                                  ) : (
+                                    pair.source
+                                  )}
+                                </span>
+                              )}
                             </div>
-                            {pair.source && (
-                              <div className="text-sm text-text/70">
-                                via{" "}
-                                {pair.source_link ? (
-                                  <a 
-                                    href={pair.source_link}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="md:hover:underline"
-                                  >
-                                    {pair.source}
-                                  </a>
-                                ) : (
-                                  pair.source
-                                )}
-                              </div>
-                            )}
+                            <div className="text-sm text-text/70">{pair.type}</div>
                           </div>
                         </div>
                       ));
