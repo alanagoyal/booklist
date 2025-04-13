@@ -216,9 +216,11 @@ export default function BookDetail({ book, onClose }: BookDetailProps) {
                     <div key={relatedBook.id} className="space-y-1">
                       <div className="flex items-baseline justify-between gap-2">
                         <h3 className="text-text font-base">{relatedBook.title}</h3>
-                        <span className="text-sm text-text/70">{relatedBook.recommender_count} shared recommenders</span>
+                        <span className="text-sm text-text/70">{relatedBook.author}</span>
                       </div>
-                      <p className="text-text/70">{relatedBook.author}</p>
+                      <p className="text-sm text-text/70">
+                        Also recommended by {relatedBook.recommenders}
+                      </p>
                     </div>
                   ))}
                 </div>

@@ -59,6 +59,8 @@ export type RelatedBook = {
   genres: string[];
   amazon_url: string | null;
   recommender_count: number;
+  recommenders: string;
+  recommender_types: string;
 }
 
 export type EnhancedBook = FormattedBook & {

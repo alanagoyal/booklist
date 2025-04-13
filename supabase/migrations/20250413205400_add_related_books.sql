@@ -9,7 +9,9 @@ RETURNS TABLE (
   author TEXT,
   genres TEXT[],
   amazon_url TEXT,
-  recommender_count INTEGER
+  recommender_count INTEGER,
+  recommenders TEXT,
+  recommender_types TEXT
 ) LANGUAGE plpgsql AS $$
 BEGIN
   RETURN QUERY
@@ -27,9 +29,12 @@ BEGIN
       b.author,
       b.genre as genres,
       b.amazon_url,
-      COUNT(DISTINCT r.person_id)::INTEGER as recommender_count
+      COUNT(DISTINCT r.person_id)::INTEGER as recommender_count,
+      string_agg(DISTINCT p.full_name, ', ' ORDER BY p.full_name) as recommenders,
+      string_agg(DISTINCT p.type, ', ' ORDER BY p.type) as recommender_types
     FROM books b
     INNER JOIN recommendations r ON r.book_id = b.id
+    INNER JOIN people p ON p.id = r.person_id
     WHERE r.person_id IN (SELECT person_id FROM book_recommenders)
     AND b.id != p_book_id
     GROUP BY b.id, b.title, b.author, b.genre, b.amazon_url
