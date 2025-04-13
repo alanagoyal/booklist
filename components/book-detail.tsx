@@ -1,4 +1,4 @@
-import { ArrowLeft, X, BookOpen, Tag, Users, LayoutList, AlignJustify } from "lucide-react";
+import { X, BookOpen, Tag, LayoutList, AlignJustify, ChevronLeft } from "lucide-react";
 import { EnhancedBook, RelatedBook } from "@/types";
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/utils/supabase/client";
@@ -88,26 +88,28 @@ export default function BookDetail({ book, onClose }: BookDetailProps) {
       onClick={handleBackdropClick}
     >
       <div className="absolute right-0 top-0 bottom-0 w-full md:w-1/2 bg-background border-l border-border overflow-auto">
-        <button
-          onClick={onClose}
-          className="absolute top-4 left-4 md:hidden text-text/70 transition-colors duration-200 md:hover:text-text"
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </button>
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 hidden md:block text-text/70 transition-colors duration-200 md:hover:text-text"
-        >
-          <X className="w-5 h-5" />
-        </button>
+        <div className="sticky top-0 bg-background pt-8 px-12 md:pt-16">
+          <button
+            onClick={onClose}
+            className="absolute top-8 left-4 md:hidden text-text/70 transition-colors duration-200 md:hover:text-text"
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+          <button
+            onClick={onClose}
+            className="absolute top-4 right-4 hidden md:block text-text/70 transition-colors duration-200 md:hover:text-text"
+          >
+            <X className="w-5 h-5" />
+          </button>
 
-        <div className="px-12 py-4 md:p-8">
+          <div className="space-y-2">
+            <h1 className="text-2xl font-base text-text">{book.title}</h1>
+            <p className="text-text/70 text-lg">{book.author}</p>
+          </div>
+        </div>
+
+        <div className="px-12 py-8">
           <div className="space-y-8">
-            <div className="space-y-2">
-              <h1 className="text-2xl font-base text-text">{book.title}</h1>
-              <p className="text-text/70 text-lg">{book.author}</p>
-            </div>
-
             <div className="flex justify-between items-center">
               {book.genres && (
                 <div className="flex items-center gap-2 text-text">
