@@ -239,14 +239,12 @@ export function BookList({ initialBooks, initialRecommenders }: {
   const [mounted, setMounted] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [books, setBooks] = useState(initialBooks);
   const [filteredCount, setFilteredCount] = useState(initialBooks.length);
-  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Get selected item based on URL param
   const viewId = searchParams.get('view');
   const selectedRecommender = viewId ? initialRecommenders.find(r => r.id === viewId) : null;
-  const selectedBook = viewId && !selectedRecommender ? books.find(book => book.id === viewId || book.title === viewId) as EnhancedBook | null : null;
+  const selectedBook = viewId && !selectedRecommender ? initialBooks.find(book => book.id === viewId || book.title === viewId) as EnhancedBook | null : null;
 
   useEffect(() => {
     setMounted(true);
@@ -258,67 +256,6 @@ export function BookList({ initialBooks, initialRecommenders }: {
     const newUrl = params.toString() ? `?${params.toString()}` : window.location.pathname;
     router.push(newUrl, { scroll: false });
   }, [router, searchParams]);
-
-  const handleSearch = useCallback(
-    async (query: string) => {
-      const trimmedQuery = query.trim();
-      if (!trimmedQuery) {
-        setBooks(initialBooks);
-        return;
-      }
-
-      try {
-        // Create search params without 'view' parameter
-        const searchParams = new URLSearchParams();
-        searchParams.set('query', trimmedQuery);
-        
-        const response = await fetch("/api/search", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ query: trimmedQuery }),
-        });
-
-        if (!response.ok) {
-          throw new Error(`Search failed: ${response.statusText}`);
-        }
-
-        const data = await response.json();
-        if (data.error) {
-          console.error("Search error:", data.error);
-          return;
-        }
-
-        setBooks(data.books);
-      } catch (error) {
-        console.error("Error searching books:", error);
-        setBooks(initialBooks);
-      }
-    },
-    [initialBooks]
-  );
-
-  useEffect(() => {
-    if (searchTimeoutRef.current) {
-      clearTimeout(searchTimeoutRef.current);
-    }
-
-    // Get search query from URL params, excluding 'view'
-    const params = new URLSearchParams(searchParams.toString());
-    params.delete('view');
-    const query = params.get('query');
-
-    searchTimeoutRef.current = setTimeout(() => {
-      handleSearch(query || '');
-    }, 300);
-
-    return () => {
-      if (searchTimeoutRef.current) {
-        clearTimeout(searchTimeoutRef.current);
-      }
-    };
-  }, [searchParams]);
 
   const handleFilteredDataChange = useCallback((count: number) => {
     setFilteredCount(count);
@@ -332,7 +269,7 @@ export function BookList({ initialBooks, initialRecommenders }: {
     <div className="h-full flex flex-col relative">
       <div className="flex-1 overflow-hidden">
         <BookGrid
-          data={books}
+          data={initialBooks}
           onFilteredDataChange={handleFilteredDataChange}
         />
       </div>
