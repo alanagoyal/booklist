@@ -68,11 +68,8 @@ export type RelatedBook = {
   id: string;  // UUID
   title: string;
   author: string;
-  genres: string[];
-  amazon_url: string | null;
-  recommender_count: number;
   recommenders: string;
-  recommender_types: string;
+  recommender_count: number;
 }
 
 export type EnhancedBook = FormattedBook & {

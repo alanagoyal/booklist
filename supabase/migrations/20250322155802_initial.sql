@@ -193,10 +193,7 @@ BEGIN
       rb.id as related_book_id,
       rb.title as related_book_title,
       rb.author as related_book_author,
-      rb.genre as related_book_genres,
-      rb.amazon_url as related_book_amazon_url,
       string_agg(DISTINCT p2.full_name, ', ') as recommenders,
-      string_agg(DISTINCT p2.type, ', ') as recommender_types,
       COUNT(DISTINCT r2.id) as recommender_count
     FROM book_recommendations br
     -- Get recommendations for the current book
@@ -207,16 +204,8 @@ BEGIN
     JOIN books rb ON rb.id = r2.book_id
     -- Join to get recommender details
     JOIN people p2 ON r2.person_id = p2.id
-    -- Add indexes to speed up joins
-    WHERE EXISTS (
-      SELECT 1 
-      FROM recommendations r3 
-      WHERE r3.book_id = r2.book_id 
-      GROUP BY r3.book_id 
-      HAVING COUNT(DISTINCT r3.person_id) >= 2
-    )
-    GROUP BY br.id, rb.id, rb.title, rb.author, rb.genre, rb.amazon_url
-    -- Limit to top 5 related books per book to prevent timeout
+    GROUP BY br.id, rb.id, rb.title, rb.author
+    -- Limit to books with at least 2 shared recommendations
     HAVING COUNT(DISTINCT r2.id) >= 2
   ),
   related_books_by_recommenders AS (
@@ -228,10 +217,7 @@ BEGIN
             'id', related_book_id,
             'title', related_book_title,
             'author', related_book_author,
-            'genres', related_book_genres,
-            'amazon_url', related_book_amazon_url,
             'recommenders', recommenders,
-            'recommender_types', recommender_types,
             'recommender_count', recommender_count
           )
         )
@@ -240,7 +226,7 @@ BEGIN
           FROM related_book_recommenders rbr2
           WHERE rbr2.book_id = related_book_recommenders.book_id
           ORDER BY recommender_count DESC
-          LIMIT 5  -- Limit to top 5 related books
+          LIMIT 3  -- Further limit to top 3 related books for better performance
         ) t
       ) as related_books
     FROM related_book_recommenders
