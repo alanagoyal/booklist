@@ -4,7 +4,7 @@ import { Fragment, useState, useEffect, useCallback, useRef } from "react";
 import { DataGrid } from "@/components/grid";
 import { BookCounter } from "@/components/book-counter";
 import { PercentileTooltip } from "@/components/percentile-tooltip";
-import { FormattedBook, EnhancedBook, Recommender } from "@/types";
+import { FormattedBook, EnhancedBook, Recommender, FormattedRecommender } from "@/types";
 import BookDetail from "@/components/book-detail";
 import RecommenderDetail from "@/components/recommender-detail";
 import { supabase } from "@/utils/supabase/client";
@@ -256,10 +256,13 @@ export function BookGrid({
   );
 }
 
-export function BookList({ initialBooks, people }: { initialBooks: FormattedBook[]; people: Recommender[] }) {
+export function BookList({ initialBooks, initialRecommenders }: { 
+  initialBooks: FormattedBook[]; 
+  initialRecommenders: FormattedRecommender[];
+}) {
+  const [mounted, setMounted] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [mounted, setMounted] = useState(false);
   const [books, setBooks] = useState(initialBooks);
   const [filteredCount, setFilteredCount] = useState(initialBooks.length);
   const [tooltipOpen, setTooltipOpen] = useState(false);
@@ -268,7 +271,7 @@ export function BookList({ initialBooks, people }: { initialBooks: FormattedBook
 
   // Get selected item based on URL param
   const viewId = searchParams.get('view');
-  const selectedRecommender = viewId ? people.find(person => person.id === viewId) || null : null;
+  const selectedRecommender = viewId ? initialRecommenders.find(r => r.id === viewId) : null;
   const selectedBook = viewId && !selectedRecommender ? books.find(book => book.id === viewId || book.title === viewId) as EnhancedBook | null : null;
 
   useEffect(() => {

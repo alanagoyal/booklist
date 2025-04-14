@@ -1,5 +1,5 @@
 import { BookList } from "@/components/books";
-import { DatabaseBook, FormattedBook, Recommender } from "@/types";
+import { DatabaseBook, FormattedBook, FormattedRecommender } from "@/types";
 import { supabase } from "@/utils/supabase/client";
 
 // Force static generation and disable ISR
@@ -55,35 +55,80 @@ async function getBooks(): Promise<FormattedBook[]> {
   return formattedBooks;
 }
 
-async function getPeople(): Promise<Recommender[]> {
-  const { data: people, error } = await supabase
+async function getRecommenders(): Promise<FormattedRecommender[]> {
+  // Get all people from the database
+  const { data: people, error: peopleError } = await supabase
     .from('people')
     .select('id, full_name, url, type')
     .order('full_name');
 
-  if (error) {
-    throw error;
+  if (peopleError) {
+    throw peopleError;
   }
 
-  // Ensure type is never null to match Recommender interface
-  return (people || []).map(person => ({
-    ...person,
-    type: person.type || 'Unknown' // Provide default value if null
-  }));
+  // For each person, get their recommendations and related recommenders
+  const formattedRecommenders = await Promise.all(
+    (people || []).map(async (person) => {
+      const { data, error } = await supabase
+        .rpc('get_recommender_details', { p_recommender_id: person.id });
+
+      if (error || !data?.[0]) {
+        console.error('Error fetching recommender details:', error);
+        return null;
+      }
+
+      // Transform the raw data into the correct types
+      const rawData = data[0];
+      const transformedData: FormattedRecommender = {
+        id: rawData.id,
+        full_name: rawData.full_name,
+        url: rawData.url,
+        type: rawData.type || 'Unknown',
+        recommendations: (rawData.recommendations as any[]).map(rec => ({
+          id: rec.id,
+          title: rec.title,
+          author: rec.author,
+          description: rec.description,
+          genre: rec.genre,
+          amazon_url: rec.amazon_url,
+          source: rec.source,
+          source_link: rec.source_link
+        })),
+        related_recommenders: (rawData.related_recommenders as any[]).map(rec => ({
+          id: rec.id,
+          full_name: rec.full_name,
+          url: rec.url,
+          type: rec.type,
+          shared_books: rec.shared_books,
+          shared_count: rec.shared_count
+        }))
+      };
+
+      return transformedData;
+    })
+  );
+
+  return formattedRecommenders.filter((recommender): recommender is FormattedRecommender => recommender !== null);
 }
 
 export default async function Home() {
   try {
-    const [formattedBooks, people] = await Promise.all([
+    const [formattedBooks, formattedRecommenders] = await Promise.all([
       getBooks(),
-      getPeople(),
+      getRecommenders(),
     ]);
-    return <BookList initialBooks={formattedBooks} people={people} />;
+
+    return (
+      <BookList 
+        initialBooks={formattedBooks} 
+        initialRecommenders={formattedRecommenders} 
+      />
+    );
   } catch (error) {
-    console.error('Error fetching books:', error);
+    console.error('Error fetching data:', error);
     return (
       <div className="p-4">
-        <div className="text-text font-bold mb-2">Error loading books</div>
+        <div className="text-text font-bold mb-2">Error loading data</div>
         <pre className="text-text/70 text-sm whitespace-pre-wrap">
           {JSON.stringify(error, null, 2)}
         </pre>

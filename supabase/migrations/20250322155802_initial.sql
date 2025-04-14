@@ -324,6 +324,97 @@ BEGIN
 END;
 $$;
 
+-- Create a function to get all recommender details including books and related recommenders
+CREATE OR REPLACE FUNCTION get_recommender_details(p_recommender_id UUID)
+RETURNS TABLE (
+  id UUID,
+  full_name TEXT,
+  url TEXT,
+  type TEXT,
+  recommendations JSON,
+  related_recommenders JSON
+)
+LANGUAGE plpgsql
+STABLE
+AS $$
+BEGIN
+  RETURN QUERY
+  WITH recommender_books AS (
+    SELECT 
+      b.id,
+      b.title,
+      b.author,
+      b.description,
+      b.genre,
+      b.amazon_url,
+      r.source,
+      r.source_link
+    FROM recommendations r
+    JOIN books b ON r.book_id = b.id
+    WHERE r.person_id = p_recommender_id
+  ),
+  related_recommenders_data AS (
+    SELECT 
+      p2.id,
+      p2.full_name,
+      p2.url,
+      p2.type,
+      string_agg(DISTINCT b.title, ', ') as shared_books,
+      COUNT(DISTINCT r2.book_id) as shared_count
+    FROM recommendations r1
+    JOIN recommendations r2 ON r1.book_id = r2.book_id AND r1.person_id != r2.person_id
+    JOIN people p2 ON r2.person_id = p2.id
+    JOIN books b ON r1.book_id = b.id
+    WHERE r1.person_id = p_recommender_id
+    GROUP BY p2.id, p2.full_name, p2.url, p2.type
+    HAVING COUNT(DISTINCT r2.book_id) >= 2
+    ORDER BY COUNT(DISTINCT r2.book_id) DESC
+    LIMIT 3
+  )
+  SELECT 
+    p.id,
+    p.full_name,
+    p.url,
+    p.type,
+    COALESCE(
+      (
+        SELECT json_agg(
+          json_build_object(
+            'id', rb.id,
+            'title', rb.title,
+            'author', rb.author,
+            'description', rb.description,
+            'genre', rb.genre,
+            'amazon_url', rb.amazon_url,
+            'source', rb.source,
+            'source_link', rb.source_link
+          )
+        )
+        FROM recommender_books rb
+      ),
+      '[]'::json
+    ) as recommendations,
+    COALESCE(
+      (
+        SELECT json_agg(
+          json_build_object(
+            'id', rr.id,
+            'full_name', rr.full_name,
+            'url', rr.url,
+            'type', rr.type,
+            'shared_books', rr.shared_books,
+            'shared_count', rr.shared_count
+          )
+        )
+        FROM related_recommenders_data rr
+      ),
+      '[]'::json
+    ) as related_recommenders
+  FROM people p
+  WHERE p.id = p_recommender_id;
+END;
+$$;
+
 grant delete on table "public"."books" to "anon";
 
 grant insert on table "public"."books" to "anon";

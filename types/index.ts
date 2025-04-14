@@ -48,6 +48,19 @@ export interface Recommender extends Omit<DbPerson, 'created_at' | 'updated_at'>
   recommendations?: RecommenderBook[];
 }
 
+// Type for combined recommender data from get_recommender_details RPC
+export interface FormattedRecommender extends Recommender {
+  recommendations: RecommenderBook[];
+  related_recommenders: {
+    id: string;
+    full_name: string;
+    url: string | null;
+    type: string;
+    shared_books: string;
+    shared_count: number;
+  }[];
+}
+
 // UI presentation types
 export interface FormattedBook {
   id: string;

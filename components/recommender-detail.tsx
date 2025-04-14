@@ -1,69 +1,21 @@
+import { FormattedRecommender } from "@/types";
 import { X, BookOpen, Tag, ChevronLeft, User } from "lucide-react";
-import { Recommender, RecommenderBook } from "@/types";
-import { useCallback, useEffect, useState } from "react";
-import { supabase } from "@/utils/supabase/client";
 
 type RecommenderDetailProps = {
-  recommender: Recommender;
+  recommender: FormattedRecommender;
   onClose: () => void;
 };
-
-interface RelatedRecommender extends Recommender {
-  shared_books: string;
-  shared_count: number;
-}
 
 export default function RecommenderDetail({
   recommender,
   onClose,
 }: RecommenderDetailProps) {
-  const [recommendedBooks, setRecommendedBooks] = useState<RecommenderBook[]>([]);
-  const [relatedRecommenders, setRelatedRecommenders] = useState<RelatedRecommender[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    async function fetchData() {
-      setIsLoading(true);
-      
-      // Fetch recommended books
-      const { data: booksData, error: booksError } = await supabase
-        .rpc('get_books_by_recommender', {
-          p_recommender_id: recommender.id
-        });
-
-      if (!booksError && booksData) {
-        setRecommendedBooks(booksData);
-      } else if (booksError) {
-        console.error('Error fetching recommended books:', booksError);
-      }
-
-      // Fetch related recommenders
-      const { data: recommendersData, error: recommendersError } = await supabase
-        .rpc('get_related_recommenders', {
-          p_recommender_id: recommender.id,
-          p_limit: 3
-        });
-
-      if (!recommendersError && recommendersData) {
-        setRelatedRecommenders(recommendersData);
-      } else if (recommendersError) {
-        console.error('Error fetching related recommenders:', recommendersError);
-      }
-
-      setIsLoading(false);
+  const handleBackdropClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      onClose();
     }
-
-    fetchData();
-  }, [recommender.id]);
-
-  const handleBackdropClick = useCallback(
-    (e: React.MouseEvent) => {
-      if (e.target === e.currentTarget) {
-        onClose();
-      }
-    },
-    [onClose]
-  );
+  };
 
   return (
     <div
@@ -84,7 +36,9 @@ export default function RecommenderDetail({
           >
             <X className="w-5 h-5" />
           </button>
-            <h1 className="text-2xl font-base text-text">{recommender.full_name}</h1>
+          <h1 className="text-2xl font-base text-text">
+            {recommender.full_name}
+          </h1>
         </div>
 
         <div className="px-12 py-8">
@@ -112,64 +66,99 @@ export default function RecommenderDetail({
               )}
             </div>
 
-            {/* Book recommendations */}
-            {!isLoading && recommendedBooks.length > 0 && (
-              <div className="space-y-2">
-                <h2 className="text-base text-text font-bold">Recommendations</h2>
+            <div className="space-y-8">
+              {/* Book recommendations */}
+              <div>
+                <h2 className="text-base text-text font-bold">
+                  Recommendations
+                </h2>
                 <div className="space-y-4 max-h-[300px] overflow-y-auto">
-                  {recommendedBooks.map((book) => (
+                  {recommender.recommendations.map((book) => (
                     <div key={book.id} className="flex items-start gap-3">
                       <BookOpen className="w-5 h-5 mt-0.5 text-text/70 shrink-0" />
                       <div className="space-y-1 min-w-0 flex-1">
                         <div className="flex items-baseline gap-2">
-                          <span className="text-text">{book.amazon_url ? <a href={book.amazon_url} target="_blank" rel="noopener noreferrer" className="text-text md:hover:underline">{book.title}</a> : <span>{book.title}</span>} by {book.author} (via {book.source_link ? <a href={book.source_link} target="_blank" rel="noopener noreferrer" className="text-text md:hover:underline">{book.source}</a> : <span>{book.source}</span>})</span>
+                          <span className="text-text">
+                            {book.amazon_url ? (
+                              <a
+                                href={book.amazon_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-text md:hover:underline"
+                              >
+                                {book.title}
+                              </a>
+                            ) : (
+                              <span>{book.title}</span>
+                            )}{" "}
+                            by {book.author} (via{" "}
+                            {book.source_link ? (
+                              <a
+                                href={book.source_link}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-text md:hover:underline"
+                              >
+                                {book.source}
+                              </a>
+                            ) : (
+                              <span>{book.source}</span>
+                            )}
+                            )
+                          </span>
                         </div>
                         {book.genre && (
-                          <div className="text-sm text-text/70">{book.genre.join(", ")}</div>
+                          <div className="text-sm text-text/70">
+                            {book.genre.join(", ")}
+                          </div>
                         )}
                       </div>
                     </div>
                   ))}
                 </div>
               </div>
-            )}
 
-            {/* Related recommenders */}
-            {!isLoading && relatedRecommenders.length > 0 && (
-              <div className="space-y-2">
-                <h2 className="text-base text-text font-bold">You Might Also Like</h2>
-                <div className="space-y-4">
-                  {relatedRecommenders.map((related) => (
-                    <div key={related.id} className="flex items-start gap-3">
-                      <User className="w-5 h-5 mt-0.5 text-text/70 shrink-0" />
-                      <div className="space-y-1 min-w-0 flex-1">
-                        <div className="flex items-baseline gap-2">
-                          <button
-                            onClick={() => {
-                              onClose();
-                              const params = new URLSearchParams();
-                              params.set("view", related.id);
-                              window.history.pushState({}, "", `/?${params.toString()}`);
-                            }}
-                            className="text-text text-left font-base hover:underline transition-colors duration-200"
-                          >
-                            {related.full_name} ({related.type})
-                          </button>
-                        </div>
-                        <div className="text-sm text-text/70">
-                          {related.shared_count} shared recommendation{related.shared_count !== 1 && 's'}
+              {/* Related recommenders */}
+              {recommender.related_recommenders.length > 0 && (
+                <div>
+                  <h2 className="text-base text-text font-bold">
+                    You Might Also Enjoy
+                  </h2>
+                  <div className="space-y-4">
+                    {recommender.related_recommenders.map((related) => (
+                      <div key={related.id} className="flex items-start gap-3">
+                        <User className="w-5 h-5 mt-0.5 text-text/70 shrink-0" />
+                        <div className="space-y-1 min-w-0 flex-1">
+                          <div className="flex items-baseline gap-2">
+                            <button
+                              onClick={() => {
+                                onClose();
+                                const params = new URLSearchParams();
+                                params.set("view", related.id);
+                                window.history.pushState(
+                                  {},
+                                  "",
+                                  `/?${params.toString()}`
+                                );
+                              }}
+                              className="text-text text-left font-base hover:underline transition-colors duration-200"
+                            >
+                              {related.full_name} ({related.type})
+                            </button>
+                          </div>
+                          <div className="text-sm text-text/70">
+                            {related.shared_count} shared recommendation
+                            {related.shared_count !== 1 && "s"}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
 
-            {isLoading && (
-              <div className="text-text/70">Loading...</div>
-            )}
-            {!isLoading && recommendedBooks.length === 0 && (
+            {!recommender.recommendations.length && (
               <div className="text-text/70">No books recommended yet.</div>
             )}
           </div>

@@ -262,6 +262,19 @@ export type Database = {
           shared_count: number
         }[]
       }
+      get_recommender_details: {
+        Args: {
+          p_recommender_id: string
+        }
+        Returns: {
+          id: string
+          full_name: string
+          url: string | null
+          type: string | null
+          recommendations: Json
+          related_recommenders: Json
+        }[]
+      }
       gtrgm_compress: {
         Args: { "": unknown }
         Returns: unknown
