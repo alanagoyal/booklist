@@ -46,7 +46,12 @@ async function getBooks(): Promise<FormattedBook[]> {
           .filter(Boolean)
           .join(', ') || "",
       amazon_url: book.amazon_url || "",
-      related_books: book.related_books || []
+      related_books: (book.related_books || []).map(rb => ({
+        ...rb,
+        genres: [], // We'll need to update the DB query to include this
+        amazon_url: null, // We'll need to update the DB query to include this
+        recommender_types: "n/a" // We'll need to update the DB query to include this
+      }))
     };
     
     return formatted;

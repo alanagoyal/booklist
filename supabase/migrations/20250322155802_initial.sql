@@ -197,29 +197,42 @@ BEGIN
       rb.id as related_book_id,
       rb.title as related_book_title,
       rb.author as related_book_author,
+      rb.genre as related_book_genres,
+      rb.amazon_url as related_book_amazon_url,
       string_agg(DISTINCT p2.full_name, ', ') as recommenders,
-      COUNT(DISTINCT r2.person_id) as recommender_count
+      string_agg(DISTINCT p2.type, ', ') as recommender_types,
+      COUNT(DISTINCT r2.id) as recommender_count
     FROM book_recommendations br
-    JOIN recommendations r1 ON r1.book_id = br.id
-    JOIN recommendations r2 ON r2.person_id = r1.person_id AND r2.book_id != br.id
-    JOIN books rb ON rb.id = r2.book_id
-    JOIN people p2 ON r2.person_id = p2.id
-    GROUP BY br.id, rb.id, rb.title, rb.author
+    CROSS JOIN LATERAL (
+      SELECT DISTINCT r2.book_id
+      FROM recommendations r2
+      WHERE r2.person_id IN (
+        SELECT r3.person_id
+        FROM recommendations r3
+        WHERE r3.book_id = br.id
+      )
+      AND r2.book_id != br.id
+    ) rb_ids
+    JOIN books rb ON rb.id = rb_ids.book_id
+    JOIN recommendations r2 ON r2.book_id = rb.id
+    JOIN people p2 ON p2.id = r2.person_id
+    GROUP BY br.id, rb.id, rb.title, rb.author, rb.genre, rb.amazon_url
+    HAVING COUNT(DISTINCT r2.id) >= 2
   ),
   related_books_by_recommenders AS (
     SELECT 
       book_id,
-      COALESCE(
-        json_agg(
-          json_build_object(
-            'id', related_book_id,
-            'title', related_book_title,
-            'author', related_book_author,
-            'recommenders', recommenders,
-            'recommender_count', recommender_count
-          ) ORDER BY recommender_count DESC
-        ),
-        '[]'::json
+      json_agg(
+        json_build_object(
+          'id', related_book_id,
+          'title', related_book_title,
+          'author', related_book_author,
+          'genres', related_book_genres,
+          'amazon_url', related_book_amazon_url,
+          'recommenders', recommenders,
+          'recommender_types', recommender_types,
+          'recommender_count', recommender_count
+        )
       ) as related_books
     FROM related_book_recommenders
     GROUP BY book_id

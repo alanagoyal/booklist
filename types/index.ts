@@ -61,13 +61,7 @@ export interface FormattedBook {
   source_link: string;
   url: string;
   amazon_url: string;
-  related_books: {
-    id: string;
-    title: string;
-    author: string;
-    recommenders: string;
-    recommender_count: number;
-  }[];
+  related_books: RelatedBook[];
 }
 
 export type RelatedBook = {
