@@ -10,16 +10,15 @@ import BookDetail from "@/components/book-detail";
 import RecommenderDetail from "@/components/recommender-detail";
 
 const TitleCell = function Title({
-  row: { original, isExpanded },
+  row: { original },
 }: {
-  row: { original: EnhancedBook; isExpanded: boolean };
+  row: { original: EnhancedBook };
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const title = original.title || "";
 
-  const displayTitle =
-    !isExpanded && title.length > 50 ? `${title.slice(0, 50)}...` : title;
+  const displayTitle = title.length > 50 ? `${title.slice(0, 50)}...` : title;
 
   const handleBookClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -40,11 +39,11 @@ const TitleCell = function Title({
 };
 
 const RecommenderCell = ({
-  row: { original, isExpanded },
+  row: { original },
   maxCount,
   books,
 }: {
-  row: { original: EnhancedBook; isExpanded: boolean };
+  row: { original: EnhancedBook };
   maxCount: number;
   books: FormattedBook[];
 }) => {
@@ -69,7 +68,7 @@ const RecommenderCell = ({
       return countB - countA;
     });
 
-  const displayCount = !isExpanded ? 2 : recommenderPairs.length;
+  const displayCount = 2;
   const percentile = getPercentile(original._recommendationCount, maxCount);
 
   const handleRecommenderClick = (id: string) => {
@@ -80,9 +79,7 @@ const RecommenderCell = ({
 
   return (
     <div
-      className={`whitespace-pre-line ${
-        isExpanded ? "" : "line-clamp-2"
-      } text-text`}
+      className={`whitespace-pre-line line-clamp-2 text-text`}
       style={{
         backgroundColor: getBackgroundColor(
           original._recommendationCount,
@@ -112,8 +109,7 @@ const RecommenderCell = ({
           ))}
           {recommenderPairs.length > displayCount && (
             <span className="text-text/70">
-              {" "}
-              and {recommenderPairs.length - displayCount} more
+              , + {recommenderPairs.length - displayCount} more
             </span>
           )}
         </span>
@@ -194,7 +190,7 @@ export function BookGrid({
       field: "title" as keyof FormattedBook,
       header: "Title",
       cell: (props: {
-        row: { original: EnhancedBook; isExpanded: boolean };
+        row: { original: EnhancedBook };
       }) => <TitleCell {...props} />,
     },
     { field: "author" as keyof FormattedBook, header: "Author" },
@@ -202,7 +198,7 @@ export function BookGrid({
       field: "recommenders" as keyof FormattedBook,
       header: "Recommenders",
       cell: (props: {
-        row: { original: EnhancedBook; isExpanded: boolean };
+        row: { original: EnhancedBook };
       }) => (
         <RecommenderCell
           {...props}

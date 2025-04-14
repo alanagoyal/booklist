@@ -13,14 +13,14 @@ import {
 import { useRouter, useSearchParams } from "next/navigation";
 import { bookCountManager } from './book-counter';
 
-type SortDirection = "asc" | "desc" | "most" | null;
+type SortDirection = "asc" | "desc" | null;
 
 type ColumnDef<T> = {
   field: keyof T;
   header: string;
   width?: number;
   cell?: (props: {
-    row: { original: T; isExpanded: boolean };
+    row: { original: T };
   }) => React.ReactNode;
   isExpandable?: boolean;
 };
@@ -40,7 +40,6 @@ type SortConfig = {
 type VirtualState<T> = {
   startIndex: number;
   endIndex: number;
-  expandedRows: Record<number, boolean>;
   visibleRows: T[];
 };
 
@@ -58,8 +57,8 @@ export function DataGrid<T extends Record<string, any>>({
 
   // Update state when URL params change
   useEffect(() => {
-    const field = searchParams.get('sort') || "";
-    const direction = searchParams.get('dir') as SortDirection || null;
+    const field = searchParams.get('sort') || "recommenders";
+    const direction = searchParams.get('dir') as SortDirection || "asc";
     setSortConfig({ field, direction });
 
     const params = Object.fromEntries(searchParams.entries());
@@ -74,8 +73,8 @@ export function DataGrid<T extends Record<string, any>>({
 
   // Initialize state with URL params or defaults
   const [sortConfig, setSortConfig] = useState<SortConfig>(() => {
-    const field = searchParams.get('sort') || "";
-    const direction = searchParams.get('dir') as SortDirection || null;
+    const field = searchParams.get('sort') || "recommenders";
+    const direction = searchParams.get('dir') as SortDirection || "asc";
     return { field, direction };
   });
   
@@ -201,10 +200,12 @@ export function DataGrid<T extends Record<string, any>>({
       const aValue = a[field as keyof T];
       const bValue = b[field as keyof T];
 
-      if (direction === "most") {
-        const aCount = typeof aValue === "string" ? aValue.split(",").filter(Boolean).length : 0;
-        const bCount = typeof bValue === "string" ? bValue.split(",").filter(Boolean).length : 0;
-        return bCount - aCount;
+      if (field === 'recommenders') {
+        // Sort by number of recommenders (popularity)
+        const aRecs = (a as any).recommendations?.length || 0;
+        const bRecs = (b as any).recommendations?.length || 0;
+        const sortDirection = direction === "asc" ? 1 : -1;
+        return (bRecs - aRecs) * sortDirection;
       }
 
       if (aValue === bValue) return 0;
@@ -220,7 +221,6 @@ export function DataGrid<T extends Record<string, any>>({
   const [virtualState, setVirtualState] = useState<VirtualState<T>>({
     startIndex: 0,
     endIndex: 50,
-    expandedRows: {},
     visibleRows: []
   });
 
@@ -235,25 +235,15 @@ export function DataGrid<T extends Record<string, any>>({
     const target = e.target as HTMLElement;
     if (target.closest('[data-dropdown], button, input, a')) return;
     if (openDropdown || isDropdownClosing) return;
-
-    setVirtualState(prev => ({
-      ...prev,
-      expandedRows: {
-        ...prev.expandedRows,
-        [rowIndex]: !prev.expandedRows[rowIndex]
-      }
-    }));
   }, [openDropdown, isDropdownClosing]);
 
   // Optimize cell rendering with useCallback
   const renderCell = useCallback(({ 
     column, 
-    row, 
-    isExpanded 
+    row 
   }: { 
     column: ColumnDef<T>, 
-    row: T, 
-    isExpanded: boolean 
+    row: T 
   }) => {
     return (
       <div
@@ -268,17 +258,13 @@ export function DataGrid<T extends Record<string, any>>({
       >
         {column.cell ? (
           <div
-            className={`whitespace-pre-line transition-all duration-200 text-text selection:bg-main selection:text-mtext ${
-              !isExpanded ? "line-clamp-2" : ""
-            }`}
+            className="whitespace-pre-line transition-all duration-200 text-text selection:bg-main selection:text-mtext line-clamp-2"
           >
-            {column.cell({ row: { original: row, isExpanded } })}
+            {column.cell({ row: { original: row } })}
           </div>
         ) : (
           <div
-            className={`whitespace-pre-line transition-all duration-200 text-text selection:bg-main selection:text-mtext ${
-              !isExpanded ? "line-clamp-2" : ""
-            }`}
+            className="whitespace-pre-line transition-all duration-200 text-text selection:bg-main selection:text-mtext line-clamp-2"
           >
             {row[column.field]}
           </div>
@@ -289,11 +275,10 @@ export function DataGrid<T extends Record<string, any>>({
 
   // Optimize row rendering with useCallback
   const renderRow = useCallback((row: T, rowIndex: number) => {
-    const isExpanded = virtualState.expandedRows[rowIndex];
     return (
       <div
         key={rowIndex}
-        className={`grid cursor-pointer transition-colors duration-200 md:hover:bg-accent/50 ${
+        className={`grid transition-colors duration-200 ${
           getRowClassName?.(row) || ""
         }`}
         style={{
@@ -301,10 +286,10 @@ export function DataGrid<T extends Record<string, any>>({
         }}
         onClick={(e) => handleRowClick(rowIndex, e)}
       >
-        {columns.map(column => renderCell({ column, row, isExpanded }))}
+        {columns.map(column => renderCell({ column, row }))}
       </div>
     );
-  }, [columns, getRowClassName, handleRowClick, renderCell, virtualState.expandedRows]);
+  }, [columns, getRowClassName, handleRowClick, renderCell]);
 
   // Memoize rendered rows
   const renderedRows = useMemo(() => {
@@ -517,24 +502,6 @@ export function DataGrid<T extends Record<string, any>>({
         }}
       >
         <div>
-          {String(column.field) === "recommenders" && (
-            <button
-              className="w-full px-4 py-2 text-left text-text transition-colors duration-200 md:hover:bg-accent/50 flex items-center justify-between"
-              onClick={(e) => {
-                e.preventDefault();
-                handleSort(String(column.field), "most");
-              }}
-            >
-              <div className="flex items-center gap-2">
-                <Award className="w-3 h-3 text-text/70 flex-shrink-0" />
-                <span>Sort by popularity</span>
-              </div>
-              {sortConfig.field === String(column.field) &&
-                sortConfig.direction === "most" && (
-                  <Check className="w-3 h-3 text-text/70" />
-              )}
-            </button>
-          )}
           <button
             className="w-full px-4 py-2 text-left text-text transition-colors duration-200 md:hover:bg-accent/50 flex items-center justify-between"
             onClick={(e) => {
@@ -636,8 +603,6 @@ export function DataGrid<T extends Record<string, any>>({
                 <div className="md:group-hover:hidden">
                   {sortConfig.direction === 'asc' ? (
                     <ArrowUp className="w-4 h-4 text-text/70 p-0.5" />
-                  ) : sortConfig.direction === 'most' ? (
-                    <Award className="w-4 h-4 text-text/70 p-0.5" />
                   ) : (
                     <ArrowDown className="w-4 h-4 text-text/70 p-0.5" />
                   )}
