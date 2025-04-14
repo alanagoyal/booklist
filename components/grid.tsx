@@ -159,11 +159,22 @@ export function DataGrid<T extends Record<string, any>>({
     const lowercaseFilters = Object.fromEntries(
       Object.entries(filters).map(([key, value]) => [key, value?.toLowerCase()])
     );
-    
+
     return data.filter((item) => {
       return Object.entries(lowercaseFilters).every(([field, filterValue]) => {
         if (!filterValue) return true;
-        const value = String(item[field as keyof T]).toLowerCase();
+
+        // Filter by recommender full name
+        if (field === 'recommenders') {
+          const recommendations = (item as any).recommendations || [];
+          const recommenderNames = recommendations
+            .filter((rec: any) => rec.recommender)
+            .map((rec: any) => rec.recommender.full_name.toLowerCase());
+          return recommenderNames.some((name: string) => name.includes(filterValue));
+        }
+
+        const value = String(item[field as keyof T] || '').toLowerCase();
+   
         return value.includes(filterValue);
       });
     });
