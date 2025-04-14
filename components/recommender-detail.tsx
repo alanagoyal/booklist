@@ -70,7 +70,7 @@ export default function RecommenderDetail({
       className="fixed inset-0 z-20 bg-background/80"
       onClick={handleBackdropClick}
     >
-      <div className="absolute right-0 top-0 bottom-0 w-full md:w-1/2 bg-background border-l border-border overflow-auto">
+      <div className="absolute right-0 top-0 bottom-0 w-full md:w-1/2 bg-background md:border-l border-border overflow-auto">
         <div className="sticky top-0 bg-background pt-8 px-12 md:pt-16">
           <button
             onClick={onClose}
