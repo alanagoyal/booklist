@@ -67,11 +67,11 @@ export default function RecommenderDetail({
 
             <div className="space-y-8">
               {/* Book recommendations */}
-              <div>
+              <div className="space-y-2">
                 <h2 className="text-base text-text font-bold">
                   Recommendations
                 </h2>
-                <div className="space-y-4 max-h-[300px] overflow-y-auto">
+                <div className="text-text space-y-4 max-h-[300px] overflow-y-auto">
                   {recommender.recommendations.map((book) => (
                     <div key={book.id} className="flex items-start gap-3">
                       <BookOpen className="w-5 h-5 mt-0.5 text-text/70 shrink-0" />
@@ -122,7 +122,7 @@ export default function RecommenderDetail({
 
               {/* Related recommenders */}
               {recommender.related_recommenders.length > 0 && (
-                <div>
+                <div className="space-y-2">
                   <h2 className="text-base text-text font-bold">
                     You Might Also Enjoy
                   </h2>
