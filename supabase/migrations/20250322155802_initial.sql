@@ -171,19 +171,15 @@ BEGIN
       COALESCE(
         json_agg(
           json_build_object(
+            'recommender', json_build_object(
+              'full_name', people.full_name,
+              'url', people.url,
+              'type', people.type
+            ),
             'source', recommendations.source,
-            'source_link', recommendations.source_link,
-            'recommender', CASE 
-              WHEN people.id IS NOT NULL THEN
-                json_build_object(
-                  'full_name', people.full_name,
-                  'url', people.url,
-                  'type', people.type
-                )
-              ELSE NULL
-            END
+            'source_link', recommendations.source_link
           )
-        ) FILTER (WHERE recommendations.id IS NOT NULL),
+        ),
         '[]'::json
       ) as recommendations
     FROM books
@@ -203,36 +199,49 @@ BEGIN
       string_agg(DISTINCT p2.type, ', ') as recommender_types,
       COUNT(DISTINCT r2.id) as recommender_count
     FROM book_recommendations br
-    CROSS JOIN LATERAL (
-      SELECT DISTINCT r2.book_id
-      FROM recommendations r2
-      WHERE r2.person_id IN (
-        SELECT r3.person_id
-        FROM recommendations r3
-        WHERE r3.book_id = br.id
-      )
-      AND r2.book_id != br.id
-    ) rb_ids
-    JOIN books rb ON rb.id = rb_ids.book_id
-    JOIN recommendations r2 ON r2.book_id = rb.id
-    JOIN people p2 ON p2.id = r2.person_id
+    -- Get recommendations for the current book
+    JOIN recommendations r1 ON r1.book_id = br.id
+    -- Find other books recommended by the same people
+    JOIN recommendations r2 ON r2.person_id = r1.person_id AND r2.book_id != br.id
+    -- Join to get book details
+    JOIN books rb ON rb.id = r2.book_id
+    -- Join to get recommender details
+    JOIN people p2 ON r2.person_id = p2.id
+    -- Add indexes to speed up joins
+    WHERE EXISTS (
+      SELECT 1 
+      FROM recommendations r3 
+      WHERE r3.book_id = r2.book_id 
+      GROUP BY r3.book_id 
+      HAVING COUNT(DISTINCT r3.person_id) >= 2
+    )
     GROUP BY br.id, rb.id, rb.title, rb.author, rb.genre, rb.amazon_url
+    -- Limit to top 5 related books per book to prevent timeout
     HAVING COUNT(DISTINCT r2.id) >= 2
   ),
   related_books_by_recommenders AS (
     SELECT 
       book_id,
-      json_agg(
-        json_build_object(
-          'id', related_book_id,
-          'title', related_book_title,
-          'author', related_book_author,
-          'genres', related_book_genres,
-          'amazon_url', related_book_amazon_url,
-          'recommenders', recommenders,
-          'recommender_types', recommender_types,
-          'recommender_count', recommender_count
+      (
+        SELECT json_agg(
+          json_build_object(
+            'id', related_book_id,
+            'title', related_book_title,
+            'author', related_book_author,
+            'genres', related_book_genres,
+            'amazon_url', related_book_amazon_url,
+            'recommenders', recommenders,
+            'recommender_types', recommender_types,
+            'recommender_count', recommender_count
+          )
         )
+        FROM (
+          SELECT *
+          FROM related_book_recommenders rbr2
+          WHERE rbr2.book_id = related_book_recommenders.book_id
+          ORDER BY recommender_count DESC
+          LIMIT 5  -- Limit to top 5 related books
+        ) t
       ) as related_books
     FROM related_book_recommenders
     GROUP BY book_id
