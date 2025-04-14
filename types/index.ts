@@ -17,6 +17,13 @@ export interface DbBookWithRecommendations extends Omit<DbBook, 'author_embeddin
     source: string;
     source_link: string | null;
   }[];
+  related_books?: {
+    id: string;
+    title: string;
+    author: string;
+    recommenders: string;
+    recommender_count: number;
+  }[];
 }
 
 // Core domain model extending from database types
@@ -54,6 +61,13 @@ export interface FormattedBook {
   source_link: string;
   url: string;
   amazon_url: string;
+  related_books: {
+    id: string;
+    title: string;
+    author: string;
+    recommenders: string;
+    recommender_count: number;
+  }[];
 }
 
 export type RelatedBook = {

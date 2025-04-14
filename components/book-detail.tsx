@@ -24,30 +24,9 @@ type BookDetailProps = {
 };
 
 export default function BookDetail({ book, onClose }: BookDetailProps) {
-  const [relatedBooks, setRelatedBooks] = useState<RelatedBook[]>([]);
   const [showSummary, setShowSummary] = useState(false);
   const [recommenderSummary, setRecommenderSummary] = useState<string>("");
   const [isLoadingSummary, setIsLoadingSummary] = useState(false);
-
-  useEffect(() => {
-    async function fetchRelatedBooks() {
-      const { data, error } = await supabase.rpc(
-        "get_books_by_shared_recommenders",
-        {
-          p_book_id: book.id,
-          p_limit: 3,
-        }
-      );
-
-      if (!error && data) {
-        setRelatedBooks(data);
-      } else if (error) {
-        console.error("Error fetching related books:", error);
-      }
-    }
-
-    fetchRelatedBooks();
-  }, [book.id]);
 
   useEffect(() => {
     async function fetchRecommenderSummary() {
@@ -262,13 +241,13 @@ export default function BookDetail({ book, onClose }: BookDetailProps) {
             )}
 
             {/* Book suggestions */}
-            {relatedBooks.length > 0 && (
+            {book.related_books.length > 0 && (
               <div className="space-y-2">
                 <h2 className="text-base text-text font-bold">
                   You Might Also Enjoy
                 </h2>
                 <div className="space-y-4">
-                  {relatedBooks.map((relatedBook) => (
+                  {book.related_books.slice(0, 3).map((relatedBook) => (
                     <div
                       key={relatedBook.id}
                       className="flex items-start gap-3"
@@ -289,12 +268,7 @@ export default function BookDetail({ book, onClose }: BookDetailProps) {
                           </button>
                         </div>
                         <p className="text-sm text-text/70">
-                          {relatedBook.recommenders
-                            .split(", ")
-                            .slice(0, 3)
-                            .join(", ")}
-                          {relatedBook.recommenders.split(", ").length > 3 &&
-                            ` and ${relatedBook.recommenders.split(", ").length - 3} more`}
+                          {relatedBook.recommenders}
                         </p>
                       </div>
                     </div>

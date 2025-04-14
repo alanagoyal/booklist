@@ -46,6 +46,7 @@ async function getBooks(): Promise<FormattedBook[]> {
           .filter(Boolean)
           .join(', ') || "",
       amazon_url: book.amazon_url || "",
+      related_books: book.related_books || []
     };
     
     return formatted;
