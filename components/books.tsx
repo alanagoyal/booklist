@@ -4,30 +4,34 @@ import { Fragment, useState, useEffect, useCallback, useRef } from "react";
 import { DataGrid } from "@/components/grid";
 import { BookCounter } from "@/components/book-counter";
 import { PercentileTooltip } from "@/components/percentile-tooltip";
-import { FormattedBook, EnhancedBook, Recommender, FormattedRecommender } from "@/types";
+import { FormattedBook, EnhancedBook, FormattedRecommender } from "@/types";
+import { useRouter, useSearchParams } from "next/navigation";
 import BookDetail from "@/components/book-detail";
 import RecommenderDetail from "@/components/recommender-detail";
-import { useRouter, useSearchParams } from "next/navigation";
 
 const TitleCell = function Title({
   row: { original, isExpanded },
-  onSelect,
 }: {
   row: { original: EnhancedBook; isExpanded: boolean };
-  onSelect: (book: EnhancedBook) => void;
 }) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const title = original.title || "";
 
   const displayTitle =
     !isExpanded && title.length > 50 ? `${title.slice(0, 50)}...` : title;
 
+  const handleBookClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('view', original.id || original.title);
+    router.push(`?${params.toString()}`, { scroll: false });
+  };
+
   return (
     <button
-      onClick={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        onSelect(original);
-      }}
+      onClick={handleBookClick}
       className="text-left hover:underline transition-colors duration-200 md:hover:text-text"
     >
       {displayTitle}
@@ -44,6 +48,8 @@ const RecommenderCell = ({
   maxCount: number;
   books: FormattedBook[];
 }) => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [tooltipOpen, setTooltipOpen] = useState(false);
 
   if (original.recommendations.filter((rec) => rec.recommender).length === 0) {
@@ -67,9 +73,9 @@ const RecommenderCell = ({
   const percentile = getPercentile(original._recommendationCount, maxCount);
 
   const handleRecommenderClick = (id: string) => {
-    const params = new URLSearchParams(window.location.search);
+    const params = new URLSearchParams(searchParams.toString());
     params.set('view', id);
-    window.history.pushState({}, "", `/?${params.toString()}`);
+    router.push(`?${params.toString()}`, { scroll: false });
   };
 
   return (
@@ -124,8 +130,6 @@ const RecommenderCell = ({
 interface BookGridProps {
   data: FormattedBook[];
   onFilteredDataChange?: (count: number) => void;
-  onSelectBook: (book: EnhancedBook) => void;
-  onSelectRecommender: (recommender: Recommender) => void;
 }
 
 const getRecommendationCount = (recommenderName: string, books: FormattedBook[]) => {
@@ -175,8 +179,6 @@ const getBackgroundColor = (count: number, maxCount: number): string => {
 export function BookGrid({
   data,
   onFilteredDataChange,
-  onSelectBook,
-  onSelectRecommender,
 }: BookGridProps) {
   const maxRecommendations = Math.max(
     ...data.map((book) => book.recommendations.length)
@@ -193,9 +195,7 @@ export function BookGrid({
       header: "Title",
       cell: (props: {
         row: { original: EnhancedBook; isExpanded: boolean };
-      }) => (
-        <TitleCell {...props} onSelect={onSelectBook} />
-      ),
+      }) => <TitleCell {...props} />,
     },
     { field: "author" as keyof FormattedBook, header: "Author" },
     {
@@ -251,18 +251,6 @@ export function BookList({ initialBooks, initialRecommenders }: {
   useEffect(() => {
     setMounted(true);
   }, []);
-
-  const handleSelectBook = useCallback((book: EnhancedBook) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set('view', book.id || book.title);
-    router.push(`?${params.toString()}`, { scroll: false });
-  }, [router, searchParams]);
-
-  const handleSelectRecommender = useCallback((recommender: Recommender) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set('view', recommender.id);
-    router.push(`?${params.toString()}`, { scroll: false });
-  }, [router, searchParams]);
 
   const handleClose = useCallback(() => {
     const params = new URLSearchParams(searchParams.toString());
@@ -346,8 +334,6 @@ export function BookList({ initialBooks, initialRecommenders }: {
         <BookGrid
           data={books}
           onFilteredDataChange={handleFilteredDataChange}
-          onSelectBook={handleSelectBook}
-          onSelectRecommender={handleSelectRecommender}
         />
       </div>
       <BookCounter total={initialBooks.length} filtered={filteredCount} />
