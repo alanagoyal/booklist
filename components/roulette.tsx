@@ -97,7 +97,7 @@ export default function Roulette({ initialBook }: RouletteProps) {
                 <ul className="space-y-2">
                   {selectedBook.recommendations.map((rec, i) => (
                     <li key={i} className="text-text/70">
-                      {rec.recommender_name || rec.source}
+                      {rec.recommender?.full_name || rec.source}
                       {rec.source_link && (
                         <span className="ml-2 text-text">
                           (<a
