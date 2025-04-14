@@ -1,5 +1,5 @@
 import { X, BookOpen, Tag, ChevronLeft, User } from "lucide-react";
-import { Recommender, Book } from "@/types";
+import { Recommender, RecommenderBook } from "@/types";
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/utils/supabase/client";
 
@@ -17,7 +17,7 @@ export default function RecommenderDetail({
   recommender,
   onClose,
 }: RecommenderDetailProps) {
-  const [recommendedBooks, setRecommendedBooks] = useState<Book[]>([]);
+  const [recommendedBooks, setRecommendedBooks] = useState<RecommenderBook[]>([]);
   const [relatedRecommenders, setRelatedRecommenders] = useState<RelatedRecommender[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 

@@ -1,5 +1,5 @@
 import { BookList } from "@/components/books";
-import { DatabaseBook, Recommender } from "@/types";
+import { DatabaseBook, FormattedBook, Recommender } from "@/types";
 import { supabase } from "@/utils/supabase/client";
 
 // Force static generation and disable ISR
@@ -7,7 +7,7 @@ export const dynamic = 'force-static';
 export const revalidate = false;
 
 // Fetch books at build time
-async function getBooks() {
+async function getBooks(): Promise<FormattedBook[]> {
   // Get sorted books
   const { data: books, error } = await supabase
     .rpc('get_books_by_recommendation_count');
@@ -17,7 +17,7 @@ async function getBooks() {
   }
 
   const formattedBooks = ((books || []) as DatabaseBook[]).map((book) => {
-    const formatted = {
+    const formatted: FormattedBook = {
       id: book.id,
       title: book.title || "n/a",
       author: book.author || "n/a",
