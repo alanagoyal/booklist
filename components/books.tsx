@@ -91,20 +91,23 @@ const RecommenderCell = ({
         className="flex items-center gap-1"
         onClick={(e) => tooltipOpen && e.stopPropagation()}
       >
-        <span>
+        <span className="break-words">
           {recommenderPairs.slice(0, displayCount).map((pair, i) => (
             <Fragment key={pair.recommender}>
-              {i > 0 && ", "}
-              <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  handleRecommenderClick(pair.id);
-                }}
-                className="text-text md:hover:text-text/70 md:hover:underline transition-colors duration-200"
-              >
-                {pair.recommender}
-              </button>
+              <span className="inline whitespace-nowrap">
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleRecommenderClick(pair.id);
+                  }}
+                  className="text-text md:hover:text-text/70 md:hover:underline transition-colors duration-200"
+                >
+                  {pair.recommender}
+                </button>
+                {i < displayCount - 1 && recommenderPairs.length > i + 1 && ", "}
+              </span>
+              {i < displayCount - 1 && recommenderPairs.length > i + 1 && " "}
             </Fragment>
           ))}
           {recommenderPairs.length > displayCount && (
