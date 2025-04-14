@@ -1,5 +1,6 @@
 import { FormattedRecommender } from "@/types";
 import { X, BookOpen, Tag, ChevronLeft, User } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 type RecommenderDetailProps = {
   recommender: FormattedRecommender;
@@ -10,6 +11,9 @@ export default function RecommenderDetail({
   recommender,
   onClose,
 }: RecommenderDetailProps) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
   const handleBackdropClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) {
       onClose();
@@ -81,13 +85,9 @@ export default function RecommenderDetail({
                             <button
                               onClick={() => {
                                 onClose();
-                                const params = new URLSearchParams();
+                                const params = new URLSearchParams(searchParams.toString());
                                 params.set("view", book.id);
-                                window.history.pushState(
-                                  {},
-                                  "",
-                                  `/?${params.toString()}`
-                                );
+                                router.push(`?${params.toString()}`, { scroll: false });
                               }}
                               className="text-text text-left md:hover:underline"
                             >
@@ -136,13 +136,9 @@ export default function RecommenderDetail({
                               <button
                                 onClick={() => {
                                   onClose();
-                                  const params = new URLSearchParams();
+                                  const params = new URLSearchParams(searchParams.toString());
                                   params.set("view", related.id);
-                                  window.history.pushState(
-                                    {},
-                                    "",
-                                    `/?${params.toString()}`
-                                  );
+                                  router.push(`?${params.toString()}`, { scroll: false });
                                 }}
                                 className="text-text text-left font-base hover:underline transition-colors duration-200"
                               >

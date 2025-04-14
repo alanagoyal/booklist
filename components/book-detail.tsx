@@ -10,6 +10,7 @@ import {
 import { EnhancedBook } from "@/types";
 import { useCallback, useEffect, useState } from "react";
 import { initLogger } from "braintrust";
+import { useRouter, useSearchParams } from "next/navigation";
 
 // Initialize Braintrust logger
 initLogger({
@@ -26,6 +27,8 @@ export default function BookDetail({ book, onClose }: BookDetailProps) {
   const [showSummary, setShowSummary] = useState(false);
   const [recommenderSummary, setRecommenderSummary] = useState<string>("");
   const [isLoadingSummary, setIsLoadingSummary] = useState(false);
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     async function fetchRecommenderSummary() {
@@ -70,9 +73,9 @@ export default function BookDetail({ book, onClose }: BookDetailProps) {
   );
 
   const handleRecommenderClick = (id: string) => {
-    const params = new URLSearchParams(window.location.search);
+    const params = new URLSearchParams(searchParams.toString());
     params.set("view", id);
-    window.history.pushState({}, "", `/?${params.toString()}`);
+    router.push(`?${params.toString()}`, { scroll: false });
   };
 
   const relatedBooks =
@@ -253,13 +256,9 @@ export default function BookDetail({ book, onClose }: BookDetailProps) {
                         <div className="flex items-baseline gap-2">
                           <button
                             onClick={() => {
-                              const params = new URLSearchParams();
+                              const params = new URLSearchParams(searchParams.toString());
                               params.set("view", relatedBook.id);
-                              window.history.pushState(
-                                {},
-                                "",
-                                `/?${params.toString()}`
-                              );
+                              router.push(`?${params.toString()}`, { scroll: false });
                             }}
                             className="text-text text-left md:hover:underline"
                           >
