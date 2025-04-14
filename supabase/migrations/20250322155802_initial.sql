@@ -143,6 +143,7 @@ END;
 $function$;
 
 -- Create function to get books ordered by recommendation count
+drop function if exists get_books_by_recommendation_count();
 create or replace function get_books_by_recommendation_count()
 returns table (
   id uuid,
