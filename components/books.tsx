@@ -8,6 +8,7 @@ import { FormattedBook, EnhancedBook, Recommender } from "@/types";
 import BookDetail from "@/components/book-detail";
 import RecommenderDetail from "@/components/recommender-detail";
 import { supabase } from "@/utils/supabase/client";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const TitleCell = function Title({
   row: { original, isExpanded },
@@ -84,7 +85,12 @@ const RecommenderCell = ({
       return;
     }
 
-    onSelectRecommender(recommenderData);
+    // Update URL with recommender ID
+    const params = new URLSearchParams(window.location.search);
+    params.set('view', recommenderData.id);
+    window.history.pushState({}, "", `/?${params.toString()}`);
+
+    onSelectRecommender(recommenderData as Recommender);
   };
 
   return (
@@ -250,19 +256,43 @@ export function BookGrid({
   );
 }
 
-export function BookList({ initialBooks }: { initialBooks: FormattedBook[] }) {
+export function BookList({ initialBooks, people }: { initialBooks: FormattedBook[]; people: Recommender[] }) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [mounted, setMounted] = useState(false);
   const [books, setBooks] = useState(initialBooks);
   const [filteredCount, setFilteredCount] = useState(initialBooks.length);
   const [tooltipOpen, setTooltipOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedBook, setSelectedBook] = useState<EnhancedBook | null>(null);
-  const [selectedRecommender, setSelectedRecommender] = useState<Recommender | null>(null);
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Get selected item based on URL param
+  const viewId = searchParams.get('view');
+  const selectedRecommender = viewId ? people.find(person => person.id === viewId) || null : null;
+  const selectedBook = viewId && !selectedRecommender ? books.find(book => book.id === viewId || book.title === viewId) as EnhancedBook | null : null;
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  const handleSelectBook = useCallback((book: EnhancedBook) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('view', book.id || book.title);
+    router.push(`?${params.toString()}`, { scroll: false });
+  }, [router, searchParams]);
+
+  const handleSelectRecommender = useCallback((recommender: Recommender) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('view', recommender.id);
+    router.push(`?${params.toString()}`, { scroll: false });
+  }, [router, searchParams]);
+
+  const handleClose = useCallback(() => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete('view');
+    const newUrl = params.toString() ? `?${params.toString()}` : window.location.pathname;
+    router.push(newUrl, { scroll: false });
+  }, [router, searchParams]);
 
   const handleSearch = useCallback(
     async (query: string) => {
@@ -273,6 +303,10 @@ export function BookList({ initialBooks }: { initialBooks: FormattedBook[] }) {
       }
 
       try {
+        // Create search params without 'view' parameter
+        const searchParams = new URLSearchParams();
+        searchParams.set('query', trimmedQuery);
+        
         const response = await fetch("/api/search", {
           method: "POST",
           headers: {
@@ -305,8 +339,13 @@ export function BookList({ initialBooks }: { initialBooks: FormattedBook[] }) {
       clearTimeout(searchTimeoutRef.current);
     }
 
+    // Get search query from URL params, excluding 'view'
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete('view');
+    const query = params.get('query') || searchQuery;
+
     searchTimeoutRef.current = setTimeout(() => {
-      handleSearch(searchQuery);
+      handleSearch(query);
     }, 300);
 
     return () => {
@@ -314,7 +353,7 @@ export function BookList({ initialBooks }: { initialBooks: FormattedBook[] }) {
         clearTimeout(searchTimeoutRef.current);
       }
     };
-  }, [searchQuery]);
+  }, [searchQuery, searchParams]);
 
   const handleFilteredDataChange = useCallback((count: number) => {
     setFilteredCount(count);
@@ -332,21 +371,21 @@ export function BookList({ initialBooks }: { initialBooks: FormattedBook[] }) {
           onFilteredDataChange={handleFilteredDataChange}
           tooltipOpen={tooltipOpen}
           setTooltipOpen={setTooltipOpen}
-          onSelectBook={setSelectedBook}
-          onSelectRecommender={setSelectedRecommender}
+          onSelectBook={handleSelectBook}
+          onSelectRecommender={handleSelectRecommender}
         />
       </div>
       <BookCounter total={initialBooks.length} filtered={filteredCount} />
       {selectedBook && (
         <BookDetail
           book={selectedBook}
-          onClose={() => setSelectedBook(null)}
+          onClose={handleClose}
         />
       )}
       {selectedRecommender && (
         <RecommenderDetail
           recommender={selectedRecommender}
-          onClose={() => setSelectedRecommender(null)}
+          onClose={handleClose}
         />
       )}
     </div>

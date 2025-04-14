@@ -1,12 +1,6 @@
-import { createClient } from "@supabase/supabase-js";
 import { BookList } from "@/components/books";
-import { DatabaseBook } from "@/types";
-
-// Create Supabase client
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
+import { DatabaseBook, Recommender } from "@/types";
+import { supabase } from "@/utils/supabase/client";
 
 // Force static generation and disable ISR
 export const dynamic = 'force-static';
@@ -60,10 +54,30 @@ async function getBooks() {
   return formattedBooks;
 }
 
+async function getPeople(): Promise<Recommender[]> {
+  const { data: people, error } = await supabase
+    .from('people')
+    .select('id, full_name, url, type')
+    .order('full_name');
+
+  if (error) {
+    throw error;
+  }
+
+  // Ensure type is never null to match Recommender interface
+  return (people || []).map(person => ({
+    ...person,
+    type: person.type || 'Unknown' // Provide default value if null
+  }));
+}
+
 export default async function Home() {
   try {
-    const formattedBooks = await getBooks();
-    return <BookList initialBooks={formattedBooks} />;
+    const [formattedBooks, people] = await Promise.all([
+      getBooks(),
+      getPeople(),
+    ]);
+    return <BookList initialBooks={formattedBooks} people={people} />;
   } catch (error) {
     console.error('Error fetching books:', error);
     return (

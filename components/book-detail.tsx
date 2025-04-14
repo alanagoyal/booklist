@@ -276,9 +276,17 @@ export default function BookDetail({ book, onClose }: BookDetailProps) {
                       <BookOpen className="w-5 h-5 mt-0.5 text-text/70 shrink-0" />
                       <div className="space-y-1 min-w-0 flex-1">
                         <div className="flex items-baseline gap-2">
-                          <h3 className="text-text font-base">
+                          <button
+                            onClick={() => {
+                              onClose();
+                              const params = new URLSearchParams();
+                              params.set("view", relatedBook.id);
+                              window.history.pushState({}, "", `/?${params.toString()}`);
+                            }}
+                            className="text-text text-left font-base text-left transition-colors duration-200 hover:underline"
+                          >
                             {relatedBook.title} by {relatedBook.author}
-                          </h3>
+                          </button>
                         </div>
                         <p className="text-sm text-text/70">
                           {relatedBook.recommenders
