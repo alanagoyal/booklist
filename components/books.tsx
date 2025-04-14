@@ -4,67 +4,10 @@ import { Fragment, useState, useEffect, useCallback, useRef } from "react";
 import { DataGrid } from "@/components/grid";
 import { BookCounter } from "@/components/book-counter";
 import { PercentileTooltip } from "@/components/percentile-tooltip";
-import { FormattedBook, EnhancedBook } from "@/types";
+import { FormattedBook, EnhancedBook, Recommender } from "@/types";
 import BookDetail from "@/components/book-detail";
-
-const SourceCell = ({
-  row: { original, isExpanded },
-}: {
-  row: { original: EnhancedBook; isExpanded: boolean };
-}) => {
-  const recommenderText = original.recommenders || "";
-  const sourceText = original.source || "";
-  const sourceLinkText = original.source_link || "";
-
-  // Create pairs of recommenders and sources with their links
-  const pairs = recommenderText
-    .split(",")
-    .map((r, i) => ({
-      recommender: r.trim(),
-      source: sourceText.split(",")[i]?.trim() || "",
-      sourceLink: sourceLinkText.split(",")[i]?.trim() || null,
-    }))
-    .filter((pair) => pair.recommender && pair.source);
-
-  // Sort pairs by recommender name to match RecommenderCell order
-  pairs.sort((a, b) => a.recommender.localeCompare(b.recommender));
-
-  if (pairs.length === 0) {
-    return <span></span>;
-  }
-
-  const displayCount = !isExpanded ? 2 : pairs.length;
-
-  return (
-    <span>
-      {pairs.slice(0, displayCount).map((pair, i) => (
-        <Fragment key={i}>
-          {i > 0 && ", "}
-          {pair.sourceLink ? (
-            <a
-              href={pair.sourceLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:underline"
-            >
-              {pair.source}
-            </a>
-          ) : (
-            <span>{pair.source}</span>
-          )}
-        </Fragment>
-      ))}
-      {!isExpanded && pairs.length > displayCount && (
-        <>
-          {", "}
-          <span className="text-text/70">
-            + {pairs.length - displayCount} more
-          </span>
-        </>
-      )}
-    </span>
-  );
-};
+import RecommenderDetail from "@/components/recommender-detail";
+import { supabase } from "@/utils/supabase/client";
 
 const TitleCell = function Title({
   row: { original, isExpanded },
@@ -97,11 +40,13 @@ const RecommenderCell = ({
   maxCount,
   tooltipOpen,
   setTooltipOpen,
+  onSelectRecommender,
 }: {
   row: { original: EnhancedBook; isExpanded: boolean };
   maxCount: number;
   tooltipOpen: boolean;
   setTooltipOpen: (open: boolean) => void;
+  onSelectRecommender: (recommender: Recommender) => void;
 }) => {
   const recommenderText = original.recommenders || "";
   const urlText = original.url || "";
@@ -126,6 +71,22 @@ const RecommenderCell = ({
   const displayCount = !isExpanded ? 2 : recommenderPairs.length;
   const percentile = getPercentile(original._recommendationCount, maxCount);
 
+  const handleRecommenderClick = async (recommenderName: string, url: string) => {
+    // First get the recommender's ID from the database
+    const { data: recommenderData, error } = await supabase
+      .from('people')
+      .select('*')
+      .eq('full_name', recommenderName)
+      .single();
+
+    if (error) {
+      console.error('Error fetching recommender:', error);
+      return;
+    }
+
+    onSelectRecommender(recommenderData);
+  };
+
   return (
     <div
       className={`whitespace-pre-line ${
@@ -146,18 +107,16 @@ const RecommenderCell = ({
           {recommenderPairs.slice(0, displayCount).map((pair, i) => (
             <Fragment key={pair.recommender}>
               {i > 0 && ", "}
-              {pair.url ? (
-                <a
-                  href={pair.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-text hover:text-text/70 hover:underline transition-colors duration-200"
-                >
-                  {pair.recommender}
-                </a>
-              ) : (
-                <span>{pair.recommender}</span>
-              )}
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleRecommenderClick(pair.recommender, pair.url);
+                }}
+                className="text-text md:hover:text-text/70 md:hover:underline transition-colors duration-200"
+              >
+                {pair.recommender}
+              </button>
             </Fragment>
           ))}
           {recommenderPairs.length > displayCount && (
@@ -182,6 +141,7 @@ interface BookGridProps {
   tooltipOpen: boolean;
   setTooltipOpen: (open: boolean) => void;
   onSelectBook: (book: EnhancedBook) => void;
+  onSelectRecommender: (recommender: Recommender) => void;
 }
 
 const getRecommendationCount = (recommender: string): number => {
@@ -231,6 +191,7 @@ export function BookGrid({
   tooltipOpen,
   setTooltipOpen,
   onSelectBook,
+  onSelectRecommender,
 }: BookGridProps) {
   const maxRecommendations = Math.max(
     ...data.map((book) => getRecommendationCount(book.recommenders))
@@ -263,6 +224,7 @@ export function BookGrid({
           maxCount={maxRecommendations}
           tooltipOpen={tooltipOpen}
           setTooltipOpen={setTooltipOpen}
+          onSelectRecommender={onSelectRecommender}
         />
       ),
       isExpandable: true,
@@ -295,6 +257,7 @@ export function BookList({ initialBooks }: { initialBooks: FormattedBook[] }) {
   const [tooltipOpen, setTooltipOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedBook, setSelectedBook] = useState<EnhancedBook | null>(null);
+  const [selectedRecommender, setSelectedRecommender] = useState<Recommender | null>(null);
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -370,6 +333,7 @@ export function BookList({ initialBooks }: { initialBooks: FormattedBook[] }) {
           tooltipOpen={tooltipOpen}
           setTooltipOpen={setTooltipOpen}
           onSelectBook={setSelectedBook}
+          onSelectRecommender={setSelectedRecommender}
         />
       </div>
       <BookCounter total={initialBooks.length} filtered={filteredCount} />
@@ -377,6 +341,12 @@ export function BookList({ initialBooks }: { initialBooks: FormattedBook[] }) {
         <BookDetail
           book={selectedBook}
           onClose={() => setSelectedBook(null)}
+        />
+      )}
+      {selectedRecommender && (
+        <RecommenderDetail
+          recommender={selectedRecommender}
+          onClose={() => setSelectedRecommender(null)}
         />
       )}
     </div>

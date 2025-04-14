@@ -8,6 +8,8 @@ export interface Book {
   amazon_url?: string;
   created_at: string;
   updated_at: string;
+  source?: string;
+  source_link?: string;
   recommendations?: {
     person_id: string;
     source: string;
@@ -55,6 +57,14 @@ export interface DatabaseBook {
   genre: string[] | null;
   amazon_url: string | null;
   recommendations: DatabaseRecommendation[] | null;
+}
+
+export interface Recommender {
+  id: string;
+  full_name: string;
+  url: string | null;
+  type: string;
+  recommendations?: Book[];
 }
 
 // UI presentation types
