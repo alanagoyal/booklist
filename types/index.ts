@@ -69,6 +69,7 @@ export interface RelatedBook {
   author: string;
   description: string;
   amazon_url: string | null;
+  _recommendationCount: number;
 }
 
 export interface FormattedBook {

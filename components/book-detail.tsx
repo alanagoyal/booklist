@@ -82,7 +82,6 @@ export default function BookDetail({ book, onClose }: BookDetailProps) {
     book.related_books?.map((relatedBook) => ({
       ...relatedBook,
       recommendations: [],
-      _recommendationCount: 0,
     })) || [];
 
   return (
@@ -254,19 +253,26 @@ export default function BookDetail({ book, onClose }: BookDetailProps) {
                       <BookOpen className="w-5 h-5 mt-0.5 text-text/70 shrink-0" />
                       <div className="space-y-1 min-w-0 flex-1">
                         <div className="flex items-baseline gap-2">
-                          <button
-                            onClick={() => {
-                              const params = new URLSearchParams(searchParams.toString());
-                              params.set("view", relatedBook.id);
-                              router.push(`?${params.toString()}`, { scroll: false });
-                            }}
-                            className="text-text text-left md:hover:underline"
-                          >
-                            {relatedBook.title}
-                          </button>
+                          <span className="text-text">
+                            <button
+                              onClick={() => {
+                                const params = new URLSearchParams(
+                                  searchParams.toString()
+                                );
+                                params.set("view", relatedBook.id);
+                                router.push(`?${params.toString()}`, {
+                                  scroll: false,
+                                });
+                              }}
+                              className="text-text text-left md:hover:underline"
+                            >
+                              {relatedBook.title}
+                            </button>{" "}
+                            by {relatedBook.author}
+                          </span>
                         </div>
                         <div className="text-sm text-text/70">
-                          by {relatedBook.author}
+                          {relatedBook._recommendationCount}{" "} recommendations
                         </div>
                       </div>
                     </div>
