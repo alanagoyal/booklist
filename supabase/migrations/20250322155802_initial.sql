@@ -143,6 +143,7 @@ END;
 $function$;
 
 -- Create function to get books ordered by recommendation count
+drop function if exists get_books_by_recommendation_count();
 create or replace function get_books_by_recommendation_count()
 returns table (
   id uuid,
@@ -156,37 +157,164 @@ returns table (
 language sql
 stable
 as $$
-  with book_counts as (
-    select b.*, count(r.id) as recommendation_count
-    from books b
-    left join recommendations r on r.book_id = b.id
-    group by b.id
-  )
-  select 
-    bc.id,
-    bc.title,
-    bc.author,
-    bc.description,
-    bc.genre,
-    bc.amazon_url,
-    coalesce(
+  SELECT 
+    books.id,
+    books.title,
+    books.author,
+    books.description,
+    books.genre,
+    books.amazon_url,
+    COALESCE(
       json_agg(
         json_build_object(
-          'source', r.source,
-          'source_link', r.source_link,
-          'recommender', json_build_object(
-            'full_name', p.full_name,
-            'url', p.url
-          )
+          'source', recommendations.source,
+          'source_link', recommendations.source_link,
+          'recommender', CASE 
+            WHEN people.id IS NOT NULL THEN
+              json_build_object(
+                'full_name', people.full_name,
+                'url', people.url,
+                'type', people.type
+              )
+            ELSE NULL
+          END
         )
-      ) filter (where r.id is not null),
-      '[]'
+      ) FILTER (WHERE recommendations.id IS NOT NULL),
+      '[]'::json
     ) as recommendations
-  from book_counts bc
-  left join recommendations r on r.book_id = bc.id
-  left join people p on p.id = r.person_id
-  group by bc.id, bc.title, bc.author, bc.description, bc.genre, bc.amazon_url, bc.recommendation_count
-  order by bc.recommendation_count desc, bc.title asc;
+  FROM books
+  LEFT JOIN recommendations ON books.id = recommendations.book_id
+  LEFT JOIN people ON recommendations.person_id = people.id
+  GROUP BY books.id
+  ORDER BY COUNT(recommendations.id) DESC;
+$$;
+
+-- Create function to get books by shared recommenders
+DROP FUNCTION IF EXISTS get_books_by_shared_recommenders(UUID, INTEGER);
+CREATE OR REPLACE FUNCTION get_books_by_shared_recommenders(p_book_id UUID, p_limit INTEGER DEFAULT 10)
+RETURNS TABLE (
+  id UUID,
+  title TEXT,
+  author TEXT,
+  genres TEXT[],
+  amazon_url TEXT,
+  recommender_count INTEGER,
+  recommenders TEXT,
+  recommender_types TEXT
+) LANGUAGE plpgsql AS $$
+BEGIN
+  RETURN QUERY
+  WITH book_recommenders AS (
+    -- Get all people who recommended the input book
+    SELECT DISTINCT r.person_id
+    FROM recommendations r
+    WHERE r.book_id = p_book_id
+  ),
+  related_books AS (
+    -- Find other books recommended by these people
+    SELECT 
+      b.id,
+      b.title,
+      b.author,
+      b.genre as genres,
+      b.amazon_url,
+      COUNT(DISTINCT r.person_id)::INTEGER as recommender_count,
+      string_agg(DISTINCT p.full_name, ', ') as recommenders,
+      string_agg(DISTINCT p.type::TEXT, ', ') as recommender_types
+    FROM books b
+    INNER JOIN recommendations r ON r.book_id = b.id
+    INNER JOIN people p ON p.id = r.person_id
+    WHERE r.person_id IN (SELECT person_id FROM book_recommenders)
+    AND b.id != p_book_id
+    GROUP BY b.id, b.title, b.author, b.genre, b.amazon_url
+  )
+  SELECT * FROM related_books
+  ORDER BY recommender_count DESC, title ASC
+  LIMIT p_limit;
+END;
+$$;
+
+-- Create a function to get all books recommended by a person
+drop function if exists get_books_by_recommender(uuid);
+create or replace function get_books_by_recommender(p_recommender_id uuid)
+returns table (
+  id uuid,
+  title text,
+  author text,
+  description text,
+  genre text[],
+  amazon_url text,
+  created_at timestamptz,
+  updated_at timestamptz,
+  source text,
+  source_link text
+) security definer
+language plpgsql
+as $$
+begin
+  return query
+  select distinct
+    b.id,
+    b.title,
+    b.author,
+    b.description,
+    b.genre,
+    b.amazon_url,
+    b.created_at,
+    b.updated_at,
+    r.source,
+    r.source_link
+  from books b
+  join recommendations r on r.book_id = b.id
+  where r.person_id = p_recommender_id
+  order by b.created_at desc;
+end;
+$$;
+
+-- Create function to get related recommenders
+DROP FUNCTION IF EXISTS get_related_recommenders(uuid, int);
+CREATE OR REPLACE FUNCTION get_related_recommenders(p_recommender_id UUID, p_limit INT DEFAULT 3)
+RETURNS TABLE (
+  id UUID,
+  full_name TEXT,
+  url TEXT,
+  type TEXT,
+  shared_books TEXT,
+  shared_count BIGINT
+) SECURITY DEFINER
+LANGUAGE plpgsql
+AS $$
+BEGIN
+  RETURN QUERY
+  WITH recommender_books AS (
+    SELECT book_id
+    FROM recommendations
+    WHERE person_id = p_recommender_id
+  ),
+  similar_recommenders AS (
+    SELECT 
+      r.person_id,
+      COUNT(*) AS shared_count,
+      STRING_AGG(b.title, ', ' ORDER BY b.title) AS shared_books
+    FROM recommendations r
+    JOIN books b ON b.id = r.book_id
+    WHERE r.book_id IN (SELECT book_id FROM recommender_books)
+      AND r.person_id != p_recommender_id
+    GROUP BY r.person_id
+    ORDER BY shared_count DESC
+    LIMIT p_limit
+  )
+  SELECT 
+    p.id,
+    p.full_name,
+    p.url,
+    p.type,
+    sr.shared_books,
+    sr.shared_count
+  FROM similar_recommenders sr
+  JOIN people p ON p.id = sr.person_id
+  ORDER BY sr.shared_count DESC;
+END;
 $$;
 
 grant delete on table "public"."books" to "anon";

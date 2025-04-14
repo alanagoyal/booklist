@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import type { ForceGraphMethods } from "react-force-graph-2d";
 import { useTheme } from "next-themes";
-import { createClient } from "@supabase/supabase-js";
+import { supabase } from "@/utils/supabase/client";
 import Link from "next/link";
 import { Expand, X } from "lucide-react";
 
@@ -45,11 +45,6 @@ interface QueryResult {
   shared_book_count: number;
   shared_book_titles: string[];
 }
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
 
 export default function RecommendationGraph() {
   const graphRef = useRef<ForceGraphMethods>(null);

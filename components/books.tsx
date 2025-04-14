@@ -4,89 +4,35 @@ import { Fragment, useState, useEffect, useCallback, useRef } from "react";
 import { DataGrid } from "@/components/grid";
 import { BookCounter } from "@/components/book-counter";
 import { PercentileTooltip } from "@/components/percentile-tooltip";
-import { FormattedBook, EnhancedBook } from "@/types";
-
-const SourceCell = ({
-  row: { original, isExpanded },
-}: {
-  row: { original: EnhancedBook; isExpanded: boolean };
-}) => {
-  const recommenderText = original.recommenders || "";
-  const sourceText = original.source || "";
-  const sourceLinkText = original.source_link || "";
-
-  // Create pairs of recommenders and sources with their links
-  const pairs = recommenderText
-    .split(",")
-    .map((r, i) => ({
-      recommender: r.trim(),
-      source: sourceText.split(",")[i]?.trim() || "",
-      sourceLink: sourceLinkText.split(",")[i]?.trim() || null,
-    }))
-    .filter((pair) => pair.recommender && pair.source);
-
-  // Sort pairs by recommender name to match RecommenderCell order
-  pairs.sort((a, b) => a.recommender.localeCompare(b.recommender));
-
-  if (pairs.length === 0) {
-    return <span></span>;
-  }
-
-  const displayCount = !isExpanded ? 2 : pairs.length;
-
-  return (
-    <span>
-      {pairs.slice(0, displayCount).map((pair, i) => (
-        <Fragment key={i}>
-          {i > 0 && ", "}
-          {pair.sourceLink ? (
-            <a
-              href={pair.sourceLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:underline"
-            >
-              {pair.source}
-            </a>
-          ) : (
-            <span>{pair.source}</span>
-          )}
-        </Fragment>
-      ))}
-      {!isExpanded && pairs.length > displayCount && (
-        <>
-          {", "}
-          <span className="text-text/70">
-            + {pairs.length - displayCount} more
-          </span>
-        </>
-      )}
-    </span>
-  );
-};
+import { FormattedBook, EnhancedBook, Recommender } from "@/types";
+import BookDetail from "@/components/book-detail";
+import RecommenderDetail from "@/components/recommender-detail";
+import { supabase } from "@/utils/supabase/client";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const TitleCell = function Title({
   row: { original, isExpanded },
+  onSelect,
 }: {
   row: { original: EnhancedBook; isExpanded: boolean };
+  onSelect: (book: EnhancedBook) => void;
 }) {
   const title = original.title || "";
-  const amazonUrl = original.amazon_url;
 
   const displayTitle =
     !isExpanded && title.length > 50 ? `${title.slice(0, 50)}...` : title;
 
-  return amazonUrl ? (
-    <a
-      href={amazonUrl}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="hover:underline"
+  return (
+    <button
+      onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        onSelect(original);
+      }}
+      className="text-left hover:underline transition-colors duration-200 md:hover:text-text"
     >
       {displayTitle}
-    </a>
-  ) : (
-    <span>{displayTitle}</span>
+    </button>
   );
 };
 
@@ -95,11 +41,13 @@ const RecommenderCell = ({
   maxCount,
   tooltipOpen,
   setTooltipOpen,
+  onSelectRecommender,
 }: {
   row: { original: EnhancedBook; isExpanded: boolean };
   maxCount: number;
   tooltipOpen: boolean;
   setTooltipOpen: (open: boolean) => void;
+  onSelectRecommender: (recommender: Recommender) => void;
 }) => {
   const recommenderText = original.recommenders || "";
   const urlText = original.url || "";
@@ -124,6 +72,27 @@ const RecommenderCell = ({
   const displayCount = !isExpanded ? 2 : recommenderPairs.length;
   const percentile = getPercentile(original._recommendationCount, maxCount);
 
+  const handleRecommenderClick = async (recommenderName: string, url: string) => {
+    // First get the recommender's ID from the database
+    const { data: recommenderData, error } = await supabase
+      .from('people')
+      .select('*')
+      .eq('full_name', recommenderName)
+      .single();
+
+    if (error) {
+      console.error('Error fetching recommender:', error);
+      return;
+    }
+
+    // Update URL with recommender ID
+    const params = new URLSearchParams(window.location.search);
+    params.set('view', recommenderData.id);
+    window.history.pushState({}, "", `/?${params.toString()}`);
+
+    onSelectRecommender(recommenderData as Recommender);
+  };
+
   return (
     <div
       className={`whitespace-pre-line ${
@@ -144,18 +113,16 @@ const RecommenderCell = ({
           {recommenderPairs.slice(0, displayCount).map((pair, i) => (
             <Fragment key={pair.recommender}>
               {i > 0 && ", "}
-              {pair.url ? (
-                <a
-                  href={pair.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-text hover:text-text/70 hover:underline transition-colors duration-200"
-                >
-                  {pair.recommender}
-                </a>
-              ) : (
-                <span>{pair.recommender}</span>
-              )}
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleRecommenderClick(pair.recommender, pair.url);
+                }}
+                className="text-text md:hover:text-text/70 md:hover:underline transition-colors duration-200"
+              >
+                {pair.recommender}
+              </button>
             </Fragment>
           ))}
           {recommenderPairs.length > displayCount && (
@@ -179,6 +146,8 @@ interface BookGridProps {
   onFilteredDataChange?: (count: number) => void;
   tooltipOpen: boolean;
   setTooltipOpen: (open: boolean) => void;
+  onSelectBook: (book: EnhancedBook) => void;
+  onSelectRecommender: (recommender: Recommender) => void;
 }
 
 const getRecommendationCount = (recommender: string): number => {
@@ -227,6 +196,8 @@ export function BookGrid({
   onFilteredDataChange,
   tooltipOpen,
   setTooltipOpen,
+  onSelectBook,
+  onSelectRecommender,
 }: BookGridProps) {
   const maxRecommendations = Math.max(
     ...data.map((book) => getRecommendationCount(book.recommenders))
@@ -241,7 +212,11 @@ export function BookGrid({
     {
       field: "title" as keyof FormattedBook,
       header: "Title",
-      cell: TitleCell,
+      cell: (props: {
+        row: { original: EnhancedBook; isExpanded: boolean };
+      }) => (
+        <TitleCell {...props} onSelect={onSelectBook} />
+      ),
     },
     { field: "author" as keyof FormattedBook, header: "Author" },
     {
@@ -255,6 +230,7 @@ export function BookGrid({
           maxCount={maxRecommendations}
           tooltipOpen={tooltipOpen}
           setTooltipOpen={setTooltipOpen}
+          onSelectRecommender={onSelectRecommender}
         />
       ),
       isExpandable: true,
@@ -280,7 +256,9 @@ export function BookGrid({
   );
 }
 
-export function BookList({ initialBooks }: { initialBooks: FormattedBook[] }) {
+export function BookList({ initialBooks, people }: { initialBooks: FormattedBook[]; people: Recommender[] }) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [mounted, setMounted] = useState(false);
   const [books, setBooks] = useState(initialBooks);
   const [filteredCount, setFilteredCount] = useState(initialBooks.length);
@@ -288,9 +266,33 @@ export function BookList({ initialBooks }: { initialBooks: FormattedBook[] }) {
   const [searchQuery, setSearchQuery] = useState("");
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Get selected item based on URL param
+  const viewId = searchParams.get('view');
+  const selectedRecommender = viewId ? people.find(person => person.id === viewId) || null : null;
+  const selectedBook = viewId && !selectedRecommender ? books.find(book => book.id === viewId || book.title === viewId) as EnhancedBook | null : null;
+
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  const handleSelectBook = useCallback((book: EnhancedBook) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('view', book.id || book.title);
+    router.push(`?${params.toString()}`, { scroll: false });
+  }, [router, searchParams]);
+
+  const handleSelectRecommender = useCallback((recommender: Recommender) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('view', recommender.id);
+    router.push(`?${params.toString()}`, { scroll: false });
+  }, [router, searchParams]);
+
+  const handleClose = useCallback(() => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete('view');
+    const newUrl = params.toString() ? `?${params.toString()}` : window.location.pathname;
+    router.push(newUrl, { scroll: false });
+  }, [router, searchParams]);
 
   const handleSearch = useCallback(
     async (query: string) => {
@@ -301,6 +303,10 @@ export function BookList({ initialBooks }: { initialBooks: FormattedBook[] }) {
       }
 
       try {
+        // Create search params without 'view' parameter
+        const searchParams = new URLSearchParams();
+        searchParams.set('query', trimmedQuery);
+        
         const response = await fetch("/api/search", {
           method: "POST",
           headers: {
@@ -333,8 +339,13 @@ export function BookList({ initialBooks }: { initialBooks: FormattedBook[] }) {
       clearTimeout(searchTimeoutRef.current);
     }
 
+    // Get search query from URL params, excluding 'view'
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete('view');
+    const query = params.get('query') || searchQuery;
+
     searchTimeoutRef.current = setTimeout(() => {
-      handleSearch(searchQuery);
+      handleSearch(query);
     }, 300);
 
     return () => {
@@ -342,7 +353,7 @@ export function BookList({ initialBooks }: { initialBooks: FormattedBook[] }) {
         clearTimeout(searchTimeoutRef.current);
       }
     };
-  }, [searchQuery]);
+  }, [searchQuery, searchParams]);
 
   const handleFilteredDataChange = useCallback((count: number) => {
     setFilteredCount(count);
@@ -354,36 +365,29 @@ export function BookList({ initialBooks }: { initialBooks: FormattedBook[] }) {
 
   return (
     <div className="h-full flex flex-col relative">
-      {/*       <div className="relative border-b border-border">
-        <input
-          type="text"
-          placeholder="Search all"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full p-2 bg-background text-text text-base sm:text-sm placeholder:text-sm selection:bg-main selection:text-mtext focus:outline-none rounded-none"
-        />
-        {searchQuery && (
-          <button
-            className="absolute right-2 top-1/2 -translate-y-1/2 text-text/70 transition-colors duration-200 md:hover:text-text p-2 -mr-2"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              setSearchQuery("");
-            }}
-          >
-            <X className="w-3 h-3" />
-          </button>
-        )}
-      </div> */}
       <div className="flex-1 overflow-hidden">
         <BookGrid
           data={books}
           onFilteredDataChange={handleFilteredDataChange}
           tooltipOpen={tooltipOpen}
           setTooltipOpen={setTooltipOpen}
+          onSelectBook={handleSelectBook}
+          onSelectRecommender={handleSelectRecommender}
         />
       </div>
       <BookCounter total={initialBooks.length} filtered={filteredCount} />
+      {selectedBook && (
+        <BookDetail
+          book={selectedBook}
+          onClose={handleClose}
+        />
+      )}
+      {selectedRecommender && (
+        <RecommenderDetail
+          recommender={selectedRecommender}
+          onClose={handleClose}
+        />
+      )}
     </div>
   );
 }
