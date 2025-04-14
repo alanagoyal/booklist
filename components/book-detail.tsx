@@ -7,9 +7,8 @@ import {
   ChevronLeft,
   User,
 } from "lucide-react";
-import { EnhancedBook, RelatedBook } from "@/types";
+import { EnhancedBook } from "@/types";
 import { useCallback, useEffect, useState } from "react";
-import { supabase } from "@/utils/supabase/client";
 import { initLogger } from "braintrust";
 
 // Initialize Braintrust logger
@@ -30,12 +29,7 @@ export default function BookDetail({ book, onClose }: BookDetailProps) {
 
   useEffect(() => {
     async function fetchRecommenderSummary() {
-      if (
-        showSummary &&
-        !recommenderSummary &&
-        book.recommenders &&
-        book.recommender_types
-      ) {
+      if (showSummary && !recommenderSummary && book.recommendations) {
         setIsLoadingSummary(true);
         try {
           const response = await fetch("/api/recommenders/explain", {
@@ -45,7 +39,7 @@ export default function BookDetail({ book, onClose }: BookDetailProps) {
             },
             body: JSON.stringify({
               book: `${book.title} by ${book.author}`,
-              recommenders: book.recommenders,
+              recommenders: book.recommendations,
             }),
           });
 
@@ -74,6 +68,19 @@ export default function BookDetail({ book, onClose }: BookDetailProps) {
     },
     [onClose]
   );
+
+  const handleRecommenderClick = (id: string) => {
+    const params = new URLSearchParams(window.location.search);
+    params.set("view", id);
+    window.history.pushState({}, "", `/?${params.toString()}`);
+  };
+
+  const relatedBooks =
+    book.related_books?.map((relatedBook) => ({
+      ...relatedBook,
+      recommendations: [],
+      _recommendationCount: 0,
+    })) || [];
 
   return (
     <div
@@ -137,7 +144,7 @@ export default function BookDetail({ book, onClose }: BookDetailProps) {
             )}
 
             {/* Book recommenders */}
-            {book.recommenders && book.recommender_types && (
+            {book.recommendations && (
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <h2 className="text-base text-text font-bold">
@@ -171,62 +178,51 @@ export default function BookDetail({ book, onClose }: BookDetailProps) {
 
                 {!showSummary ? (
                   <div className="text-text space-y-4 max-h-[300px] overflow-y-auto">
-                    {(() => {
-                      const pairs = book.recommenders
-                        .split(", ")
-                        .map((recommender, i) => ({
-                          name: recommender.trim(),
-                          type: book.recommender_types
-                            .split(", ")
-                            [i]?.trim() || "",
-                          url: book.url?.split(", ")[i]?.trim() || "",
-                          source: book.source?.split(", ")[i]?.trim() || "",
-                          source_link:
-                            book.source_link?.split(", ")[i]?.trim() || "",
-                        }));
-
-                      return pairs.map((pair) => (
-                        <div key={pair.name} className="flex items-start gap-3">
-                          <User className="w-5 h-5 mt-0.5 text-text/70 shrink-0" />
-                          <div className="space-y-1 min-w-0 flex-1">
-                            <div className="flex items-baseline gap-2">
-                              {pair.url ? (
-                                <a
-                                  href={pair.url}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-text md:hover:underline"
-                                >
-                                  {pair.name}
-                                </a>
-                              ) : (
-                                <span className="text-text">{pair.name}</span>
-                              )}
-                              {pair.source && (
-                                <span className="text-sm text-text/70">
+                    {book.recommendations.map((rec) => (
+                      <div
+                        key={rec.recommender?.id}
+                        className="flex items-start gap-3"
+                      >
+                        <User className="w-5 h-5 mt-0.5 text-text/70 shrink-0" />
+                        <div className="space-y-1 min-w-0 flex-1">
+                          <div className="flex items-baseline gap-2">
+                            <span className="text-text">
+                              <button
+                                onClick={() =>
+                                  handleRecommenderClick(
+                                    rec.recommender?.id || ""
+                                  )
+                                }
+                                className="text-text text-left md:hover:underline"
+                              >
+                                {rec.recommender?.full_name}
+                              </button>
+                              {rec.source && (
+                                <span className="text-text/70">
+                                  {" "}
                                   via{" "}
-                                  {pair.source_link ? (
+                                  {rec.source_link ? (
                                     <a
-                                      href={pair.source_link}
+                                      href={rec.source_link}
                                       target="_blank"
                                       rel="noopener noreferrer"
                                       className="md:hover:underline"
                                     >
-                                      {pair.source}
+                                      {rec.source}
                                     </a>
                                   ) : (
-                                    pair.source
+                                    rec.source
                                   )}
                                 </span>
                               )}
-                            </div>
-                            <div className="text-sm text-text/70">
-                              {pair.type}
-                            </div>
+                            </span>
+                          </div>
+                          <div className="text-sm text-text/70">
+                            {rec.recommender?.type}
                           </div>
                         </div>
-                      ));
-                    })()}
+                      </div>
+                    ))}
                   </div>
                 ) : (
                   <div className="text-text whitespace-pre-line leading-relaxed max-h-[300px] overflow-y-auto">
@@ -241,13 +237,13 @@ export default function BookDetail({ book, onClose }: BookDetailProps) {
             )}
 
             {/* Book suggestions */}
-            {book.related_books.length > 0 && (
+            {relatedBooks.length > 0 && (
               <div className="space-y-2">
                 <h2 className="text-base text-text font-bold">
                   You Might Also Enjoy
                 </h2>
                 <div className="space-y-4">
-                  {book.related_books.slice(0, 3).map((relatedBook) => (
+                  {relatedBooks.slice(0, 3).map((relatedBook) => (
                     <div
                       key={relatedBook.id}
                       className="flex items-start gap-3"
@@ -257,19 +253,22 @@ export default function BookDetail({ book, onClose }: BookDetailProps) {
                         <div className="flex items-baseline gap-2">
                           <button
                             onClick={() => {
-                              onClose();
                               const params = new URLSearchParams();
                               params.set("view", relatedBook.id);
-                              window.history.pushState({}, "", `/?${params.toString()}`);
+                              window.history.pushState(
+                                {},
+                                "",
+                                `/?${params.toString()}`
+                              );
                             }}
-                            className="text-text text-left font-base text-left transition-colors duration-200 hover:underline"
+                            className="text-text text-left md:hover:underline"
                           >
-                            {relatedBook.title} by {relatedBook.author}
+                            {relatedBook.title}
                           </button>
                         </div>
-                        <p className="text-sm text-text/70">
-                          {relatedBook.recommenders}
-                        </p>
+                        <div className="text-sm text-text/70">
+                          by {relatedBook.author}
+                        </div>
                       </div>
                     </div>
                   ))}

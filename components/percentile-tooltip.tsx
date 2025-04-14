@@ -3,28 +3,22 @@ import { useState } from "react";
 
 interface PercentileTooltipProps {
   percentile: number;
-  onTooltipOpenChange?: (isOpen: boolean) => void;
+  open: boolean;
+  setOpen: (open: boolean) => void;
 }
 
-export function PercentileTooltip({ percentile, onTooltipOpenChange }: PercentileTooltipProps) {
-  const [open, setOpen] = useState(false);
-  
+export function PercentileTooltip({ percentile, open, setOpen }: PercentileTooltipProps) {
   if (percentile <= 25) return null;
-
-  const handleOpenChange = (isOpen: boolean) => {
-    setOpen(isOpen);
-    onTooltipOpenChange?.(isOpen);
-  };
 
   return (
     <Tooltip.Provider>
-      <Tooltip.Root open={open} onOpenChange={handleOpenChange}>
+      <Tooltip.Root open={open} onOpenChange={setOpen}>
         <Tooltip.Trigger asChild>
           <span 
             className="inline-flex items-center justify-center rounded-full text-text/70 hover:text-text transition-colors duration-200 cursor-help"
             onClick={(e) => {
               e.stopPropagation();
-              handleOpenChange(!open);
+              setOpen(!open);
             }}
           >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">

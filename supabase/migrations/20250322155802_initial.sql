@@ -172,6 +172,7 @@ BEGIN
         json_agg(
           json_build_object(
             'recommender', json_build_object(
+              'id', people.id,
               'full_name', people.full_name,
               'url', people.url,
               'type', people.type
@@ -238,89 +239,6 @@ BEGIN
   FROM book_recommendations br
   LEFT JOIN related_books_by_recommenders rbr ON rbr.book_id = br.id
   ORDER BY jsonb_array_length(br.recommendations::jsonb) DESC;
-END;
-$$;
-
--- Create a function to get all books recommended by a person
-drop function if exists get_books_by_recommender(uuid);
-create or replace function get_books_by_recommender(p_recommender_id uuid)
-returns table (
-  id uuid,
-  title text,
-  author text,
-  description text,
-  genre text[],
-  amazon_url text,
-  created_at timestamptz,
-  updated_at timestamptz,
-  source text,
-  source_link text
-) security definer
-language plpgsql
-as $$
-begin
-  return query
-  select distinct
-    b.id,
-    b.title,
-    b.author,
-    b.description,
-    b.genre,
-    b.amazon_url,
-    b.created_at,
-    b.updated_at,
-    r.source,
-    r.source_link
-  from books b
-  join recommendations r on r.book_id = b.id
-  where r.person_id = p_recommender_id
-  order by b.created_at desc;
-end;
-$$;
-
--- Create function to get related recommenders
-DROP FUNCTION IF EXISTS get_related_recommenders(uuid, int);
-CREATE OR REPLACE FUNCTION get_related_recommenders(p_recommender_id UUID, p_limit INT DEFAULT 3)
-RETURNS TABLE (
-  id UUID,
-  full_name TEXT,
-  url TEXT,
-  type TEXT,
-  shared_books TEXT,
-  shared_count BIGINT
-) SECURITY DEFINER
-LANGUAGE plpgsql
-AS $$
-BEGIN
-  RETURN QUERY
-  WITH recommender_books AS (
-    SELECT book_id
-    FROM recommendations
-    WHERE person_id = p_recommender_id
-  ),
-  similar_recommenders AS (
-    SELECT 
-      r.person_id,
-      COUNT(*) AS shared_count,
-      STRING_AGG(b.title, ', ' ORDER BY b.title) AS shared_books
-    FROM recommendations r
-    JOIN books b ON b.id = r.book_id
-    WHERE r.book_id IN (SELECT book_id FROM recommender_books)
-      AND r.person_id != p_recommender_id
-    GROUP BY r.person_id
-    ORDER BY shared_count DESC
-    LIMIT p_limit
-  )
-  SELECT 
-    p.id,
-    p.full_name,
-    p.url,
-    p.type,
-    sr.shared_books,
-    sr.shared_count
-  FROM similar_recommenders sr
-  JOIN people p ON p.id = sr.person_id
-  ORDER BY sr.shared_count DESC;
 END;
 $$;
 

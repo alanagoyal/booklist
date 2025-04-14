@@ -7,7 +7,6 @@ import { PercentileTooltip } from "@/components/percentile-tooltip";
 import { FormattedBook, EnhancedBook, Recommender, FormattedRecommender } from "@/types";
 import BookDetail from "@/components/book-detail";
 import RecommenderDetail from "@/components/recommender-detail";
-import { supabase } from "@/utils/supabase/client";
 import { useRouter, useSearchParams } from "next/navigation";
 
 const TitleCell = function Title({
@@ -39,29 +38,22 @@ const TitleCell = function Title({
 const RecommenderCell = ({
   row: { original, isExpanded },
   maxCount,
-  tooltipOpen,
-  setTooltipOpen,
-  onSelectRecommender,
+  books,
 }: {
   row: { original: EnhancedBook; isExpanded: boolean };
   maxCount: number;
-  tooltipOpen: boolean;
-  setTooltipOpen: (open: boolean) => void;
-  onSelectRecommender: (recommender: Recommender) => void;
+  books: FormattedBook[];
 }) => {
-  const recommenderText = original.recommenders || "";
-  const urlText = original.url || "";
-
-  const recommenderPairs = recommenderText
-    .split(",")
-    .map((r: string, i: number) => {
-      const url = urlText.split(",")[i] || "";
-      return { recommender: r.trim(), url: url.trim() };
-    })
-    .filter((pair: { recommender: string; url: string }) => pair.recommender)
-    .sort((a: { recommender: string }, b: { recommender: string }) => {
-      const countA = getRecommendationCount(a.recommender);
-      const countB = getRecommendationCount(b.recommender);
+  const recommenderPairs = original.recommendations
+    .filter((rec) => rec.recommender)
+    .map((rec) => ({
+      recommender: rec.recommender?.full_name || "",
+      url: rec.recommender?.url || "",
+      id: rec.recommender?.id || "",
+    }))
+    .sort((a, b) => {
+      const countA = getRecommendationCount(a.recommender, books);
+      const countB = getRecommendationCount(b.recommender, books);
       return countB - countA;
     });
 
@@ -72,25 +64,12 @@ const RecommenderCell = ({
   const displayCount = !isExpanded ? 2 : recommenderPairs.length;
   const percentile = getPercentile(original._recommendationCount, maxCount);
 
-  const handleRecommenderClick = async (recommenderName: string, url: string) => {
-    // First get the recommender's ID from the database
-    const { data: recommenderData, error } = await supabase
-      .from('people')
-      .select('*')
-      .eq('full_name', recommenderName)
-      .single();
+  const [tooltipOpen, setTooltipOpen] = useState(false);
 
-    if (error) {
-      console.error('Error fetching recommender:', error);
-      return;
-    }
-
-    // Update URL with recommender ID
+  const handleRecommenderClick = (id: string) => {
     const params = new URLSearchParams(window.location.search);
-    params.set('view', recommenderData.id);
+    params.set('view', id);
     window.history.pushState({}, "", `/?${params.toString()}`);
-
-    onSelectRecommender(recommenderData as Recommender);
   };
 
   return (
@@ -100,7 +79,7 @@ const RecommenderCell = ({
       } text-text`}
       style={{
         backgroundColor: getBackgroundColor(
-          getRecommendationCount(original.recommenders),
+          original._recommendationCount,
           maxCount
         ),
       }}
@@ -117,7 +96,7 @@ const RecommenderCell = ({
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  handleRecommenderClick(pair.recommender, pair.url);
+                  handleRecommenderClick(pair.id);
                 }}
                 className="text-text md:hover:text-text/70 md:hover:underline transition-colors duration-200"
               >
@@ -128,13 +107,14 @@ const RecommenderCell = ({
           {recommenderPairs.length > displayCount && (
             <span className="text-text/70">
               {" "}
-              +{recommenderPairs.length - displayCount} more
+              and {recommenderPairs.length - displayCount} more
             </span>
           )}
         </span>
         <PercentileTooltip
           percentile={percentile}
-          onTooltipOpenChange={setTooltipOpen}
+          open={tooltipOpen}
+          setOpen={setTooltipOpen}
         />
       </span>
     </div>
@@ -144,16 +124,17 @@ const RecommenderCell = ({
 interface BookGridProps {
   data: FormattedBook[];
   onFilteredDataChange?: (count: number) => void;
-  tooltipOpen: boolean;
-  setTooltipOpen: (open: boolean) => void;
   onSelectBook: (book: EnhancedBook) => void;
   onSelectRecommender: (recommender: Recommender) => void;
 }
 
-const getRecommendationCount = (recommender: string): number => {
-  return recommender
-    ? recommender.split(",").filter((r) => r.trim()).length
-    : 0;
+const getRecommendationCount = (recommenderName: string, books: FormattedBook[]) => {
+  return books.reduce((count, book) => {
+    const hasRecommender = book.recommendations.some(
+      (rec) => rec.recommender?.full_name === recommenderName
+    );
+    return count + (hasRecommender ? 1 : 0);
+  }, 0);
 };
 
 const getPercentile = (count: number, maxCount: number): number => {
@@ -194,18 +175,16 @@ const getBackgroundColor = (count: number, maxCount: number): string => {
 export function BookGrid({
   data,
   onFilteredDataChange,
-  tooltipOpen,
-  setTooltipOpen,
   onSelectBook,
   onSelectRecommender,
 }: BookGridProps) {
   const maxRecommendations = Math.max(
-    ...data.map((book) => getRecommendationCount(book.recommenders))
+    ...data.map((book) => book.recommendations.length)
   );
 
   const enhancedData: EnhancedBook[] = data.map((book) => ({
     ...book,
-    _recommendationCount: getRecommendationCount(book.recommenders),
+    _recommendationCount: book.recommendations.length,
   }));
 
   const columns = [
@@ -228,9 +207,7 @@ export function BookGrid({
         <RecommenderCell
           {...props}
           maxCount={maxRecommendations}
-          tooltipOpen={tooltipOpen}
-          setTooltipOpen={setTooltipOpen}
-          onSelectRecommender={onSelectRecommender}
+          books={data}
         />
       ),
       isExpandable: true,
@@ -251,7 +228,6 @@ export function BookGrid({
         getBackgroundColor(row._recommendationCount, maxRecommendations)
       }
       onFilteredDataChange={onFilteredDataChange}
-      tooltipOpen={tooltipOpen}
     />
   );
 }
@@ -265,8 +241,6 @@ export function BookList({ initialBooks, initialRecommenders }: {
   const searchParams = useSearchParams();
   const [books, setBooks] = useState(initialBooks);
   const [filteredCount, setFilteredCount] = useState(initialBooks.length);
-  const [tooltipOpen, setTooltipOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Get selected item based on URL param
@@ -345,10 +319,10 @@ export function BookList({ initialBooks, initialRecommenders }: {
     // Get search query from URL params, excluding 'view'
     const params = new URLSearchParams(searchParams.toString());
     params.delete('view');
-    const query = params.get('query') || searchQuery;
+    const query = params.get('query');
 
     searchTimeoutRef.current = setTimeout(() => {
-      handleSearch(query);
+      handleSearch(query || '');
     }, 300);
 
     return () => {
@@ -356,7 +330,7 @@ export function BookList({ initialBooks, initialRecommenders }: {
         clearTimeout(searchTimeoutRef.current);
       }
     };
-  }, [searchQuery, searchParams]);
+  }, [searchParams]);
 
   const handleFilteredDataChange = useCallback((count: number) => {
     setFilteredCount(count);
@@ -372,8 +346,6 @@ export function BookList({ initialBooks, initialRecommenders }: {
         <BookGrid
           data={books}
           onFilteredDataChange={handleFilteredDataChange}
-          tooltipOpen={tooltipOpen}
-          setTooltipOpen={setTooltipOpen}
           onSelectBook={handleSelectBook}
           onSelectRecommender={handleSelectRecommender}
         />

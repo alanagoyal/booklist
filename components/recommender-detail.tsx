@@ -10,7 +10,6 @@ export default function RecommenderDetail({
   recommender,
   onClose,
 }: RecommenderDetailProps) {
-
   const handleBackdropClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) {
       onClose();
@@ -79,18 +78,21 @@ export default function RecommenderDetail({
                       <div className="space-y-1 min-w-0 flex-1">
                         <div className="flex items-baseline gap-2">
                           <span className="text-text">
-                            {book.amazon_url ? (
-                              <a
-                                href={book.amazon_url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-text md:hover:underline"
-                              >
-                                {book.title}
-                              </a>
-                            ) : (
-                              <span>{book.title}</span>
-                            )}{" "}
+                            <button
+                              onClick={() => {
+                                onClose();
+                                const params = new URLSearchParams();
+                                params.set("view", book.id);
+                                window.history.pushState(
+                                  {},
+                                  "",
+                                  `/?${params.toString()}`
+                                );
+                              }}
+                              className="text-text text-left md:hover:underline"
+                            >
+                              {book.title}
+                            </button>{" "}
                             by {book.author} (via{" "}
                             {book.source_link ? (
                               <a
@@ -130,21 +132,24 @@ export default function RecommenderDetail({
                         <User className="w-5 h-5 mt-0.5 text-text/70 shrink-0" />
                         <div className="space-y-1 min-w-0 flex-1">
                           <div className="flex items-baseline gap-2">
-                            <button
-                              onClick={() => {
-                                onClose();
-                                const params = new URLSearchParams();
-                                params.set("view", related.id);
-                                window.history.pushState(
-                                  {},
-                                  "",
-                                  `/?${params.toString()}`
-                                );
-                              }}
-                              className="text-text text-left font-base hover:underline transition-colors duration-200"
-                            >
-                              {related.full_name} ({related.type})
-                            </button>
+                            <span className="text-text">
+                              <button
+                                onClick={() => {
+                                  onClose();
+                                  const params = new URLSearchParams();
+                                  params.set("view", related.id);
+                                  window.history.pushState(
+                                    {},
+                                    "",
+                                    `/?${params.toString()}`
+                                  );
+                                }}
+                                className="text-text text-left font-base hover:underline transition-colors duration-200"
+                              >
+                                {related.full_name}
+                              </button>{" "}
+                              ({related.type})
+                            </span>
                           </div>
                           <div className="text-sm text-text/70">
                             {related.shared_count} shared recommendation

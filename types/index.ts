@@ -10,6 +10,7 @@ export type DbPendingContribution = Database['public']['Tables']['pending_contri
 export interface DbBookWithRecommendations extends Omit<DbBook, 'author_embedding' | 'title_embedding' | 'description_embedding'> {
   recommendations?: {
     recommender: {
+      id: string;
       full_name: string;
       url: string | null;
       type: string;
@@ -62,32 +63,47 @@ export interface FormattedRecommender extends Recommender {
 }
 
 // UI presentation types
+export interface RelatedBook {
+  id: string;
+  title: string;
+  author: string;
+  description: string;
+  amazon_url: string | null;
+}
+
 export interface FormattedBook {
   id: string;
   title: string;
   author: string;
   description: string;
   genres: string;
-  recommenders: string;
-  recommender_types: string;
-  source: string;
-  source_link: string;
-  url: string;
   amazon_url: string;
   related_books: RelatedBook[];
-}
-
-export type RelatedBook = {
-  id: string;  // UUID
-  title: string;
-  author: string;
-  recommenders: string;
-  recommender_count: number;
+  recommendations: {
+    recommender: {
+      id: string;
+      full_name: string;
+      url: string | null;
+      type: string;
+    } | null;
+    source: string;
+    source_link: string | null;
+  }[];
 }
 
 export type EnhancedBook = FormattedBook & {
   _recommendationCount: number;
   related_books?: RelatedBook[];
+  recommendations?: {
+    recommender: {
+      id: string;
+      full_name: string;
+      url: string | null;
+      type: string;
+    } | null;
+    source: string;
+    source_link: string | null;
+  }[];
 }
 
 // Re-export DatabaseBook type for backward compatibility

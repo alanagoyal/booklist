@@ -1,5 +1,5 @@
 import { BookList } from "@/components/books";
-import { DatabaseBook, FormattedBook, FormattedRecommender } from "@/types";
+import { FormattedBook, FormattedRecommender, RelatedBook } from "@/types";
 import { supabase } from "@/utils/supabase/client";
 
 // Force static generation and disable ISR
@@ -16,41 +16,25 @@ async function getBooks(): Promise<FormattedBook[]> {
     throw error;
   }
 
-  const formattedBooks = ((books || []) as DatabaseBook[]).map((book) => {
-    const formatted: FormattedBook = {
-      id: book.id,
-      title: book.title || "n/a",
-      author: book.author || "n/a",
-      description: book.description || "n/a",
-      genres: book.genre?.join(", ") || "n/a",
-      recommenders:
-        book.recommendations
-          ?.map((rec) => rec.recommender?.full_name)
-          .filter(Boolean)
-          .join(', ') || "n/a",
-      recommender_types:
-        book.recommendations
-          ?.map((rec) => rec.recommender?.type)
-          .filter(Boolean)
-          .join(', ') || "n/a",
-      source:
-        book.recommendations
-          ?.map((rec) => rec.source)
-          .join(', ') || "n/a",
-      source_link: book.recommendations
-          ?.map((rec) => rec.source_link)
-          .filter(Boolean)
-          .join(', ') || "",
-      url: book.recommendations
-          ?.map((rec) => rec.recommender?.url)
-          .filter(Boolean)
-          .join(', ') || "",
-      amazon_url: book.amazon_url || "",
-      related_books: book.related_books || []
-    };
-    
-    return formatted;
-  });
+  const formattedBooks: FormattedBook[] = books.map((book: any) => ({
+    id: book.id,
+    title: book.title || "",
+    author: book.author || "",
+    description: book.description || "",
+    genres: book.genre?.join(", ") || "",
+    amazon_url: book.amazon_url || "",
+    related_books: (book.related_books || []) as RelatedBook[],
+    recommendations: (book.recommendations || []).map((rec: any) => ({
+      recommender: rec.recommender ? {
+        id: rec.recommender.id || "",
+        full_name: rec.recommender.full_name || "",
+        url: rec.recommender.url,
+        type: rec.recommender.type || "",
+      } : null,
+      source: rec.source || "",
+      source_link: rec.source_link,
+    })),
+  }));
 
   return formattedBooks;
 }

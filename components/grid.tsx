@@ -49,8 +49,7 @@ export function DataGrid<T extends Record<string, any>>({
   columns, 
   getRowClassName,
   onFilteredDataChange,
-  tooltipOpen,
-}: DataGridProps<T> & { tooltipOpen: boolean }) {
+}: DataGridProps<T>) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const gridRef = useRef<HTMLDivElement>(null);
@@ -224,7 +223,7 @@ export function DataGrid<T extends Record<string, any>>({
   const handleRowClick = useCallback((rowIndex: number, e: React.MouseEvent) => {
     const target = e.target as HTMLElement;
     if (target.closest('[data-dropdown], button, input, a')) return;
-    if (openDropdown || isDropdownClosing || tooltipOpen) return;
+    if (openDropdown || isDropdownClosing) return;
 
     setVirtualState(prev => ({
       ...prev,
@@ -233,7 +232,7 @@ export function DataGrid<T extends Record<string, any>>({
         [rowIndex]: !prev.expandedRows[rowIndex]
       }
     }));
-  }, [openDropdown, isDropdownClosing, tooltipOpen]);
+  }, [openDropdown, isDropdownClosing]);
 
   // Optimize cell rendering with useCallback
   const renderCell = useCallback(({ 
