@@ -44,6 +44,12 @@ const RecommenderCell = ({
   maxCount: number;
   books: FormattedBook[];
 }) => {
+  const [tooltipOpen, setTooltipOpen] = useState(false);
+
+  if (original.recommendations.filter((rec) => rec.recommender).length === 0) {
+    return <span></span>;
+  }
+
   const recommenderPairs = original.recommendations
     .filter((rec) => rec.recommender)
     .map((rec) => ({
@@ -57,14 +63,8 @@ const RecommenderCell = ({
       return countB - countA;
     });
 
-  if (recommenderPairs.length === 0) {
-    return <span></span>;
-  }
-
   const displayCount = !isExpanded ? 2 : recommenderPairs.length;
   const percentile = getPercentile(original._recommendationCount, maxCount);
-
-  const [tooltipOpen, setTooltipOpen] = useState(false);
 
   const handleRecommenderClick = (id: string) => {
     const params = new URLSearchParams(window.location.search);
