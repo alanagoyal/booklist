@@ -1,4 +1,12 @@
-import { X, BookOpen, Tag, LayoutList, AlignJustify, ChevronLeft, User } from "lucide-react";
+import {
+  X,
+  BookOpen,
+  Tag,
+  LayoutList,
+  AlignJustify,
+  ChevronLeft,
+  User,
+} from "lucide-react";
 import { EnhancedBook, RelatedBook, RecommenderType } from "@/types";
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/utils/supabase/client";
@@ -9,7 +17,6 @@ initLogger({
   projectName: "booklist",
   apiKey: process.env.BRAINTRUST_API_KEY,
 });
-  
 
 type BookDetailProps = {
   book: EnhancedBook;
@@ -24,16 +31,18 @@ export default function BookDetail({ book, onClose }: BookDetailProps) {
 
   useEffect(() => {
     async function fetchRelatedBooks() {
-      const { data, error } = await supabase
-        .rpc('get_books_by_shared_recommenders', {
+      const { data, error } = await supabase.rpc(
+        "get_books_by_shared_recommenders",
+        {
           p_book_id: book.id,
-          p_limit: 3
-        });
+          p_limit: 3,
+        }
+      );
 
       if (!error && data) {
         setRelatedBooks(data);
       } else if (error) {
-        console.error('Error fetching related books:', error);
+        console.error("Error fetching related books:", error);
       }
     }
 
@@ -42,13 +51,18 @@ export default function BookDetail({ book, onClose }: BookDetailProps) {
 
   useEffect(() => {
     async function fetchRecommenderSummary() {
-      if (showSummary && !recommenderSummary && book.recommenders && book.recommender_types) {
+      if (
+        showSummary &&
+        !recommenderSummary &&
+        book.recommenders &&
+        book.recommender_types
+      ) {
         setIsLoadingSummary(true);
         try {
-          const response = await fetch('/api/recommenders/explain', {
-            method: 'POST',
+          const response = await fetch("/api/recommenders/explain", {
+            method: "POST",
             headers: {
-              'Content-Type': 'application/json',
+              "Content-Type": "application/json",
             },
             body: JSON.stringify({
               book: `${book.title} by ${book.author}`,
@@ -57,13 +71,13 @@ export default function BookDetail({ book, onClose }: BookDetailProps) {
           });
 
           if (!response.ok) {
-            throw new Error('Failed to fetch recommender summary');
+            throw new Error("Failed to fetch recommender summary");
           }
 
           const data = await response.json();
           setRecommenderSummary(data.summary);
         } catch (error) {
-          console.error('Error fetching recommender summary:', error);
+          console.error("Error fetching recommender summary:", error);
         } finally {
           setIsLoadingSummary(false);
         }
@@ -110,7 +124,7 @@ export default function BookDetail({ book, onClose }: BookDetailProps) {
 
         <div className="px-12 py-8">
           <div className="space-y-8">
-          {/* Book metadata */}
+            {/* Book metadata */}
             <div className="flex justify-between items-center">
               {book.genres && (
                 <div className="flex items-center gap-2 text-text">
@@ -143,15 +157,20 @@ export default function BookDetail({ book, onClose }: BookDetailProps) {
               </div>
             )}
 
+            {/* Book recommenders */}
             {book.recommenders && book.recommender_types && (
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-base text-text font-bold">Recommenders</h2>
+                  <h2 className="text-base text-text font-bold">
+                    Recommenders
+                  </h2>
                   <div className="flex gap-2">
                     <button
                       onClick={() => setShowSummary(false)}
                       className={`p-1.5 transition-colors duration-200 ${
-                        !showSummary ? 'text-text bg-accent/50' : 'text-text/70 md:hover:text-text'
+                        !showSummary
+                          ? "text-text bg-accent/50"
+                          : "text-text/70 md:hover:text-text"
                       }`}
                       title="List View"
                     >
@@ -160,7 +179,9 @@ export default function BookDetail({ book, onClose }: BookDetailProps) {
                     <button
                       onClick={() => setShowSummary(true)}
                       className={`p-1.5 transition-colors duration-200 ${
-                        showSummary ? 'text-text bg-accent/50' : 'text-text/70 md:hover:text-text'
+                        showSummary
+                          ? "text-text bg-accent/50"
+                          : "text-text/70 md:hover:text-text"
                       }`}
                       title="Summary View"
                     >
@@ -168,17 +189,22 @@ export default function BookDetail({ book, onClose }: BookDetailProps) {
                     </button>
                   </div>
                 </div>
-                
+
                 {!showSummary ? (
                   <div className="text-text space-y-4 max-h-[300px] overflow-y-auto">
                     {(() => {
-                      const pairs = book.recommenders.split(", ").map((recommender, i) => ({
-                        name: recommender.trim(),
-                        type: book.recommender_types.split(", ")[i]?.trim() as RecommenderType,
-                        url: book.url?.split(", ")[i]?.trim() || "",
-                        source: book.source?.split(", ")[i]?.trim() || "",
-                        source_link: book.source_link?.split(", ")[i]?.trim() || ""
-                      }));
+                      const pairs = book.recommenders
+                        .split(", ")
+                        .map((recommender, i) => ({
+                          name: recommender.trim(),
+                          type: book.recommender_types
+                            .split(", ")
+                            [i]?.trim() as RecommenderType,
+                          url: book.url?.split(", ")[i]?.trim() || "",
+                          source: book.source?.split(", ")[i]?.trim() || "",
+                          source_link:
+                            book.source_link?.split(", ")[i]?.trim() || "",
+                        }));
 
                       return pairs.map((pair) => (
                         <div key={pair.name} className="flex items-start gap-3">
@@ -186,10 +212,10 @@ export default function BookDetail({ book, onClose }: BookDetailProps) {
                           <div className="space-y-1 min-w-0 flex-1">
                             <div className="flex items-baseline gap-2">
                               {pair.url ? (
-                                <a 
+                                <a
                                   href={pair.url}
                                   target="_blank"
-                                  rel="noopener noreferrer" 
+                                  rel="noopener noreferrer"
                                   className="text-text md:hover:underline"
                                 >
                                   {pair.name}
@@ -201,7 +227,7 @@ export default function BookDetail({ book, onClose }: BookDetailProps) {
                                 <span className="text-sm text-text/70">
                                   via{" "}
                                   {pair.source_link ? (
-                                    <a 
+                                    <a
                                       href={pair.source_link}
                                       target="_blank"
                                       rel="noopener noreferrer"
@@ -215,7 +241,9 @@ export default function BookDetail({ book, onClose }: BookDetailProps) {
                                 </span>
                               )}
                             </div>
-                            <div className="text-sm text-text/70">{pair.type}</div>
+                            <div className="text-sm text-text/70">
+                              {pair.type}
+                            </div>
                           </div>
                         </div>
                       ));
@@ -233,21 +261,31 @@ export default function BookDetail({ book, onClose }: BookDetailProps) {
               </div>
             )}
 
+            {/* Book suggestions */}
             {relatedBooks.length > 0 && (
               <div className="space-y-2">
-                <h2 className="text-base text-text font-bold">You Might Also Enjoy</h2>
+                <h2 className="text-base text-text font-bold">
+                  You Might Also Enjoy
+                </h2>
                 <div className="space-y-4">
                   {relatedBooks.map((relatedBook) => (
-                    <div key={relatedBook.id} className="space-y-1">
-                      <div className="flex items-baseline justify-between gap-2">
-                        <h3 className="text-text font-base">{relatedBook.title}</h3>
-                        <span className="text-sm text-text/70">{relatedBook.author}</span>
-                      </div>
-                      <div className="flex items-start gap-3">
-                        <User className="w-5 h-5 mt-0.5 text-text/70 shrink-0" />
+                    <div
+                      key={relatedBook.id}
+                      className="flex items-start gap-3"
+                    >
+                      <BookOpen className="w-5 h-5 mt-0.5 text-text/70 shrink-0" />
+                      <div className="space-y-1 min-w-0 flex-1">
+                        <div className="flex items-baseline gap-2">
+                          <h3 className="text-text font-base">
+                            {relatedBook.title} by {relatedBook.author}
+                          </h3>
+                        </div>
                         <p className="text-sm text-text/70">
-                          {relatedBook.recommenders.split(", ").slice(0, 3).join(", ")}
-                          {relatedBook.recommenders.split(", ").length > 3 && 
+                          {relatedBook.recommenders
+                            .split(", ")
+                            .slice(0, 3)
+                            .join(", ")}
+                          {relatedBook.recommenders.split(", ").length > 3 &&
                             ` and ${relatedBook.recommenders.split(", ").length - 3} more`}
                         </p>
                       </div>
