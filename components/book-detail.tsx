@@ -7,7 +7,7 @@ import {
   ChevronLeft,
   User,
 } from "lucide-react";
-import { EnhancedBook, RelatedBook, RecommenderType } from "@/types";
+import { EnhancedBook, RelatedBook } from "@/types";
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/utils/supabase/client";
 import { initLogger } from "braintrust";
@@ -199,7 +199,7 @@ export default function BookDetail({ book, onClose }: BookDetailProps) {
                           name: recommender.trim(),
                           type: book.recommender_types
                             .split(", ")
-                            [i]?.trim() as RecommenderType,
+                            [i]?.trim() || "",
                           url: book.url?.split(", ")[i]?.trim() || "",
                           source: book.source?.split(", ")[i]?.trim() || "",
                           source_link:

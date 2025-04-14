@@ -7,31 +7,6 @@ export type Json =
   | Json[]
 
 export type Database = {
-  graphql_public: {
-    Tables: {
-      [_ in never]: never
-    }
-    Views: {
-      [_ in never]: never
-    }
-    Functions: {
-      graphql: {
-        Args: {
-          operationName?: string
-          query?: string
-          variables?: Json
-          extensions?: Json
-        }
-        Returns: Json
-      }
-    }
-    Enums: {
-      [_ in never]: never
-    }
-    CompositeTypes: {
-      [_ in never]: never
-    }
-  }
   public: {
     Tables: {
       books: {
@@ -39,6 +14,7 @@ export type Database = {
           amazon_url: string | null
           author: string
           author_embedding: string | null
+          cover_url: string | null
           created_at: string
           description: string | null
           description_embedding: string | null
@@ -52,6 +28,7 @@ export type Database = {
           amazon_url?: string | null
           author: string
           author_embedding?: string | null
+          cover_url?: string | null
           created_at?: string
           description?: string | null
           description_embedding?: string | null
@@ -65,6 +42,7 @@ export type Database = {
           amazon_url?: string | null
           author?: string
           author_embedding?: string | null
+          cover_url?: string | null
           created_at?: string
           description?: string | null
           description_embedding?: string | null
@@ -79,7 +57,6 @@ export type Database = {
       pending_contributions: {
         Row: {
           approval_token: string | null
-          book_ids: string[] | null
           books: Json
           created_at: string | null
           id: string
@@ -89,7 +66,6 @@ export type Database = {
         }
         Insert: {
           approval_token?: string | null
-          book_ids?: string[] | null
           books: Json
           created_at?: string | null
           id?: string
@@ -99,7 +75,6 @@ export type Database = {
         }
         Update: {
           approval_token?: string | null
-          book_ids?: string[] | null
           books?: Json
           created_at?: string | null
           id?: string
@@ -114,7 +89,7 @@ export type Database = {
           created_at: string
           full_name: string
           id: string
-          type: Database["public"]["Enums"]["recommender_type"] | null
+          type: string | null
           updated_at: string
           url: string | null
         }
@@ -122,7 +97,7 @@ export type Database = {
           created_at?: string
           full_name: string
           id?: string
-          type?: Database["public"]["Enums"]["recommender_type"] | null
+          type?: string | null
           updated_at?: string
           url?: string | null
         }
@@ -130,7 +105,7 @@ export type Database = {
           created_at?: string
           full_name?: string
           id?: string
-          type?: Database["public"]["Enums"]["recommender_type"] | null
+          type?: string | null
           updated_at?: string
           url?: string | null
         }
@@ -186,10 +161,6 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      binary_quantize: {
-        Args: { "": string } | { "": unknown }
-        Returns: unknown
-      }
       find_similar_books: {
         Args: { p_title: string; p_author: string }
         Returns: {
@@ -250,25 +221,13 @@ export type Database = {
           recommender_types: string
         }[]
       }
-      get_books_by_similar_recommenders: {
-        Args: { p_person_id: string; p_limit?: number }
-        Returns: {
-          id: string
-          title: string
-          author: string
-          genre: string[]
-          amazon_url: string
-          recommenders: string
-          recommender_types: string
-          recommender_count: number
-        }[]
-      }
       get_random_book: {
         Args: Record<PropertyKey, never>
         Returns: {
           amazon_url: string | null
           author: string
           author_embedding: string | null
+          cover_url: string | null
           created_at: string
           description: string | null
           description_embedding: string | null
@@ -277,28 +236,6 @@ export type Database = {
           title: string
           title_embedding: string | null
           updated_at: string
-        }[]
-      }
-      get_random_book_with_recommendations: {
-        Args: Record<PropertyKey, never>
-        Returns: {
-          id: string
-          title: string
-          author: string
-          year: number
-          description: string
-          cover_image: string
-          recommendations: Json
-        }[]
-      }
-      get_recommendation_graph: {
-        Args: Record<PropertyKey, never>
-        Returns: {
-          person1_name: string
-          person1_type: string
-          person2_name: string
-          person2_type: string
-          shared_books: number
         }[]
       }
       get_recommendation_network: {
@@ -314,48 +251,15 @@ export type Database = {
           shared_book_titles: string[]
         }[]
       }
-      get_recommender_details: {
-        Args: { p_person_id: string }
-        Returns: {
-          id: string
-          full_name: string
-          url: string
-          type: string
-          recommendation_count: number
-          books: Json
-        }[]
-      }
-      get_related_books: {
-        Args: { book_id: number; limit_count?: number }
-        Returns: {
-          id: number
-          title: string
-          author: string
-          genres: string
-          amazon_url: string
-          recommender_count: number
-        }[]
-      }
       get_related_recommenders: {
         Args: { p_recommender_id: string; p_limit?: number }
         Returns: {
           id: string
           full_name: string
           url: string
-          type: Database["public"]["Enums"]["recommender_type"]
+          type: string
           shared_books: string
           shared_count: number
-        }[]
-      }
-      get_shared_recommendations: {
-        Args: Record<PropertyKey, never>
-        Returns: {
-          person1_id: string
-          person1_name: string
-          person2_id: string
-          person2_name: string
-          shared_books_count: number
-          shared_books: string[]
         }[]
       }
       gtrgm_compress: {
@@ -378,58 +282,6 @@ export type Database = {
         Args: { "": unknown }
         Returns: unknown
       }
-      halfvec_avg: {
-        Args: { "": number[] }
-        Returns: unknown
-      }
-      halfvec_out: {
-        Args: { "": unknown }
-        Returns: unknown
-      }
-      halfvec_send: {
-        Args: { "": unknown }
-        Returns: string
-      }
-      halfvec_typmod_in: {
-        Args: { "": unknown[] }
-        Returns: number
-      }
-      hnsw_bit_support: {
-        Args: { "": unknown }
-        Returns: unknown
-      }
-      hnsw_halfvec_support: {
-        Args: { "": unknown }
-        Returns: unknown
-      }
-      hnsw_sparsevec_support: {
-        Args: { "": unknown }
-        Returns: unknown
-      }
-      hnswhandler: {
-        Args: { "": unknown }
-        Returns: unknown
-      }
-      ivfflat_bit_support: {
-        Args: { "": unknown }
-        Returns: unknown
-      }
-      ivfflat_halfvec_support: {
-        Args: { "": unknown }
-        Returns: unknown
-      }
-      ivfflathandler: {
-        Args: { "": unknown }
-        Returns: unknown
-      }
-      l2_norm: {
-        Args: { "": unknown } | { "": unknown }
-        Returns: number
-      }
-      l2_normalize: {
-        Args: { "": string } | { "": unknown } | { "": unknown }
-        Returns: string
-      }
       match_documents: {
         Args: { query_embedding: string }
         Returns: {
@@ -449,63 +301,9 @@ export type Database = {
         Args: { "": string }
         Returns: string[]
       }
-      sparsevec_out: {
-        Args: { "": unknown }
-        Returns: unknown
-      }
-      sparsevec_send: {
-        Args: { "": unknown }
-        Returns: string
-      }
-      sparsevec_typmod_in: {
-        Args: { "": unknown[] }
-        Returns: number
-      }
-      vector_avg: {
-        Args: { "": number[] }
-        Returns: string
-      }
-      vector_dims: {
-        Args: { "": string } | { "": unknown }
-        Returns: number
-      }
-      vector_norm: {
-        Args: { "": string }
-        Returns: number
-      }
-      vector_out: {
-        Args: { "": string }
-        Returns: unknown
-      }
-      vector_send: {
-        Args: { "": string }
-        Returns: string
-      }
-      vector_typmod_in: {
-        Args: { "": unknown[] }
-        Returns: number
-      }
     }
     Enums: {
-      recommender_type:
-        | "Technologist or Mathematician"
-        | "Librarian or Teacher"
-        | "Entrepreneur or Startup Founder"
-        | "Historian, Philosopher, or Theologian"
-        | "Anthropologist or Social Scientist"
-        | "Biologist, Physicist, or Medical Scientist"
-        | "Economist or Policy Expert"
-        | "Architect or Design Expert"
-        | "Broadcaster, Journalist, or Media Commentator"
-        | "Venture Capitalist or Investor"
-        | "Author or Writer"
-        | "Musician, Music Critic, or Filmmaker"
-        | "Biographer or Memoirist"
-        | "Cook, Food Writer, or Culinary Expert"
-        | "Comedian, Magician, or Entertainer"
-        | "Business Leader or Executive"
-        | "Product Manager, Designer, or Engineer"
-        | "Art Historian, Critic, or Visual Artist"
+      [_ in never]: never
     }
     CompositeTypes: {
       [_ in never]: never
@@ -619,32 +417,7 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
-  graphql_public: {
+  public: {
     Enums: {},
   },
-  public: {
-    Enums: {
-      recommender_type: [
-        "Technologist or Mathematician",
-        "Librarian or Teacher",
-        "Entrepreneur or Startup Founder",
-        "Historian, Philosopher, or Theologian",
-        "Anthropologist or Social Scientist",
-        "Biologist, Physicist, or Medical Scientist",
-        "Economist or Policy Expert",
-        "Architect or Design Expert",
-        "Broadcaster, Journalist, or Media Commentator",
-        "Venture Capitalist or Investor",
-        "Author or Writer",
-        "Musician, Music Critic, or Filmmaker",
-        "Biographer or Memoirist",
-        "Cook, Food Writer, or Culinary Expert",
-        "Comedian, Magician, or Entertainer",
-        "Business Leader or Executive",
-        "Product Manager, Designer, or Engineer",
-        "Art Historian, Critic, or Visual Artist",
-      ],
-    },
-  },
 } as const
-
