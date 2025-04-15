@@ -1,10 +1,36 @@
 import { BookList } from "@/components/books";
-import { FormattedBook, FormattedRecommender, RelatedBook } from "@/types";
+import { FormattedBook, FormattedRecommender, RawBook, RecommenderPair, RawRecommendation } from "@/types";
 import { supabase } from "@/utils/supabase/client";
 
 // Force static generation and disable ISR
 export const dynamic = 'force-static';
 export const revalidate = false;
+
+// Precompute recommendation counts for each recommender
+function getRecommenderCounts(books: RawBook[]): Record<string, number> {
+  const counts: Record<string, number> = {};
+  books.forEach(book => {
+    book.recommendations?.forEach((rec: RawRecommendation) => {
+      if (rec.recommender) {
+        const name = rec.recommender.full_name;
+        counts[name] = (counts[name] || 0) + 1;
+      }
+    });
+  });
+  return counts;
+}
+
+// Precompute sorted recommender pairs for each book
+function getSortedRecommenders(book: RawBook, recommenderCounts: Record<string, number>): RecommenderPair[] {
+  return book.recommendations
+    ?.filter((rec: RawRecommendation) => rec.recommender)
+    .map((rec: RawRecommendation) => ({
+      id: rec.recommender!.id,
+      recommender: rec.recommender!.full_name,
+      recommendationCount: recommenderCounts[rec.recommender!.full_name] || 0
+    }))
+    .sort((a: RecommenderPair, b: RecommenderPair) => b.recommendationCount - a.recommendationCount) || [];
+}
 
 // Fetch books at build time
 async function getBooks(): Promise<FormattedBook[]> {
@@ -16,32 +42,50 @@ async function getBooks(): Promise<FormattedBook[]> {
     throw error;
   }
 
-  const formattedBooks: FormattedBook[] = books.map((book: any) => ({
-    id: book.id,
-    title: book.title || "",
-    author: book.author || "",
-    description: book.description || "",
-    genres: book.genre?.join(", ") || "",
-    amazon_url: book.amazon_url || "",
-    related_books: (book.related_books || []).map((rb: any) => ({
-      id: rb.id,
-      title: rb.title,
-      author: rb.author,
-      description: "",
-      amazon_url: null,
-      _recommendationCount: rb.recommender_count
-    })),
-    recommendations: (book.recommendations || []).map((rec: any) => ({
-      recommender: rec.recommender ? {
-        id: rec.recommender.id || "",
-        full_name: rec.recommender.full_name || "",
-        url: rec.recommender.url,
-        type: rec.recommender.type || "",
-      } : null,
-      source: rec.source || "",
-      source_link: rec.source_link,
-    })),
-  }));
+  // Precompute all recommender counts once
+  const recommenderCounts = getRecommenderCounts(books as RawBook[]);
+  
+  const formattedBooks: FormattedBook[] = (books as RawBook[]).map((book) => {
+    // Precompute sorted recommenders for this book
+    const sortedRecommenders = getSortedRecommenders(book, recommenderCounts);
+    
+    return {
+      id: book.id,
+      title: book.title || "",
+      author: book.author || "",
+      description: book.description || "",
+      genres: book.genre?.join(", ") || "",
+      amazon_url: book.amazon_url || "",
+      related_books: (book.related_books || []).map((rb) => ({
+        id: rb.id,
+        title: rb.title,
+        author: rb.author,
+        description: "",
+        amazon_url: null,
+        _recommendationCount: rb.recommender_count
+      })),
+      recommendations: sortedRecommenders.map((sr: RecommenderPair) => ({
+        recommender: {
+          id: sr.id,
+          full_name: sr.recommender,
+          url: book.recommendations?.find((r: RawRecommendation) => 
+            r.recommender?.id === sr.id
+          )?.recommender?.url || null,
+          type: book.recommendations?.find((r: RawRecommendation) => 
+            r.recommender?.id === sr.id
+          )?.recommender?.type || "",
+        },
+        source: book.recommendations?.find((r: RawRecommendation) => 
+          r.recommender?.id === sr.id
+        )?.source || "",
+        source_link: book.recommendations?.find((r: RawRecommendation) => 
+          r.recommender?.id === sr.id
+        )?.source_link || null,
+      })),
+      _sortedRecommenders: sortedRecommenders,
+      _recommendationCount: book.recommendations?.length || 0,
+    };
+  });
 
   return formattedBooks;
 }

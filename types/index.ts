@@ -33,6 +33,40 @@ export interface Book extends Omit<DbBookWithRecommendations, 'author_embedding'
   source_link?: string;
 }
 
+// Raw types from Supabase RPC responses
+export type RawRecommendation = {
+  recommender: {
+    id: string;
+    full_name: string;
+    url: string | null;
+    type: string | null;
+  } | null;
+  source: string | null;
+  source_link: string | null;
+};
+
+export type RawBook = {
+  id: string;
+  title: string | null;
+  author: string | null;
+  description: string | null;
+  genre: string[] | null;
+  amazon_url: string | null;
+  recommendations: RawRecommendation[];
+  related_books?: Array<{
+    id: string;
+    title: string;
+    author: string;
+    recommender_count: number;
+  }>;
+};
+
+export type RecommenderPair = {
+  id: string;
+  recommender: string;
+  recommendationCount: number;
+};
+
 // Simplified book type returned by get_books_by_recommender RPC
 export interface RecommenderBook {
   id: string;
@@ -90,6 +124,12 @@ export interface FormattedBook {
     source: string;
     source_link: string | null;
   }[];
+  _sortedRecommenders: {
+    id: string;
+    recommender: string;
+    recommendationCount: number;
+  }[];
+  _recommendationCount: number;
 }
 
 export type EnhancedBook = FormattedBook & {
