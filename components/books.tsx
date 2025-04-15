@@ -265,18 +265,6 @@ export function BookList({ initialBooks, initialRecommenders }: {
     setFilteredCount(count);
   }, []);
 
-  const selectedBook = useMemo(() => {
-    if (!viewId) return null;
-    const [actualId] = viewId.split('--');
-    return initialBooks.find((b) => b.id === actualId);
-  }, [viewId, initialBooks]);
-
-  const selectedRecommender = useMemo(() => {
-    if (!viewId) return null;
-    const [actualId] = viewId.split('--');
-    return initialRecommenders.find((r) => r.id === actualId);
-  }, [viewId, initialRecommenders]);
-
   if (!mounted) {
     return null;
   }
