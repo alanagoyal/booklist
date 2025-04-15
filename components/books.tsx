@@ -26,7 +26,7 @@ function RecommenderCell({ original }: { original: EnhancedBook }) {
   
   const handleRecommenderClick = useCallback((id: string) => {
     const params = new URLSearchParams(searchParams.toString());
-    params.set('view', id);
+    params.set('view', `${id}--${Date.now()}`);
     router.push(`?${params.toString()}`, { scroll: false });
   }, [searchParams, router]);
   
@@ -151,7 +151,7 @@ export function BookGrid({
 
   const handleRowClick = useCallback((book: EnhancedBook) => {
     const params = new URLSearchParams(searchParams.toString());
-    params.set('view', book.id || book.title);
+    params.set('view', `${book.id || book.title}--${Date.now()}`);
     router.push(`?${params.toString()}`, { scroll: false });
   }, [searchParams, router]);
 
@@ -194,22 +194,23 @@ export function BookList({ initialBooks, initialRecommenders }: {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [filteredCount, setFilteredCount] = useState(initialBooks.length);
-  const [viewHistory, setViewHistory] = useState<Array<{id: string; type: 'book' | 'recommender'}>>([]);
+  const [viewHistory, setViewHistory] = useState<Array<{id: string; actualId: string; type: 'book' | 'recommender'}>>([]);
 
   // Get selected item based on URL param
   const viewId = searchParams.get('view');
   
   useEffect(() => {
     if (viewId) {
-      const isRecommender = initialRecommenders.find(r => r.id === viewId);
+      const [actualId] = viewId.split('--');
+      const isRecommender = initialRecommenders.find(r => r.id === actualId);
+      
       setViewHistory(prev => {
         // Don't add if it's already the most recent view
         if (prev[prev.length - 1]?.id === viewId) return prev;
-        // If this view is already in history, remove it and all views after it
-        const existingIndex = prev.findIndex(v => v.id === viewId);
-        const baseHistory = existingIndex >= 0 ? prev.slice(0, existingIndex) : prev;
-        return [...baseHistory, {
-          id: viewId,
+        
+        return [...prev, {
+          id: viewId, // Keep full viewId with timestamp in history
+          actualId, // Store the real ID separately
           type: isRecommender ? 'recommender' : 'book'
         }];
       });
@@ -243,14 +244,16 @@ export function BookList({ initialBooks, initialRecommenders }: {
   // Keep viewHistory in sync with URL
   useEffect(() => {
     if (viewId) {
-      const isRecommender = initialRecommenders.find(r => r.id === viewId);
-      // Always add new view to history, don't remove existing ones
+      const [actualId] = viewId.split('--');
+      const isRecommender = initialRecommenders.find(r => r.id === actualId);
+      
       setViewHistory(prev => {
         // Don't add if it's already the most recent view
         if (prev[prev.length - 1]?.id === viewId) return prev;
-        // If this view is already in history, keep all views
+        
         return [...prev, {
-          id: viewId,
+          id: viewId, // Keep full viewId with timestamp in history
+          actualId, // Store the real ID separately
           type: isRecommender ? 'recommender' : 'book'
         }];
       });
@@ -261,6 +264,18 @@ export function BookList({ initialBooks, initialRecommenders }: {
   const handleFilteredDataChange = useCallback((count: number) => {
     setFilteredCount(count);
   }, []);
+
+  const selectedBook = useMemo(() => {
+    if (!viewId) return null;
+    const [actualId] = viewId.split('--');
+    return initialBooks.find((b) => b.id === actualId);
+  }, [viewId, initialBooks]);
+
+  const selectedRecommender = useMemo(() => {
+    if (!viewId) return null;
+    const [actualId] = viewId.split('--');
+    return initialRecommenders.find((r) => r.id === actualId);
+  }, [viewId, initialRecommenders]);
 
   if (!mounted) {
     return null;
@@ -279,9 +294,9 @@ export function BookList({ initialBooks, initialRecommenders }: {
         const isLast = index === viewHistory.length - 1;
         const offset = index * 8; // 8px offset for each stacked view
         const selectedRecommender = view.type === 'recommender' ? 
-          initialRecommenders.find(r => r.id === view.id) : null;
+          initialRecommenders.find(r => r.id === view.actualId) : null;
         const selectedBook = view.type === 'book' ? 
-          initialBooks.find(book => book.id === view.id || book.title === view.id) as EnhancedBook | null : null;
+          initialBooks.find(book => book.id === view.actualId || book.title === view.actualId) as EnhancedBook | null : null;
 
         return (
           <div 

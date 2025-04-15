@@ -75,7 +75,7 @@ export default function BookDetail({ book, onClose, stackIndex = 0 }: BookDetail
 
   const handleRecommenderClick = (id: string) => {
     const params = new URLSearchParams(searchParams.toString());
-    params.set("view", id);
+    params.set("view", `${id}--${Date.now()}`);
     router.push(`?${params.toString()}`, { scroll: false });
   };
 
@@ -270,7 +270,7 @@ export default function BookDetail({ book, onClose, stackIndex = 0 }: BookDetail
                                 const params = new URLSearchParams(
                                   searchParams.toString()
                                 );
-                                params.set("view", relatedBook.id);
+                                params.set("view", `${relatedBook.id}--${Date.now()}`);
                                 router.push(`?${params.toString()}`, {
                                   scroll: false,
                                 });

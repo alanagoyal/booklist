@@ -95,7 +95,7 @@ export default function RecommenderDetail({
                             <button
                               onClick={() => {
                                 const params = new URLSearchParams(searchParams.toString());
-                                params.set("view", book.id);
+                                params.set("view", `${book.id}--${Date.now()}`);
                                 router.push(`?${params.toString()}`, { scroll: false });
                               }}
                               className="text-text text-left md:hover:underline"
@@ -145,7 +145,7 @@ export default function RecommenderDetail({
                               <button
                                 onClick={() => {
                                   const params = new URLSearchParams(searchParams.toString());
-                                  params.set("view", related.id);
+                                  params.set("view", `${related.id}--${Date.now()}`);
                                   router.push(`?${params.toString()}`, { scroll: false });
                                 }}
                                 className="text-text text-left font-base hover:underline transition-colors duration-200"
