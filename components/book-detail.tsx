@@ -117,7 +117,9 @@ export default function BookDetail({ book, onClose }: BookDetailProps) {
               {book.genres && (
                 <div className="flex items-center gap-2 text-text">
                   <Tag className="w-4 h-4 text-text/70" />
-                  <span>{book.genres}</span>
+                  <span>
+                    {Array.isArray(book.genres) ? book.genres.join(", ") : book.genres}
+                  </span>
                 </div>
               )}
               {book.amazon_url && (

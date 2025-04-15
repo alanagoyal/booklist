@@ -77,7 +77,7 @@ export interface FormattedBook {
   title: string;
   author: string;
   description: string;
-  genres: string;
+  genres: string | string[];
   amazon_url: string;
   related_books: RelatedBook[];
   recommendations: {
