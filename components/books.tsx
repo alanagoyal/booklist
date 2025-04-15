@@ -65,7 +65,7 @@ const getTopRecommenders = (book: EnhancedBook, books: FormattedBook[], maxCount
   return recommenderPairs;
 };
 
-const RecommenderCell = memo(({
+const RecommenderCell = memo(function RecommenderCell({
   row: { original },
   maxCount,
   books,
@@ -73,7 +73,7 @@ const RecommenderCell = memo(({
   row: { original: EnhancedBook };
   maxCount: number;
   books: FormattedBook[];
-}) => {
+}) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [tooltipOpen, setTooltipOpen] = useState(false);
