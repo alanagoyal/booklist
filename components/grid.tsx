@@ -30,6 +30,7 @@ type DataGridProps<T extends Record<string, any>> = {
   columns: ColumnDef<T>[];
   getRowClassName?: (row: T) => string;
   onFilteredDataChange?: (count: number) => void;
+  onRowClick?: (row: T) => void;
 };
 
 type SortConfig = {
@@ -48,6 +49,7 @@ export function DataGrid<T extends Record<string, any>>({
   columns, 
   getRowClassName,
   onFilteredDataChange,
+  onRowClick,
 }: DataGridProps<T>) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -231,11 +233,24 @@ export function DataGrid<T extends Record<string, any>>({
     return filteredAndSortedData.slice(startIndex, endIndex);
   }, [filteredAndSortedData, virtualState.startIndex, virtualState.endIndex]);
 
-  const handleRowClick = useCallback((rowIndex: number, e: React.MouseEvent) => {
+  const handleRowClick = useCallback((e: React.MouseEvent, row: T) => {
     const target = e.target as HTMLElement;
-    if (target.closest('[data-dropdown], button, input, a')) return;
-    if (openDropdown || isDropdownClosing) return;
-  }, [openDropdown, isDropdownClosing]);
+    
+    // Don't trigger row click if:
+    // 1. Clicking inside a dropdown menu or dropdown trigger
+    // 2. Clicking on interactive elements
+    // 3. A dropdown is open or closing
+    if (
+      target.closest('[data-dropdown]') ||
+      target.closest('a, button, input') ||
+      openDropdown ||
+      isDropdownClosing
+    ) {
+      return;
+    }
+    
+    onRowClick?.(row);
+  }, [onRowClick, openDropdown, isDropdownClosing]);
 
   // Optimize cell rendering with useCallback
   const renderCell = useCallback(({ 
@@ -249,12 +264,6 @@ export function DataGrid<T extends Record<string, any>>({
       <div
         key={String(column.field)}
         className="px-3 py-2"
-        onClick={(e) => {
-          const target = e.target as HTMLElement;
-          if (target.closest("a, button, input")) {
-            e.stopPropagation();
-          }
-        }}
       >
         {column.cell ? (
           <div
@@ -284,12 +293,12 @@ export function DataGrid<T extends Record<string, any>>({
         style={{
           gridTemplateColumns: `repeat(${columns.length}, minmax(200px, 1fr))`,
         }}
-        onClick={(e) => handleRowClick(rowIndex, e)}
+        onClick={(e) => handleRowClick(e, row)}
       >
         {columns.map(column => renderCell({ column, row }))}
       </div>
     );
-  }, [columns, getRowClassName, handleRowClick, renderCell]);
+  }, [columns, getRowClassName, onRowClick, renderCell, handleRowClick]);
 
   // Memoize rendered rows
   const renderedRows = useMemo(() => {

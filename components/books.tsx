@@ -14,28 +14,9 @@ const TitleCell = function Title({
 }: {
   row: { original: EnhancedBook };
 }) {
-  const router = useRouter();
-  const searchParams = useSearchParams();
   const title = original.title || "";
-
   const displayTitle = title.length > 50 ? `${title.slice(0, 50)}...` : title;
-
-  const handleBookClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    const params = new URLSearchParams(searchParams.toString());
-    params.set('view', original.id || original.title);
-    router.push(`?${params.toString()}`, { scroll: false });
-  };
-
-  return (
-    <button
-      onClick={handleBookClick}
-      className="text-left hover:underline transition-colors duration-200 md:hover:text-text"
-    >
-      {displayTitle}
-    </button>
-  );
+  return <span className="text-text">{displayTitle}</span>;
 };
 
 function RecommenderCell({ original }: { original: EnhancedBook }) {
@@ -165,6 +146,15 @@ export function BookGrid({
     });
   }, [data]);
 
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const handleRowClick = useCallback((book: EnhancedBook) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('view', book.id || book.title);
+    router.push(`?${params.toString()}`, { scroll: false });
+  }, [searchParams, router]);
+
   const columns = [
     {
       field: "title" as keyof FormattedBook,
@@ -188,8 +178,9 @@ export function BookGrid({
       data={enhancedData}
       columns={columns}
       getRowClassName={(row: EnhancedBook) =>
-        getBackgroundColor(row._recommendationCount, Math.max(...enhancedData.map(b => b._recommendationCount)))
+        `cursor-pointer transition-colors duration-200 ${getBackgroundColor(row._recommendationCount, Math.max(...enhancedData.map(b => b._recommendationCount)))}`
       }
+      onRowClick={handleRowClick}
       onFilteredDataChange={onFilteredDataChange}
     />
   );
