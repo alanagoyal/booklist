@@ -206,7 +206,7 @@ export default function BookDetail({ book, onClose, stackIndex = 0 }: BookDetail
                                     rec.recommender?.id || ""
                                   )
                                 }
-                                className="text-text text-left md:hover:underline"
+                                className="text-text md:hover:text-text/70 md:hover:underline transition-colors duration-200"
                               >
                                 {rec.recommender?.full_name}
                               </button>

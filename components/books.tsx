@@ -205,7 +205,10 @@ export function BookList({ initialBooks, initialRecommenders }: {
       setViewHistory(prev => {
         // Don't add if it's already the most recent view
         if (prev[prev.length - 1]?.id === viewId) return prev;
-        return [...prev, {
+        // If this view is already in history, remove it and all views after it
+        const existingIndex = prev.findIndex(v => v.id === viewId);
+        const baseHistory = existingIndex >= 0 ? prev.slice(0, existingIndex) : prev;
+        return [...baseHistory, {
           id: viewId,
           type: isRecommender ? 'recommender' : 'book'
         }];
@@ -220,11 +223,40 @@ export function BookList({ initialBooks, initialRecommenders }: {
   }, []);
 
   const handleClose = useCallback(() => {
+    // Update URL first
     const params = new URLSearchParams(searchParams.toString());
-    params.delete('view');
+    const previousView = viewHistory[viewHistory.length - 2]; // Get second-to-last view
+    
+    if (previousView) {
+      params.set('view', previousView.id);
+    } else {
+      params.delete('view');
+    }
+    
     const newUrl = params.toString() ? `?${params.toString()}` : window.location.pathname;
     router.push(newUrl, { scroll: false });
-  }, [router, searchParams]);
+
+    // Then update state
+    setViewHistory(prev => prev.slice(0, -1));
+  }, [router, searchParams, viewHistory]);
+
+  // Keep viewHistory in sync with URL
+  useEffect(() => {
+    if (viewId) {
+      const isRecommender = initialRecommenders.find(r => r.id === viewId);
+      // Always add new view to history, don't remove existing ones
+      setViewHistory(prev => {
+        // Don't add if it's already the most recent view
+        if (prev[prev.length - 1]?.id === viewId) return prev;
+        // If this view is already in history, keep all views
+        return [...prev, {
+          id: viewId,
+          type: isRecommender ? 'recommender' : 'book'
+        }];
+      });
+    }
+    // Don't clear history when viewId is null - only handleClose should modify history
+  }, [viewId, initialRecommenders]);
 
   const handleFilteredDataChange = useCallback((count: number) => {
     setFilteredCount(count);

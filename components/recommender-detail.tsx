@@ -94,7 +94,6 @@ export default function RecommenderDetail({
                           <span className="text-text">
                             <button
                               onClick={() => {
-                                onClose?.();
                                 const params = new URLSearchParams(searchParams.toString());
                                 params.set("view", book.id);
                                 router.push(`?${params.toString()}`, { scroll: false });
@@ -145,7 +144,6 @@ export default function RecommenderDetail({
                             <span className="text-text">
                               <button
                                 onClick={() => {
-                                  onClose?.();
                                   const params = new URLSearchParams(searchParams.toString());
                                   params.set("view", related.id);
                                   router.push(`?${params.toString()}`, { scroll: false });
