@@ -301,6 +301,7 @@ export function BookList({ initialBooks, initialRecommenders }: {
                 book={selectedBook}
                 onClose={isLast ? handleClose : () => {}}
                 stackIndex={index}
+                maxStackIndex={viewHistory.length - 1}
               />
             )}
             {selectedRecommender && (
@@ -308,6 +309,7 @@ export function BookList({ initialBooks, initialRecommenders }: {
                 recommender={selectedRecommender}
                 onClose={isLast ? handleClose : () => {}}
                 stackIndex={index}
+                maxStackIndex={viewHistory.length - 1}
               />
             )}
           </div>
