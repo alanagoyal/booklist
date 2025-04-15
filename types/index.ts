@@ -92,8 +92,16 @@ export interface FormattedBook {
   }[];
 }
 
+// Optimized types for runtime performance
+export type RecommenderReference = {
+  id: string;
+  full_name: string;
+  recommendationCount: number;
+};
+
 export type EnhancedBook = FormattedBook & {
   _recommendationCount: number;
+  _topRecommenders?: RecommenderReference[];  // Cached top recommenders
   related_books?: RelatedBook[];
   recommendations?: {
     recommender: {
