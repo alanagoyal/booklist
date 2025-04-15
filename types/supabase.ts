@@ -182,7 +182,10 @@ export type Database = {
         }[]
       }
       get_books_by_recommendation_count: {
-        Args: Record<PropertyKey, never>
+        Args: {
+          p_limit?: number
+          p_offset?: number
+        }
         Returns: {
           id: string
           title: string
@@ -191,6 +194,7 @@ export type Database = {
           genre: string[]
           amazon_url: string
           recommendations: Json
+          related_books: Json
         }[]
       }
       get_books_by_recommender: {
@@ -220,6 +224,10 @@ export type Database = {
           recommenders: string
           recommender_types: string
         }[]
+      }
+      get_books_count: {
+        Args: Record<PropertyKey, never>
+        Returns: number
       }
       get_random_book: {
         Args: Record<PropertyKey, never>
