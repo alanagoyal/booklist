@@ -4,18 +4,20 @@ import { useRouter, useSearchParams } from "next/navigation";
 
 type RecommenderDetailProps = {
   recommender: FormattedRecommender;
-  onClose: () => void;
+  onClose?: () => void;
+  stackIndex?: number;
 };
 
 export default function RecommenderDetail({
   recommender,
   onClose,
+  stackIndex = 0,
 }: RecommenderDetailProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
   const handleBackdropClick = (e: React.MouseEvent) => {
-    if (e.target === e.currentTarget) {
+    if (e.target === e.currentTarget && onClose) {
       onClose();
     }
   };
@@ -24,8 +26,16 @@ export default function RecommenderDetail({
     <div
       className="fixed inset-0 z-20 bg-background/80"
       onClick={handleBackdropClick}
+      style={{
+        backgroundColor: stackIndex === 0 ? 'rgba(var(--background), 0.8)' : 'transparent'
+      }}
     >
-      <div className="absolute right-0 top-0 bottom-0 w-full md:w-1/2 bg-background md:border-l border-border overflow-auto">
+      <div 
+        className={`absolute right-0 top-0 bottom-0 w-full md:w-1/2 bg-background border-border overflow-auto ${stackIndex > 0 ? 'border-l' : 'md:border-l'}`}
+        style={{
+          boxShadow: stackIndex > 0 ? '0 0 20px rgba(0, 0, 0, 0.1)' : 'none'
+        }}
+      >
         <div className="sticky top-0 bg-background pt-8 px-12 md:pt-16">
           <button
             onClick={onClose}
@@ -84,7 +94,7 @@ export default function RecommenderDetail({
                           <span className="text-text">
                             <button
                               onClick={() => {
-                                onClose();
+                                onClose?.();
                                 const params = new URLSearchParams(searchParams.toString());
                                 params.set("view", book.id);
                                 router.push(`?${params.toString()}`, { scroll: false });
@@ -135,7 +145,7 @@ export default function RecommenderDetail({
                             <span className="text-text">
                               <button
                                 onClick={() => {
-                                  onClose();
+                                  onClose?.();
                                   const params = new URLSearchParams(searchParams.toString());
                                   params.set("view", related.id);
                                   router.push(`?${params.toString()}`, { scroll: false });

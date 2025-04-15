@@ -194,11 +194,26 @@ export function BookList({ initialBooks, initialRecommenders }: {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [filteredCount, setFilteredCount] = useState(initialBooks.length);
+  const [viewHistory, setViewHistory] = useState<Array<{id: string; type: 'book' | 'recommender'}>>([]);
 
   // Get selected item based on URL param
   const viewId = searchParams.get('view');
-  const selectedRecommender = viewId ? initialRecommenders.find(r => r.id === viewId) : null;
-  const selectedBook = viewId && !selectedRecommender ? initialBooks.find(book => book.id === viewId || book.title === viewId) as EnhancedBook | null : null;
+  
+  useEffect(() => {
+    if (viewId) {
+      const isRecommender = initialRecommenders.find(r => r.id === viewId);
+      setViewHistory(prev => {
+        // Don't add if it's already the most recent view
+        if (prev[prev.length - 1]?.id === viewId) return prev;
+        return [...prev, {
+          id: viewId,
+          type: isRecommender ? 'recommender' : 'book'
+        }];
+      });
+    } else {
+      setViewHistory([]);
+    }
+  }, [viewId, initialRecommenders]);
 
   useEffect(() => {
     setMounted(true);
@@ -228,18 +243,41 @@ export function BookList({ initialBooks, initialRecommenders }: {
         />
       </div>
       <BookCounter total={initialBooks.length} filtered={filteredCount} />
-      {selectedBook && (
-        <BookDetail
-          book={selectedBook}
-          onClose={handleClose}
-        />
-      )}
-      {selectedRecommender && (
-        <RecommenderDetail
-          recommender={selectedRecommender}
-          onClose={handleClose}
-        />
-      )}
+      {viewHistory.map((view, index) => {
+        const isLast = index === viewHistory.length - 1;
+        const offset = index * 8; // 8px offset for each stacked view
+        const selectedRecommender = view.type === 'recommender' ? 
+          initialRecommenders.find(r => r.id === view.id) : null;
+        const selectedBook = view.type === 'book' ? 
+          initialBooks.find(book => book.id === view.id || book.title === view.id) as EnhancedBook | null : null;
+
+        return (
+          <div 
+            key={`${view.id}-${index}`}
+            className="absolute inset-0" 
+            style={{
+              transform: `translateX(${offset}px)`,
+              zIndex: 20 + index,
+              width: `calc(100% - ${offset}px)`
+            }}
+          >
+            {selectedBook && (
+              <BookDetail
+                book={selectedBook}
+                onClose={isLast ? handleClose : () => {}}
+                stackIndex={index}
+              />
+            )}
+            {selectedRecommender && (
+              <RecommenderDetail
+                recommender={selectedRecommender}
+                onClose={isLast ? handleClose : () => {}}
+                stackIndex={index}
+              />
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 }

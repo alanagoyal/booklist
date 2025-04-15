@@ -20,10 +20,11 @@ initLogger({
 
 type BookDetailProps = {
   book: EnhancedBook;
-  onClose: () => void;
+  onClose?: () => void;
+  stackIndex?: number;
 };
 
-export default function BookDetail({ book, onClose }: BookDetailProps) {
+export default function BookDetail({ book, onClose, stackIndex = 0 }: BookDetailProps) {
   const [showSummary, setShowSummary] = useState(false);
   const [recommenderSummary, setRecommenderSummary] = useState<string>("");
   const [isLoadingSummary, setIsLoadingSummary] = useState(false);
@@ -66,7 +67,7 @@ export default function BookDetail({ book, onClose }: BookDetailProps) {
   const handleBackdropClick = useCallback(
     (e: React.MouseEvent) => {
       if (e.target === e.currentTarget) {
-        onClose();
+        onClose?.();
       }
     },
     [onClose]
@@ -88,8 +89,16 @@ export default function BookDetail({ book, onClose }: BookDetailProps) {
     <div
       className="fixed inset-0 z-20 bg-background/80"
       onClick={handleBackdropClick}
+      style={{
+        backgroundColor: stackIndex === 0 ? 'rgba(var(--background), 0.8)' : 'transparent'
+      }}
     >
-      <div className="absolute right-0 top-0 bottom-0 w-full md:w-1/2 bg-background md:border-l border-border overflow-auto">
+      <div 
+        className={`absolute right-0 top-0 bottom-0 w-full md:w-1/2 bg-background border-border overflow-auto ${stackIndex > 0 ? 'border-l' : 'md:border-l'}`}
+        style={{
+          boxShadow: stackIndex > 0 ? '0 0 20px rgba(0, 0, 0, 0.1)' : 'none'
+        }}
+      >
         <div className="sticky top-0 bg-background pt-8 px-12 md:pt-16">
           <button
             onClick={onClose}
