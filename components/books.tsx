@@ -41,17 +41,32 @@ const TitleCell = function Title({
 const RecommenderCell = ({
   row: { original },
   maxCount,
+  books,
 }: {
   row: { original: EnhancedBook };
   maxCount: number;
+  books: FormattedBook[];
 }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [tooltipOpen, setTooltipOpen] = useState(false);
 
-  if (original._sortedRecommenders.length === 0) {
+  if (original.recommendations.filter((rec) => rec.recommender).length === 0) {
     return <span></span>;
   }
+
+  const recommenderPairs = original.recommendations
+    .filter((rec) => rec.recommender)
+    .map((rec) => ({
+      recommender: rec.recommender?.full_name || "",
+      url: rec.recommender?.url || "",
+      id: rec.recommender?.id || "",
+    }))
+    .sort((a, b) => {
+      const countA = getRecommendationCount(a.recommender, books);
+      const countB = getRecommendationCount(b.recommender, books);
+      return countB - countA;
+    });
 
   const displayCount = 2;
   const percentile = getPercentile(original._recommendationCount, maxCount);
@@ -77,7 +92,7 @@ const RecommenderCell = ({
         onClick={(e) => tooltipOpen && e.stopPropagation()}
       >
         <span className="break-words">
-          {original._sortedRecommenders.slice(0, displayCount).map((pair, i) => (
+          {recommenderPairs.slice(0, displayCount).map((pair, i) => (
             <Fragment key={pair.recommender}>
               <span className="inline whitespace-nowrap">
                 <button
@@ -90,14 +105,14 @@ const RecommenderCell = ({
                 >
                   {pair.recommender}
                 </button>
-                {i < displayCount - 1 && original._sortedRecommenders.length > i + 1 && ", "}
+                {i < displayCount - 1 && recommenderPairs.length > i + 1 && ", "}
               </span>
-              {i < displayCount - 1 && original._sortedRecommenders.length > i + 1 && " "}
+              {i < displayCount - 1 && recommenderPairs.length > i + 1 && " "}
             </Fragment>
           ))}
-          {original._sortedRecommenders.length > displayCount && (
+          {recommenderPairs.length > displayCount && (
             <span className="text-text/70">
-              , + {original._sortedRecommenders.length - displayCount} more
+              , + {recommenderPairs.length - displayCount} more
             </span>
           )}
         </span>
@@ -116,13 +131,20 @@ interface BookGridProps {
   onFilteredDataChange?: (count: number) => void;
 }
 
-// Get percentile for a given count relative to max count
-function getPercentile(count: number, maxCount: number): number {
-  return Math.round((count / maxCount) * 100);
-}
+const getRecommendationCount = (recommenderName: string, books: FormattedBook[]) => {
+  return books.reduce((count, book) => {
+    const hasRecommender = book.recommendations.some(
+      (rec) => rec.recommender?.full_name === recommenderName
+    );
+    return count + (hasRecommender ? 1 : 0);
+  }, 0);
+};
 
-// Get background color based on recommendation count
-function getBackgroundColor(count: number, maxCount: number): string {
+const getPercentile = (count: number, maxCount: number): number => {
+  return Math.round((count / maxCount) * 100);
+};
+
+const getBackgroundColor = (count: number, maxCount: number): string => {
   if (count === 0) return "";
 
   const percentile = (count / maxCount) * 100;
@@ -151,7 +173,7 @@ function getBackgroundColor(count: number, maxCount: number): string {
     default:
       return "";
   }
-}
+};
 
 export function BookGrid({
   data,
@@ -184,6 +206,7 @@ export function BookGrid({
         <RecommenderCell
           {...props}
           maxCount={maxRecommendations}
+          books={data}
         />
       ),
       isExpandable: true,
