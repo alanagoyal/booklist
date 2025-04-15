@@ -185,7 +185,7 @@ export default function BookDetail({ book, onClose }: BookDetailProps) {
                     {book.recommendations.map((rec) => (
                       <div
                         key={rec.recommender?.id}
-                        className="flex items-start gap-3"
+                        className="flex items-start gap-3 bg-accent/50 p-2"
                       >
                         <User className="w-5 h-5 mt-0.5 text-text/70 shrink-0" />
                         <div className="space-y-1 min-w-0 flex-1">
@@ -250,7 +250,7 @@ export default function BookDetail({ book, onClose }: BookDetailProps) {
                   {relatedBooks.slice(0, 3).map((relatedBook) => (
                     <div
                       key={relatedBook.id}
-                      className="flex items-start gap-3"
+                      className="flex items-start gap-3 bg-accent/50 p-2"
                     >
                       <BookOpen className="w-5 h-5 mt-0.5 text-text/70 shrink-0" />
                       <div className="space-y-1 min-w-0 flex-1">

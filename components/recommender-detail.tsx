@@ -1,5 +1,5 @@
 import { FormattedRecommender } from "@/types";
-import { X, BookOpen, Tag, ChevronLeft, User } from "lucide-react";
+import { X, BookOpen, Tag, ChevronLeft, User, Link } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 type RecommenderDetailProps = {
@@ -56,14 +56,14 @@ export default function RecommenderDetail({
               )}
               {recommender.url && (
                 <div className="flex items-center gap-2">
-                  <User className="w-4 h-4 text-text/70" />
+                  <Link className="w-4 h-4 text-text/70" />
                   <a
                     href={recommender.url}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-text transition-colors duration-200 md:hover:underline"
                   >
-                    Profile
+                    View Website
                   </a>
                 </div>
               )}
@@ -77,7 +77,7 @@ export default function RecommenderDetail({
                 </h2>
                 <div className="text-text space-y-4 max-h-[300px] overflow-y-auto">
                   {recommender.recommendations.map((book) => (
-                    <div key={book.id} className="flex items-start gap-3">
+                    <div key={book.id} className="flex items-start gap-3 bg-accent/50 p-2">
                       <BookOpen className="w-5 h-5 mt-0.5 text-text/70 shrink-0" />
                       <div className="space-y-1 min-w-0 flex-1">
                         <div className="flex items-baseline gap-2">
@@ -128,7 +128,7 @@ export default function RecommenderDetail({
                   </h2>
                   <div className="space-y-4">
                     {recommender.related_recommenders.map((related) => (
-                      <div key={related.id} className="flex items-start gap-3">
+                      <div key={related.id} className="flex items-start gap-3 bg-accent/50 p-2">
                         <User className="w-5 h-5 mt-0.5 text-text/70 shrink-0" />
                         <div className="space-y-1 min-w-0 flex-1">
                           <div className="flex items-baseline gap-2">
