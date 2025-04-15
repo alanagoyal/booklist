@@ -99,7 +99,6 @@ export default function BookDetail({
         backgroundColor: stackIndex === 0 ? 'rgba(var(--background), 0.8)' : 'transparent'
       }}
     >
-      <>{console.log('BookDetail:', { stackIndex, title: book.title })}</>
       <div 
         className={`absolute right-0 top-0 bottom-0 w-full md:w-1/2 bg-background border-border ${stackIndex > 0 ? 'border-l' : 'md:border-l'}`}
         style={{
