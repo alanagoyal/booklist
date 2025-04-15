@@ -11,32 +11,37 @@ async function getBooks(): Promise<FormattedBook[]> {
   // Get sorted books
   const { data: books, error } = await supabase
     .rpc('get_books_by_recommendation_count');
-
+  
   if (error) {
-    throw error;
+    console.error('Error fetching books:', error);
+    return [];
   }
 
   const formattedBooks: FormattedBook[] = books.map((book: any) => ({
     id: book.id,
-    title: book.title || "",
-    author: book.author || "",
-    description: book.description || "",
-    genres: book.genre?.join(", ") || "",
-    amazon_url: book.amazon_url || "",
-    related_books: [],  // Not using related books currently
-    recommendations: (book.recommendations || []).map((rec: any) => ({
+    title: book.title,
+    author: book.author,
+    description: book.description,
+    genres: book.genre,
+    amazon_url: book.amazon_url,
+    related_books: (book.related_books || []).map((rb: any) => ({
+      id: rb.id,
+      title: rb.title,
+      author: rb.author,
+      description: "",
+      amazon_url: null,
+      _recommendationCount: rb.recommender_count
+    })),
+    recommendations: book.recommendations.map((rec: any) => ({
       recommender: rec.recommender ? {
         id: rec.recommender.id || "",
         full_name: rec.recommender.full_name || "",
         url: rec.recommender.url,
         type: rec.recommender.type || "",
       } : null,
-      source: rec.source || "",
-      source_link: rec.source_link,
-    })),
-    _recommendationCount: book.recommendation_count || 0,
-    _percentile: book.percentile || 0,
-    _topRecommenders: book.top_recommenders || []
+      source: rec.source,
+      source_link: rec.source_link
+    }))
   }));
 
   return formattedBooks;

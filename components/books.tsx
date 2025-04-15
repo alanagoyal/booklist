@@ -90,10 +90,6 @@ function RecommenderCell({ original }: { original: EnhancedBook }) {
   );
 }
 
-const getPercentile = (count: number, maxCount: number): number => {
-  return Math.round((count / maxCount) * 100);
-};
-
 const getBackgroundColor = (count: number, maxCount: number): string => {
   if (count === 0) return "";
 
@@ -138,20 +134,27 @@ export function BookGrid({
       ...data.map((book) => book.recommendations.length)
     );
 
+    // First compute total recommendations per recommender for sorting
+    const recommenderCounts = data.reduce((counts: Record<string, number>, book) => {
+      book.recommendations.forEach(rec => {
+        if (rec.recommender) {
+          counts[rec.recommender.id] = (counts[rec.recommender.id] || 0) + 1;
+        }
+      });
+      return counts;
+    }, {});
+
     return data.map((book) => {
-      // Pre-compute recommendation data
-      const recommenders = book.recommendations
-        .filter(rec => rec.recommender)
-        .map(rec => ({
-          id: rec.recommender!.id,
-          full_name: rec.recommender!.full_name,
-          recommendationCount: data.reduce((count, b) => {
-            return count + (b.recommendations.some(r => 
-              r.recommender?.full_name === rec.recommender!.full_name
-            ) ? 1 : 0);
-          }, 0)
-        }))
-        .sort((a, b) => b.recommendationCount - a.recommendationCount);
+      // Get unique recommenders and sort by their total recommendation count
+      const recommenders = [...new Map(
+        book.recommendations
+          .filter(rec => rec.recommender)
+          .map(rec => [rec.recommender!.id, {
+            id: rec.recommender!.id,
+            full_name: rec.recommender!.full_name,
+            recommendationCount: recommenderCounts[rec.recommender!.id]
+          }])
+      ).values()].sort((a, b) => b.recommendationCount - a.recommendationCount);
 
       return {
         ...book,
