@@ -109,7 +109,7 @@ export default function BookDetail({
         {stackIndex !== maxStackIndex && (
           <div 
             className="hidden md:block absolute -left-[32px] -translate-x-full origin-top-right -rotate-90 bg-background border-border border px-3 py-2 text-text/70 truncate h-[32px] w-[200px] whitespace-nowrap"
-            style={{ top: `${stackIndex * 200}px` }}
+            style={{ top: `${(stackIndex * 150) + 4}px` }}
           >
             {book.title}
           </div>
