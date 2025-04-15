@@ -102,6 +102,7 @@ export type RecommenderReference = {
 export type EnhancedBook = FormattedBook & {
   _recommendationCount: number;
   _topRecommenders?: RecommenderReference[];  // Cached top recommenders
+  _percentile: number;  // Added percentile
   related_books?: RelatedBook[];
   recommendations?: {
     recommender: {
