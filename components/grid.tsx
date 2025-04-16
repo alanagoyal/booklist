@@ -267,7 +267,7 @@ export function DataGrid<T extends Record<string, any>>({
     return (
       <div
         key={index}
-        className={`grid transition-colors duration-200 md:hover:bg-accent/50 ${
+        className={`grid transition-colors duration-200 ${
           getRowClassName?.(row) || ""
         }`}
         style={{
