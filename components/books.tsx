@@ -196,6 +196,23 @@ export function BookList({ initialBooks, initialRecommenders }: {
   const [filteredCount, setFilteredCount] = useState(initialBooks.length);
   const [viewHistory, setViewHistory] = useState<Array<{id: string; actualId: string; type: 'book' | 'recommender'}>>([]);
   const containerRef = useRef<HTMLDivElement>(null);
+  const [isMobile, setIsMobile] = useState(false);
+  
+  // Check if mobile on mount and when window resizes
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    // Initial check
+    checkMobile();
+    
+    // Add resize listener
+    window.addEventListener('resize', checkMobile);
+    
+    // Cleanup
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
   
   // Keep viewHistory in sync with URL
   useEffect(() => {
@@ -319,9 +336,9 @@ export function BookList({ initialBooks, initialRecommenders }: {
             key={`${view.id}-${index}`}
             className="absolute inset-0" 
             style={{
-              transform: `translateX(${index * 8}px)`,
+              transform: `translateX(${isMobile ? 0 : index * 8}px)`,
               zIndex: 20 + index,
-              width: `calc(100% - ${index * 8}px)`
+              width: `calc(100% - ${isMobile ? 0 : index * 8}px)`
             }}
           >
             {selectedBook && (
