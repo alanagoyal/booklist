@@ -201,7 +201,8 @@ export default function BookDetail({
                       {book.recommendations.map((rec) => (
                         <div
                           key={rec.recommender?.id}
-                          className="flex items-start gap-3 bg-accent/50 p-2"
+                          className="flex items-start gap-3 bg-accent/50 p-2 cursor-pointer transition-colors duration-200 md:hover:bg-accent"
+                          onClick={() => handleRecommenderClick(rec.recommender?.id || "")}
                         >
                           <User className="w-5 h-5 mt-0.5 text-text/70 shrink-0" />
                           <div className="space-y-1 min-w-0 flex-1">
@@ -266,7 +267,16 @@ export default function BookDetail({
                     {relatedBooks.slice(0, 3).map((relatedBook) => (
                       <div
                         key={relatedBook.id}
-                        className="flex items-start gap-3 bg-accent/50 p-2"
+                        className="flex items-start gap-3 bg-accent/50 p-2 cursor-pointer transition-colors duration-200 md:hover:bg-accent"
+                        onClick={() => {
+                          const params = new URLSearchParams(
+                            searchParams.toString()
+                          );
+                          params.set("view", `${relatedBook.id}--${Date.now()}`);
+                          router.push(`?${params.toString()}`, {
+                            scroll: false,
+                          });
+                        }}
                       >
                         <BookOpen className="w-5 h-5 mt-0.5 text-text/70 shrink-0" />
                         <div className="space-y-1 min-w-0 flex-1">

@@ -90,13 +90,22 @@ export default function RecommenderDetail({
                   </h2>
                   <div className="text-text space-y-4 max-h-[300px] overflow-y-auto">
                     {recommender.recommendations.map((book) => (
-                      <div key={book.id} className="flex items-start gap-3 bg-accent/50 p-2">
+                      <div 
+                        key={book.id} 
+                        className="flex items-start gap-3 bg-accent/50 p-2 cursor-pointer transition-colors duration-200 md:hover:bg-accent"
+                        onClick={() => {
+                          const params = new URLSearchParams(searchParams.toString());
+                          params.set("view", `${book.id}--${Date.now()}`);
+                          router.push(`?${params.toString()}`, { scroll: false });
+                        }}
+                      >
                         <BookOpen className="w-5 h-5 mt-0.5 text-text/70 shrink-0" />
                         <div className="space-y-1 min-w-0 flex-1">
                           <div className="flex items-baseline gap-2">
                             <span className="text-text">
                               <button
-                                onClick={() => {
+                                onClick={(e) => {
+                                  e.stopPropagation();
                                   const params = new URLSearchParams(searchParams.toString());
                                   params.set("view", `${book.id}--${Date.now()}`);
                                   router.push(`?${params.toString()}`, { scroll: false });
@@ -140,18 +149,27 @@ export default function RecommenderDetail({
                     </h2>
                     <div className="space-y-4">
                       {recommender.related_recommenders.map((related) => (
-                        <div key={related.id} className="flex items-start gap-3 bg-accent/50 p-2">
+                        <div 
+                          key={related.id} 
+                          className="flex items-start gap-3 bg-accent/50 p-2 cursor-pointer transition-colors duration-200 md:hover:bg-accent"
+                          onClick={() => {
+                            const params = new URLSearchParams(searchParams.toString());
+                            params.set("view", `${related.id}--${Date.now()}`);
+                            router.push(`?${params.toString()}`, { scroll: false });
+                          }}
+                        >
                           <User className="w-5 h-5 mt-0.5 text-text/70 shrink-0" />
                           <div className="space-y-1 min-w-0 flex-1">
                             <div className="flex items-baseline gap-2">
                               <span className="text-text">
                                 <button
-                                  onClick={() => {
+                                  onClick={(e) => {
+                                    e.stopPropagation();
                                     const params = new URLSearchParams(searchParams.toString());
                                     params.set("view", `${related.id}--${Date.now()}`);
                                     router.push(`?${params.toString()}`, { scroll: false });
                                   }}
-                                  className="text-text text-left font-base hover:underline transition-colors duration-200"
+                                  className="text-text text-left font-base md:hover:underline transition-colors duration-200"
                                 >
                                   {related.full_name}
                                 </button>{" "}
