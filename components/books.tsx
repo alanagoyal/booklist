@@ -330,12 +330,32 @@ export function BookList({ initialBooks, initialRecommenders }: {
         const tabTitle = selectedBook ? selectedBook.title : (selectedRecommender ? selectedRecommender.full_name : '');
         const isRecommender = view.type === 'recommender';
         
+        // Calculate tab visibility based on viewport constraints
+        const tabHeight = 150; // Height allocated per tab
+        const baseTopOffset = 82; // Starting position from top
+        const maxVisibleTabs = Math.floor((window.innerHeight - baseTopOffset) / tabHeight);
+        
+        // If we have more tabs than can fit in the viewport, only show the most recent ones
+        const tabsToShow = viewHistory.length - 1; // Exclude the current view
+        
+        // Calculate which tabs should be visible (the most recent ones)
+        // We want to show the most recent tabs, so we start from the end and work backwards
+        const startShowingFromIndex = Math.max(0, tabsToShow - maxVisibleTabs);
+        const shouldShowTab = index >= startShowingFromIndex;
+        
+        // Don't render tabs that would overflow
+        if (!shouldShowTab) return null;
+        
+        // Calculate the position from the top
+        // First visible tab should be at baseTopOffset, and each subsequent tab 150px below
+        const positionIndex = index - startShowingFromIndex;
+        
         return (
           <button 
             key={`tab-${view.id}-${index}`}
             className="hidden md:block fixed bg-background border-border border px-3 py-2 text-text/70 truncate h-[32px] w-[200px] text-sm text-right whitespace-nowrap cursor-pointer transition-colors duration-200"
             style={{
-              top: `${(index * 150) + 82}px`,
+              top: `${(positionIndex * tabHeight) + baseTopOffset}px`,
               left: `calc(50% + ${index * 4}px)`,
               transform: 'translateX(-100%) translateX(-31px) rotate(-90deg)',
               transformOrigin: 'top right',
@@ -343,7 +363,6 @@ export function BookList({ initialBooks, initialRecommenders }: {
             }}
             onClick={(e) => {
               e.preventDefault();
-              console.log(`Tab clicked: ${tabTitle}`);
               
               // When clicking a tab, we want to truncate the view history to this point
               // This means we'll remove all views above the clicked one
