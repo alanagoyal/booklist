@@ -105,14 +105,6 @@ export default function BookDetail({
           boxShadow: stackIndex > 0 ? '0 0 20px rgba(0, 0, 0, 0.1)' : 'none'
         }}
       >
-        {stackIndex !== maxStackIndex && (
-          <div 
-            className="hidden md:block absolute -left-[32px] -translate-x-full origin-top-right -rotate-90 bg-background border-border border px-3 py-2 text-text/70 truncate h-[32px] w-[200px] whitespace-nowrap"
-            style={{ top: `${(stackIndex * 150) + 4}px` }}
-          >
-            {book.title}
-          </div>
-        )}
         <div className="overflow-auto h-full">
           <div className="sticky top-0 bg-background pt-8 px-12 md:pt-16">
             <button

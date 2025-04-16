@@ -278,6 +278,8 @@ export function BookList({ initialBooks, initialRecommenders }: {
         />
       </div>
       <BookCounter total={initialBooks.length} filtered={filteredCount} />
+      
+      {/* Render detail views */}
       {viewHistory.map((view, index) => {
         const isLast = index === viewHistory.length - 1;
         const offset = index * 8; // 8px offset for each stacked view
@@ -313,6 +315,51 @@ export function BookList({ initialBooks, initialRecommenders }: {
               />
             )}
           </div>
+        );
+      })}
+      
+      {/* Render tabs as separate DOM elements outside of the detail components */}
+      {viewHistory.map((view, index) => {
+        if (index === viewHistory.length - 1) return null; // Don't show tab for the most recent view
+        
+        const selectedRecommender = view.type === 'recommender' ? 
+          initialRecommenders.find(r => r.id === view.actualId) : null;
+        const selectedBook = view.type === 'book' ? 
+          initialBooks.find(book => book.id === view.actualId || book.title === view.actualId) : null;
+        
+        const tabTitle = selectedBook ? selectedBook.title : (selectedRecommender ? selectedRecommender.full_name : '');
+        const isRecommender = view.type === 'recommender';
+        
+        return (
+          <button 
+            key={`tab-${view.id}-${index}`}
+            className="hidden md:block fixed bg-background border-border border px-3 py-2 text-text/70 truncate h-[32px] w-[200px] text-sm text-right whitespace-nowrap cursor-pointer transition-colors duration-200"
+            style={{
+              top: `${(index * 150) + 82}px`,
+              left: `calc(50% + ${index * 4}px)`,
+              transform: 'translateX(-100%) translateX(-31px) rotate(-90deg)',
+              transformOrigin: 'top right',
+              zIndex: 50, 
+            }}
+            onClick={(e) => {
+              e.preventDefault();
+              console.log(`Tab clicked: ${tabTitle}`);
+              
+              // When clicking a tab, we want to truncate the view history to this point
+              // This means we'll remove all views above the clicked one
+              const newViewHistory = viewHistory.slice(0, index + 1);
+              
+              // Update URL to show only the clicked view
+              const params = new URLSearchParams(searchParams.toString());
+              params.set('view', view.id); // Use the original ID with timestamp
+              router.push(`?${params.toString()}`, { scroll: false });
+              
+              // Update the view history state
+              setViewHistory(newViewHistory);
+            }}
+          >
+            {tabTitle}
+          </button>
         );
       })}
     </div>
