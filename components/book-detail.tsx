@@ -98,7 +98,7 @@ export default function BookDetail({
       }}
     >
       <div 
-        className={`absolute right-0 top-0 bottom-0 w-full md:w-1/2 bg-background border-border ${stackIndex > 0 ? '' : 'md:border-l'}`}
+        className="absolute right-0 top-0 bottom-0 w-full md:w-1/2 bg-background border-border md:border-l"
         style={{
           boxShadow: stackIndex > 0 ? '0 0 20px rgba(0, 0, 0, 0.1)' : 'none'
         }}
