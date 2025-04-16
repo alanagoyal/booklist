@@ -142,9 +142,12 @@ BEGIN
 END;
 $function$;
 
--- Create function to get books ordered by recommendation count
-drop function if exists get_books_by_recommendation_count();
-create or replace function get_books_by_recommendation_count()
+-- Optimized version of get_books_by_recommendation_count with pagination
+DROP FUNCTION IF EXISTS get_books_by_recommendation_count();
+create or replace function get_books_by_recommendation_count(
+  p_limit int default 1000,
+  p_offset int default 0
+)
 returns table (
   id uuid,
   title text,
@@ -156,7 +159,7 @@ returns table (
   related_books json
 )
 language plpgsql
-stable
+volatile
 as $$
 BEGIN
   RETURN QUERY
@@ -180,13 +183,22 @@ BEGIN
             'source', recommendations.source,
             'source_link', recommendations.source_link
           )
-        ),
+        ) FILTER (WHERE people.id IS NOT NULL),
         '[]'::json
-      ) as recommendations
+      ) as recommendations,
+      COUNT(DISTINCT recommendations.id) as recommendation_count
     FROM books
     LEFT JOIN recommendations ON books.id = recommendations.book_id
     LEFT JOIN people ON recommendations.person_id = people.id
     GROUP BY books.id
+    -- Pre-filter to improve performance
+    ORDER BY COUNT(DISTINCT recommendations.id) DESC
+    -- Apply limit and offset at this stage to reduce the dataset for related books calculation
+    LIMIT p_limit OFFSET p_offset
+  ),
+  -- Materialize the book_recommendations CTE to improve performance
+  book_recommendations_materialized AS (
+    SELECT * FROM book_recommendations
   ),
   related_book_recommenders AS (
     SELECT 
@@ -196,7 +208,7 @@ BEGIN
       rb.author as related_book_author,
       string_agg(DISTINCT p2.full_name, ', ') as recommenders,
       COUNT(DISTINCT r2.id) as recommender_count
-    FROM book_recommendations br
+    FROM book_recommendations_materialized br
     -- Get recommendations for the current book
     JOIN recommendations r1 ON r1.book_id = br.id
     -- Find other books recommended by the same people
@@ -234,15 +246,22 @@ BEGIN
     GROUP BY book_id
   )
   SELECT
-    br.*,
+    br.id,
+    br.title,
+    br.author,
+    br.description,
+    br.genre,
+    br.amazon_url,
+    br.recommendations,
     COALESCE(rbr.related_books, '[]'::json) as related_books
-  FROM book_recommendations br
+  FROM book_recommendations_materialized br
   LEFT JOIN related_books_by_recommenders rbr ON rbr.book_id = br.id
-  ORDER BY jsonb_array_length(br.recommendations::jsonb) DESC;
+  ORDER BY br.recommendation_count DESC;
 END;
 $$;
 
--- Create a function to get all recommender details including books and related recommenders
+-- Also optimize the get_recommender_details function
+DROP FUNCTION IF EXISTS get_recommender_details();
 CREATE OR REPLACE FUNCTION get_recommender_details(p_recommender_id UUID)
 RETURNS TABLE (
   id UUID,
@@ -253,7 +272,7 @@ RETURNS TABLE (
   related_recommenders JSON
 )
 LANGUAGE plpgsql
-STABLE
+volatile
 AS $$
 BEGIN
   RETURN QUERY
@@ -287,7 +306,7 @@ BEGIN
     GROUP BY p2.id, p2.full_name, p2.url, p2.type
     HAVING COUNT(DISTINCT r2.book_id) >= 2
     ORDER BY COUNT(DISTINCT r2.book_id) DESC
-    LIMIT 3
+    LIMIT 5
   )
   SELECT 
     p.id,
@@ -330,6 +349,21 @@ BEGIN
     ) as related_recommenders
   FROM people p
   WHERE p.id = p_recommender_id;
+END;
+$$;
+
+-- Create a new function to get just the count of books
+DROP FUNCTION IF EXISTS get_books_count();
+CREATE OR REPLACE FUNCTION get_books_count()
+RETURNS INTEGER
+LANGUAGE plpgsql
+STABLE
+AS $$
+DECLARE
+  book_count INTEGER;
+BEGIN
+  SELECT COUNT(*) INTO book_count FROM books;
+  RETURN book_count;
 END;
 $$;
 

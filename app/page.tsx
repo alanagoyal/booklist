@@ -19,7 +19,7 @@ async function getBooks(): Promise<FormattedBook[]> {
     return cachedBooks;
   }
 
-  const pageSize = 100;
+  const pageSize = 1000;
   let allBooks: any[] = [];
   let page = 0;
   let hasMore = true;
