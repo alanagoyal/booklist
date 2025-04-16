@@ -90,9 +90,6 @@ export interface FormattedBook {
     source: string;
     source_link: string | null;
   }[];
-  recommendation_count?: number;
-  recommendation_percentile?: number;
-  top_recommenders?: RecommenderReference[];
 }
 
 // Optimized types for runtime performance

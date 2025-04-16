@@ -109,56 +109,39 @@ export function BookGrid({
   data: FormattedBook[];
   onFilteredDataChange?: (count: number) => void;
 }) {
-  // Convert FormattedBook to EnhancedBook using precomputed fields from the database
+  // Do all expensive computations once when data is received
   const enhancedData: EnhancedBook[] = useMemo(() => {
-    // Calculate max recommendations for percentile calculation if needed
     const maxRecommendations = Math.max(
       ...data.map((book) => book.recommendations.length)
     );
 
+    // First compute total recommendations per recommender for sorting
+    const recommenderCounts = data.reduce((counts: Record<string, number>, book) => {
+      book.recommendations.forEach(rec => {
+        if (rec.recommender) {
+          counts[rec.recommender.id] = (counts[rec.recommender.id] || 0) + 1;
+        }
+      });
+      return counts;
+    }, {});
+
     return data.map((book) => {
-      // Handle the top_recommenders field from the database
-      let topRecommenders: RecommenderReference[] = [];
-      
-      // If we have precomputed top_recommenders from the database
-      if (book.top_recommenders && Array.isArray(book.top_recommenders)) {
-        topRecommenders = book.top_recommenders.map(rec => ({
-          id: rec.id,
-          full_name: rec.full_name || "",
-          recommendation_count: rec.recommendation_count || (rec as any).recommendation_count || 0
-        }));
-      } 
-      // Fallback to calculating from recommendations if needed
-      else if (book.recommendations && book.recommendations.length > 0) {
-        // First compute total recommendations per recommender for sorting
-        const recommenderCounts = data.reduce((counts: Record<string, number>, b) => {
-          b.recommendations.forEach(rec => {
-            if (rec.recommender) {
-              counts[rec.recommender.id] = (counts[rec.recommender.id] || 0) + 1;
-            }
-          });
-          return counts;
-        }, {});
-        
-        // Get unique recommenders and sort by their total recommendation count
-        topRecommenders = [...new Map(
-          book.recommendations
-            .filter(rec => rec.recommender)
-            .map(rec => [rec.recommender!.id, {
-              id: rec.recommender!.id,
-              full_name: rec.recommender!.full_name || "",
-              recommendation_count: recommenderCounts[rec.recommender!.id]
-            }])
-        ).values()].sort((a, b) => b.recommendation_count - a.recommendation_count);
-      }
+      // Get unique recommenders and sort by their total recommendation count
+      const recommenders = [...new Map(
+        book.recommendations
+          .filter(rec => rec.recommender)
+          .map(rec => [rec.recommender!.id, {
+            id: rec.recommender!.id,
+            full_name: rec.recommender!.full_name,
+            recommendation_count: recommenderCounts[rec.recommender!.id]
+          }])
+      ).values()].sort((a, b) => b.recommendation_count - a.recommendation_count);
 
       return {
         ...book,
-        // Use precomputed fields if available, otherwise fall back to client-side calculation
-        _recommendation_count: book.recommendation_count ?? book.recommendations.length,
-        _top_recommenders: topRecommenders,
-        _percentile: book.recommendation_percentile ?? 
-          (maxRecommendations > 0 ? Math.round((book.recommendations.length / maxRecommendations) * 100) : 0)
+        _recommendation_count: book.recommendations.length,
+        _top_recommenders: recommenders,
+        _percentile: Math.round((book.recommendations.length / maxRecommendations) * 100)
       };
     });
   }, [data]);
