@@ -4,7 +4,7 @@ import { Fragment, useState, useEffect, useCallback, useMemo, useRef } from "rea
 import { DataGrid } from "@/components/grid";
 import { BookCounter } from "@/components/book-counter";
 import { PercentileTooltip } from "@/components/percentile-tooltip";
-import { FormattedBook, EnhancedBook, FormattedRecommender } from "@/types";
+import { FormattedBook, EnhancedBook, FormattedRecommender, RecommenderReference } from "@/types";
 import { useRouter, useSearchParams } from "next/navigation";
 import BookDetail from "@/components/book-detail";
 import RecommenderDetail from "@/components/recommender-detail";
@@ -37,7 +37,7 @@ function RecommenderCell({ original }: { original: EnhancedBook }) {
         onClick={(e) => tooltipOpen && e.stopPropagation()}
       >
         <span className="break-words">
-          {original._topRecommenders?.slice(0, 2).map((rec, i, arr) => (
+          {original._top_recommenders?.slice(0, 2).map((rec, i, arr) => (
             <Fragment key={rec.id}>
               <span className="inline whitespace-nowrap">
                 <button
@@ -55,9 +55,9 @@ function RecommenderCell({ original }: { original: EnhancedBook }) {
               {i < arr.length - 1 && i < 1 && " "}
             </Fragment>
           ))}
-          {(original._topRecommenders?.length ?? 0) > 2 && (
+          {(original._top_recommenders?.length ?? 0) > 2 && (
             <span className="text-text/70">
-              , + {(original._topRecommenders?.length ?? 0) - 2} more
+              , + {(original._top_recommenders?.length ?? 0) - 2} more
             </span>
           )}
         </span>
@@ -109,39 +109,56 @@ export function BookGrid({
   data: FormattedBook[];
   onFilteredDataChange?: (count: number) => void;
 }) {
-  // Do all expensive computations once when data is received
+  // Convert FormattedBook to EnhancedBook using precomputed fields from the database
   const enhancedData: EnhancedBook[] = useMemo(() => {
+    // Calculate max recommendations for percentile calculation if needed
     const maxRecommendations = Math.max(
       ...data.map((book) => book.recommendations.length)
     );
 
-    // First compute total recommendations per recommender for sorting
-    const recommenderCounts = data.reduce((counts: Record<string, number>, book) => {
-      book.recommendations.forEach(rec => {
-        if (rec.recommender) {
-          counts[rec.recommender.id] = (counts[rec.recommender.id] || 0) + 1;
-        }
-      });
-      return counts;
-    }, {});
-
     return data.map((book) => {
-      // Get unique recommenders and sort by their total recommendation count
-      const recommenders = [...new Map(
-        book.recommendations
-          .filter(rec => rec.recommender)
-          .map(rec => [rec.recommender!.id, {
-            id: rec.recommender!.id,
-            full_name: rec.recommender!.full_name,
-            recommendationCount: recommenderCounts[rec.recommender!.id]
-          }])
-      ).values()].sort((a, b) => b.recommendationCount - a.recommendationCount);
+      // Handle the top_recommenders field from the database
+      let topRecommenders: RecommenderReference[] = [];
+      
+      // If we have precomputed top_recommenders from the database
+      if (book.top_recommenders && Array.isArray(book.top_recommenders)) {
+        topRecommenders = book.top_recommenders.map(rec => ({
+          id: rec.id,
+          full_name: rec.full_name || "",
+          recommendation_count: rec.recommendation_count || (rec as any).recommendation_count || 0
+        }));
+      } 
+      // Fallback to calculating from recommendations if needed
+      else if (book.recommendations && book.recommendations.length > 0) {
+        // First compute total recommendations per recommender for sorting
+        const recommenderCounts = data.reduce((counts: Record<string, number>, b) => {
+          b.recommendations.forEach(rec => {
+            if (rec.recommender) {
+              counts[rec.recommender.id] = (counts[rec.recommender.id] || 0) + 1;
+            }
+          });
+          return counts;
+        }, {});
+        
+        // Get unique recommenders and sort by their total recommendation count
+        topRecommenders = [...new Map(
+          book.recommendations
+            .filter(rec => rec.recommender)
+            .map(rec => [rec.recommender!.id, {
+              id: rec.recommender!.id,
+              full_name: rec.recommender!.full_name || "",
+              recommendation_count: recommenderCounts[rec.recommender!.id]
+            }])
+        ).values()].sort((a, b) => b.recommendation_count - a.recommendation_count);
+      }
 
       return {
         ...book,
-        _recommendationCount: book.recommendations.length,
-        _topRecommenders: recommenders,
-        _percentile: Math.round((book.recommendations.length / maxRecommendations) * 100)
+        // Use precomputed fields if available, otherwise fall back to client-side calculation
+        _recommendation_count: book.recommendation_count ?? book.recommendations.length,
+        _top_recommenders: topRecommenders,
+        _percentile: book.recommendation_percentile ?? 
+          (maxRecommendations > 0 ? Math.round((book.recommendations.length / maxRecommendations) * 100) : 0)
       };
     });
   }, [data]);
@@ -178,7 +195,7 @@ export function BookGrid({
       data={enhancedData}
       columns={columns}
       getRowClassName={(row: EnhancedBook) =>
-        `cursor-pointer transition-colors duration-200 ${getBackgroundColor(row._recommendationCount, Math.max(...enhancedData.map(b => b._recommendationCount)))}`
+        `cursor-pointer transition-colors duration-200 ${getBackgroundColor(row._recommendation_count, Math.max(...enhancedData.map(b => b._recommendation_count)))}`
       }
       onRowClick={handleRowClick}
       onFilteredDataChange={onFilteredDataChange}

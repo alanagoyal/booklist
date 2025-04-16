@@ -90,18 +90,21 @@ export interface FormattedBook {
     source: string;
     source_link: string | null;
   }[];
+  recommendation_count?: number;
+  recommendation_percentile?: number;
+  top_recommenders?: RecommenderReference[];
 }
 
 // Optimized types for runtime performance
 export type RecommenderReference = {
   id: string;
   full_name: string;
-  recommendationCount: number;
+  recommendation_count: number;
 };
 
 export type EnhancedBook = FormattedBook & {
-  _recommendationCount: number;
-  _topRecommenders?: RecommenderReference[];  // Cached top recommenders
+  _recommendation_count: number;
+  _top_recommenders?: RecommenderReference[];  // Cached top recommenders
   _percentile: number;  // Added percentile
   related_books?: RelatedBook[];
   recommendations?: {
