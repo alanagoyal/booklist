@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useState, useEffect, useCallback, useMemo } from "react";
+import { Fragment, useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { DataGrid } from "@/components/grid";
 import { BookCounter } from "@/components/book-counter";
 import { PercentileTooltip } from "@/components/percentile-tooltip";
@@ -195,82 +195,109 @@ export function BookList({ initialBooks, initialRecommenders }: {
   const searchParams = useSearchParams();
   const [filteredCount, setFilteredCount] = useState(initialBooks.length);
   const [viewHistory, setViewHistory] = useState<Array<{id: string; actualId: string; type: 'book' | 'recommender'}>>([]);
-
-  // Get selected item based on URL param
-  const viewId = searchParams.get('view');
+  const containerRef = useRef<HTMLDivElement>(null);
   
-  useEffect(() => {
-    if (viewId) {
-      const [actualId] = viewId.split('--');
-      const isRecommender = initialRecommenders.find(r => r.id === actualId);
-      
-      setViewHistory(prev => {
-        // Don't add if it's already the most recent view
-        if (prev[prev.length - 1]?.id === viewId) return prev;
-        
-        return [...prev, {
-          id: viewId, // Keep full viewId with timestamp in history
-          actualId, // Store the real ID separately
-          type: isRecommender ? 'recommender' : 'book'
-        }];
-      });
-    } else {
-      setViewHistory([]);
-    }
-  }, [viewId, initialRecommenders]);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  const handleClose = useCallback(() => {
-    // Update URL first
-    const params = new URLSearchParams(searchParams.toString());
-    const previousView = viewHistory[viewHistory.length - 2]; // Get second-to-last view
-    
-    if (previousView) {
-      params.set('view', previousView.id);
-    } else {
-      params.delete('view');
-    }
-    
-    const newUrl = params.toString() ? `?${params.toString()}` : window.location.pathname;
-    router.push(newUrl, { scroll: false });
-
-    // Then update state
-    setViewHistory(prev => prev.slice(0, -1));
-  }, [router, searchParams, viewHistory]);
-
   // Keep viewHistory in sync with URL
   useEffect(() => {
-    if (viewId) {
-      const [actualId] = viewId.split('--');
+    if (searchParams.get('view')) {
+      const [actualId] = searchParams.get('view')!.split('--');
       const isRecommender = initialRecommenders.find(r => r.id === actualId);
       
       setViewHistory(prev => {
         // Don't add if it's already the most recent view
-        if (prev[prev.length - 1]?.id === viewId) return prev;
+        if (prev[prev.length - 1]?.id === searchParams.get('view')) return prev;
         
         return [...prev, {
-          id: viewId, // Keep full viewId with timestamp in history
+          id: searchParams.get('view')!, // Keep full viewId with timestamp in history
           actualId, // Store the real ID separately
           type: isRecommender ? 'recommender' : 'book'
         }];
       });
     }
     // Don't clear history when viewId is null - only handleClose should modify history
-  }, [viewId, initialRecommenders]);
+  }, [searchParams, initialRecommenders]);
 
+  // Set mounted state to true after initial render
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+  
+  // Handle closing the detail view
+  const handleClose = useCallback(() => {
+    if (viewHistory.length <= 1) {
+      // If there's only one view, remove it completely
+      const params = new URLSearchParams(searchParams.toString());
+      params.delete('view');
+      router.push(`?${params.toString()}`, { scroll: false });
+      setViewHistory([]);
+    } else {
+      // If there are multiple views, just remove the topmost one
+      const previousView = viewHistory[viewHistory.length - 2]; // Get second-to-last view
+      const params = new URLSearchParams(searchParams.toString());
+      params.set('view', previousView.id);
+      router.push(`?${params.toString()}`, { scroll: false });
+      
+      // Update state to remove only the last view
+      setViewHistory(prev => prev.slice(0, -1));
+    }
+  }, [router, searchParams, viewHistory]);
+  
+  // Handle filtered data change
   const handleFilteredDataChange = useCallback((count: number) => {
     setFilteredCount(count);
   }, []);
+  
+  // Tab layout configuration - centralized in one place
+  const tabConfig = {
+    height: 100,         // Height allocated per tab
+    baseTopOffset: 82,   // Starting position from top
+    bottomMargin: 16,    // Space to leave at bottom
+    width: 150,          // Width of tab
+    horizontalOffset: 4, // Horizontal offset between tabs
+  };
+  
+  // Calculate visible tabs and their positions
+  const tabPositions = useMemo(() => {
+    if (!mounted) return [];
+    
+    // Skip the most recent view (it's displayed as the main content)
+    const tabsToPosition = viewHistory.slice(0, -1);
+    if (tabsToPosition.length === 0) return [];
+    
+    const availableHeight = window.innerHeight - tabConfig.baseTopOffset - tabConfig.bottomMargin;
+    const maxVisibleTabs = Math.max(1, Math.floor(availableHeight / tabConfig.height));
+    
+    // If we have more tabs than can fit, only show the most recent ones
+    const startIndex = Math.max(0, tabsToPosition.length - maxVisibleTabs);
+    
+    return tabsToPosition.map((view, index) => {
+      // Calculate if this tab should be visible
+      const shouldShow = index >= startIndex;
+      
+      // Calculate position from the top (relative to visible tabs)
+      const positionIndex = index - startIndex;
+      const calculatedPosition = (positionIndex * tabConfig.height) + tabConfig.baseTopOffset;
+      
+      // Ensure we don't exceed the bottom margin
+      const maxPosition = window.innerHeight - tabConfig.bottomMargin;
+      const finalPosition = Math.min(calculatedPosition, maxPosition);
+      
+      return {
+        view,
+        index,
+        shouldShow,
+        position: finalPosition,
+        zIndex: 50 + index, // Ensure proper stacking
+      };
+    });
+  }, [viewHistory, mounted]);
 
   if (!mounted) {
     return null;
   }
 
   return (
-    <div className="h-full flex flex-col relative">
+    <div ref={containerRef} className="h-full flex flex-col relative">
       <div className="flex-1 overflow-hidden">
         <BookGrid
           data={initialBooks}
@@ -282,7 +309,6 @@ export function BookList({ initialBooks, initialRecommenders }: {
       {/* Render detail views */}
       {viewHistory.map((view, index) => {
         const isLast = index === viewHistory.length - 1;
-        const offset = index * 8; // 8px offset for each stacked view
         const selectedRecommender = view.type === 'recommender' ? 
           initialRecommenders.find(r => r.id === view.actualId) : null;
         const selectedBook = view.type === 'book' ? 
@@ -293,9 +319,9 @@ export function BookList({ initialBooks, initialRecommenders }: {
             key={`${view.id}-${index}`}
             className="absolute inset-0" 
             style={{
-              transform: `translateX(${offset}px)`,
+              transform: `translateX(${index * 8}px)`,
               zIndex: 20 + index,
-              width: `calc(100% - ${offset}px)`
+              width: `calc(100% - ${index * 8}px)`
             }}
           >
             {selectedBook && (
@@ -319,8 +345,8 @@ export function BookList({ initialBooks, initialRecommenders }: {
       })}
       
       {/* Render tabs as separate DOM elements outside of the detail components */}
-      {viewHistory.map((view, index) => {
-        if (index === viewHistory.length - 1) return null; // Don't show tab for the most recent view
+      {tabPositions.map(({ view, index, shouldShow, position, zIndex }) => {
+        if (!shouldShow) return null;
         
         const selectedRecommender = view.type === 'recommender' ? 
           initialRecommenders.find(r => r.id === view.actualId) : null;
@@ -328,38 +354,17 @@ export function BookList({ initialBooks, initialRecommenders }: {
           initialBooks.find(book => book.id === view.actualId || book.title === view.actualId) : null;
         
         const tabTitle = selectedBook ? selectedBook.title : (selectedRecommender ? selectedRecommender.full_name : '');
-        const isRecommender = view.type === 'recommender';
-        
-        // Calculate tab visibility based on viewport constraints
-        const tabHeight = 150; // Height allocated per tab
-        const baseTopOffset = 82; // Starting position from top
-        const maxVisibleTabs = Math.floor((window.innerHeight - baseTopOffset) / tabHeight);
-        
-        // If we have more tabs than can fit in the viewport, only show the most recent ones
-        const tabsToShow = viewHistory.length - 1; // Exclude the current view
-        
-        // Calculate which tabs should be visible (the most recent ones)
-        // We want to show the most recent tabs, so we start from the end and work backwards
-        const startShowingFromIndex = Math.max(0, tabsToShow - maxVisibleTabs);
-        const shouldShowTab = index >= startShowingFromIndex;
-        
-        // Don't render tabs that would overflow
-        if (!shouldShowTab) return null;
-        
-        // Calculate the position from the top
-        // First visible tab should be at baseTopOffset, and each subsequent tab 150px below
-        const positionIndex = index - startShowingFromIndex;
         
         return (
           <button 
             key={`tab-${view.id}-${index}`}
-            className="hidden md:block fixed bg-background border-border border px-3 py-2 text-text/70 truncate h-[32px] w-[200px] text-sm text-right whitespace-nowrap cursor-pointer transition-colors duration-200"
+            className="hidden md:block fixed bg-background border-border border px-3 py-2 text-text/70 truncate h-[32px] w-[150px] text-sm text-right whitespace-nowrap cursor-pointer transition-colors duration-200"
             style={{
-              top: `${(positionIndex * tabHeight) + baseTopOffset}px`,
-              left: `calc(50% + ${index * 4}px)`,
+              top: `${position}px`,
+              left: `calc(50% + ${index * tabConfig.horizontalOffset}px)`,
               transform: 'translateX(-100%) translateX(-31px) rotate(-90deg)',
               transformOrigin: 'top right',
-              zIndex: 50, 
+              zIndex, 
             }}
             onClick={(e) => {
               e.preventDefault();
