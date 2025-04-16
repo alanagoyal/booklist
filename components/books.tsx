@@ -251,7 +251,7 @@ export function BookList({ initialBooks, initialRecommenders }: {
   const tabConfig = {
     height: 100,         // Height allocated per tab
     baseTopOffset: 82,   // Starting position from top
-    bottomMargin: 16,    // Space to leave at bottom
+    bottomMargin: 32,    // Space to leave at bottom
     width: 150,          // Width of tab
     horizontalOffset: 4, // Horizontal offset between tabs
   };
@@ -329,7 +329,6 @@ export function BookList({ initialBooks, initialRecommenders }: {
                 book={selectedBook}
                 onClose={isLast ? handleClose : () => {}}
                 stackIndex={index}
-                maxStackIndex={viewHistory.length - 1}
               />
             )}
             {selectedRecommender && (
@@ -337,7 +336,6 @@ export function BookList({ initialBooks, initialRecommenders }: {
                 recommender={selectedRecommender}
                 onClose={isLast ? handleClose : () => {}}
                 stackIndex={index}
-                maxStackIndex={viewHistory.length - 1}
               />
             )}
           </div>

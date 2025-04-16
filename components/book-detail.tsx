@@ -22,14 +22,12 @@ type BookDetailProps = {
   book: EnhancedBook;
   onClose?: () => void;
   stackIndex?: number;
-  maxStackIndex?: number;
 };
 
 export default function BookDetail({
   book,
   onClose,
   stackIndex = 0,
-  maxStackIndex = 0,
 }: BookDetailProps) {
   const [showSummary, setShowSummary] = useState(false);
   const [recommenderSummary, setRecommenderSummary] = useState<string>("");

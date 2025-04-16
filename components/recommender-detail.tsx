@@ -6,14 +6,12 @@ type RecommenderDetailProps = {
   recommender: FormattedRecommender;
   onClose?: () => void;
   stackIndex?: number;
-  maxStackIndex?: number;
 };
 
 export default function RecommenderDetail({
   recommender,
   onClose,
   stackIndex = 0,
-  maxStackIndex = 0,
 }: RecommenderDetailProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
