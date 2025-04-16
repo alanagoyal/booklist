@@ -38,12 +38,6 @@ type SortConfig = {
   direction: SortDirection;
 };
 
-type VirtualState<T> = {
-  startIndex: number;
-  endIndex: number;
-  visibleRows: T[];
-};
-
 export function DataGrid<T extends Record<string, any>>({ 
   data, 
   columns, 
@@ -141,11 +135,6 @@ export function DataGrid<T extends Record<string, any>>({
   const scrollTimeout = useRef<number | null>(null);
   const resizeTimeout = useRef<number | null>(null);
 
-  // Constants for virtualization
-  const ROW_HEIGHT = 32;
-  const OVERSCAN_COUNT = 5;
-  const MIN_BATCH_SIZE = 25;
-
   // Memoize active filters to prevent unnecessary recalculations
   const activeFilters = useMemo(() => {
     return Object.entries(filters)
@@ -219,20 +208,6 @@ export function DataGrid<T extends Record<string, any>>({
     });
   }, [filteredData, sortConfig.field, sortConfig.direction]);
 
-  // Add virtualState to component state
-  const [virtualState, setVirtualState] = useState<VirtualState<T>>({
-    startIndex: 0,
-    endIndex: 50,
-    visibleRows: []
-  });
-
-  // Memoize visible rows calculation
-  const visibleRows = useMemo(() => {
-    const startIndex = virtualState.startIndex;
-    const endIndex = virtualState.endIndex;
-    return filteredAndSortedData.slice(startIndex, endIndex);
-  }, [filteredAndSortedData, virtualState.startIndex, virtualState.endIndex]);
-
   const handleRowClick = useCallback((e: React.MouseEvent, row: T) => {
     const target = e.target as HTMLElement;
     
@@ -298,83 +273,30 @@ export function DataGrid<T extends Record<string, any>>({
         {columns.map(column => renderCell({ column, row }))}
       </div>
     );
-  }, [columns, getRowClassName, onRowClick, renderCell, handleRowClick]);
+  }, [columns, getRowClassName, handleRowClick, renderCell]);
 
   // Memoize rendered rows
   const renderedRows = useMemo(() => {
-    return visibleRows.map((row, idx) => {
-      const rowIndex = virtualState.startIndex + idx;
-      return renderRow(row, rowIndex);
-    });
-  }, [visibleRows, renderRow, virtualState.startIndex]);
+    return filteredAndSortedData.map((row, idx) => renderRow(row, idx));
+  }, [filteredAndSortedData, renderRow]);
 
-  const updateVisibleRows = useCallback(() => {
-    const container = gridRef.current;
-    if (!container) return;
-
-    const containerHeight = container.clientHeight;
-    const totalHeight = filteredAndSortedData.length * ROW_HEIGHT;
-    
-    // Calculate viewport
-    const scrollTop = Math.max(0, Math.min(container.scrollTop, totalHeight - containerHeight));
-    const viewportStart = Math.floor(scrollTop / ROW_HEIGHT);
-    const viewportItemCount = Math.ceil(containerHeight / ROW_HEIGHT);
-    
-    // Add overscan and ensure minimum batch size
-    const overscanStart = Math.max(0, viewportStart - OVERSCAN_COUNT);
-    const overscanEnd = Math.min(
-      filteredAndSortedData.length,
-      viewportStart + viewportItemCount + OVERSCAN_COUNT
-    );
-    
-    // Ensure we render at least MIN_BATCH_SIZE items for smooth scrolling
-    const batchSize = Math.max(
-      overscanEnd - overscanStart,
-      MIN_BATCH_SIZE
-    );
-    
-    const startIndex = Math.max(0, Math.min(
-      overscanStart,
-      filteredAndSortedData.length - batchSize
-    ));
-    
-    const endIndex = Math.min(
-      startIndex + batchSize,
-      filteredAndSortedData.length
-    );
-
-    setVirtualState(prev => {
-      if (prev.startIndex === startIndex && prev.endIndex === endIndex) {
-        return prev;
-      }
-
-      return {
-        ...prev,
-        startIndex,
-        endIndex,
-        visibleRows: filteredAndSortedData.slice(startIndex, endIndex)
-      };
-    });
-  }, [filteredAndSortedData]);
-
-  // Optimize scroll handling with debounce for rapid scrolling
+  // Simplify scroll handling - just for header syncing if needed
   const handleScroll = useCallback(() => {
-    // Use RAF for smooth scrolling
-    if (!scrollTimeout.current) {
-      scrollTimeout.current = requestAnimationFrame(() => {
-        updateVisibleRows();
-        scrollTimeout.current = null;
-      });
-    }
-  }, [updateVisibleRows]);
+    // We can keep this empty or use it for header syncing if needed
+  }, []);
 
-  // Optimize resize handling
+  // Keep resize observer for header width syncing
   useEffect(() => {
     const observer = new ResizeObserver(() => {
       if (resizeTimeout.current) {
         cancelAnimationFrame(resizeTimeout.current);
       }
-      resizeTimeout.current = requestAnimationFrame(updateVisibleRows);
+      resizeTimeout.current = requestAnimationFrame(() => {
+        // Update header width if needed
+        if (gridRef.current?.firstElementChild && headerRef.current) {
+          headerRef.current.style.width = `${gridRef.current.firstElementChild.clientWidth}px`;
+        }
+      });
     });
 
     const container = gridRef.current;
@@ -388,7 +310,7 @@ export function DataGrid<T extends Record<string, any>>({
         cancelAnimationFrame(resizeTimeout.current);
       }
     };
-  }, [updateVisibleRows]);
+  }, []);
 
   // Clean up scroll timeout
   useEffect(() => {
@@ -399,21 +321,7 @@ export function DataGrid<T extends Record<string, any>>({
     };
   }, []);
 
-  useEffect(() => {
-    const updateHeaderWidth = () => {
-      if (gridRef.current?.firstElementChild && headerRef.current) {
-        headerRef.current.style.width = `${gridRef.current.firstElementChild.clientWidth}px`;
-      }
-    };
-
-    const resizeObserver = new ResizeObserver(updateHeaderWidth);
-    if (gridRef.current?.firstElementChild) {
-      resizeObserver.observe(gridRef.current.firstElementChild);
-    }
-
-    return () => resizeObserver.disconnect();
-  }, []);
-
+  // Handle dropdown interactions
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (!openDropdown) return;
@@ -472,31 +380,6 @@ export function DataGrid<T extends Record<string, any>>({
     });
     setOpenDropdown(null);
   };
-
-  // Update visible rows when filtered data changes
-  useEffect(() => {
-    updateVisibleRows();
-  }, [filteredAndSortedData, updateVisibleRows]);
-
-  // Memoize grid styles with opacity transition for hydration
-  const gridStyles = useMemo(() => ({
-    opacity: mounted ? 1 : 0,
-    transition: "opacity 200ms ease-in-out",
-  }), [mounted]);
-
-  const contentStyles = useMemo(() => ({
-    position: "relative" as const,
-    height: `${filteredAndSortedData.length * ROW_HEIGHT + 128}px`, // Add header height to total content height
-    opacity: mounted ? 1 : 0,
-    transition: "opacity 200ms ease-in-out",
-  }), [filteredAndSortedData.length, mounted]);
-
-  const rowsStyles = useMemo(() => ({
-    position: "absolute" as const,
-    top: `${virtualState.startIndex * ROW_HEIGHT}px`,
-    left: 0,
-    right: 0,
-  }), [virtualState.startIndex]);
 
   // Optimize dropdown menu rendering with useCallback
   const renderDropdownMenu = useCallback((column: ColumnDef<T>) => {
@@ -626,6 +509,18 @@ export function DataGrid<T extends Record<string, any>>({
     );
   }, [activeFilters, sortConfig, handleDropdownClick, renderDropdownMenu]);
 
+  // Memoize grid styles with opacity transition for hydration
+  const gridStyles = useMemo(() => ({
+    opacity: mounted ? 1 : 0,
+    transition: "opacity 200ms ease-in-out",
+  }), [mounted]);
+
+  // Simplify content styles - no need for absolute positioning
+  const contentStyles = useMemo(() => ({
+    opacity: mounted ? 1 : 0,
+    transition: "opacity 200ms ease-in-out",
+  }), [mounted]);
+
   // Don't render content until mounted to prevent hydration mismatch
   if (!mounted) {
     return (
@@ -654,7 +549,7 @@ export function DataGrid<T extends Record<string, any>>({
           </div>
         </div>
         <div style={contentStyles}>
-          <div style={rowsStyles}>{renderedRows}</div>
+          {renderedRows}
         </div>
       </div>
     </div>
