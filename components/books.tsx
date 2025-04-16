@@ -251,7 +251,7 @@ export function BookList({ initialBooks, initialRecommenders }: {
   const tabConfig = {
     height: 100,         // Height allocated per tab
     baseTopOffset: 82,   // Starting position from top
-    bottomMargin: 100,   // Increased margin to ensure no overflow in production
+    bottomMargin: 100,   // Increased margin to prevent overflow in production
     width: 150,          // Width of tab
     horizontalOffset: 4, // Horizontal offset between tabs
   };
@@ -264,28 +264,11 @@ export function BookList({ initialBooks, initialRecommenders }: {
     const tabsToPosition = viewHistory.slice(0, -1);
     if (tabsToPosition.length === 0) return [];
     
-    // Use a more conservative calculation for available height
-    // This accounts for potential differences between environments
-    const viewportHeight = typeof window !== 'undefined' ? window.innerHeight : 0;
-    const availableHeight = Math.max(0, viewportHeight - tabConfig.baseTopOffset - tabConfig.bottomMargin);
-    
-    // Log values for debugging
-    console.log('Tab calculation debug:', {
-      viewportHeight,
-      baseTopOffset: tabConfig.baseTopOffset,
-      bottomMargin: tabConfig.bottomMargin,
-      availableHeight,
-      tabHeight: tabConfig.height,
-      totalTabs: tabsToPosition.length,
-    });
-    
-    // Be more conservative with the number of tabs to show
+    const availableHeight = window.innerHeight - tabConfig.baseTopOffset - tabConfig.bottomMargin;
     const maxVisibleTabs = Math.max(1, Math.floor(availableHeight / tabConfig.height));
-    console.log('Max visible tabs:', maxVisibleTabs);
     
     // If we have more tabs than can fit, only show the most recent ones
     const startIndex = Math.max(0, tabsToPosition.length - maxVisibleTabs);
-    console.log('Start showing from index:', startIndex);
     
     return tabsToPosition.map((view, index) => {
       // Calculate if this tab should be visible
@@ -296,19 +279,8 @@ export function BookList({ initialBooks, initialRecommenders }: {
       const calculatedPosition = (positionIndex * tabConfig.height) + tabConfig.baseTopOffset;
       
       // Ensure we don't exceed the bottom margin
-      const maxPosition = viewportHeight - tabConfig.bottomMargin;
+      const maxPosition = window.innerHeight - tabConfig.bottomMargin;
       const finalPosition = Math.min(calculatedPosition, maxPosition);
-      
-      // Log individual tab positions for debugging
-      if (shouldShow) {
-        console.log(`Tab ${index} position:`, {
-          positionIndex,
-          calculatedPosition,
-          maxPosition,
-          finalPosition,
-          shouldShow,
-        });
-      }
       
       return {
         view,
@@ -319,20 +291,6 @@ export function BookList({ initialBooks, initialRecommenders }: {
       };
     });
   }, [viewHistory, mounted]);
-
-  // Add resize listener to update tab positions when window size changes
-  useEffect(() => {
-    if (!mounted) return;
-    
-    const handleResize = () => {
-      // Force a re-render when window size changes
-      setMounted(false);
-      setTimeout(() => setMounted(true), 0);
-    };
-    
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, [mounted]);
 
   if (!mounted) {
     return null;
