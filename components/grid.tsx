@@ -12,6 +12,8 @@ import {
 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { bookCountManager } from './book-counter';
+import { FixedSizeList as List } from 'react-window';
+import AutoSizer from 'react-virtualized-auto-sizer';
 
 type SortDirection = "asc" | "desc" | null;
 
@@ -22,7 +24,6 @@ type ColumnDef<T> = {
   cell?: (props: {
     row: { original: T };
   }) => React.ReactNode;
-  isExpandable?: boolean;
 };
 
 type DataGridProps<T extends Record<string, any>> = {
@@ -134,26 +135,29 @@ export function DataGrid<T extends Record<string, any>>({
   const inputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
   const scrollTimeout = useRef<number | null>(null);
   const resizeTimeout = useRef<number | null>(null);
+  
+  // Constants for virtualization
+  const ROW_HEIGHT = 56; // Approximate height of each row
+  const listRef = useRef<List>(null);
 
   // Memoize active filters to prevent unnecessary recalculations
   const activeFilters = useMemo(() => {
     return Object.entries(filters)
       .filter(([_, value]) => value)
-      .map(([field]) => field);
+      .map(([key]) => key);
   }, [filters]);
 
-  // Memoize filtered data separately from sorting for better performance
+  // Memoize filtered data to prevent unnecessary recalculations
   const filteredData = useMemo(() => {
-    if (!Object.values(filters).some(Boolean)) return data;
-    
-    const lowercaseFilters = Object.fromEntries(
-      Object.entries(filters).map(([key, value]) => [key, value?.toLowerCase()])
-    );
+    if (activeFilters.length === 0) {
+      return data;
+    }
 
-    return data.filter((item) => {
-      return Object.entries(lowercaseFilters).every(([field, filterValue]) => {
+    return data.filter(item => {
+      return activeFilters.every(field => {
+        const filterValue = filters[field]?.toLowerCase();
         if (!filterValue) return true;
-
+        
         // Filter by recommender full name
         if (field === 'recommenders') {
           const recommendations = (item as any).recommendations || [];
@@ -162,49 +166,54 @@ export function DataGrid<T extends Record<string, any>>({
             .map((rec: any) => rec.recommender.full_name.toLowerCase());
           return recommenderNames.some((name: string) => name.includes(filterValue));
         }
-
-        const value = String(item[field as keyof T] || '').toLowerCase();
-   
-        return value.includes(filterValue);
+        
+        const fieldValue = String(item[field as keyof T] || "").toLowerCase();
+        return fieldValue.includes(filterValue);
       });
     });
-  }, [data, filters]);
+  }, [data, filters, activeFilters]);
 
-  // Notify parent of filtered data changes
+  // Update filtered count for parent components
   useEffect(() => {
     onFilteredDataChange?.(filteredData.length);
-  }, [filteredData, onFilteredDataChange]);
-
-  // Update filtered data count
-  useEffect(() => {
     bookCountManager.update(data.length, filteredData.length);
-  }, [data.length, filteredData.length]);
+  }, [filteredData.length, data.length, onFilteredDataChange]);
 
-  // Memoize sorted data separately
+  // Memoize sorted data to prevent unnecessary recalculations
   const filteredAndSortedData = useMemo(() => {
-    if (!sortConfig.field || !sortConfig.direction) return filteredData;
-    
-    const field = sortConfig.field;
-    const direction = sortConfig.direction;
-    
-    return [...filteredData].sort((a, b) => {
-      const aValue = a[field as keyof T];
-      const bValue = b[field as keyof T];
+    if (!sortConfig.field || !sortConfig.direction) {
+      return filteredData;
+    }
 
-      if (field === 'recommenders') {
+    return [...filteredData].sort((a, b) => {
+      const aValue = a[sortConfig.field as keyof T];
+      const bValue = b[sortConfig.field as keyof T];
+      
+      // Special handling for recommenders column - sort by popularity
+      if (sortConfig.field === 'recommenders') {
         // Sort by number of recommenders (popularity)
         const aRecs = (a as any).recommendations?.length || 0;
         const bRecs = (b as any).recommendations?.length || 0;
-        const sortDirection = direction === "asc" ? 1 : -1;
+        const sortDirection = sortConfig.direction === "asc" ? 1 : -1;
         return (bRecs - aRecs) * sortDirection;
       }
-
-      if (aValue === bValue) return 0;
-      if (aValue === null || aValue === undefined) return 1;
-      if (bValue === null || bValue === undefined) return -1;
-
-      const sortDirection = direction === "asc" ? 1 : -1;
-      return aValue < bValue ? -sortDirection : sortDirection;
+      
+      // Handle null or undefined values
+      if (aValue == null && bValue == null) return 0;
+      if (aValue == null) return sortConfig.direction === 'asc' ? -1 : 1;
+      if (bValue == null) return sortConfig.direction === 'asc' ? 1 : -1;
+      
+      // Handle different value types
+      if (typeof aValue === 'string' && typeof bValue === 'string') {
+        return sortConfig.direction === 'asc'
+          ? aValue.localeCompare(bValue)
+          : bValue.localeCompare(aValue);
+      }
+      
+      // Default numeric comparison
+      return sortConfig.direction === 'asc'
+        ? (aValue as number) - (bValue as number)
+        : (bValue as number) - (aValue as number);
     });
   }, [filteredData, sortConfig.field, sortConfig.direction]);
 
@@ -227,14 +236,8 @@ export function DataGrid<T extends Record<string, any>>({
     onRowClick?.(row);
   }, [onRowClick, openDropdown, isDropdownClosing]);
 
-  // Optimize cell rendering with useCallback
-  const renderCell = useCallback(({ 
-    column, 
-    row 
-  }: { 
-    column: ColumnDef<T>, 
-    row: T 
-  }) => {
+  // Cell renderer - maintains exact same styling as before
+  const renderCell = useCallback(({ column, row }: { column: ColumnDef<T>; row: T }) => {
     return (
       <div
         key={String(column.field)}
@@ -257,59 +260,42 @@ export function DataGrid<T extends Record<string, any>>({
     );
   }, []);
 
-  // Optimize row rendering with useCallback
-  const renderRow = useCallback((row: T, rowIndex: number) => {
+  // Row renderer optimized for virtualization
+  const renderRow = useCallback(({ index, style }: { index: number; style: React.CSSProperties }) => {
+    const row = filteredAndSortedData[index];
+    
     return (
       <div
-        key={rowIndex}
-        className={`grid transition-colors duration-200 ${
+        key={index}
+        className={`grid transition-colors duration-200 md:hover:bg-accent/50 ${
           getRowClassName?.(row) || ""
         }`}
         style={{
+          ...style,
           gridTemplateColumns: `repeat(${columns.length}, minmax(200px, 1fr))`,
+          width: '100%'
         }}
         onClick={(e) => handleRowClick(e, row)}
       >
         {columns.map(column => renderCell({ column, row }))}
       </div>
     );
-  }, [columns, getRowClassName, handleRowClick, renderCell]);
+  }, [columns, filteredAndSortedData, getRowClassName, handleRowClick, renderCell]);
 
-  // Memoize rendered rows
-  const renderedRows = useMemo(() => {
-    return filteredAndSortedData.map((row, idx) => renderRow(row, idx));
-  }, [filteredAndSortedData, renderRow]);
-
-  // Simplify scroll handling - just for header syncing if needed
-  const handleScroll = useCallback(() => {
-    // We can keep this empty or use it for header syncing if needed
-  }, []);
-
-  // Keep resize observer for header width syncing
+  // Sync horizontal scroll between header and list
   useEffect(() => {
-    const observer = new ResizeObserver(() => {
-      if (resizeTimeout.current) {
-        cancelAnimationFrame(resizeTimeout.current);
-      }
-      resizeTimeout.current = requestAnimationFrame(() => {
-        // Update header width if needed
-        if (gridRef.current?.firstElementChild && headerRef.current) {
-          headerRef.current.style.width = `${gridRef.current.firstElementChild.clientWidth}px`;
+    if (gridRef.current) {
+      const handleGridScroll = () => {
+        if (headerRef.current && gridRef.current) {
+          headerRef.current.style.transform = `translateX(-${gridRef.current.scrollLeft}px)`;
         }
-      });
-    });
-
-    const container = gridRef.current;
-    if (container) {
-      observer.observe(container);
+      };
+      
+      gridRef.current.addEventListener('scroll', handleGridScroll);
+      return () => {
+        gridRef.current?.removeEventListener('scroll', handleGridScroll);
+      };
     }
-
-    return () => {
-      observer.disconnect();
-      if (resizeTimeout.current) {
-        cancelAnimationFrame(resizeTimeout.current);
-      }
-    };
   }, []);
 
   // Clean up scroll timeout
@@ -433,7 +419,7 @@ export function DataGrid<T extends Record<string, any>>({
                 ref={(el) =>
                   void (inputRefs.current[String(column.field)] = el)
                 }
-                className="w-full px-2 py-1 border border-border bg-background text-text text-base sm:text-sm placeholder:text-sm selection:bg-main selection:text-mtext focus:outline-none rounded-none"
+                className="w-full px-2 py-1 border border-border bg-background text-text text-base sm:text-sm placeholder:text-sm selection:bg-main selection:text-mtext focus:outline-none"
                 placeholder="Search"
                 value={filters[String(column.field)] || ""}
                 onChange={(e) =>
@@ -500,7 +486,7 @@ export function DataGrid<T extends Record<string, any>>({
                   )}
                 </div>
               )}
-              <ChevronDown className="w-4 h-4 text-text/70 transition-colors duration-200 rounded p-0.5 md:group-hover:bg-accent/50 hidden md:group-hover:block" />
+              <ChevronDown className="w-4 h-4 text-text/70 transition-colors duration-200 p-0.5 md:group-hover:bg-accent/50 hidden md:group-hover:block" />
             </div>
           </div>
         </div>
@@ -515,11 +501,32 @@ export function DataGrid<T extends Record<string, any>>({
     transition: "opacity 200ms ease-in-out",
   }), [mounted]);
 
-  // Simplify content styles - no need for absolute positioning
+  // Content styles for virtualization
   const contentStyles = useMemo(() => ({
     opacity: mounted ? 1 : 0,
     transition: "opacity 200ms ease-in-out",
   }), [mounted]);
+
+  // Virtualized list with AutoSizer
+  const renderedRows = useMemo(() => {
+    return (
+      <AutoSizer>
+        {({ height, width }) => (
+          <List
+            ref={listRef}
+            height={height}
+            width={width}
+            itemCount={filteredAndSortedData.length}
+            itemSize={ROW_HEIGHT}
+            overscanCount={20}
+            className="scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent"
+          >
+            {renderRow}
+          </List>
+        )}
+      </AutoSizer>
+    );
+  }, [filteredAndSortedData.length, renderRow]);
 
   // Don't render content until mounted to prevent hydration mismatch
   if (!mounted) {
@@ -533,24 +540,22 @@ export function DataGrid<T extends Record<string, any>>({
   return (
     <div 
       ref={gridRef}
-      className="h-full overflow-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent"
-      onScroll={handleScroll}
+      className="h-full flex flex-col overflow-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent"
       style={gridStyles}
     >
-      <div className="inline-block min-w-full">
-        <div className="sticky top-0 z-10 bg-background">
-          <div
-            className="grid"
-            style={{
-              gridTemplateColumns: `repeat(${columns.length}, minmax(200px, 1fr))`,
-            }}
-          >
-            {columns.map(renderHeader)}
-          </div>
+      <div className="sticky top-0 z-10 bg-background">
+        <div
+          ref={headerRef}
+          className="grid"
+          style={{
+            gridTemplateColumns: `repeat(${columns.length}, minmax(200px, 1fr))`,
+          }}
+        >
+          {columns.map(renderHeader)}
         </div>
-        <div style={contentStyles}>
-          {renderedRows}
-        </div>
+      </div>
+      <div className="flex-1 overflow-hidden" style={contentStyles}>
+        {renderedRows}
       </div>
     </div>
   );
