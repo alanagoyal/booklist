@@ -71,6 +71,26 @@ function RecommenderCell({ original }: { original: EnhancedBook }) {
   );
 }
 
+function GenreCell({ original }: { original: EnhancedBook }) {
+  return (
+    <div className="whitespace-pre-line line-clamp-2 text-text">
+      <span className="break-words">
+        {Array.isArray(original.genres) 
+          ? original.genres.map((genre, i, arr) => (
+              <Fragment key={genre}>
+                <span className="inline whitespace-nowrap">
+                  {genre}
+                  {i < arr.length - 1 && ", "}
+                </span>
+                {i < arr.length - 1 && " "}
+              </Fragment>
+            ))
+          : original.genres}
+      </span>
+    </div>
+  );
+}
+
 const getBackgroundColor = (count: number, maxCount: number): string => {
   if (count === 0) return "";
 
@@ -170,7 +190,13 @@ export function BookGrid({
       ),
     },
     { field: "description" as keyof FormattedBook, header: "Description" },
-    { field: "genres" as keyof FormattedBook, header: "Genre" },
+    {
+      field: "genres" as keyof FormattedBook,
+      header: "Genre",
+      cell: (props: { row: { original: EnhancedBook } }) => (
+        <GenreCell original={props.row.original} />
+      ),
+    },
   ];
 
   return (
