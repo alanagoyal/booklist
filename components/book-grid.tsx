@@ -8,9 +8,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 
 // Title cell
 function TitleCell({ row: { original } }: { row: { original: EnhancedBook } }) {
-  const title = original.title || "";
-  const displayTitle = title.length > 50 ? `${title.slice(0, 50)}...` : title;
-  return <span className="text-text">{displayTitle}</span>;
+  return <span className="text-text whitespace-pre-line line-clamp-2">{original.title}</span>;
 }
 
 // Recommender cell
@@ -32,7 +30,7 @@ function RecommenderCell({ original }: { original: EnhancedBook }) {
         onClick={(e) => tooltipOpen && e.stopPropagation()}
       >
         <span className="break-words">
-          {original._top_recommenders?.slice(0, 2).map((rec, i, arr) => (
+          {original._top_recommenders?.slice(0, 1).map((rec) => (
             <Fragment key={rec.id}>
               <span className="inline whitespace-nowrap">
                 <button
@@ -45,14 +43,12 @@ function RecommenderCell({ original }: { original: EnhancedBook }) {
                 >
                   {rec.full_name}
                 </button>
-                {i < arr.length - 1 && i < 1 && ", "}
               </span>
-              {i < arr.length - 1 && i < 1 && " "}
             </Fragment>
           ))}
-          {(original._top_recommenders?.length ?? 0) > 2 && (
+          {(original._top_recommenders?.length ?? 0) > 1 && (
             <span className="text-text/70">
-              , + {(original._top_recommenders?.length ?? 0) - 2} more
+              {" "}+ {(original._top_recommenders?.length ?? 0) - 1} more
             </span>
           )}
         </span>
