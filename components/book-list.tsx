@@ -18,9 +18,12 @@ export function BookList({
   initialRecommenders: FormattedRecommender[];
 }) {
   const [mounted, setMounted] = useState(false);
-  const [viewMode, setViewMode] = useState<'books' | 'recommenders'>('books');
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [viewMode, setViewMode] = useState<'books' | 'recommenders'>(() => {
+    // Initialize from URL param, default to 'books'
+    return (searchParams.get('view') as 'books' | 'recommenders') || 'books';
+  });
   const [filteredCount, setFilteredCount] = useState(initialBooks.length);
   const [viewHistory, setViewHistory] = useState<
     Array<{ id: string; actualId: string; type: "book" | "recommender" }>
@@ -67,6 +70,14 @@ export function BookList({
     // Don't clear history when viewId is null - only handleClose should modify history
   }, [searchParams, initialRecommenders]);
 
+  // Keep viewMode in sync with URL
+  useEffect(() => {
+    const view = searchParams.get('view');
+    if (view === 'books' || view === 'recommenders') {
+      setViewMode(view);
+    }
+  }, [searchParams]);
+
   // Set mounted state to true after initial render
   useEffect(() => {
     setMounted(true);
@@ -96,6 +107,14 @@ export function BookList({
   const handleFilteredDataChange = useCallback((count: number) => {
     setFilteredCount(count);
   }, []);
+
+  // Update URL when viewMode changes
+  const toggleViewMode = useCallback(() => {
+    const newView = viewMode === 'books' ? 'recommenders' : 'books';
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('view', newView);
+    router.push(`?${params.toString()}`, { scroll: false });
+  }, [viewMode, router, searchParams]);
 
   // Tab layout configuration - centralized in one place
   const tabConfig = {
@@ -147,13 +166,6 @@ export function BookList({
     });
   }, [viewHistory, mounted]);
 
-  // Handle view mode toggle
-  const handleViewModeToggle = useCallback(() => {
-    setViewMode(prev => prev === 'books' ? 'recommenders' : 'books');
-    const newMode = viewMode === 'books' ? 'recommenders' : 'books';
-    setFilteredCount(newMode === 'books' ? initialBooks.length : initialRecommenders.length);
-  }, [initialBooks.length, initialRecommenders.length, viewMode]);
-
   if (!mounted) {
     return null;
   }
@@ -162,7 +174,7 @@ export function BookList({
     <div ref={containerRef} className="h-full flex flex-col relative">
       <div className="flex items-center justify-between px-3 py-2 border-b border-border bg-background">
         <button
-          onClick={handleViewModeToggle}
+          onClick={toggleViewMode}
           className="flex items-center gap-2 text-text/70 hover:text-text transition-colors duration-200"
         >
           <LayoutList size={16} />

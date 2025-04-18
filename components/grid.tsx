@@ -212,6 +212,17 @@ export function DataGrid<T extends Record<string, any>>({
     const currentParams = new URLSearchParams(searchParams.toString());
     const newParams = new URLSearchParams(currentParams.toString());
 
+    // Initialize default parameters if they don't exist
+    if (!currentParams.has('sort')) {
+      newParams.set('sort', 'recommenders');
+    }
+    if (!currentParams.has('dir')) {
+      newParams.set('dir', 'desc');
+    }
+    if (!currentParams.has('view')) {
+      newParams.set('view', 'books');
+    }
+
     // Update sort params
     if (sortConfig.field) {
       newParams.set("sort", sortConfig.field);
@@ -233,6 +244,12 @@ export function DataGrid<T extends Record<string, any>>({
         newParams.delete(key);
       }
     });
+
+    // Preserve view parameter if it exists
+    const view = currentParams.get('view');
+    if (view) {
+      newParams.set('view', view);
+    }
 
     const queryString = newParams.toString();
     const newPath = queryString ? `/?${queryString}` : "/";
