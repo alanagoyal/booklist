@@ -12,7 +12,7 @@ import { EnhancedBook } from "@/types";
 import { useCallback, useEffect, useState } from "react";
 import { initLogger } from "braintrust";
 import { useRouter, useSearchParams } from "next/navigation";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/utils/supabase/client";
 
 // Initialize Braintrust logger
 initLogger({
@@ -123,7 +123,7 @@ export default function BookDetail({
             amazon_url
           )
         `)
-        .in('person_id', book.recommendations?.map(r => r.recommender?.id) || [])
+        .in('person_id', book.recommendations?.map(r => r.recommender?.id).filter((id): id is string => id !== undefined) || [])
         .not('book_id', 'eq', book.id)
         .order('book_id', { ascending: false })
         .limit(3) as { data: RelatedBookResponse[] | null };
