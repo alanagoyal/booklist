@@ -116,13 +116,12 @@ const getBackgroundColor = (count: number, maxCount: number): string => {
   }
 };
 
-export default function BookGrid({
-  data,
-  onFilteredDataChange,
-}: {
+interface BookGridProps {
   data: FormattedBook[];
   onFilteredDataChange?: (count: number) => void;
-}) {
+}
+
+export default function BookGrid({ data, onFilteredDataChange }: BookGridProps) {
   // Hooks
   const router = useRouter();
   const searchParams = useSearchParams();

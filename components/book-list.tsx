@@ -1,12 +1,14 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { BookCounter } from "@/components/book-counter";
-import { FormattedBook, EnhancedBook, FormattedRecommender } from "@/types";
+import { FormattedBook, FormattedRecommender } from "@/types";
 import { useRouter, useSearchParams } from "next/navigation";
 import BookDetail from "@/components/book-detail";
 import RecommenderDetail from "@/components/recommender-detail";
 import BookGrid from "./book-grid";
+import RecommenderGrid from "./recommender-grid";
+import { LayoutList } from "lucide-react";
 
 export function BookList({
   initialBooks,
@@ -16,6 +18,7 @@ export function BookList({
   initialRecommenders: FormattedRecommender[];
 }) {
   const [mounted, setMounted] = useState(false);
+  const [viewMode, setViewMode] = useState<'books' | 'recommenders'>('books');
   const router = useRouter();
   const searchParams = useSearchParams();
   const [filteredCount, setFilteredCount] = useState(initialBooks.length);
@@ -142,13 +145,14 @@ export function BookList({
         zIndex: 50 + index, // Ensure proper stacking
       };
     });
-  }, [
-    viewHistory,
-    mounted,
-    tabConfig.baseTopOffset,
-    tabConfig.bottomMargin,
-    tabConfig.height,
-  ]);
+  }, [viewHistory, mounted]);
+
+  // Handle view mode toggle
+  const handleViewModeToggle = useCallback(() => {
+    setViewMode(prev => prev === 'books' ? 'recommenders' : 'books');
+    const newMode = viewMode === 'books' ? 'recommenders' : 'books';
+    setFilteredCount(newMode === 'books' ? initialBooks.length : initialRecommenders.length);
+  }, [initialBooks.length, initialRecommenders.length, viewMode]);
 
   if (!mounted) {
     return null;
@@ -156,13 +160,33 @@ export function BookList({
 
   return (
     <div ref={containerRef} className="h-full flex flex-col relative">
-      <div className="flex-1 overflow-hidden">
-        <BookGrid
-          data={initialBooks}
-          onFilteredDataChange={handleFilteredDataChange}
-        />
+      <div className="flex items-center justify-between px-3 py-2 border-b border-border bg-background">
+        <button
+          onClick={handleViewModeToggle}
+          className="flex items-center gap-2 text-text/70 hover:text-text transition-colors duration-200"
+        >
+          <LayoutList size={16} />
+          <span className="text-sm">{viewMode === 'books' ? 'View by Recommender' : 'View by Book'}</span>
+        </button>
       </div>
-      <BookCounter total={initialBooks.length} filtered={filteredCount} />
+      <div className="flex-1 overflow-hidden">
+        {viewMode === 'books' ? (
+          <BookGrid
+            data={initialBooks}
+            onFilteredDataChange={handleFilteredDataChange}
+          />
+        ) : (
+          <RecommenderGrid
+            data={initialRecommenders}
+            onFilteredDataChange={handleFilteredDataChange}
+          />
+        )}
+      </div>
+      <BookCounter 
+        total={viewMode === 'books' ? initialBooks.length : initialRecommenders.length} 
+        filtered={filteredCount}
+        viewMode={viewMode}
+      />
 
       {/* Render detail views */}
       {viewHistory.map((view, index) => {
@@ -173,10 +197,10 @@ export function BookList({
             : null;
         const selectedBook =
           view.type === "book"
-            ? (initialBooks.find(
+            ? initialBooks.find(
                 (book) =>
                   book.id === view.actualId || book.title === view.actualId
-              ) as EnhancedBook | null)
+              ) as FormattedBook & { _recommendation_count: number; _percentile: number }
             : null;
 
         return (
@@ -220,7 +244,7 @@ export function BookList({
             ? initialBooks.find(
                 (book) =>
                   book.id === view.actualId || book.title === view.actualId
-              )
+              ) as FormattedBook & { _recommendation_count: number; _percentile: number }
             : null;
 
         const tabTitle = selectedBook

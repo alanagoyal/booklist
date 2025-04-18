@@ -100,9 +100,15 @@ export function DataGrid<T extends Record<string, any>>({
       Object.entries(filters).map(([key, value]) => [key, value?.toLowerCase()])
     );
 
+    // Get list of valid filter fields from columns
+    const validFilterFields = columns.map(col => String(col.field));
+
     return data.filter((item) => {
       return Object.entries(lowercaseFilters).every(([field, filterValue]) => {
         if (!filterValue) return true;
+
+        // Skip filters that don't correspond to any column
+        if (!validFilterFields.includes(field) && field !== 'recommenders') return true;
 
         // Filter by recommender full name
         if (field === "recommenders") {
@@ -116,11 +122,10 @@ export function DataGrid<T extends Record<string, any>>({
         }
 
         const value = String(item[field as keyof T] || "").toLowerCase();
-
         return value.includes(filterValue);
       });
     });
-  }, [data, filters]);
+  }, [data, filters, columns]);
 
   // Memoize sorted data separately
   const filteredAndSortedData = useMemo(() => {
@@ -152,13 +157,11 @@ export function DataGrid<T extends Record<string, any>>({
 
   // Notify parent of filtered data changes
   useEffect(() => {
-    onFilteredDataChange?.(filteredData.length);
-  }, [filteredData, onFilteredDataChange]);
-
-  // Update filtered data count
-  useEffect(() => {
-    bookCountManager.update(data.length, filteredData.length);
-  }, [data.length, filteredData.length]);
+    if (onFilteredDataChange) {
+      onFilteredDataChange(filteredAndSortedData.length);
+      bookCountManager.updateCount();
+    }
+  }, [filteredAndSortedData.length, onFilteredDataChange]);
 
   // Update state when URL params change
   useEffect(() => {

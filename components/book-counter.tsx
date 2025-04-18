@@ -4,27 +4,23 @@ import { createPortal } from 'react-dom';
 import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 
-// Global event for updating book counts
-const BOOK_COUNT_UPDATE = 'BOOK_COUNT_UPDATE';
-
-type BookCountEvent = {
-  total: number;
-  filtered: number;
-};
-
-// Singleton pattern for book count updates
+// Global state manager for book counts
 export const bookCountManager = {
-  _lastUpdate: { total: 0, filtered: 0 },
-  update(total: number, filtered: number) {
-    this._lastUpdate = { total, filtered };
-    if (typeof window !== 'undefined') {
-      window.dispatchEvent(
-        new CustomEvent<BookCountEvent>(BOOK_COUNT_UPDATE, {
-          detail: { total, filtered }
-        })
-      );
-    }
+  _lastUpdate: 0,
+  _callbacks: new Set<() => void>(),
+
+  addCallback(callback: () => void) {
+    this._callbacks.add(callback);
+    return () => {
+      this._callbacks.delete(callback);
+    };
   },
+
+  updateCount() {
+    this._lastUpdate = Date.now();
+    this._callbacks.forEach((callback) => callback());
+  },
+
   getLastUpdate() {
     return this._lastUpdate;
   }
@@ -42,9 +38,10 @@ export function LoadingState() {
 interface BookCounterProps {
   total: number;
   filtered: number;
+  viewMode?: 'books' | 'recommenders';
 }
 
-export function BookCounter({ total, filtered }: BookCounterProps) {
+export function BookCounter({ total, filtered, viewMode = 'books' }: BookCounterProps) {
   const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
   const isHomePage = pathname === '/';
@@ -56,11 +53,17 @@ export function BookCounter({ total, filtered }: BookCounterProps) {
   // Only show on home page
   if (!mounted || !isHomePage) return null;
 
+  const text = viewMode === 'books'
+    ? filtered === total 
+      ? `${total} books`
+      : `${filtered} of ${total} books`
+    : filtered === total
+      ? `${total} recommenders`
+      : `${filtered} of ${total} recommenders`;
+
   return createPortal(
     <div className="fixed bottom-5 right-5 text-text/70 text-xs whitespace-pre-line transition-all duration-200 bg-background/80 backdrop-blur-sm p-2 selection:bg-main selection:text-mtext md:hover:bg-accent/50">
-      {filtered === total 
-        ? `${total} books`
-        : `${filtered} of ${total} books`}
+      {text}
     </div>,
     document.body
   );
