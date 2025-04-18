@@ -1,5 +1,5 @@
-import { BookList } from '@/components/books';
-import { FormattedBook, FormattedRecommender, RelatedBook } from "@/types";
+import { BookList } from '@/components/book-list';
+import { FormattedBook, FormattedRecommender } from "@/types";
 import { supabase } from "@/utils/supabase/client";
 
 // Force static generation and disable ISR
@@ -99,9 +99,6 @@ async function getBooks(): Promise<FormattedBook[]> {
       source_link: rec.source_link
     }))
   }));
-
-  // log an example book from the db
-  console.log("Example book from DB:", formattedBooks[0]);
 
   // Cache the results
   cachedBooks = formattedBooks;
