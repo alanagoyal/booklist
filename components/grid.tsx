@@ -241,6 +241,30 @@ export function DataGrid<T extends Record<string, any>>({
     [onRowClick, openDropdown, isDropdownClosing]
   );
 
+  // Filter handlers
+  const handleFilterChange = useCallback((field: string, value: string) => {
+    setFilters((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  }, []);
+
+  // Sort handlers
+  const handleSort = useCallback((field: string, direction: SortDirection) => {
+    setSortConfig((prevConfig) => {
+      // If clicking the same sort option that's currently active, disable sorting
+      if (prevConfig.field === field && prevConfig.direction === direction) {
+        return { field: "", direction: null };
+      }
+      // Otherwise apply the new sort
+      return {
+        field,
+        direction,
+      };
+    });
+    setOpenDropdown(null);
+  }, []);
+
   // Keep resize observer for header width syncing
   useEffect(() => {
     const observer = new ResizeObserver(() => {
@@ -321,30 +345,6 @@ export function DataGrid<T extends Record<string, any>>({
     },
     [isDropdownClosing, openDropdown]
   );
-
-  // Filter handlers
-  const handleFilterChange = (field: string, value: string) => {
-    setFilters((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
-
-  // Sort handlers
-  const handleSort = (field: string, direction: SortDirection) => {
-    setSortConfig((prevConfig) => {
-      // If clicking the same sort option that's currently active, disable sorting
-      if (prevConfig.field === field && prevConfig.direction === direction) {
-        return { field: "", direction: null };
-      }
-      // Otherwise apply the new sort
-      return {
-        field,
-        direction,
-      };
-    });
-    setOpenDropdown(null);
-  };
 
   // Dropdown menu
   const renderDropdownMenu = useCallback(
