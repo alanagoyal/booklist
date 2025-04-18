@@ -46,18 +46,18 @@ export function BookList({
 
   // Keep viewHistory in sync with URL
   useEffect(() => {
-    if (searchParams.get("view")) {
-      const [actualId] = searchParams.get("view")!.split("--");
+    if (searchParams.get("key")) {
+      const [actualId] = searchParams.get("key")!.split("--");
       const isRecommender = initialRecommenders.find((r) => r.id === actualId);
 
       setViewHistory((prev) => {
         // Don't add if it's already the most recent view
-        if (prev[prev.length - 1]?.id === searchParams.get("view")) return prev;
+        if (prev[prev.length - 1]?.id === searchParams.get("key")) return prev;
 
         return [
           ...prev,
           {
-            id: searchParams.get("view")!, // Keep full viewId with timestamp in history
+            id: searchParams.get("key")!, // Keep full viewId with timestamp in history
             actualId, // Store the real ID separately
             type: isRecommender ? "recommender" : "book",
           },
@@ -77,14 +77,14 @@ export function BookList({
     if (viewHistory.length <= 1) {
       // If there's only one view, remove it completely
       const params = new URLSearchParams(searchParams.toString());
-      params.delete("view");
+      params.delete("key");
       router.push(`?${params.toString()}`, { scroll: false });
       setViewHistory([]);
     } else {
       // If there are multiple views, just remove the topmost one
       const previousView = viewHistory[viewHistory.length - 2]; // Get second-to-last view
       const params = new URLSearchParams(searchParams.toString());
-      params.set("view", previousView.id);
+      params.set("key", previousView.id);
       router.push(`?${params.toString()}`, { scroll: false });
 
       // Update state to remove only the last view
@@ -273,7 +273,7 @@ export function BookList({
 
               // Update URL to show only the clicked view
               const params = new URLSearchParams(searchParams.toString());
-              params.set("view", view.id); // Use the original ID with timestamp
+              params.set("key", view.id); // Use the original ID with timestamp
               router.push(`?${params.toString()}`, { scroll: false });
 
               // Update the view history state

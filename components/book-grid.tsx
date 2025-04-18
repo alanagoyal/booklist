@@ -17,7 +17,7 @@ function RecommenderCell({ original }: { original: EnhancedBook }) {
   
   const handleRecommenderClick = useCallback((id: string) => {
     const params = new URLSearchParams(searchParams.toString());
-    params.set('view', `${id}--${Date.now()}`);
+    params.set('key', `${id}--${Date.now()}`);
     router.push(`?${params.toString()}`, { scroll: false });
   }, [searchParams, router]);
   
@@ -142,7 +142,7 @@ export default function BookGrid({ data, onFilteredDataChange }: BookGridProps) 
   // Row click handler
   const handleRowClick = useCallback((book: EnhancedBook) => {
     const params = new URLSearchParams(searchParams.toString());
-    params.set('view', `${book.id || book.title}--${Date.now()}`);
+    params.set('key', `${book.id || book.title}--${Date.now()}`);
     router.push(`?${params.toString()}`, { scroll: false });
   }, [searchParams, router]);
 

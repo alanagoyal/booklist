@@ -108,7 +108,7 @@ export default function BookDetail({
 
   const handleEntityClick = (id: string) => {
     const params = new URLSearchParams(searchParams.toString());
-    params.set("view", `${id}--${Date.now()}`);
+    params.set("key", `${id}--${Date.now()}`);
     router.push(`?${params.toString()}`, { scroll: false });
   };
 

@@ -78,7 +78,7 @@ export function DataGrid<T extends Record<string, any>>({
     const params = Object.fromEntries(searchParams.entries());
     const filterParams: { [key: string]: string } = {};
     Object.entries(params).forEach(([key, value]) => {
-      if (key !== "sort" && key !== "dir") {
+      if (key !== "sort" && key !== "dir" && key !== "key") {
         filterParams[key] = value;
       }
     });
@@ -198,7 +198,7 @@ export function DataGrid<T extends Record<string, any>>({
     const params = Object.fromEntries(searchParams.entries());
     const filterParams: { [key: string]: string } = {};
     Object.entries(params).forEach(([key, value]) => {
-      if (key !== "sort" && key !== "dir" && key !== "view") {
+      if (key !== "sort" && key !== "dir" && key !== "key") {
         filterParams[key] = value;
       }
     });
