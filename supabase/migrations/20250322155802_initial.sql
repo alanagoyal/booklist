@@ -195,24 +195,6 @@ BEGIN
     GROUP BY books.id
     ORDER BY COUNT(DISTINCT recommendations.id) DESC
     LIMIT p_limit OFFSET p_offset
-  ),
-  related_book_recommenders AS (
-    SELECT 
-      br.id as book_id,
-      json_agg(
-        json_build_object(
-          'id', rb.id,
-          'title', rb.title,
-          'author', rb.author,
-          'recommender_count', COUNT(DISTINCT r2.id)
-        ) ORDER BY COUNT(DISTINCT r2.id) DESC
-      ) FILTER (WHERE rb.id IS NOT NULL) as related_books
-    FROM book_recommendations br
-    JOIN recommendations r1 ON r1.book_id = br.id
-    JOIN recommendations r2 ON r2.person_id = r1.person_id AND r2.book_id != br.id
-    JOIN books rb ON rb.id = r2.book_id
-    GROUP BY br.id
-    HAVING COUNT(DISTINCT r2.id) >= 2
   )
   SELECT
     br.id,
@@ -222,9 +204,8 @@ BEGIN
     br.genre,
     br.amazon_url,
     br.recommendations,
-    COALESCE(rbr.related_books, '[]'::json) as related_books
+    '[]'::json as related_books
   FROM book_recommendations br
-  LEFT JOIN related_book_recommenders rbr ON rbr.book_id = br.id
   ORDER BY br.recommendation_count DESC;
 END;
 $$;
