@@ -142,7 +142,13 @@ export function BookList({
         zIndex: 50 + index, // Ensure proper stacking
       };
     });
-  }, [viewHistory, mounted]);
+  }, [
+    viewHistory,
+    mounted,
+    tabConfig.baseTopOffset,
+    tabConfig.bottomMargin,
+    tabConfig.height,
+  ]);
 
   if (!mounted) {
     return null;
