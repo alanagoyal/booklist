@@ -3,19 +3,20 @@ import { FormattedBook, FormattedRecommender } from "@/types";
 import { supabase } from "@/utils/supabase/client";
 
 // Force static generation and disable ISR
-export const dynamic = 'force-static';
-export const revalidate = false;
-// Add fetchCache directive to ensure data is cached
-export const fetchCache = 'force-cache';
+export const dynamic = process.env.NODE_ENV === 'production' ? 'force-static' : 'force-dynamic';
+export const revalidate = process.env.NODE_ENV === 'production' ? false : 0;
 
-// Create a cache for the data
-let cachedBooks: FormattedBook[] | null = null;
-let cachedRecommenders: FormattedRecommender[] | null = null;
+// Add fetchCache directive to ensure data is cached in production
+export const fetchCache = process.env.NODE_ENV === 'production' ? 'force-cache' : 'default-no-store';
+
+// Create a cache for the data (only in production)
+let cachedBooks: FormattedBook[] | undefined = undefined;
+let cachedRecommenders: FormattedRecommender[] | undefined = undefined;
 
 // Fetch books at build time
 async function getBooks(): Promise<FormattedBook[]> {
-  // Return cached data if available
-  if (cachedBooks) {
+  // Return cached data if available (only in production)
+  if (process.env.NODE_ENV === 'production' && cachedBooks) {
     return cachedBooks;
   }
 
@@ -92,14 +93,16 @@ async function getBooks(): Promise<FormattedBook[]> {
     }))
   }));
 
-  // Cache the results
-  cachedBooks = formattedBooks;
+  // Cache the results (only in production)
+  if (process.env.NODE_ENV === 'production') {
+    cachedBooks = formattedBooks;
+  }
   return formattedBooks;
 }
 
 async function getRecommenders(): Promise<FormattedRecommender[]> {
-  // Return cached data if available
-  if (cachedRecommenders) {
+  // Return cached data if available (only in production)
+  if (process.env.NODE_ENV === 'production' && cachedRecommenders) {
     return cachedRecommenders;
   }
 
@@ -157,8 +160,10 @@ async function getRecommenders(): Promise<FormattedRecommender[]> {
 
   const result = formattedRecommenders.filter((recommender): recommender is FormattedRecommender => recommender !== null);
   
-  // Cache the results
-  cachedRecommenders = result;
+  // Cache the results (only in production)
+  if (process.env.NODE_ENV === 'production') {
+    cachedRecommenders = result;
+  }
   return result;
 }
 
