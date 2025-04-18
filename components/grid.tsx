@@ -108,7 +108,16 @@ export function DataGrid<T extends Record<string, any>>({
         if (!filterValue) return true;
 
         // Skip filters that don't correspond to any column
-        if (!validFilterFields.includes(field) && field !== 'recommenders') return true;
+        if (!validFilterFields.includes(field)) return true;
+
+        // Special handling for description fields
+        if (field === "book_description") {
+          return String(item.description || "").toLowerCase().includes(filterValue);
+        }
+
+        if (field === "recommender_description") {
+          return String(item.description || "").toLowerCase().includes(filterValue);
+        }
 
         // Filter by recommender full name
         if (field === "recommenders") {
@@ -135,10 +144,17 @@ export function DataGrid<T extends Record<string, any>>({
     const direction = sortConfig.direction;
 
     return [...filteredData].sort((a, b) => {
-      const aValue = a[field as keyof T];
-      const bValue = b[field as keyof T];
+      // Special handling for description fields
+      if (sortConfig.field === "book_description" || sortConfig.field === "recommender_description") {
+        const aValue = String(a.description || "").toLowerCase();
+        const bValue = String(b.description || "").toLowerCase();
+        return sortConfig.direction === "asc"
+          ? aValue.localeCompare(bValue)
+          : bValue.localeCompare(aValue);
+      }
 
-      if (field === "recommenders") {
+      // Handle recommender sorting
+      if (sortConfig.field === "recommenders") {
         // Sort by number of recommenders (popularity)
         const aRecs = (a as any).recommendations?.length || 0;
         const bRecs = (b as any).recommendations?.length || 0;
@@ -146,12 +162,12 @@ export function DataGrid<T extends Record<string, any>>({
         return (bRecs - aRecs) * sortDirection;
       }
 
-      if (aValue === bValue) return 0;
-      if (aValue === null || aValue === undefined) return 1;
-      if (bValue === null || bValue === undefined) return -1;
+      if (a[field as keyof T] === b[field as keyof T]) return 0;
+      if (a[field as keyof T] === null || a[field as keyof T] === undefined) return 1;
+      if (b[field as keyof T] === null || b[field as keyof T] === undefined) return -1;
 
       const sortDirection = direction === "asc" ? 1 : -1;
-      return aValue < bValue ? -sortDirection : sortDirection;
+      return a[field as keyof T] < b[field as keyof T] ? -sortDirection : sortDirection;
     });
   }, [filteredData, sortConfig.field, sortConfig.direction]);
 

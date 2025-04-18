@@ -9,6 +9,7 @@ type EnhancedRecommender = {
   id: string;
   full_name: string;
   type: string;
+  description: string | null;
   recommendations: FormattedBook[];
   _book_count: number;
   _percentile: number;
@@ -22,13 +23,16 @@ interface RecommenderGridProps {
 function BookCell({ original }: { original: EnhancedRecommender }) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  
-  const handleBookClick = useCallback((id: string) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set('view', `${id}--${Date.now()}`);
-    router.push(`?${params.toString()}`, { scroll: false });
-  }, [searchParams, router]);
-  
+
+  const handleBookClick = useCallback(
+    (id: string) => {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set("view", `${id}--${Date.now()}`);
+      router.push(`?${params.toString()}`, { scroll: false });
+    },
+    [searchParams, router]
+  );
+
   return (
     <div className="whitespace-pre-line line-clamp-2 text-text">
       <span className="break-words">
@@ -50,7 +54,8 @@ function BookCell({ original }: { original: EnhancedRecommender }) {
         ))}
         {original.recommendations.length > 1 && (
           <span className="text-text/70">
-            {" "}+ {original.recommendations.length - 1} more
+            {" "}
+            + {original.recommendations.length - 1} more
           </span>
         )}
       </span>
@@ -90,46 +95,63 @@ const getBackgroundColor = (count: number, maxCount: number): string => {
   }
 };
 
-export default function RecommenderGrid({ data, onFilteredDataChange }: RecommenderGridProps) {
+export default function RecommenderGrid({
+  data,
+  onFilteredDataChange,
+}: RecommenderGridProps) {
   // Hooks
   const router = useRouter();
   const searchParams = useSearchParams();
 
   // Transform recommender data into grid format
   const enhancedData: EnhancedRecommender[] = useMemo(() => {
-    return data.map(recommender => ({
-      id: recommender.id,
-      full_name: recommender.full_name,
-      type: recommender.type || 'Unknown',
-      recommendations: recommender.recommendations.map(book => ({
-        ...book,
-        genres: book.genre || [], // Convert genre to genres
-        amazon_url: book.amazon_url || '', // Ensure amazon_url is always a string
-        recommendations: [], // Add empty recommendations array
-      })) as FormattedBook[],
-      _book_count: recommender.recommendations.length,
-      _percentile: 0
-    })).map((rec, _, arr) => {
-      const maxBooks = Math.max(...arr.map(r => r._book_count));
-      return {
-        ...rec,
-        _percentile: Math.round((rec._book_count / maxBooks) * 100)
-      };
-    }).sort((a, b) => a.full_name.localeCompare(b.full_name));
+    return data
+      .map((recommender) => ({
+        id: recommender.id,
+        full_name: recommender.full_name,
+        type: recommender.type || "Unknown",
+        description: recommender.description || null,
+        recommendations: recommender.recommendations.map((book) => ({
+          ...book,
+          genres: book.genre || [], // Convert genre to genres
+          amazon_url: book.amazon_url || "", // Ensure amazon_url is always a string
+          recommendations: [], // Add empty recommendations array
+        })) as FormattedBook[],
+        _book_count: recommender.recommendations.length,
+        _percentile: 0,
+      }))
+      .map((rec, _, arr) => {
+        const maxBooks = Math.max(...arr.map((r) => r._book_count));
+        return {
+          ...rec,
+          _percentile: Math.round((rec._book_count / maxBooks) * 100),
+        };
+      })
+      .sort((a, b) => a.full_name.localeCompare(b.full_name));
   }, [data]);
 
   // Row click handler
-  const handleRowClick = useCallback((recommender: EnhancedRecommender) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set('view', `${recommender.id}--${Date.now()}`);
-    router.push(`?${params.toString()}`, { scroll: false });
-  }, [searchParams, router]);
+  const handleRowClick = useCallback(
+    (recommender: EnhancedRecommender) => {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set("view", `${recommender.id}--${Date.now()}`);
+      router.push(`?${params.toString()}`, { scroll: false });
+    },
+    [searchParams, router]
+  );
 
   // Columns
   const columns = [
     {
       field: "full_name" as keyof EnhancedRecommender,
-      header: "Recommender",
+      header: "Name",
+    },
+    {
+      field: "recommendations" as keyof EnhancedRecommender,
+      header: "Recommendations",
+      cell: (props: { row: { original: EnhancedRecommender } }) => (
+        <BookCell original={props.row.original} />
+      ),
     },
     {
       field: "type" as keyof EnhancedRecommender,
@@ -141,16 +163,18 @@ export default function RecommenderGrid({ data, onFilteredDataChange }: Recommen
       ),
     },
     {
-      field: "recommendations" as keyof EnhancedRecommender,
-      header: "Recommendations",
+      field: "recommender_description" as keyof EnhancedRecommender,
+      header: "Description",
       cell: (props: { row: { original: EnhancedRecommender } }) => (
-        <BookCell original={props.row.original} />
+        <div className="whitespace-pre-line line-clamp-2 text-text selection:bg-main selection:text-mtext transition-all duration-200">
+          {props.row.original.description || ""}
+        </div>
       ),
     },
     {
       field: "_book_count" as keyof EnhancedRecommender,
       header: "Book Count",
-    }
+    },
   ];
 
   return (
@@ -158,7 +182,7 @@ export default function RecommenderGrid({ data, onFilteredDataChange }: Recommen
       data={enhancedData}
       columns={columns}
       getRowClassName={(row: EnhancedRecommender) =>
-        `cursor-pointer transition-colors duration-200 ${getBackgroundColor(row._book_count, Math.max(...enhancedData.map(r => r._book_count)))}`
+        `cursor-pointer transition-colors duration-200 ${getBackgroundColor(row._book_count, Math.max(...enhancedData.map((r) => r._book_count)))}`
       }
       onRowClick={handleRowClick}
       onFilteredDataChange={onFilteredDataChange}

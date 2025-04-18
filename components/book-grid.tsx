@@ -161,7 +161,15 @@ export default function BookGrid({ data, onFilteredDataChange }: BookGridProps) 
         <RecommenderCell original={props.row.original} />
       ),
     },
-    { field: "description" as keyof FormattedBook, header: "Description" },
+    {
+      field: "book_description" as keyof FormattedBook,
+      header: "Description",
+      cell: (props: { row: { original: EnhancedBook } }) => (
+        <div className="whitespace-pre-line line-clamp-2 text-text selection:bg-main selection:text-mtext transition-all duration-200">
+          {props.row.original.description}
+        </div>
+      ),
+    },
     {
       field: "genres" as keyof FormattedBook,
       header: "Genre",
