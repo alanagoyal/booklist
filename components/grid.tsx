@@ -53,11 +53,17 @@ export function DataGrid<T extends Record<string, any>>({
   const [isDropdownClosing, setIsDropdownClosing] = useState(false);
 
   // Get current view and sort configs directly from URL
-  const currentView = (searchParams.get('view') as 'books' | 'recommenders') || 'books';
+  const currentView =
+    (searchParams.get("view") as "books" | "recommenders") || "books";
   const directionParam = searchParams?.get(`${currentView}_dir`);
   const sortConfig = {
-    field: searchParams?.get(`${currentView}_sort`) || (currentView === 'books' ? 'recommenders' : 'recommendations'),
-    direction: (directionParam === 'asc' || directionParam === 'desc') ? directionParam : 'desc'
+    field:
+      searchParams?.get(`${currentView}_sort`) ||
+      (currentView === "books" ? "recommenders" : "recommendations"),
+    direction:
+      directionParam === "asc" || directionParam === "desc"
+        ? directionParam
+        : "desc",
   };
 
   // Initialize filters from URL params
@@ -65,7 +71,12 @@ export function DataGrid<T extends Record<string, any>>({
     const params = Object.fromEntries(searchParams.entries());
     const filterParams: { [key: string]: string } = {};
     Object.entries(params).forEach(([key, value]) => {
-      if (!key.includes('sort') && !key.includes('dir') && key !== 'key' && key !== 'view') {
+      if (
+        !key.includes("sort") &&
+        !key.includes("dir") &&
+        key !== "key" &&
+        key !== "view"
+      ) {
         filterParams[key] = value;
       }
     });
@@ -96,7 +107,7 @@ export function DataGrid<T extends Record<string, any>>({
     );
 
     // Get list of valid filter fields from columns
-    const validFilterFields = columns.map(col => String(col.field));
+    const validFilterFields = columns.map((col) => String(col.field));
 
     return data.filter((item) => {
       return Object.entries(lowercaseFilters).every(([field, filterValue]) => {
@@ -107,11 +118,15 @@ export function DataGrid<T extends Record<string, any>>({
 
         // Special handling for description fields
         if (field === "book_description") {
-          return String(item.description || "").toLowerCase().includes(filterValue);
+          return String(item.description || "")
+            .toLowerCase()
+            .includes(filterValue);
         }
 
         if (field === "recommender_description") {
-          return String(item.description || "").toLowerCase().includes(filterValue);
+          return String(item.description || "")
+            .toLowerCase()
+            .includes(filterValue);
         }
 
         // Filter by recommender full name
@@ -128,8 +143,9 @@ export function DataGrid<T extends Record<string, any>>({
         // Filter by recommendation title
         if (field === "recommendations") {
           const recommendations = (item as any).recommendations || [];
-          const recommendationTitles = recommendations
-            .map((rec: any) => rec.title.toLowerCase());
+          const recommendationTitles = recommendations.map((rec: any) =>
+            rec.title.toLowerCase()
+          );
           return recommendationTitles.some((title: string) =>
             title.includes(filterValue)
           );
@@ -173,11 +189,15 @@ export function DataGrid<T extends Record<string, any>>({
       }
 
       if (a[field as keyof T] === b[field as keyof T]) return 0;
-      if (a[field as keyof T] === null || a[field as keyof T] === undefined) return 1;
-      if (b[field as keyof T] === null || b[field as keyof T] === undefined) return -1;
+      if (a[field as keyof T] === null || a[field as keyof T] === undefined)
+        return 1;
+      if (b[field as keyof T] === null || b[field as keyof T] === undefined)
+        return -1;
 
       const sortDirection = direction === "asc" ? 1 : -1;
-      return a[field as keyof T] < b[field as keyof T] ? -sortDirection : sortDirection;
+      return a[field as keyof T] < b[field as keyof T]
+        ? -sortDirection
+        : sortDirection;
     });
   }, [filteredData, sortConfig]);
 
@@ -194,7 +214,12 @@ export function DataGrid<T extends Record<string, any>>({
     const params = Object.fromEntries(searchParams.entries());
     const filterParams: { [key: string]: string } = {};
     Object.entries(params).forEach(([key, value]) => {
-      if (!key.includes('sort') && !key.includes('dir') && key !== 'key' && key !== 'view') {
+      if (
+        !key.includes("sort") &&
+        !key.includes("dir") &&
+        key !== "key" &&
+        key !== "view"
+      ) {
         filterParams[key] = value;
       }
     });
@@ -209,8 +234,8 @@ export function DataGrid<T extends Record<string, any>>({
     const newParams = new URLSearchParams(currentParams.toString());
 
     // Initialize default parameters if they don't exist
-    if (!currentParams.has('view')) {
-      newParams.set('view', 'books');
+    if (!currentParams.has("view")) {
+      newParams.set("view", "books");
     }
 
     // Update filter params
@@ -267,31 +292,34 @@ export function DataGrid<T extends Record<string, any>>({
   }, []);
 
   // Sort handlers
-  const handleSort = useCallback((field: string, direction: SortDirection) => {
-    const params = new URLSearchParams(searchParams?.toString() ?? '');
-    const view = params.get('view') as 'books' | 'recommenders' || 'books';
-    
-    // Get current sort params
-    const currentField = params.get(`${view}_sort`);
-    const currentDir = params.get(`${view}_dir`);
+  const handleSort = useCallback(
+    (field: string, direction: SortDirection) => {
+      const params = new URLSearchParams(searchParams?.toString() ?? "");
+      const view = (params.get("view") as "books" | "recommenders") || "books";
 
-    // If clicking the same sort option that's currently active, disable sorting
-    if (currentField === field && currentDir === direction) {
-      params.delete(`${view}_sort`);
-      params.delete(`${view}_dir`);
-    } else {
-      // Otherwise apply the new sort
-      params.set(`${view}_sort`, field);
-      if (direction) {
-        params.set(`${view}_dir`, direction);
-      } else {
+      // Get current sort params
+      const currentField = params.get(`${view}_sort`);
+      const currentDir = params.get(`${view}_dir`);
+
+      // If clicking the same sort option that's currently active, disable sorting
+      if (currentField === field && currentDir === direction) {
+        params.delete(`${view}_sort`);
         params.delete(`${view}_dir`);
+      } else {
+        // Otherwise apply the new sort
+        params.set(`${view}_sort`, field);
+        if (direction) {
+          params.set(`${view}_dir`, direction);
+        } else {
+          params.delete(`${view}_dir`);
+        }
       }
-    }
 
-    router.push(`/?${params.toString()}`, { scroll: false });
-    setOpenDropdown(null);
-  }, [router, searchParams]);
+      router.push(`/?${params.toString()}`, { scroll: false });
+      setOpenDropdown(null);
+    },
+    [router, searchParams]
+  );
 
   // Keep resize observer for header width syncing
   useEffect(() => {
@@ -519,10 +547,7 @@ export function DataGrid<T extends Record<string, any>>({
   const renderCell = useCallback(
     ({ column, row }: { column: ColumnDef<T>; row: T }) => {
       return (
-        <div
-          key={String(column.field)}
-          className="px-3 py-2"
-        >
+        <div key={String(column.field)} className="px-3 py-2">
           {column.cell ? (
             <div className="whitespace-pre-line transition-all duration-200 text-text selection:bg-main selection:text-mtext line-clamp-2">
               {column.cell({ row: { original: row } })}
@@ -549,10 +574,10 @@ export function DataGrid<T extends Record<string, any>>({
           }`}
           style={{
             gridTemplateColumns: `repeat(${columns.length}, minmax(200px, 1fr))`,
-            position: 'absolute',
+            position: "absolute",
             top: `${virtualRow.start}px`,
             left: 0,
-            width: '100%',
+            width: "100%",
             height: `${virtualRow.size}px`,
           }}
           onClick={(e) => handleRowClick(e, row)}
@@ -570,19 +595,6 @@ export function DataGrid<T extends Record<string, any>>({
     getScrollElement: () => parentRef.current,
     estimateSize: () => 56, // Adjust based on your actual row height
   });
-
-  const paddingTop = rowVirtualizer.getVirtualItems()[0]?.start || 0;
-  const paddingBottom =
-    rowVirtualizer.getTotalSize() -
-    (rowVirtualizer.getVirtualItems()[rowVirtualizer.getVirtualItems().length - 1]?.end || 0);
-
-  // Memoize rendered rows
-  const renderedRows = useMemo(() => {
-    return rowVirtualizer.getVirtualItems().map((virtualRow) => {
-      const row = filteredAndSortedData[virtualRow.index];
-      return renderRow(row, virtualRow);
-    });
-  }, [filteredAndSortedData, renderRow, rowVirtualizer]);
 
   // Don't render content until mounted to prevent hydration mismatch
   if (!mounted) {
@@ -609,8 +621,8 @@ export function DataGrid<T extends Record<string, any>>({
             {columns.map(renderHeader)}
           </div>
         </div>
-        
-        <div 
+
+        <div
           className="relative"
           style={{
             height: `${rowVirtualizer.getTotalSize()}px`,
@@ -626,10 +638,10 @@ export function DataGrid<T extends Record<string, any>>({
                 }`}
                 style={{
                   gridTemplateColumns: `repeat(${columns.length}, minmax(200px, 1fr))`,
-                  position: 'absolute',
+                  position: "absolute",
                   top: `${virtualRow.start}px`,
                   left: 0,
-                  width: '100%',
+                  width: "100%",
                   height: `${virtualRow.size}px`,
                 }}
                 onClick={(e) => handleRowClick(e, row)}
