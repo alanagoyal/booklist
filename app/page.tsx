@@ -1,5 +1,5 @@
-import { BookList } from '@/components/books';
-import { FormattedBook, FormattedRecommender, RelatedBook } from "@/types";
+import { BookList } from '@/components/book-list';
+import { FormattedBook, FormattedRecommender } from "@/types";
 import { supabase } from "@/utils/supabase/client";
 
 // Force static generation and disable ISR

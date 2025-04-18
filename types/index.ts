@@ -101,20 +101,9 @@ export type RecommenderReference = {
 
 export type EnhancedBook = FormattedBook & {
   _recommendation_count: number;
-  _top_recommenders?: RecommenderReference[];  // Cached top recommenders
-  _percentile: number;  // Added percentile
+  _percentile: number;  
   related_books?: RelatedBook[];
-  recommendations?: {
-    recommender: {
-      id: string;
-      full_name: string;
-      url: string | null;
-      type: string;
-    } | null;
-    source: string;
-    source_link: string | null;
-  }[];
-}
+};
 
 // Re-export DatabaseBook type for backward compatibility
 export type DatabaseBook = DbBookWithRecommendations;

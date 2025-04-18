@@ -174,16 +174,18 @@ BEGIN
       COALESCE(
         json_agg(
           json_build_object(
-            'recommender', json_build_object(
-              'id', people.id,
-              'full_name', people.full_name,
-              'url', people.url,
-              'type', people.type
-            ),
+            'recommender', CASE WHEN people.id IS NOT NULL THEN
+              json_build_object(
+                'id', people.id,
+                'full_name', people.full_name,
+                'url', people.url,
+                'type', people.type
+              )
+            ELSE NULL END,
             'source', recommendations.source,
             'source_link', recommendations.source_link
-          )
-        ) FILTER (WHERE people.id IS NOT NULL),
+          ) ORDER BY people.full_name ASC
+        ) FILTER (WHERE recommendations.id IS NOT NULL),
         '[]'::json
       ) as recommendations,
       COUNT(DISTINCT recommendations.id) as recommendation_count
@@ -191,59 +193,26 @@ BEGIN
     LEFT JOIN recommendations ON books.id = recommendations.book_id
     LEFT JOIN people ON recommendations.person_id = people.id
     GROUP BY books.id
-    -- Pre-filter to improve performance
     ORDER BY COUNT(DISTINCT recommendations.id) DESC
-    -- Apply limit and offset at this stage to reduce the dataset for related books calculation
     LIMIT p_limit OFFSET p_offset
-  ),
-  -- Materialize the book_recommendations CTE to improve performance
-  book_recommendations_materialized AS (
-    SELECT * FROM book_recommendations
   ),
   related_book_recommenders AS (
     SELECT 
       br.id as book_id,
-      rb.id as related_book_id,
-      rb.title as related_book_title,
-      rb.author as related_book_author,
-      string_agg(DISTINCT p2.full_name, ', ') as recommenders,
-      COUNT(DISTINCT r2.id) as recommender_count
-    FROM book_recommendations_materialized br
-    -- Get recommendations for the current book
+      json_agg(
+        json_build_object(
+          'id', rb.id,
+          'title', rb.title,
+          'author', rb.author,
+          'recommender_count', COUNT(DISTINCT r2.id)
+        ) ORDER BY COUNT(DISTINCT r2.id) DESC
+      ) FILTER (WHERE rb.id IS NOT NULL) as related_books
+    FROM book_recommendations br
     JOIN recommendations r1 ON r1.book_id = br.id
-    -- Find other books recommended by the same people
     JOIN recommendations r2 ON r2.person_id = r1.person_id AND r2.book_id != br.id
-    -- Join to get book details
     JOIN books rb ON rb.id = r2.book_id
-    -- Join to get recommender details
-    JOIN people p2 ON r2.person_id = p2.id
-    GROUP BY br.id, rb.id, rb.title, rb.author
-    -- Limit to books with at least 2 shared recommendations
+    GROUP BY br.id
     HAVING COUNT(DISTINCT r2.id) >= 2
-  ),
-  related_books_by_recommenders AS (
-    SELECT 
-      book_id,
-      (
-        SELECT json_agg(
-          json_build_object(
-            'id', related_book_id,
-            'title', related_book_title,
-            'author', related_book_author,
-            'recommenders', recommenders,
-            'recommender_count', recommender_count
-          )
-        )
-        FROM (
-          SELECT *
-          FROM related_book_recommenders rbr2
-          WHERE rbr2.book_id = related_book_recommenders.book_id
-          ORDER BY recommender_count DESC
-          LIMIT 3  -- Further limit to top 3 related books for better performance
-        ) t
-      ) as related_books
-    FROM related_book_recommenders
-    GROUP BY book_id
   )
   SELECT
     br.id,
@@ -254,8 +223,8 @@ BEGIN
     br.amazon_url,
     br.recommendations,
     COALESCE(rbr.related_books, '[]'::json) as related_books
-  FROM book_recommendations_materialized br
-  LEFT JOIN related_books_by_recommenders rbr ON rbr.book_id = br.id
+  FROM book_recommendations br
+  LEFT JOIN related_book_recommenders rbr ON rbr.book_id = br.id
   ORDER BY br.recommendation_count DESC;
 END;
 $$;
@@ -297,15 +266,15 @@ BEGIN
       p2.url,
       p2.type,
       string_agg(DISTINCT b.title, ', ') as shared_books,
-      COUNT(DISTINCT r2.book_id) as shared_count
+      COUNT(DISTINCT r2.id) as shared_count
     FROM recommendations r1
     JOIN recommendations r2 ON r1.book_id = r2.book_id AND r1.person_id != r2.person_id
     JOIN people p2 ON r2.person_id = p2.id
     JOIN books b ON r1.book_id = b.id
     WHERE r1.person_id = p_recommender_id
     GROUP BY p2.id, p2.full_name, p2.url, p2.type
-    HAVING COUNT(DISTINCT r2.book_id) >= 2
-    ORDER BY COUNT(DISTINCT r2.book_id) DESC
+    HAVING COUNT(DISTINCT r2.id) >= 2
+    ORDER BY COUNT(DISTINCT r2.id) DESC
     LIMIT 5
   )
   SELECT 
@@ -325,7 +294,7 @@ BEGIN
             'amazon_url', rb.amazon_url,
             'source', rb.source,
             'source_link', rb.source_link
-          )
+          ) ORDER BY rb.title ASC
         )
         FROM recommender_books rb
       ),
@@ -341,7 +310,7 @@ BEGIN
             'type', rr.type,
             'shared_books', rr.shared_books,
             'shared_count', rr.shared_count
-          )
+          ) ORDER BY rr.full_name ASC
         )
         FROM related_recommenders_data rr
       ),
