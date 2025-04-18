@@ -130,6 +130,16 @@ export function DataGrid<T extends Record<string, any>>({
           );
         }
 
+        // Filter by recommendation title
+        if (field === "recommendations") {
+          const recommendations = (item as any).recommendations || [];
+          const recommendationTitles = recommendations
+            .map((rec: any) => rec.title.toLowerCase());
+          return recommendationTitles.some((title: string) =>
+            title.includes(filterValue)
+          );
+        }
+
         const value = String(item[field as keyof T] || "").toLowerCase();
         return value.includes(filterValue);
       });
