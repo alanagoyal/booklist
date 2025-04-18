@@ -80,14 +80,6 @@ async function getBooks(): Promise<FormattedBook[]> {
     description: book.description,
     genres: book.genre,
     amazon_url: book.amazon_url,
-    related_books: (book.related_books || []).map((rb: any) => ({
-      id: rb.id,
-      title: rb.title,
-      author: rb.author,
-      description: "",
-      amazon_url: null,
-      _recommendationCount: rb.recommender_count
-    })),
     recommendations: book.recommendations.map((rec: any) => ({
       recommender: rec.recommender ? {
         id: rec.recommender.id || "",

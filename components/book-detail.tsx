@@ -12,6 +12,7 @@ import { EnhancedBook } from "@/types";
 import { useCallback, useEffect, useState } from "react";
 import { initLogger } from "braintrust";
 import { useRouter, useSearchParams } from "next/navigation";
+import { supabase } from "@/lib/supabase";
 
 // Initialize Braintrust logger
 initLogger({
@@ -25,6 +26,16 @@ type BookDetailProps = {
   stackIndex?: number;
 };
 
+type RelatedBookResponse = {
+  book: {
+    id: string;
+    title: string;
+    author: string;
+    description: string | null;
+    amazon_url: string | null;
+  };
+};
+
 export default function BookDetail({
   book,
   onClose,
@@ -33,9 +44,18 @@ export default function BookDetail({
   const [showSummary, setShowSummary] = useState(false);
   const [recommenderSummary, setRecommenderSummary] = useState<string>("");
   const [isLoadingSummary, setIsLoadingSummary] = useState(false);
+  const [relatedBooks, setRelatedBooks] = useState<Array<{
+    id: string;
+    title: string;
+    author: string;
+    description: string | null;
+    amazon_url: string | null;
+    _recommendationCount: number;
+  }>>([]);
   const router = useRouter();
   const searchParams = useSearchParams();
 
+  // Explain recommenders
   useEffect(() => {
     async function fetchRecommenderSummary() {
       if (showSummary && !recommenderSummary && book.recommendations) {
@@ -84,11 +104,52 @@ export default function BookDetail({
     router.push(`?${params.toString()}`, { scroll: false });
   };
 
-  const relatedBooks =
-    book.related_books?.map((relatedBook) => ({
-      ...relatedBook,
-      recommendations: [],
-    })) || [];
+  // Fetch related books
+  useEffect(() => {
+    async function fetchRelatedBooks() {
+      const { data: relatedBooksData } = await supabase
+        .from('recommendations')
+        .select(`
+          book:books(
+            id,
+            title,
+            author,
+            description,
+            amazon_url
+          )
+        `)
+        .in('person_id', book.recommendations?.map(r => r.recommender?.id) || [])
+        .not('book_id', 'eq', book.id)
+        .order('book_id', { ascending: false })
+        .limit(3) as { data: RelatedBookResponse[] | null };
+
+      // Count occurrences of each book
+      const bookCounts = (relatedBooksData || []).reduce((acc, r) => {
+        const bookId = r.book.id;
+        acc[bookId] = (acc[bookId] || 0) + 1;
+        return acc;
+      }, {} as Record<string, number>);
+
+      const uniqueBooks = (relatedBooksData || [])
+        .map(r => ({
+          id: r.book.id,
+          title: r.book.title,
+          author: r.book.author,
+          description: r.book.description,
+          amazon_url: r.book.amazon_url,
+          _recommendationCount: bookCounts[r.book.id]
+        }))
+        .filter((book, index, self) => 
+          index === self.findIndex((b) => b.id === book.id)
+        )
+        .sort((a, b) => b._recommendationCount - a._recommendationCount)
+        .slice(0, 3);
+
+      setRelatedBooks(uniqueBooks);
+    }
+
+    fetchRelatedBooks();
+  }, [book]);
 
   return (
     <div
@@ -263,7 +324,7 @@ export default function BookDetail({
                     You Might Also Enjoy
                   </h2>
                   <div className="space-y-4">
-                    {relatedBooks.slice(0, 3).map((relatedBook) => (
+                    {relatedBooks.map((relatedBook) => (
                       <div
                         key={relatedBook.id}
                         className="flex items-start gap-3 bg-accent/50 p-2 cursor-pointer transition-colors duration-200 md:hover:bg-accent"
@@ -299,7 +360,8 @@ export default function BookDetail({
                             </span>
                           </div>
                           <div className="text-sm text-text/70">
-                            {relatedBook._recommendationCount}{" "} recommendations
+                            {relatedBook._recommendationCount}{" "}
+                            recommendation{relatedBook._recommendationCount !== 1 && "s"}
                           </div>
                         </div>
                       </div>
