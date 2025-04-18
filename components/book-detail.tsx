@@ -211,7 +211,7 @@ export default function BookDetail({
             </div>
           </div>
 
-          <div className="px-12 py-8">
+          <div className="px-12">
             <div className="space-y-8">
               {/* Book description */}
               {book.description && (
@@ -261,7 +261,7 @@ export default function BookDetail({
                       {book.recommendations.map((rec) => (
                         <div
                           key={rec.recommender?.id}
-                          className="flex items-start gap-3 bg-accent/50 p-2 cursor-pointer transition-colors duration-200 md:hover:bg-accent"
+                          className="flex items-start gap-3 bg-accent/50 p-2 cursor-pointer transition-colors duration-200 md:hover:bg-accent md:hover:border-l-2"
                           onClick={() => handleRecommenderClick(rec.recommender?.id || "")}
                         >
                           <User className="w-5 h-5 mt-0.5 text-text/70 shrink-0" />
@@ -321,13 +321,13 @@ export default function BookDetail({
               {relatedBooks.length > 0 && (
                 <div className="space-y-2">
                   <h2 className="text-base text-text font-bold">
-                    You Might Also Enjoy
+                    Similar Recommendations
                   </h2>
                   <div className="space-y-4">
                     {relatedBooks.map((relatedBook) => (
                       <div
                         key={relatedBook.id}
-                        className="flex items-start gap-3 bg-accent/50 p-2 cursor-pointer transition-colors duration-200 md:hover:bg-accent"
+                        className="flex items-start gap-3 bg-accent/50 p-2 cursor-pointer transition-colors duration-200 md:hover:bg-accent md:hover:border-l-2"
                         onClick={() => {
                           const params = new URLSearchParams(
                             searchParams.toString()

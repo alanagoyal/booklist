@@ -27,13 +27,14 @@ export default function RecommenderDetail({
       className="fixed inset-0 z-20 bg-background/80"
       onClick={handleBackdropClick}
       style={{
-        backgroundColor: stackIndex === 0 ? 'rgba(var(--background), 0.8)' : 'transparent'
+        backgroundColor:
+          stackIndex === 0 ? "rgba(var(--background), 0.8)" : "transparent",
       }}
     >
-      <div 
+      <div
         className="absolute right-0 top-0 bottom-0 w-full md:w-1/2 bg-background border-border md:border-l"
         style={{
-          boxShadow: stackIndex > 0 ? '0 0 20px rgba(0, 0, 0, 0.1)' : 'none'
+          boxShadow: stackIndex > 0 ? "0 0 20px rgba(0, 0, 0, 0.1)" : "none",
         }}
       >
         <div className="overflow-auto h-full">
@@ -55,7 +56,10 @@ export default function RecommenderDetail({
                 <h1 className="text-2xl font-base text-text">
                   {recommender.full_name}
                 </h1>
-                <p className="text-text/70 text-lg">{recommender.recommendations.length} recommendation{recommender.recommendations.length === 1 ? '' : 's'}</p>
+                <p className="text-text/70 text-lg">
+                  {recommender.recommendations.length} recommendation
+                  {recommender.recommendations.length === 1 ? "" : "s"}
+                </p>
               </div>
 
               {/* Recommender metadata */}
@@ -83,7 +87,7 @@ export default function RecommenderDetail({
             </div>
           </div>
 
-          <div className="px-12 py-8">
+          <div className="px-12">
             <div className="space-y-8">
               <div className="space-y-2">
                 <h2 className="text-base text-text font-bold">
@@ -91,11 +95,13 @@ export default function RecommenderDetail({
                 </h2>
                 <div className="text-text space-y-4 max-h-[300px] overflow-y-auto">
                   {recommender.recommendations.map((book) => (
-                    <div 
-                      key={book.id} 
-                      className="flex items-start gap-3 bg-accent/50 p-2 cursor-pointer transition-colors duration-200 md:hover:bg-accent"
+                    <div
+                      key={book.id}
+                      className="flex items-start gap-3 bg-accent/50 p-2 cursor-pointer transition-colors duration-200 md:hover:bg-accent md:hover:border-l-2"
                       onClick={() => {
-                        const params = new URLSearchParams(searchParams.toString());
+                        const params = new URLSearchParams(
+                          searchParams.toString()
+                        );
                         params.set("view", `${book.id}--${Date.now()}`);
                         router.push(`?${params.toString()}`, { scroll: false });
                       }}
@@ -107,9 +113,13 @@ export default function RecommenderDetail({
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
-                                const params = new URLSearchParams(searchParams.toString());
+                                const params = new URLSearchParams(
+                                  searchParams.toString()
+                                );
                                 params.set("view", `${book.id}--${Date.now()}`);
-                                router.push(`?${params.toString()}`, { scroll: false });
+                                router.push(`?${params.toString()}`, {
+                                  scroll: false,
+                                });
                               }}
                               className="text-text text-left md:hover:underline"
                             >
@@ -146,17 +156,21 @@ export default function RecommenderDetail({
               {recommender.related_recommenders.length > 0 && (
                 <div className="space-y-2">
                   <h2 className="text-base text-text font-bold">
-                    You Might Also Enjoy
+                    Similar Recommenders
                   </h2>
                   <div className="space-y-4">
                     {recommender.related_recommenders.map((related) => (
-                      <div 
-                        key={related.id} 
-                        className="flex items-start gap-3 bg-accent/50 p-2 cursor-pointer transition-colors duration-200 md:hover:bg-accent"
+                      <div
+                        key={related.id}
+                        className="flex items-start gap-3 bg-accent/50 p-2 cursor-pointer transition-colors duration-200 md:hover:bg-accent md:hover:border-l-2"
                         onClick={() => {
-                          const params = new URLSearchParams(searchParams.toString());
+                          const params = new URLSearchParams(
+                            searchParams.toString()
+                          );
                           params.set("view", `${related.id}--${Date.now()}`);
-                          router.push(`?${params.toString()}`, { scroll: false });
+                          router.push(`?${params.toString()}`, {
+                            scroll: false,
+                          });
                         }}
                       >
                         <User className="w-5 h-5 mt-0.5 text-text/70 shrink-0" />
@@ -166,9 +180,16 @@ export default function RecommenderDetail({
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  const params = new URLSearchParams(searchParams.toString());
-                                  params.set("view", `${related.id}--${Date.now()}`);
-                                  router.push(`?${params.toString()}`, { scroll: false });
+                                  const params = new URLSearchParams(
+                                    searchParams.toString()
+                                  );
+                                  params.set(
+                                    "view",
+                                    `${related.id}--${Date.now()}`
+                                  );
+                                  router.push(`?${params.toString()}`, {
+                                    scroll: false,
+                                  });
                                 }}
                                 className="text-text text-left font-base md:hover:underline transition-colors duration-200"
                               >
@@ -178,7 +199,8 @@ export default function RecommenderDetail({
                             </span>
                           </div>
                           <div className="text-sm text-text/70">
-                            {related.shared_count} shared recommendation{related.shared_count === 1 ? '' : 's'}
+                            {related.shared_count} shared recommendation
+                            {related.shared_count === 1 ? "" : "s"}
                           </div>
                         </div>
                       </div>
