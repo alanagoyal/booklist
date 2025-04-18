@@ -142,7 +142,6 @@ BEGIN
 END;
 $function$;
 
--- Optimized version of get_books_by_recommendation_count with pagination
 DROP FUNCTION IF EXISTS get_books_by_recommendation_count();
 create or replace function get_books_by_recommendation_count(
   p_limit int default 1000,
@@ -171,26 +170,23 @@ BEGIN
       books.description,
       books.genre,
       books.amazon_url,
-      COALESCE(
-        json_agg(
-          json_build_object(
-            'recommender', CASE WHEN people.id IS NOT NULL THEN
-              json_build_object(
-                'id', people.id,
-                'full_name', people.full_name,
-                'url', people.url,
-                'type', people.type
-              )
-            ELSE NULL END,
-            'source', recommendations.source,
-            'source_link', recommendations.source_link
-          ) ORDER BY people.full_name ASC
-        ) FILTER (WHERE recommendations.id IS NOT NULL),
-        '[]'::json
+      json_agg(
+        json_build_object(
+          'recommender', CASE WHEN people.id IS NOT NULL THEN
+            json_build_object(
+              'id', people.id,
+              'full_name', people.full_name,
+              'url', people.url,
+              'type', people.type
+            )
+          ELSE NULL END,
+          'source', recommendations.source,
+          'source_link', recommendations.source_link
+        ) ORDER BY people.full_name ASC
       ) as recommendations,
       COUNT(DISTINCT recommendations.id) as recommendation_count
     FROM books
-    LEFT JOIN recommendations ON books.id = recommendations.book_id
+    INNER JOIN recommendations ON books.id = recommendations.book_id
     LEFT JOIN people ON recommendations.person_id = people.id
     GROUP BY books.id
     ORDER BY COUNT(DISTINCT recommendations.id) DESC
