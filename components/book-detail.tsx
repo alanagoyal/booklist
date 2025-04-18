@@ -261,7 +261,7 @@ export default function BookDetail({
                       {book.recommendations.map((rec) => (
                         <div
                           key={rec.recommender?.id}
-                          className="flex items-start gap-3 bg-accent/50 p-2 cursor-pointer transition-colors duration-200 md:hover:bg-accent md:hover:border-l-2"
+                          className="flex items-start gap-3 bg-accent/50 p-2 cursor-pointer transition-colors duration-200 border-l-2 border-transparent md:hover:bg-accent md:hover:border-border"
                           onClick={() => handleRecommenderClick(rec.recommender?.id || "")}
                         >
                           <User className="w-5 h-5 mt-0.5 text-text/70 shrink-0" />
@@ -327,7 +327,7 @@ export default function BookDetail({
                     {relatedBooks.map((relatedBook) => (
                       <div
                         key={relatedBook.id}
-                        className="flex items-start gap-3 bg-accent/50 p-2 cursor-pointer transition-colors duration-200 md:hover:bg-accent md:hover:border-l-2"
+                        className="flex items-start gap-3 bg-accent/50 p-2 cursor-pointer transition-colors duration-200 border-l-2 border-transparent md:hover:bg-accent md:hover:border-border"
                         onClick={() => {
                           const params = new URLSearchParams(
                             searchParams.toString()

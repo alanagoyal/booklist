@@ -97,7 +97,7 @@ export default function RecommenderDetail({
                   {recommender.recommendations.map((book) => (
                     <div
                       key={book.id}
-                      className="flex items-start gap-3 bg-accent/50 p-2 cursor-pointer transition-colors duration-200 md:hover:bg-accent md:hover:border-l-2"
+                      className="flex items-start gap-3 bg-accent/50 p-2 cursor-pointer transition-colors duration-200 border-l-2 border-transparent md:hover:bg-accent md:hover:border-border"
                       onClick={() => {
                         const params = new URLSearchParams(
                           searchParams.toString()
@@ -162,7 +162,7 @@ export default function RecommenderDetail({
                     {recommender.related_recommenders.map((related) => (
                       <div
                         key={related.id}
-                        className="flex items-start gap-3 bg-accent/50 p-2 cursor-pointer transition-colors duration-200 md:hover:bg-accent md:hover:border-l-2"
+                        className="flex items-start gap-3 bg-accent/50 p-2 cursor-pointer transition-colors duration-200 border-l-2 border-transparent md:hover:bg-accent md:hover:border-border"
                         onClick={() => {
                           const params = new URLSearchParams(
                             searchParams.toString()
