@@ -44,14 +44,17 @@ export default function BookDetail({
   const [showSummary, setShowSummary] = useState(false);
   const [recommenderSummary, setRecommenderSummary] = useState<string>("");
   const [isLoadingSummary, setIsLoadingSummary] = useState(false);
-  const [relatedBooks, setRelatedBooks] = useState<Array<{
-    id: string;
-    title: string;
-    author: string;
-    description: string | null;
-    amazon_url: string | null;
-    _recommendationCount: number;
-  }>>([]);
+  const [relatedBooks, setRelatedBooks] = useState<
+    Array<{
+      id: string;
+      title: string;
+      author: string;
+      description: string | null;
+      amazon_url: string | null;
+      _recommendationCount: number;
+    }>
+  >([]);
+  const [showAllRecommenders, setShowAllRecommenders] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -69,11 +72,11 @@ export default function BookDetail({
             body: JSON.stringify({
               book: `${book.title} by ${book.author}`,
               recommenders: book.recommendations
-                .filter(r => r.recommender)
-                .map(r => ({
-                  name: r.recommender?.full_name || '',
-                  type: r.recommender?.type || ''
-                }))
+                .filter((r) => r.recommender)
+                .map((r) => ({
+                  name: r.recommender?.full_name || "",
+                  type: r.recommender?.type || "",
+                })),
             }),
           });
 
@@ -103,7 +106,7 @@ export default function BookDetail({
     [onClose]
   );
 
-  const handleRecommenderClick = (id: string) => {
+  const handleEntityClick = (id: string) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set("view", `${id}--${Date.now()}`);
     router.push(`?${params.toString()}`, { scroll: false });
@@ -112,9 +115,10 @@ export default function BookDetail({
   // Fetch related books
   useEffect(() => {
     async function fetchRelatedBooks() {
-      const { data: relatedBooksData } = await supabase
-        .from('recommendations')
-        .select(`
+      const { data: relatedBooksData } = (await supabase
+        .from("recommendations")
+        .select(
+          `
           book:books(
             id,
             title,
@@ -122,30 +126,40 @@ export default function BookDetail({
             description,
             amazon_url
           )
-        `)
-        .in('person_id', book.recommendations?.map(r => r.recommender?.id).filter((id): id is string => id !== undefined) || [])
-        .not('book_id', 'eq', book.id)
-        .order('book_id', { ascending: false })
-        .limit(3) as { data: RelatedBookResponse[] | null };
+        `
+        )
+        .in(
+          "person_id",
+          book.recommendations
+            ?.map((r) => r.recommender?.id)
+            .filter((id): id is string => id !== undefined) || []
+        )
+        .not("book_id", "eq", book.id)
+        .order("book_id", { ascending: false })
+        .limit(3)) as { data: RelatedBookResponse[] | null };
 
       // Count occurrences of each book
-      const bookCounts = (relatedBooksData || []).reduce((acc, r) => {
-        const bookId = r.book.id;
-        acc[bookId] = (acc[bookId] || 0) + 1;
-        return acc;
-      }, {} as Record<string, number>);
+      const bookCounts = (relatedBooksData || []).reduce(
+        (acc, r) => {
+          const bookId = r.book.id;
+          acc[bookId] = (acc[bookId] || 0) + 1;
+          return acc;
+        },
+        {} as Record<string, number>
+      );
 
       const uniqueBooks = (relatedBooksData || [])
-        .map(r => ({
+        .map((r) => ({
           id: r.book.id,
           title: r.book.title,
           author: r.book.author,
           description: r.book.description,
           amazon_url: r.book.amazon_url,
-          _recommendationCount: bookCounts[r.book.id]
+          _recommendationCount: bookCounts[r.book.id],
         }))
-        .filter((book, index, self) => 
-          index === self.findIndex((b) => b.id === book.id)
+        .filter(
+          (book, index, self) =>
+            index === self.findIndex((b) => b.id === book.id)
         )
         .sort((a, b) => b._recommendationCount - a._recommendationCount)
         .slice(0, 3);
@@ -161,13 +175,14 @@ export default function BookDetail({
       className="fixed inset-0 z-20 bg-background/80"
       onClick={handleBackdropClick}
       style={{
-        backgroundColor: stackIndex === 0 ? 'rgba(var(--background), 0.8)' : 'transparent'
+        backgroundColor:
+          stackIndex === 0 ? "rgba(var(--background), 0.8)" : "transparent",
       }}
     >
-      <div 
+      <div
         className="absolute right-0 top-0 bottom-0 w-full md:w-1/2 bg-background border-border md:border-l"
         style={{
-          boxShadow: stackIndex > 0 ? '0 0 20px rgba(0, 0, 0, 0.1)' : 'none'
+          boxShadow: stackIndex > 0 ? "0 0 20px rgba(0, 0, 0, 0.1)" : "none",
         }}
       >
         <div className="overflow-auto h-full">
@@ -195,7 +210,9 @@ export default function BookDetail({
                   <div className="flex items-center gap-2 text-text">
                     <Tag className="w-4 h-4 text-text/70" />
                     <span>
-                      {Array.isArray(book.genres) ? book.genres.join(", ") : book.genres}
+                      {Array.isArray(book.genres)
+                        ? book.genres.join(", ")
+                        : book.genres}
                     </span>
                   </div>
                 )}
@@ -262,56 +279,74 @@ export default function BookDetail({
                   </div>
 
                   {!showSummary ? (
-                    <div className="text-text space-y-4 max-h-[300px] overflow-y-auto">
-                      {book.recommendations.map((rec) => (
-                        <div
-                          key={rec.recommender?.id}
-                          className="flex items-start gap-3 bg-accent/50 p-2 cursor-pointer transition-colors duration-200 border-l-2 border-transparent md:hover:bg-accent md:hover:border-border"
-                          onClick={() => handleRecommenderClick(rec.recommender?.id || "")}
-                        >
-                          <User className="w-5 h-5 mt-0.5 text-text/70 shrink-0" />
-                          <div className="space-y-1 min-w-0 flex-1">
-                            <div className="flex items-baseline gap-2">
-                              <span className="text-text">
-                                <button
-                                  onClick={() =>
-                                    handleRecommenderClick(
-                                      rec.recommender?.id || ""
-                                    )
-                                  }
-                                  className="text-text md:hover:text-text/70 md:hover:underline transition-colors duration-200"
-                                >
-                                  {rec.recommender?.full_name}
-                                </button>
-                                {rec.source && (
-                                  <span className="text-text/70">
-                                    {" "}
-                                    via{" "}
-                                    {rec.source_link ? (
-                                      <a
-                                        href={rec.source_link}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="md:hover:underline"
-                                      >
-                                        {rec.source}
-                                      </a>
-                                    ) : (
-                                      rec.source
+                    <>
+                      <div className="text-text space-y-4">
+                        {book.recommendations
+                          .slice(0, showAllRecommenders ? undefined : 3)
+                          .map((rec) => (
+                            <div
+                              key={rec.recommender?.id}
+                              className="flex items-start gap-3 bg-accent/50 p-2 cursor-pointer transition-colors duration-200 border-l-2 border-transparent md:hover:bg-accent md:hover:border-border"
+                              onClick={() =>
+                                handleEntityClick(rec.recommender?.id || "")
+                              }
+                            >
+                              <User className="w-5 h-5 mt-0.5 text-text/70 shrink-0" />
+                              <div className="space-y-1 min-w-0 flex-1">
+                                <div className="flex items-baseline gap-2">
+                                  <span className="text-text">
+                                    <button
+                                      onClick={() =>
+                                        handleEntityClick(
+                                          rec.recommender?.id || ""
+                                        )
+                                      }
+                                      className="text-text text-left font-base md:hover:underline transition-colors duration-200"
+                                    >
+                                      {rec.recommender?.full_name}
+                                    </button>
+                                    {rec.source && (
+                                      <span className="text-text/70">
+                                        {" "}
+                                        via{" "}
+                                        {rec.source_link ? (
+                                          <a
+                                            href={rec.source_link}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="md:hover:underline"
+                                          >
+                                            {rec.source}
+                                          </a>
+                                        ) : (
+                                          rec.source
+                                        )}
+                                      </span>
                                     )}
                                   </span>
-                                )}
-                              </span>
+                                </div>
+                                <div className="text-sm text-text/70">
+                                  {rec.recommender?.type}
+                                </div>
+                              </div>
                             </div>
-                            <div className="text-sm text-text/70">
-                              {rec.recommender?.type}
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
+                          ))}
+                      </div>
+                      {book.recommendations.length > 3 && (
+                        <button
+                          onClick={() =>
+                            setShowAllRecommenders(!showAllRecommenders)
+                          }
+                          className="w-full p-2 text-text/70 transition-colors duration-200 md:hover:text-text md:hover:underline"
+                        >
+                          {showAllRecommenders
+                            ? "Show less"
+                            : `Show ${book.recommendations.length - 3} more`}
+                        </button>
+                      )}
+                    </>
                   ) : (
-                    <div className="text-text whitespace-pre-line leading-relaxed max-h-[300px] overflow-y-auto">
+                    <div className="text-text whitespace-pre-line leading-relaxed">
                       {isLoadingSummary ? (
                         <p className="text-text/70">Generating summary...</p>
                       ) : (
@@ -334,13 +369,7 @@ export default function BookDetail({
                         key={relatedBook.id}
                         className="flex items-start gap-3 bg-accent/50 p-2 cursor-pointer transition-colors duration-200 border-l-2 border-transparent md:hover:bg-accent md:hover:border-border"
                         onClick={() => {
-                          const params = new URLSearchParams(
-                            searchParams.toString()
-                          );
-                          params.set("view", `${relatedBook.id}--${Date.now()}`);
-                          router.push(`?${params.toString()}`, {
-                            scroll: false,
-                          });
+                          handleEntityClick(relatedBook.id);
                         }}
                       >
                         <BookOpen className="w-5 h-5 mt-0.5 text-text/70 shrink-0" />
@@ -349,15 +378,9 @@ export default function BookDetail({
                             <span className="text-text">
                               <button
                                 onClick={() => {
-                                  const params = new URLSearchParams(
-                                    searchParams.toString()
-                                  );
-                                  params.set("view", `${relatedBook.id}--${Date.now()}`);
-                                  router.push(`?${params.toString()}`, {
-                                    scroll: false,
-                                  });
+                                  handleEntityClick(relatedBook.id);
                                 }}
-                                className="text-text text-left md:hover:underline"
+                                className="text-text text-left font-base md:hover:underline transition-colors duration-200"
                               >
                                 {relatedBook.title}
                               </button>{" "}
@@ -365,8 +388,8 @@ export default function BookDetail({
                             </span>
                           </div>
                           <div className="text-sm text-text/70">
-                            {relatedBook._recommendationCount}{" "}
-                            recommendation{relatedBook._recommendationCount !== 1 && "s"}
+                            {relatedBook._recommendationCount} recommendation
+                            {relatedBook._recommendationCount !== 1 && "s"}
                           </div>
                         </div>
                       </div>

@@ -1,6 +1,7 @@
 import { FormattedRecommender } from "@/types";
 import { X, BookOpen, Tag, ChevronLeft, User, Link } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
 
 type RecommenderDetailProps = {
   recommender: FormattedRecommender;
@@ -15,11 +16,18 @@ export default function RecommenderDetail({
 }: RecommenderDetailProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [showAllRecommendations, setShowAllRecommendations] = useState(false);
 
   const handleBackdropClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget && onClose) {
       onClose();
     }
+  };
+
+  const handleEntityClick = (id: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("view", `${id}--${Date.now()}`);
+    router.push(`?${params.toString()}`, { scroll: false });
   };
 
   return (
@@ -93,63 +101,66 @@ export default function RecommenderDetail({
                 <h2 className="text-base text-text font-bold">
                   Recommendations
                 </h2>
-                <div className="text-text space-y-4 max-h-[300px] overflow-y-auto">
-                  {recommender.recommendations.map((book) => (
-                    <div
-                      key={book.id}
-                      className="flex items-start gap-3 bg-accent/50 p-2 cursor-pointer transition-colors duration-200 border-l-2 border-transparent md:hover:bg-accent md:hover:border-border"
-                      onClick={() => {
-                        const params = new URLSearchParams(
-                          searchParams.toString()
-                        );
-                        params.set("view", `${book.id}--${Date.now()}`);
-                        router.push(`?${params.toString()}`, { scroll: false });
-                      }}
-                    >
-                      <BookOpen className="w-5 h-5 mt-0.5 text-text/70 shrink-0" />
-                      <div className="space-y-1 min-w-0 flex-1">
-                        <div className="flex items-baseline gap-2">
-                          <span className="text-text">
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                const params = new URLSearchParams(
-                                  searchParams.toString()
-                                );
-                                params.set("view", `${book.id}--${Date.now()}`);
-                                router.push(`?${params.toString()}`, {
-                                  scroll: false,
-                                });
-                              }}
-                              className="text-text text-left md:hover:underline"
-                            >
-                              {book.title}
-                            </button>{" "}
-                            by {book.author} (via{" "}
-                            {book.source_link ? (
-                              <a
-                                href={book.source_link}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-text md:hover:underline"
+                <div className="text-text space-y-4">
+                  {recommender.recommendations
+                    .slice(0, showAllRecommendations ? undefined : 3)
+                    .map((book) => (
+                      <div
+                        key={book.id}
+                        className="flex items-start gap-3 bg-accent/50 p-2 cursor-pointer transition-colors duration-200 border-l-2 border-transparent md:hover:bg-accent md:hover:border-border"
+                        onClick={() => {
+                          handleEntityClick(book.id);
+                        }}
+                      >
+                        <BookOpen className="w-5 h-5 mt-0.5 text-text/70 shrink-0" />
+                        <div className="space-y-1 min-w-0 flex-1">
+                          <div className="flex items-baseline gap-2">
+                            <span className="text-text">
+                              <button
+                                onClick={(e) => {
+                                  handleEntityClick(book.id);
+                                }}
+                                className="text-text text-left font-base md:hover:underline transition-colors duration-200"
                               >
-                                {book.source}
-                              </a>
-                            ) : (
-                              <span>{book.source}</span>
-                            )}
-                            )
-                          </span>
-                        </div>
-                        {book.genre && (
-                          <div className="text-sm text-text/70">
-                            {book.genre.join(", ")}
+                                {book.title}
+                              </button>{" "}
+                              by {book.author} (via{" "}
+                              {book.source_link ? (
+                                <a
+                                  href={book.source_link}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-text md:hover:underline"
+                                >
+                                  {book.source}
+                                </a>
+                              ) : (
+                                <span>{book.source}</span>
+                              )}
+                              )
+                            </span>
                           </div>
-                        )}
+                          {book.genre && (
+                            <div className="text-sm text-text/70">
+                              {book.genre.join(", ")}
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
                 </div>
+                {recommender.recommendations.length > 3 && (
+                  <button
+                    onClick={() =>
+                      setShowAllRecommendations(!showAllRecommendations)
+                    }
+                    className="w-full p-2 text-text/70 transition-colors duration-200 md:hover:text-text md:hover:underline"
+                  >
+                    {showAllRecommendations
+                      ? "Show less"
+                      : `Show ${recommender.recommendations.length - 3} more`}
+                  </button>
+                )}
               </div>
 
               {/* Related recommenders */}
@@ -164,13 +175,7 @@ export default function RecommenderDetail({
                         key={related.id}
                         className="flex items-start gap-3 bg-accent/50 p-2 cursor-pointer transition-colors duration-200 border-l-2 border-transparent md:hover:bg-accent md:hover:border-border"
                         onClick={() => {
-                          const params = new URLSearchParams(
-                            searchParams.toString()
-                          );
-                          params.set("view", `${related.id}--${Date.now()}`);
-                          router.push(`?${params.toString()}`, {
-                            scroll: false,
-                          });
+                          handleEntityClick(related.id);
                         }}
                       >
                         <User className="w-5 h-5 mt-0.5 text-text/70 shrink-0" />
@@ -179,17 +184,7 @@ export default function RecommenderDetail({
                             <span className="text-text">
                               <button
                                 onClick={(e) => {
-                                  e.stopPropagation();
-                                  const params = new URLSearchParams(
-                                    searchParams.toString()
-                                  );
-                                  params.set(
-                                    "view",
-                                    `${related.id}--${Date.now()}`
-                                  );
-                                  router.push(`?${params.toString()}`, {
-                                    scroll: false,
-                                  });
+                                  handleEntityClick(related.id);
                                 }}
                                 className="text-text text-left font-base md:hover:underline transition-colors duration-200"
                               >
