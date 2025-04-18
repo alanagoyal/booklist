@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useState, useEffect, useCallback, useMemo } from "react";
+import { Fragment, useState, useCallback, useMemo } from "react";
 import { DataGrid } from "@/components/grid";
 import { PercentileTooltip } from "@/components/percentile-tooltip";
 import { FormattedBook, EnhancedBook } from "@/types";
@@ -30,25 +30,25 @@ function RecommenderCell({ original }: { original: EnhancedBook }) {
         onClick={(e) => tooltipOpen && e.stopPropagation()}
       >
         <span className="break-words">
-          {original._top_recommenders?.slice(0, 1).map((rec) => (
-            <Fragment key={rec.id}>
+          {original.recommendations?.slice(0, 1).map((rec) => (
+            <Fragment key={rec.recommender?.id}>
               <span className="inline whitespace-nowrap">
                 <button
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    handleRecommenderClick(rec.id);
+                    handleRecommenderClick(rec.recommender!.id);
                   }}
                   className="text-text md:hover:text-text/70 md:hover:underline transition-colors duration-200"
                 >
-                  {rec.full_name}
+                  {rec.recommender?.full_name}
                 </button>
               </span>
             </Fragment>
           ))}
-          {(original._top_recommenders?.length ?? 0) > 1 && (
+          {(original.recommendations?.length ?? 0) > 1 && (
             <span className="text-text/70">
-              {" "}+ {(original._top_recommenders?.length ?? 0) - 1} more
+              {" "}+ {(original.recommendations?.length ?? 0) - 1} more
             </span>
           )}
         </span>
@@ -132,35 +132,11 @@ export default function BookGrid({
       ...data.map((book) => book.recommendations.length)
     );
 
-    // First compute total recommendations per recommender for sorting
-    const recommenderCounts = data.reduce((counts: Record<string, number>, book) => {
-      book.recommendations.forEach(rec => {
-        if (rec.recommender) {
-          counts[rec.recommender.id] = (counts[rec.recommender.id] || 0) + 1;
-        }
-      });
-      return counts;
-    }, {});
-
-    return data.map((book) => {
-      // Get unique recommenders and sort by their total recommendation count
-      const recommenders = [...new Map(
-        book.recommendations
-          .filter(rec => rec.recommender)
-          .map(rec => [rec.recommender!.id, {
-            id: rec.recommender!.id,
-            full_name: rec.recommender!.full_name,
-            recommendation_count: recommenderCounts[rec.recommender!.id]
-          }])
-      ).values()].sort((a, b) => b.recommendation_count - a.recommendation_count);
-
-      return {
-        ...book,
-        _recommendation_count: book.recommendations.length,
-        _top_recommenders: recommenders,
-        _percentile: Math.round((book.recommendations.length / maxRecommendations) * 100)
-      };
-    });
+    return data.map((book) => ({
+      ...book,
+      _recommendation_count: book.recommendations.length,
+      _percentile: Math.round((book.recommendations.length / maxRecommendations) * 100)
+    }));
   }, [data]);
 
   // Row click handler

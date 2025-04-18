@@ -100,6 +100,9 @@ async function getBooks(): Promise<FormattedBook[]> {
     }))
   }));
 
+  // log an example book from the db
+  console.log("Example book from DB:", formattedBooks[0]);
+
   // Cache the results
   cachedBooks = formattedBooks;
   return formattedBooks;
