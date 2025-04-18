@@ -3,20 +3,20 @@ import { FormattedBook, FormattedRecommender } from "@/types";
 import { supabase } from "@/utils/supabase/client";
 
 // Force static generation and disable ISR
-export const dynamic = process.env.NODE_ENV === 'production' ? 'force-static' : 'force-dynamic';
-export const revalidate = process.env.NODE_ENV === 'production' ? false : 0;
+export const dynamic = 'force-static';
+export const revalidate = false;
 
-// Add fetchCache directive to ensure data is cached in production
-export const fetchCache = process.env.NODE_ENV === 'production' ? 'force-cache' : 'default-no-store';
+// Add fetchCache directive to ensure data is cached
+export const fetchCache = 'force-cache';
 
-// Create a cache for the data (only in production)
+// Create a cache for the data
 let cachedBooks: FormattedBook[] | undefined = undefined;
 let cachedRecommenders: FormattedRecommender[] | undefined = undefined;
 
 // Fetch books at build time
 async function getBooks(): Promise<FormattedBook[]> {
-  // Return cached data if available (only in production)
-  if (process.env.NODE_ENV === 'production' && cachedBooks) {
+  // Return cached data if available
+  if (cachedBooks) {
     return cachedBooks;
   }
 
