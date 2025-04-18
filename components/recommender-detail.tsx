@@ -50,15 +50,16 @@ export default function RecommenderDetail({
             >
               <X className="w-5 h-5" />
             </button>
-            <h1 className="text-2xl font-base text-text">
-              {recommender.full_name}
-            </h1>
-          </div>
+            <div className="space-y-2 pb-8">
+              <div className="space-y-2">
+                <h1 className="text-2xl font-base text-text">
+                  {recommender.full_name}
+                </h1>
+                <p className="text-text/70 text-lg">{recommender.recommendations.length} recommendation{recommender.recommendations.length === 1 ? '' : 's'}</p>
+              </div>
 
-          <div className="px-12 py-8">
-            <div className="space-y-8">
               {/* Recommender metadata */}
-              <div className="flex justify-between items-center">
+              <div className="flex justify-between items-center pt-4">
                 {recommender.type && (
                   <div className="flex items-center gap-2 text-text">
                     <Tag className="w-4 h-4 text-text/70" />
@@ -79,25 +80,86 @@ export default function RecommenderDetail({
                   </div>
                 )}
               </div>
+            </div>
+          </div>
 
-              <div className="space-y-8">
-                {/* Book recommendations */}
+          <div className="px-12 py-8">
+            <div className="space-y-8">
+              <div className="space-y-2">
+                <h2 className="text-base text-text font-bold">
+                  Recommendations
+                </h2>
+                <div className="text-text space-y-4 max-h-[300px] overflow-y-auto">
+                  {recommender.recommendations.map((book) => (
+                    <div 
+                      key={book.id} 
+                      className="flex items-start gap-3 bg-accent/50 p-2 cursor-pointer transition-colors duration-200 md:hover:bg-accent"
+                      onClick={() => {
+                        const params = new URLSearchParams(searchParams.toString());
+                        params.set("view", `${book.id}--${Date.now()}`);
+                        router.push(`?${params.toString()}`, { scroll: false });
+                      }}
+                    >
+                      <BookOpen className="w-5 h-5 mt-0.5 text-text/70 shrink-0" />
+                      <div className="space-y-1 min-w-0 flex-1">
+                        <div className="flex items-baseline gap-2">
+                          <span className="text-text">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                const params = new URLSearchParams(searchParams.toString());
+                                params.set("view", `${book.id}--${Date.now()}`);
+                                router.push(`?${params.toString()}`, { scroll: false });
+                              }}
+                              className="text-text text-left md:hover:underline"
+                            >
+                              {book.title}
+                            </button>{" "}
+                            by {book.author} (via{" "}
+                            {book.source_link ? (
+                              <a
+                                href={book.source_link}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-text md:hover:underline"
+                              >
+                                {book.source}
+                              </a>
+                            ) : (
+                              <span>{book.source}</span>
+                            )}
+                            )
+                          </span>
+                        </div>
+                        {book.genre && (
+                          <div className="text-sm text-text/70">
+                            {book.genre.join(", ")}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Related recommenders */}
+              {recommender.related_recommenders.length > 0 && (
                 <div className="space-y-2">
                   <h2 className="text-base text-text font-bold">
-                    Recommendations
+                    You Might Also Enjoy
                   </h2>
-                  <div className="text-text space-y-4 max-h-[300px] overflow-y-auto">
-                    {recommender.recommendations.map((book) => (
+                  <div className="space-y-4">
+                    {recommender.related_recommenders.map((related) => (
                       <div 
-                        key={book.id} 
+                        key={related.id} 
                         className="flex items-start gap-3 bg-accent/50 p-2 cursor-pointer transition-colors duration-200 md:hover:bg-accent"
                         onClick={() => {
                           const params = new URLSearchParams(searchParams.toString());
-                          params.set("view", `${book.id}--${Date.now()}`);
+                          params.set("view", `${related.id}--${Date.now()}`);
                           router.push(`?${params.toString()}`, { scroll: false });
                         }}
                       >
-                        <BookOpen className="w-5 h-5 mt-0.5 text-text/70 shrink-0" />
+                        <User className="w-5 h-5 mt-0.5 text-text/70 shrink-0" />
                         <div className="space-y-1 min-w-0 flex-1">
                           <div className="flex items-baseline gap-2">
                             <span className="text-text">
@@ -105,89 +167,24 @@ export default function RecommenderDetail({
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   const params = new URLSearchParams(searchParams.toString());
-                                  params.set("view", `${book.id}--${Date.now()}`);
+                                  params.set("view", `${related.id}--${Date.now()}`);
                                   router.push(`?${params.toString()}`, { scroll: false });
                                 }}
-                                className="text-text text-left md:hover:underline"
+                                className="text-text text-left font-base md:hover:underline transition-colors duration-200"
                               >
-                                {book.title}
+                                {related.full_name}
                               </button>{" "}
-                              by {book.author} (via{" "}
-                              {book.source_link ? (
-                                <a
-                                  href={book.source_link}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-text md:hover:underline"
-                                >
-                                  {book.source}
-                                </a>
-                              ) : (
-                                <span>{book.source}</span>
-                              )}
-                              )
+                              ({related.type})
                             </span>
                           </div>
-                          {book.genre && (
-                            <div className="text-sm text-text/70">
-                              {book.genre.join(", ")}
-                            </div>
-                          )}
+                          <div className="text-sm text-text/70">
+                            {related.shared_count} shared recommendation{related.shared_count === 1 ? '' : 's'}
+                          </div>
                         </div>
                       </div>
                     ))}
                   </div>
                 </div>
-
-                {/* Related recommenders */}
-                {recommender.related_recommenders.length > 0 && (
-                  <div className="space-y-2">
-                    <h2 className="text-base text-text font-bold">
-                      You Might Also Enjoy
-                    </h2>
-                    <div className="space-y-4">
-                      {recommender.related_recommenders.map((related) => (
-                        <div 
-                          key={related.id} 
-                          className="flex items-start gap-3 bg-accent/50 p-2 cursor-pointer transition-colors duration-200 md:hover:bg-accent"
-                          onClick={() => {
-                            const params = new URLSearchParams(searchParams.toString());
-                            params.set("view", `${related.id}--${Date.now()}`);
-                            router.push(`?${params.toString()}`, { scroll: false });
-                          }}
-                        >
-                          <User className="w-5 h-5 mt-0.5 text-text/70 shrink-0" />
-                          <div className="space-y-1 min-w-0 flex-1">
-                            <div className="flex items-baseline gap-2">
-                              <span className="text-text">
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    const params = new URLSearchParams(searchParams.toString());
-                                    params.set("view", `${related.id}--${Date.now()}`);
-                                    router.push(`?${params.toString()}`, { scroll: false });
-                                  }}
-                                  className="text-text text-left font-base md:hover:underline transition-colors duration-200"
-                                >
-                                  {related.full_name}
-                                </button>{" "}
-                                ({related.type})
-                              </span>
-                            </div>
-                            <div className="text-sm text-text/70">
-                              {related.shared_count} shared recommendation
-                              {related.shared_count !== 1 && "s"}
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {!recommender.recommendations.length && (
-                <div className="text-text/70">No books recommended yet.</div>
               )}
             </div>
           </div>

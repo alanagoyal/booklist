@@ -6,6 +6,7 @@ import {
   AlignJustify,
   ChevronLeft,
   User,
+  Link,
 } from "lucide-react";
 import { EnhancedBook } from "@/types";
 import { useCallback, useEffect, useState } from "react";
@@ -118,16 +119,12 @@ export default function BookDetail({
               <X className="w-5 h-5" />
             </button>
 
-            <div className="space-y-2">
+            <div className="space-y-2 pb-8">
               <h1 className="text-2xl font-base text-text">{book.title}</h1>
               <p className="text-text/70 text-lg">{book.author}</p>
-            </div>
-          </div>
 
-          <div className="px-12 py-8">
-            <div className="space-y-8">
               {/* Book metadata */}
-              <div className="flex justify-between items-center">
+              <div className="flex justify-between items-center pt-4">
                 {book.genres && (
                   <div className="flex items-center gap-2 text-text">
                     <Tag className="w-4 h-4 text-text/70" />
@@ -138,7 +135,7 @@ export default function BookDetail({
                 )}
                 {book.amazon_url && (
                   <div className="flex items-center gap-2">
-                    <BookOpen className="w-4 h-4 text-text/70" />
+                    <Link className="w-4 h-4 text-text/70" />
                     <a
                       href={book.amazon_url}
                       target="_blank"
@@ -150,7 +147,11 @@ export default function BookDetail({
                   </div>
                 )}
               </div>
+            </div>
+          </div>
 
+          <div className="px-12 py-8">
+            <div className="space-y-8">
               {/* Book description */}
               {book.description && (
                 <div className="space-y-2">
