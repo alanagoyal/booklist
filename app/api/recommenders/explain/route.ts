@@ -8,9 +8,19 @@ initLogger({
   apiKey: process.env.BRAINTRUST_API_KEY,
 });
 
+// Define input schema
+const inputSchema = z.object({
+  book: z.string(),
+  recommenders: z.array(z.object({
+    name: z.string(),
+    type: z.string()
+  }))
+});
+
 export async function POST(request: Request) {
   try {
-    const { book, recommenders } = await request.json();
+    const body = await request.json();
+    const { book, recommenders } = inputSchema.parse(body);
 
     const result = await invoke({
       projectName: "booklist",
@@ -24,6 +34,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ summary: result.summary });
   } catch (error) {
     console.error('Error in recommender explanation:', error);
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        { error: 'Invalid request data', details: error.errors },
+        { status: 400 }
+      );
+    }
     return NextResponse.json(
       { error: 'Failed to generate recommender explanation' },
       { status: 500 }

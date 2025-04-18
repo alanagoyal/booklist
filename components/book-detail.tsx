@@ -68,7 +68,12 @@ export default function BookDetail({
             },
             body: JSON.stringify({
               book: `${book.title} by ${book.author}`,
-              recommenders: book.recommendations,
+              recommenders: book.recommendations
+                .filter(r => r.recommender)
+                .map(r => ({
+                  name: r.recommender?.full_name || '',
+                  type: r.recommender?.type || ''
+                }))
             }),
           });
 
