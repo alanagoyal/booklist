@@ -12,7 +12,6 @@ function TitleCell({ row: { original } }: { row: { original: EnhancedBook } }) {
 
 // Recommender cell
 function RecommenderCell({ original }: { original: EnhancedBook }) {
-  const [tooltipOpen, setTooltipOpen] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
   
@@ -26,7 +25,6 @@ function RecommenderCell({ original }: { original: EnhancedBook }) {
     <div className="whitespace-pre-line line-clamp-2 text-text">
       <span
         className="flex items-center gap-1"
-        onClick={(e) => tooltipOpen && e.stopPropagation()}
       >
         <span className="break-words">
           {original.recommendations?.slice(0, 1).map((rec) => (
