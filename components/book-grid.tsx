@@ -50,7 +50,7 @@ function RecommenderCell({ original }: { original: EnhancedBook }) {
           )}
         </span>
         <button 
-          title={`${original._percentile}th percentile of all recommendations`}
+          title={`${original._percentile}${(original._percentile % 100 > 10 && original._percentile % 100 < 14) ? 'th' : original._percentile % 10 === 1 ? 'st' : original._percentile % 10 === 2 ? 'nd' : original._percentile % 10 === 3 ? 'rd' : 'th'} percentile of all recommendations`}
           className="inline-flex items-center justify-center rounded-full text-text/70 md:hover:text-text transition-colors duration-200 cursor-help"
           onClick={(e) => e.stopPropagation()}
         >
