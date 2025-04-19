@@ -97,6 +97,15 @@ export default function RecommenderDetail({
 
           <div className="px-12">
             <div className="space-y-8">
+              {/* Recommender description */}
+              {recommender.description && (
+                <div className="space-y-2">
+                  <h2 className="text-base text-text font-bold">About</h2>
+                  <p className="text-text whitespace-pre-line leading-relaxed">
+                    {recommender.description}
+                  </p>
+                </div>
+              )}
               <div className="space-y-2">
                 <h2 className="text-base text-text font-bold">
                   Recommendations
