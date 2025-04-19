@@ -20,9 +20,9 @@ export function BookList({
   const [mounted, setMounted] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [viewMode, setViewMode] = useState<'books' | 'recommenders'>(() => {
+  const [viewMode, setViewMode] = useState<"books" | "recommenders">(() => {
     // Initialize from URL param, default to 'books'
-    return (searchParams.get('view') as 'books' | 'recommenders') || 'books';
+    return (searchParams.get("view") as "books" | "recommenders") || "books";
   });
   const [filteredCount, setFilteredCount] = useState(initialBooks.length);
   const [viewHistory, setViewHistory] = useState<
@@ -72,8 +72,8 @@ export function BookList({
 
   // Keep viewMode in sync with URL
   useEffect(() => {
-    const view = searchParams.get('view');
-    if (view === 'books' || view === 'recommenders') {
+    const view = searchParams.get("view");
+    if (view === "books" || view === "recommenders") {
       setViewMode(view);
     }
   }, [searchParams]);
@@ -110,9 +110,9 @@ export function BookList({
 
   // Update URL when viewMode changes
   const toggleViewMode = useCallback(() => {
-    const newView = viewMode === 'books' ? 'recommenders' : 'books';
+    const newView = viewMode === "books" ? "recommenders" : "books";
     const params = new URLSearchParams(searchParams.toString());
-    params.set('view', newView);
+    params.set("view", newView);
     router.push(`?${params.toString()}`, { scroll: false });
   }, [viewMode, router, searchParams]);
 
@@ -178,11 +178,13 @@ export function BookList({
           className="flex items-center gap-2 text-text/70 hover:text-text transition-colors duration-200"
         >
           <LayoutList size={16} />
-          <span className="text-sm">{viewMode === 'books' ? 'View by Recommender' : 'View by Book'}</span>
+          <span className="text-sm">
+            {viewMode === "books" ? "View by Recommender" : "View by Book"}
+          </span>
         </button>
       </div>
       <div className="flex-1 overflow-hidden">
-        {viewMode === 'books' ? (
+        {viewMode === "books" ? (
           <BookGrid
             data={initialBooks}
             onFilteredDataChange={handleFilteredDataChange}
@@ -194,8 +196,12 @@ export function BookList({
           />
         )}
       </div>
-      <BookCounter 
-        total={viewMode === 'books' ? initialBooks.length : initialRecommenders.length} 
+      <BookCounter
+        total={
+          viewMode === "books"
+            ? initialBooks.length
+            : initialRecommenders.length
+        }
         filtered={filteredCount}
         viewMode={viewMode}
       />
@@ -209,10 +215,13 @@ export function BookList({
             : null;
         const selectedBook =
           view.type === "book"
-            ? initialBooks.find(
+            ? (initialBooks.find(
                 (book) =>
                   book.id === view.actualId || book.title === view.actualId
-              ) as FormattedBook & { _recommendation_count: number; _percentile: number }
+              ) as FormattedBook & {
+                _recommendation_count: number;
+                _percentile: number;
+              })
             : null;
 
         return (
@@ -253,10 +262,13 @@ export function BookList({
             : null;
         const selectedBook =
           view.type === "book"
-            ? initialBooks.find(
+            ? (initialBooks.find(
                 (book) =>
                   book.id === view.actualId || book.title === view.actualId
-              ) as FormattedBook & { _recommendation_count: number; _percentile: number }
+              ) as FormattedBook & {
+                _recommendation_count: number;
+                _percentile: number;
+              })
             : null;
 
         const tabTitle = selectedBook
