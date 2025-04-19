@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { BookCounter } from "@/components/book-counter";
-import { FormattedBook, EnhancedBook, FormattedRecommender } from "@/types";
+import { FormattedBook, FormattedRecommender } from "@/types";
 import { useRouter, useSearchParams } from "next/navigation";
 import BookDetail from "@/components/book-detail";
 import RecommenderDetail from "@/components/recommender-detail";
 import BookGrid from "./book-grid";
+import RecommenderGrid from "./recommender-grid";
 
 export function BookList({
   initialBooks,
@@ -18,6 +19,9 @@ export function BookList({
   const [mounted, setMounted] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [viewMode, setViewMode] = useState<"books" | "people">(() => {
+    return (searchParams.get("view") as "books" | "people") || "books";
+  });
   const [filteredCount, setFilteredCount] = useState(initialBooks.length);
   const [viewHistory, setViewHistory] = useState<
     Array<{ id: string; actualId: string; type: "book" | "recommender" }>
@@ -43,18 +47,18 @@ export function BookList({
 
   // Keep viewHistory in sync with URL
   useEffect(() => {
-    if (searchParams.get("view")) {
-      const [actualId] = searchParams.get("view")!.split("--");
+    if (searchParams.get("key")) {
+      const [actualId] = searchParams.get("key")!.split("--");
       const isRecommender = initialRecommenders.find((r) => r.id === actualId);
 
       setViewHistory((prev) => {
         // Don't add if it's already the most recent view
-        if (prev[prev.length - 1]?.id === searchParams.get("view")) return prev;
+        if (prev[prev.length - 1]?.id === searchParams.get("key")) return prev;
 
         return [
           ...prev,
           {
-            id: searchParams.get("view")!, // Keep full viewId with timestamp in history
+            id: searchParams.get("key")!, // Keep full viewId with timestamp in history
             actualId, // Store the real ID separately
             type: isRecommender ? "recommender" : "book",
           },
@@ -63,6 +67,14 @@ export function BookList({
     }
     // Don't clear history when viewId is null - only handleClose should modify history
   }, [searchParams, initialRecommenders]);
+
+  // Keep viewMode in sync with URL
+  useEffect(() => {
+    const view = searchParams.get("view");
+    if (view === "books" || view === "people") {
+      setViewMode(view);
+    }
+  }, [searchParams]);
 
   // Set mounted state to true after initial render
   useEffect(() => {
@@ -74,14 +86,14 @@ export function BookList({
     if (viewHistory.length <= 1) {
       // If there's only one view, remove it completely
       const params = new URLSearchParams(searchParams.toString());
-      params.delete("view");
+      params.delete("key");
       router.push(`?${params.toString()}`, { scroll: false });
       setViewHistory([]);
     } else {
       // If there are multiple views, just remove the topmost one
       const previousView = viewHistory[viewHistory.length - 2]; // Get second-to-last view
       const params = new URLSearchParams(searchParams.toString());
-      params.set("view", previousView.id);
+      params.set("key", previousView.id);
       router.push(`?${params.toString()}`, { scroll: false });
 
       // Update state to remove only the last view
@@ -93,6 +105,14 @@ export function BookList({
   const handleFilteredDataChange = useCallback((count: number) => {
     setFilteredCount(count);
   }, []);
+
+  // Update URL when viewMode changes
+  const toggleViewMode = useCallback(() => {
+    const newView = viewMode === "books" ? "people" : "books";
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("view", newView);
+    router.push(`?${params.toString()}`, { scroll: false });
+  }, [viewMode, router, searchParams]);
 
   // Tab layout configuration - centralized in one place
   const tabConfig = {
@@ -142,13 +162,7 @@ export function BookList({
         zIndex: 50 + index, // Ensure proper stacking
       };
     });
-  }, [
-    viewHistory,
-    mounted,
-    tabConfig.baseTopOffset,
-    tabConfig.bottomMargin,
-    tabConfig.height,
-  ]);
+  }, [viewHistory, mounted]);
 
   if (!mounted) {
     return null;
@@ -156,13 +170,62 @@ export function BookList({
 
   return (
     <div ref={containerRef} className="h-full flex flex-col relative">
-      <div className="flex-1 overflow-hidden">
-        <BookGrid
-          data={initialBooks}
-          onFilteredDataChange={handleFilteredDataChange}
-        />
+      <div className="flex items-center justify-between p-2 border-b border-border bg-background">
+        <div 
+          onClick={toggleViewMode}
+          className="flex items-center cursor-pointer"
+        >
+          <div className="flex items-center border border-border relative h-8 bg-background">
+            <div 
+              className={`absolute top-0 bottom-0 transition-all duration-200 bg-accent/50 ${
+                viewMode === "books" ? "left-0 w-[80px]" : "left-[80px] w-[80px]"
+              }`}
+            />
+            <div 
+              className={`flex items-center z-10 py-1 px-3 w-[80px] transition-colors duration-200 ${
+                viewMode === "books" ? "text-text" : "text-text/70"
+              }`}
+            >
+              <span className="inline-block w-[10px] text-center text-lg">
+                {viewMode === "books" ? "›" : " "}
+              </span>
+              <span>Books</span>
+            </div>
+            <div 
+              className={`flex items-center z-10 py-1 px-3 w-[80px] transition-colors duration-200 ${
+                viewMode === "people" ? "text-text" : "text-text/70"
+              }`}
+            >
+              <span className="inline-block w-[10px] text-center text-lg">
+                {viewMode === "people" ? "›" : " "}
+              </span>
+              <span>People</span>
+            </div>
+          </div>
+        </div>
       </div>
-      <BookCounter total={initialBooks.length} filtered={filteredCount} />
+      <div className="flex-1 overflow-hidden">
+        {viewMode === "books" ? (
+          <BookGrid
+            data={initialBooks}
+            onFilteredDataChange={handleFilteredDataChange}
+          />
+        ) : (
+          <RecommenderGrid
+            data={initialRecommenders}
+            onFilteredDataChange={handleFilteredDataChange}
+          />
+        )}
+      </div>
+      <BookCounter
+        total={
+          viewMode === "books"
+            ? initialBooks.length
+            : initialRecommenders.length
+        }
+        filtered={filteredCount}
+        viewMode={viewMode}
+      />
 
       {/* Render detail views */}
       {viewHistory.map((view, index) => {
@@ -176,7 +239,10 @@ export function BookList({
             ? (initialBooks.find(
                 (book) =>
                   book.id === view.actualId || book.title === view.actualId
-              ) as EnhancedBook | null)
+              ) as FormattedBook & {
+                _recommendation_count: number;
+                _percentile: number;
+              })
             : null;
 
         return (
@@ -217,10 +283,13 @@ export function BookList({
             : null;
         const selectedBook =
           view.type === "book"
-            ? initialBooks.find(
+            ? (initialBooks.find(
                 (book) =>
                   book.id === view.actualId || book.title === view.actualId
-              )
+              ) as FormattedBook & {
+                _recommendation_count: number;
+                _percentile: number;
+              })
             : null;
 
         const tabTitle = selectedBook
@@ -249,7 +318,7 @@ export function BookList({
 
               // Update URL to show only the clicked view
               const params = new URLSearchParams(searchParams.toString());
-              params.set("view", view.id); // Use the original ID with timestamp
+              params.set("key", view.id); // Use the original ID with timestamp
               router.push(`?${params.toString()}`, { scroll: false });
 
               // Update the view history state

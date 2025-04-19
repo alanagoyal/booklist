@@ -19,14 +19,13 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { bookCountManager } from "./book-counter";
 import { useVirtualizer } from "@tanstack/react-virtual";
 
-type SortDirection = "asc" | "desc" | null;
+type SortDirection = "asc" | "desc";
 
 type ColumnDef<T> = {
   field: keyof T;
   header: string;
   width?: number;
   cell?: (props: { row: { original: T } }) => React.ReactNode;
-  isExpandable?: boolean;
 };
 
 type DataGridProps<T extends Record<string, any>> = {
@@ -35,11 +34,6 @@ type DataGridProps<T extends Record<string, any>> = {
   getRowClassName?: (row: T) => string;
   onFilteredDataChange?: (count: number) => void;
   onRowClick?: (row: T) => void;
-};
-
-type SortConfig = {
-  field: string;
-  direction: SortDirection;
 };
 
 export function DataGrid<T extends Record<string, any>>({
@@ -58,6 +52,37 @@ export function DataGrid<T extends Record<string, any>>({
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [isDropdownClosing, setIsDropdownClosing] = useState(false);
 
+  // Get current view and sort configs directly from URL
+  const currentView =
+    (searchParams.get("view") as "books" | "recommenders") || "books";
+  const directionParam = searchParams?.get(`${currentView}_dir`);
+  const sortConfig = {
+    field:
+      searchParams?.get(`${currentView}_sort`) ||
+      (currentView === "books" ? "recommenders" : "recommendations"),
+    direction:
+      directionParam === "asc" || directionParam === "desc"
+        ? directionParam
+        : "desc",
+  };
+
+  // Initialize filters from URL params
+  const [filters, setFilters] = useState<{ [key: string]: string }>(() => {
+    const params = Object.fromEntries(searchParams.entries());
+    const filterParams: { [key: string]: string } = {};
+    Object.entries(params).forEach(([key, value]) => {
+      if (
+        !key.includes("sort") &&
+        !key.includes("dir") &&
+        key !== "key" &&
+        key !== "view"
+      ) {
+        filterParams[key] = value;
+      }
+    });
+    return filterParams;
+  });
+
   // Refs
   const gridRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
@@ -65,25 +90,6 @@ export function DataGrid<T extends Record<string, any>>({
   const inputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
   const resizeTimeout = useRef<number | null>(null);
   const parentRef = useRef<HTMLDivElement>(null);
-
-  // Initialize sort config from URL params or defaults
-  const [sortConfig, setSortConfig] = useState<SortConfig>(() => {
-    const field = searchParams.get("sort") || "recommenders";
-    const direction = (searchParams.get("dir") as SortDirection) || "desc";
-    return { field, direction };
-  });
-
-  // Initialize filters from URL params
-  const [filters, setFilters] = useState<{ [key: string]: string }>(() => {
-    const params = Object.fromEntries(searchParams.entries());
-    const filterParams: { [key: string]: string } = {};
-    Object.entries(params).forEach(([key, value]) => {
-      if (key !== "sort" && key !== "dir") {
-        filterParams[key] = value;
-      }
-    });
-    return filterParams;
-  });
 
   // Memoize active filters to prevent unnecessary recalculations
   const activeFilters = useMemo(() => {
@@ -100,9 +106,28 @@ export function DataGrid<T extends Record<string, any>>({
       Object.entries(filters).map(([key, value]) => [key, value?.toLowerCase()])
     );
 
+    // Get list of valid filter fields from columns
+    const validFilterFields = columns.map((col) => String(col.field));
+
     return data.filter((item) => {
       return Object.entries(lowercaseFilters).every(([field, filterValue]) => {
         if (!filterValue) return true;
+
+        // Skip filters that don't correspond to any column
+        if (!validFilterFields.includes(field)) return true;
+
+        // Special handling for description fields
+        if (field === "book_description") {
+          return String(item.description || "")
+            .toLowerCase()
+            .includes(filterValue);
+        }
+
+        if (field === "recommender_description") {
+          return String(item.description || "")
+            .toLowerCase()
+            .includes(filterValue);
+        }
 
         // Filter by recommender full name
         if (field === "recommenders") {
@@ -115,24 +140,39 @@ export function DataGrid<T extends Record<string, any>>({
           );
         }
 
-        const value = String(item[field as keyof T] || "").toLowerCase();
+        // Filter by recommendation title
+        if (field === "recommendations") {
+          const recommendations = (item as any).recommendations || [];
+          const recommendationTitles = recommendations.map((rec: any) =>
+            rec.title.toLowerCase()
+          );
+          return recommendationTitles.some((title: string) =>
+            title.includes(filterValue)
+          );
+        }
 
+        const value = String(item[field as keyof T] || "").toLowerCase();
         return value.includes(filterValue);
       });
     });
-  }, [data, filters]);
+  }, [data, filters, columns]);
 
   // Memoize sorted data separately
   const filteredAndSortedData = useMemo(() => {
-    if (!sortConfig.field || !sortConfig.direction) return filteredData;
-
     const field = sortConfig.field;
     const direction = sortConfig.direction;
 
     return [...filteredData].sort((a, b) => {
-      const aValue = a[field as keyof T];
-      const bValue = b[field as keyof T];
+      // Special handling for description fields
+      if (field === "book_description" || field === "recommender_description") {
+        const aValue = String(a.description || "").toLowerCase();
+        const bValue = String(b.description || "").toLowerCase();
+        return direction === "asc"
+          ? aValue.localeCompare(bValue)
+          : bValue.localeCompare(aValue);
+      }
 
+      // Handle recommender sorting
       if (field === "recommenders") {
         // Sort by number of recommenders (popularity)
         const aRecs = (a as any).recommendations?.length || 0;
@@ -141,35 +181,45 @@ export function DataGrid<T extends Record<string, any>>({
         return (bRecs - aRecs) * sortDirection;
       }
 
-      if (aValue === bValue) return 0;
-      if (aValue === null || aValue === undefined) return 1;
-      if (bValue === null || bValue === undefined) return -1;
+      if (field === "recommendations") {
+        const aCount = (a as any).recommendations?.length || 0;
+        const bCount = (b as any).recommendations?.length || 0;
+        const sortDirection = direction === "desc" ? 1 : -1;
+        return (bCount - aCount) * sortDirection;
+      }
+
+      if (a[field as keyof T] === b[field as keyof T]) return 0;
+      if (a[field as keyof T] === null || a[field as keyof T] === undefined)
+        return 1;
+      if (b[field as keyof T] === null || b[field as keyof T] === undefined)
+        return -1;
 
       const sortDirection = direction === "asc" ? 1 : -1;
-      return aValue < bValue ? -sortDirection : sortDirection;
+      return a[field as keyof T] < b[field as keyof T]
+        ? -sortDirection
+        : sortDirection;
     });
-  }, [filteredData, sortConfig.field, sortConfig.direction]);
+  }, [filteredData, sortConfig]);
 
   // Notify parent of filtered data changes
   useEffect(() => {
-    onFilteredDataChange?.(filteredData.length);
-  }, [filteredData, onFilteredDataChange]);
-
-  // Update filtered data count
-  useEffect(() => {
-    bookCountManager.update(data.length, filteredData.length);
-  }, [data.length, filteredData.length]);
+    if (onFilteredDataChange) {
+      onFilteredDataChange(filteredAndSortedData.length);
+      bookCountManager.updateCount();
+    }
+  }, [filteredAndSortedData.length, onFilteredDataChange]);
 
   // Update state when URL params change
   useEffect(() => {
-    const field = searchParams.get("sort") || "recommenders";
-    const direction = (searchParams.get("dir") as SortDirection) || "desc";
-    setSortConfig({ field, direction });
-
     const params = Object.fromEntries(searchParams.entries());
     const filterParams: { [key: string]: string } = {};
     Object.entries(params).forEach(([key, value]) => {
-      if (key !== "sort" && key !== "dir" && key !== "view") {
+      if (
+        !key.includes("sort") &&
+        !key.includes("dir") &&
+        key !== "key" &&
+        key !== "view"
+      ) {
         filterParams[key] = value;
       }
     });
@@ -183,17 +233,9 @@ export function DataGrid<T extends Record<string, any>>({
     const currentParams = new URLSearchParams(searchParams.toString());
     const newParams = new URLSearchParams(currentParams.toString());
 
-    // Update sort params
-    if (sortConfig.field) {
-      newParams.set("sort", sortConfig.field);
-      if (sortConfig.direction) {
-        newParams.set("dir", sortConfig.direction);
-      } else {
-        newParams.delete("dir");
-      }
-    } else {
-      newParams.delete("sort");
-      newParams.delete("dir");
+    // Initialize default parameters if they don't exist
+    if (!currentParams.has("view")) {
+      newParams.set("view", "books");
     }
 
     // Update filter params
@@ -212,7 +254,7 @@ export function DataGrid<T extends Record<string, any>>({
     if (newParams.toString() !== currentParams.toString()) {
       router.push(newPath, { scroll: false });
     }
-  }, [sortConfig, filters, mounted, router, searchParams]);
+  }, [filters, mounted, router, searchParams]);
 
   useEffect(() => {
     setMounted(true);
@@ -250,20 +292,34 @@ export function DataGrid<T extends Record<string, any>>({
   }, []);
 
   // Sort handlers
-  const handleSort = useCallback((field: string, direction: SortDirection) => {
-    setSortConfig((prevConfig) => {
+  const handleSort = useCallback(
+    (field: string, direction: SortDirection) => {
+      const params = new URLSearchParams(searchParams?.toString() ?? "");
+      const view = (params.get("view") as "books" | "recommenders") || "books";
+
+      // Get current sort params
+      const currentField = params.get(`${view}_sort`);
+      const currentDir = params.get(`${view}_dir`);
+
       // If clicking the same sort option that's currently active, disable sorting
-      if (prevConfig.field === field && prevConfig.direction === direction) {
-        return { field: "", direction: null };
+      if (currentField === field && currentDir === direction) {
+        params.delete(`${view}_sort`);
+        params.delete(`${view}_dir`);
+      } else {
+        // Otherwise apply the new sort
+        params.set(`${view}_sort`, field);
+        if (direction) {
+          params.set(`${view}_dir`, direction);
+        } else {
+          params.delete(`${view}_dir`);
+        }
       }
-      // Otherwise apply the new sort
-      return {
-        field,
-        direction,
-      };
-    });
-    setOpenDropdown(null);
-  }, []);
+
+      router.push(`/?${params.toString()}`, { scroll: false });
+      setOpenDropdown(null);
+    },
+    [router, searchParams]
+  );
 
   // Keep resize observer for header width syncing
   useEffect(() => {
@@ -491,10 +547,7 @@ export function DataGrid<T extends Record<string, any>>({
   const renderCell = useCallback(
     ({ column, row }: { column: ColumnDef<T>; row: T }) => {
       return (
-        <div
-          key={String(column.field)}
-          className="px-3 py-2"
-        >
+        <div key={String(column.field)} className="px-3 py-2">
           {column.cell ? (
             <div className="whitespace-pre-line transition-all duration-200 text-text selection:bg-main selection:text-mtext line-clamp-2">
               {column.cell({ row: { original: row } })}
@@ -521,10 +574,10 @@ export function DataGrid<T extends Record<string, any>>({
           }`}
           style={{
             gridTemplateColumns: `repeat(${columns.length}, minmax(200px, 1fr))`,
-            position: 'absolute',
+            position: "absolute",
             top: `${virtualRow.start}px`,
             left: 0,
-            width: '100%',
+            width: "100%",
             height: `${virtualRow.size}px`,
           }}
           onClick={(e) => handleRowClick(e, row)}
@@ -542,19 +595,6 @@ export function DataGrid<T extends Record<string, any>>({
     getScrollElement: () => parentRef.current,
     estimateSize: () => 56, // Adjust based on your actual row height
   });
-
-  const paddingTop = rowVirtualizer.getVirtualItems()[0]?.start || 0;
-  const paddingBottom =
-    rowVirtualizer.getTotalSize() -
-    (rowVirtualizer.getVirtualItems()[rowVirtualizer.getVirtualItems().length - 1]?.end || 0);
-
-  // Memoize rendered rows
-  const renderedRows = useMemo(() => {
-    return rowVirtualizer.getVirtualItems().map((virtualRow) => {
-      const row = filteredAndSortedData[virtualRow.index];
-      return renderRow(row, virtualRow);
-    });
-  }, [filteredAndSortedData, renderRow, rowVirtualizer]);
 
   // Don't render content until mounted to prevent hydration mismatch
   if (!mounted) {
@@ -581,8 +621,8 @@ export function DataGrid<T extends Record<string, any>>({
             {columns.map(renderHeader)}
           </div>
         </div>
-        
-        <div 
+
+        <div
           className="relative"
           style={{
             height: `${rowVirtualizer.getTotalSize()}px`,
@@ -598,10 +638,10 @@ export function DataGrid<T extends Record<string, any>>({
                 }`}
                 style={{
                   gridTemplateColumns: `repeat(${columns.length}, minmax(200px, 1fr))`,
-                  position: 'absolute',
+                  position: "absolute",
                   top: `${virtualRow.start}px`,
                   left: 0,
-                  width: '100%',
+                  width: "100%",
                   height: `${virtualRow.size}px`,
                 }}
                 onClick={(e) => handleRowClick(e, row)}

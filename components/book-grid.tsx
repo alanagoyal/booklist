@@ -17,7 +17,7 @@ function RecommenderCell({ original }: { original: EnhancedBook }) {
   
   const handleRecommenderClick = useCallback((id: string) => {
     const params = new URLSearchParams(searchParams.toString());
-    params.set('view', `${id}--${Date.now()}`);
+    params.set('key', `${id}--${Date.now()}`);
     router.push(`?${params.toString()}`, { scroll: false });
   }, [searchParams, router]);
   
@@ -116,13 +116,12 @@ const getBackgroundColor = (count: number, maxCount: number): string => {
   }
 };
 
-export default function BookGrid({
-  data,
-  onFilteredDataChange,
-}: {
+interface BookGridProps {
   data: FormattedBook[];
   onFilteredDataChange?: (count: number) => void;
-}) {
+}
+
+export default function BookGrid({ data, onFilteredDataChange }: BookGridProps) {
   // Hooks
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -143,7 +142,7 @@ export default function BookGrid({
   // Row click handler
   const handleRowClick = useCallback((book: EnhancedBook) => {
     const params = new URLSearchParams(searchParams.toString());
-    params.set('view', `${book.id || book.title}--${Date.now()}`);
+    params.set('key', `${book.id || book.title}--${Date.now()}`);
     router.push(`?${params.toString()}`, { scroll: false });
   }, [searchParams, router]);
 
@@ -162,7 +161,15 @@ export default function BookGrid({
         <RecommenderCell original={props.row.original} />
       ),
     },
-    { field: "description" as keyof FormattedBook, header: "Description" },
+    {
+      field: "book_description" as keyof FormattedBook,
+      header: "Description",
+      cell: (props: { row: { original: EnhancedBook } }) => (
+        <div className="whitespace-pre-line line-clamp-2 text-text selection:bg-main selection:text-mtext transition-all duration-200">
+          {props.row.original.description}
+        </div>
+      ),
+    },
     {
       field: "genres" as keyof FormattedBook,
       header: "Genre",

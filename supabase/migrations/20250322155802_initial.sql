@@ -25,7 +25,8 @@ create table "public"."people" (
     "created_at" timestamp with time zone not null default timezone('utc'::text, now()),
     "updated_at" timestamp with time zone not null default timezone('utc'::text, now()),
     "url" text,
-    "type" text
+    "type" text,
+    "description" text
 );
 
 
@@ -214,6 +215,7 @@ RETURNS TABLE (
   full_name TEXT,
   url TEXT,
   type TEXT,
+  description TEXT,
   recommendations JSON,
   related_recommenders JSON
 )
@@ -259,6 +261,7 @@ BEGIN
     p.full_name,
     p.url,
     p.type,
+    p.description,
     COALESCE(
       (
         SELECT json_agg(

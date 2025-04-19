@@ -26,7 +26,7 @@ export default function RecommenderDetail({
 
   const handleEntityClick = (id: string) => {
     const params = new URLSearchParams(searchParams.toString());
-    params.set("view", `${id}--${Date.now()}`);
+    params.set("key", `${id}--${Date.now()}`);
     router.push(`?${params.toString()}`, { scroll: false });
   };
 
@@ -95,8 +95,17 @@ export default function RecommenderDetail({
             </div>
           </div>
 
-          <div className="px-12">
+          <div className="px-12 pb-16">
             <div className="space-y-8">
+              {/* Recommender description */}
+              {recommender.description && (
+                <div className="space-y-2">
+                  <h2 className="text-base text-text font-bold">About</h2>
+                  <p className="text-text whitespace-pre-line leading-relaxed">
+                    {recommender.description}
+                  </p>
+                </div>
+              )}
               <div className="space-y-2">
                 <h2 className="text-base text-text font-bold">
                   Recommendations

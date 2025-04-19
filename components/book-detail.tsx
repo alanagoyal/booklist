@@ -108,7 +108,7 @@ export default function BookDetail({
 
   const handleEntityClick = (id: string) => {
     const params = new URLSearchParams(searchParams.toString());
-    params.set("view", `${id}--${Date.now()}`);
+    params.set("key", `${id}--${Date.now()}`);
     router.push(`?${params.toString()}`, { scroll: false });
   };
 
@@ -233,7 +233,7 @@ export default function BookDetail({
             </div>
           </div>
 
-          <div className="px-12">
+          <div className="px-12 pb-16">
             <div className="space-y-8">
               {/* Book description */}
               {book.description && (

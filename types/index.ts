@@ -40,6 +40,7 @@ export interface RecommenderBook {
 
 export interface Recommender extends Omit<DbPerson, 'created_at' | 'updated_at'> {
   recommendations?: RecommenderBook[];
+  description?: string | null;
 }
 
 // Type for combined recommender data from get_recommender_details RPC

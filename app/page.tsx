@@ -74,7 +74,7 @@ async function getRecommenders(): Promise<FormattedRecommender[]> {
   // Get all people from the database
   const { data: people, error: peopleError } = await supabase
     .from("people")
-    .select("id, full_name, url, type")
+    .select("id, full_name, url, type, description")
     .order("full_name");
 
   if (peopleError) {
@@ -102,6 +102,7 @@ async function getRecommenders(): Promise<FormattedRecommender[]> {
           full_name: rawData.full_name,
           url: rawData.url,
           type: rawData.type || "Unknown",
+          description: rawData.description,
           recommendations: (rawData.recommendations as any[]).map((rec) => ({
             id: rec.id,
             title: rec.title,
