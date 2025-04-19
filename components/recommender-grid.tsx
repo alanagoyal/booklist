@@ -35,29 +35,31 @@ function BookCell({ original }: { original: EnhancedRecommender }) {
 
   return (
     <div className="whitespace-pre-line line-clamp-2 text-text">
-      <span className="break-words">
-        {original.recommendations.slice(0, 1).map((book) => (
-          <Fragment key={book.id}>
-            <span className="inline whitespace-nowrap">
-              <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  handleBookClick(book.id);
-                }}
-                className="text-text md:hover:text-text/70 md:hover:underline transition-colors duration-200"
-              >
-                {book.title}
-              </button>
+      <span className="flex items-center gap-1">
+        <span className="break-words">
+          {original.recommendations.slice(0, 1).map((book) => (
+            <Fragment key={book.id}>
+              <span className="inline whitespace-nowrap">
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleBookClick(book.id);
+                  }}
+                  className="text-text md:hover:text-text/70 md:hover:underline transition-colors duration-200"
+                >
+                  {book.title}
+                </button>
+              </span>
+            </Fragment>
+          ))}
+          {original.recommendations.length > 1 && (
+            <span className="text-text/70">
+              {" "}
+              + {original.recommendations.length - 1} more
             </span>
-          </Fragment>
-        ))}
-        {original.recommendations.length > 1 && (
-          <span className="text-text/70">
-            {" "}
-            + {original.recommendations.length - 1} more
-          </span>
-        )}
+          )}
+        </span>
       </span>
     </div>
   );
