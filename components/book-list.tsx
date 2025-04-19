@@ -8,7 +8,6 @@ import BookDetail from "@/components/book-detail";
 import RecommenderDetail from "@/components/recommender-detail";
 import BookGrid from "./book-grid";
 import RecommenderGrid from "./recommender-grid";
-import { BookOpen, User } from "lucide-react";
 
 export function BookList({
   initialBooks,
@@ -20,9 +19,8 @@ export function BookList({
   const [mounted, setMounted] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [viewMode, setViewMode] = useState<"books" | "recommenders">(() => {
-    // Initialize from URL param, default to 'books'
-    return (searchParams.get("view") as "books" | "recommenders") || "books";
+  const [viewMode, setViewMode] = useState<"books" | "people">(() => {
+    return (searchParams.get("view") as "books" | "people") || "books";
   });
   const [filteredCount, setFilteredCount] = useState(initialBooks.length);
   const [viewHistory, setViewHistory] = useState<
@@ -73,7 +71,7 @@ export function BookList({
   // Keep viewMode in sync with URL
   useEffect(() => {
     const view = searchParams.get("view");
-    if (view === "books" || view === "recommenders") {
+    if (view === "books" || view === "people") {
       setViewMode(view);
     }
   }, [searchParams]);
@@ -110,7 +108,7 @@ export function BookList({
 
   // Update URL when viewMode changes
   const toggleViewMode = useCallback(() => {
-    const newView = viewMode === "books" ? "recommenders" : "books";
+    const newView = viewMode === "books" ? "people" : "books";
     const params = new URLSearchParams(searchParams.toString());
     params.set("view", newView);
     router.push(`?${params.toString()}`, { scroll: false });
@@ -180,11 +178,11 @@ export function BookList({
           <div className="flex items-center border border-border relative h-8 bg-background">
             <div 
               className={`absolute top-0 bottom-0 transition-all duration-200 bg-accent/50 ${
-                viewMode === "books" ? "left-0 w-[70px]" : "left-[70px] w-[130px]"
+                viewMode === "books" ? "left-0 w-[80px]" : "left-[80px] w-[80px]"
               }`}
             />
             <div 
-              className={`flex items-center z-10 py-1 px-3 w-[70px] transition-colors duration-200 ${
+              className={`flex items-center z-10 py-1 px-3 w-[80px] transition-colors duration-200 ${
                 viewMode === "books" ? "text-text" : "text-text/70"
               }`}
             >
@@ -194,14 +192,14 @@ export function BookList({
               <span>Books</span>
             </div>
             <div 
-              className={`flex items-center z-10 py-1 px-3 w-[130px] transition-colors duration-200 ${
-                viewMode === "recommenders" ? "text-text" : "text-text/70"
+              className={`flex items-center z-10 py-1 px-3 w-[80px] transition-colors duration-200 ${
+                viewMode === "people" ? "text-text" : "text-text/70"
               }`}
             >
               <span className="inline-block w-[10px] text-center text-lg">
-                {viewMode === "recommenders" ? "›" : " "}
+                {viewMode === "people" ? "›" : " "}
               </span>
-              <span>Recommenders</span>
+              <span>People</span>
             </div>
           </div>
         </div>

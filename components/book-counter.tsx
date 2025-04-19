@@ -38,7 +38,7 @@ export function LoadingState() {
 interface BookCounterProps {
   total: number;
   filtered: number;
-  viewMode?: 'books' | 'recommenders';
+  viewMode?: 'books' | 'people';
 }
 
 export function BookCounter({ total, filtered, viewMode = 'books' }: BookCounterProps) {
@@ -58,8 +58,8 @@ export function BookCounter({ total, filtered, viewMode = 'books' }: BookCounter
       ? `${total} books`
       : `${filtered} of ${total} books`
     : filtered === total
-      ? `${total} recommenders`
-      : `${filtered} of ${total} recommenders`;
+      ? `${total} people`
+      : `${filtered} of ${total} people`;
 
   return createPortal(
     <div className="fixed bottom-5 right-5 text-text/70 text-xs whitespace-pre-line transition-all duration-200 bg-background/80 backdrop-blur-sm p-2 selection:bg-main selection:text-mtext md:hover:bg-accent/50">
