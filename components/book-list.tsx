@@ -8,7 +8,7 @@ import BookDetail from "@/components/book-detail";
 import RecommenderDetail from "@/components/recommender-detail";
 import BookGrid from "./book-grid";
 import RecommenderGrid from "./recommender-grid";
-import { LayoutList } from "lucide-react";
+import { BookOpen, User } from "lucide-react";
 
 export function BookList({
   initialBooks,
@@ -175,9 +175,9 @@ export function BookList({
       <div className="flex items-center justify-between px-3 py-2 border-b border-border bg-background">
         <button
           onClick={toggleViewMode}
-          className="flex items-center gap-2 text-text/70 hover:text-text transition-colors duration-200"
+          className="flex items-center gap-2 text-text/70 md:hover:text-text transition-colors duration-200"
         >
-          <LayoutList size={16} />
+          {viewMode === "books" ? <User size={16} /> : <BookOpen size={16} />}
           <span className="text-sm">
             {viewMode === "books" ? "View by Recommender" : "View by Book"}
           </span>
