@@ -172,6 +172,40 @@ export function BookList({
 
   return (
     <div ref={containerRef} className="h-full flex flex-col relative">
+      <div className="flex items-center justify-between p-2 border-b border-border bg-background">
+        <div 
+          onClick={toggleViewMode}
+          className="flex items-center cursor-pointer"
+        >
+          <div className="flex items-center border border-border relative h-8 bg-background">
+            <div 
+              className={`absolute top-0 bottom-0 transition-all duration-200 bg-accent/50 ${
+                viewMode === "books" ? "left-0 w-[70px]" : "left-[70px] w-[130px]"
+              }`}
+            />
+            <div 
+              className={`flex items-center z-10 py-1 px-3 w-[70px] transition-colors duration-200 ${
+                viewMode === "books" ? "text-text" : "text-text/70"
+              }`}
+            >
+              <span className="inline-block w-[10px] text-center text-lg">
+                {viewMode === "books" ? "›" : " "}
+              </span>
+              <span>Books</span>
+            </div>
+            <div 
+              className={`flex items-center z-10 py-1 px-3 w-[130px] transition-colors duration-200 ${
+                viewMode === "recommenders" ? "text-text" : "text-text/70"
+              }`}
+            >
+              <span className="inline-block w-[10px] text-center text-lg">
+                {viewMode === "recommenders" ? "›" : " "}
+              </span>
+              <span>Recommenders</span>
+            </div>
+          </div>
+        </div>
+      </div>
       <div className="flex-1 overflow-hidden">
         {viewMode === "books" ? (
           <BookGrid
@@ -193,7 +227,6 @@ export function BookList({
         }
         filtered={filteredCount}
         viewMode={viewMode}
-        toggleViewMode={toggleViewMode}
       />
 
       {/* Render detail views */}
