@@ -172,17 +172,6 @@ export function BookList({
 
   return (
     <div ref={containerRef} className="h-full flex flex-col relative">
-      <div className="flex items-center justify-between px-3 py-2 border-b border-border bg-background">
-        <button
-          onClick={toggleViewMode}
-          className="flex items-center gap-2 text-text/70 md:hover:text-text transition-colors duration-200"
-        >
-          {viewMode === "books" ? <User size={16} /> : <BookOpen size={16} />}
-          <span className="text-sm">
-            {viewMode === "books" ? "View by Recommender" : "View by Book"}
-          </span>
-        </button>
-      </div>
       <div className="flex-1 overflow-hidden">
         {viewMode === "books" ? (
           <BookGrid
@@ -204,6 +193,7 @@ export function BookList({
         }
         filtered={filteredCount}
         viewMode={viewMode}
+        toggleViewMode={toggleViewMode}
       />
 
       {/* Render detail views */}
