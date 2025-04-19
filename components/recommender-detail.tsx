@@ -95,7 +95,7 @@ export default function RecommenderDetail({
             </div>
           </div>
 
-          <div className="px-12">
+          <div className="px-12 pb-16">
             <div className="space-y-8">
               {/* Recommender description */}
               {recommender.description && (

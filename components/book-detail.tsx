@@ -233,7 +233,7 @@ export default function BookDetail({
             </div>
           </div>
 
-          <div className="px-12">
+          <div className="px-12 pb-16">
             <div className="space-y-8">
               {/* Book description */}
               {book.description && (
