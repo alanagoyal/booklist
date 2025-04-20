@@ -1,0 +1,127 @@
+/* Insights page markdown styling */
+
+.markdown-content {
+  color: var(--text);
+  line-height: 1.6;
+}
+
+.markdown-content details {
+  margin: 1.5rem 0;
+}
+
+.markdown-content summary {
+  cursor: pointer;
+  font-weight: 500;
+  color: rgba(var(--text-rgb), 0.7);
+  transition: color 0.2s;
+}
+
+.markdown-content summary:hover {
+  color: var(--text);
+}
+
+.markdown-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+}
+
+.markdown-content th {
+  background-color: var(--background);
+  font-weight: 500;
+  text-align: left;
+  padding: 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.markdown-content td {
+  padding: 0.75rem;
+  vertical-align: top;
+  border-bottom: 1px solid var(--border);
+}
+
+/* Apply dark mode styles */
+@media (prefers-color-scheme: dark) {
+  .markdown-content th {
+    background-color: var(--background);
+  }
+}
+
+.markdown-content aside {
+  background-color: var(--background);
+  padding: 1rem;
+  margin: 1.5rem 0;
+  font-style: italic;
+  color: rgba(var(--text-rgb), 0.7);
+  border: 1px solid var(--border);
+}
+
+@media (prefers-color-scheme: dark) {
+  .markdown-content aside {
+    background-color: var(--background);
+  }
+}
+
+.markdown-content hr {
+  border: 0;
+  height: 1px;
+  background-color: var(--border);
+  margin: 2rem 0;
+}
+
+.markdown-content h2 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin: 2rem 0 1rem;
+}
+
+.markdown-content h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 1.75rem 0 0.75rem;
+}
+
+.markdown-content h4 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 1.5rem 0 0.5rem;
+}
+
+.markdown-content p {
+  margin: 1rem 0;
+}
+
+.markdown-content ul, 
+.markdown-content ol {
+  margin: 1rem 0;
+  padding-left: 1.5rem;
+}
+
+.markdown-content ul {
+  list-style-type: disc;
+}
+
+.markdown-content ol {
+  list-style-type: decimal;
+}
+
+.markdown-content li {
+  margin: 0.25rem 0;
+}
+
+.markdown-content a {
+  color: var(--text);
+  text-decoration: underline;
+  text-decoration-color: rgba(var(--text-rgb), 0.3);
+  transition: text-decoration-color 0.2s;
+}
+
+.markdown-content a:hover {
+  text-decoration-color: var(--text);
+}
+
+/* Selection styling consistent with app */
+.markdown-content ::selection {
+  background-color: var(--main);
+  color: var(--mtext);
+}
