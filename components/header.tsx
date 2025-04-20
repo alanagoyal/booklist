@@ -30,18 +30,18 @@ function HeaderContent() {
   };
 
   return (
-    <div className="h-14 flex items-center border-b border-border">
-      <div className="flex items-center gap-4 px-4">
+    <div className="h-14 flex border-b border-border">
+      <div className="flex gap-4 px-4">
         <Link
           href={homeHref}
-          className="font-bold text-2xl text-text transition-colors duration-200"
+          className="font-bold text-2xl text-text transition-colors duration-200 pt-4"
         >
           BOOKLIST
         </Link>
-        <div className="hidden md:flex items-center h-14 text-sm">
+        <div className="hidden md:flex h-14 text-base space-x-2">
           <Link
             href={getViewHref("books")}
-            className={`h-full flex items-center px-3 transition-colors duration-200 border-b-2 ${
+            className={`h-full flex items-center px-2 pt-2 transition-colors duration-200 border-b-2 ${
               isHomePage && view === "books"
                 ? "text-text border-text" 
                 : "text-text/70 md:hover:text-text border-transparent"
@@ -51,7 +51,7 @@ function HeaderContent() {
           </Link>
           <Link
             href={getViewHref("people")}
-            className={`h-full flex items-center px-3 transition-colors duration-200 border-b-2 ${
+            className={`h-full flex items-center px-2 pt-2 transition-colors duration-200 border-b-2 ${
               isHomePage && view === "people"
                 ? "text-text border-text" 
                 : "text-text/70 md:hover:text-text border-transparent"
@@ -61,7 +61,7 @@ function HeaderContent() {
           </Link>
           <Link
             href="/insights"
-            className={`h-full flex items-center px-3 transition-colors duration-200 border-b-2 ${
+            className={`h-full flex items-center px-2 pt-2 transition-colors duration-200 border-b-2 ${
               pathname === "/insights"
                 ? "text-text border-text" 
                 : "text-text/70 md:hover:text-text border-transparent"
@@ -71,8 +71,8 @@ function HeaderContent() {
           </Link>
         </div>
       </div>
-      <div className="ml-auto flex items-center gap-2">
-        <div className="hidden md:flex items-center gap-2 px-4">
+      <div className="ml-auto flex gap-2">
+        <div className="hidden md:flex items-center gap-2 pt-2 px-4 text-base">
           <button
             onClick={() => setIsAboutOpen(true)}
             className="h-full px-3 text-text/70 transition-colors duration-200 md:hover:text-text"
@@ -81,7 +81,7 @@ function HeaderContent() {
           </button>
           <ThemeToggle className="h-full p-2 md:hover:text-text text-text/70" />
         </div>
-        <div className="md:hidden px-4 relative">
+        <div className="md:hidden px-4 pt-2 relative">
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             className="h-10 w-10 flex items-center justify-center text-text/70"
@@ -90,7 +90,7 @@ function HeaderContent() {
             <Menu size={24} />
           </button>
           {isMenuOpen && (
-            <div className="absolute right-0 top-12 w-56 bg-background border-l border-b border-border z-50">
+            <div className="absolute right-0 top-14 w-56 bg-background border-l border-b border-border z-50">
               <Link
                 href={getViewHref("books")}
                 className="w-full px-4 py-2 flex items-center text-left text-text/70"
