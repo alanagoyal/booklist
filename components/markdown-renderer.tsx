@@ -11,7 +11,7 @@ interface MarkdownRendererProps {
 
 export default function MarkdownRenderer({ content, className = '' }: MarkdownRendererProps) {
   return (
-    <div className={`markdown-content ${className}`}>
+    <div className={`markdown-content text-sm ${className}`}>
       <ReactMarkdown 
         remarkPlugins={[remarkGfm]}
         components={{
@@ -25,9 +25,9 @@ export default function MarkdownRenderer({ content, className = '' }: MarkdownRe
           tr: ({ node, ...props }) => <tr className="border-b border-border" {...props} />,
           th: ({ node, ...props }) => <th className="p-2 text-left border-r border-border last:border-r-0" {...props} />,
           td: ({ node, ...props }) => <td className="p-2 border-r border-border last:border-r-0" {...props} />,
-          h2: ({ node, ...props }) => <h2 className="text-2xl font-semibold mt-8 mb-4" {...props} />,
-          h3: ({ node, ...props }) => <h3 className="text-xl font-semibold mt-6 mb-3" {...props} />,
-          h4: ({ node, ...props }) => <h4 className="text-lg font-semibold mt-4 mb-2" {...props} />,
+          h2: ({ node, ...props }) => <h2 className="text-xl font-semibold mt-8 mb-4" {...props} />,
+          h3: ({ node, ...props }) => <h3 className="text-lg font-semibold mt-6 mb-3" {...props} />,
+          h4: ({ node, ...props }) => <h4 className="text-base font-semibold mt-4 mb-2" {...props} />,
           p: ({ node, ...props }) => <p className="my-4" {...props} />,
           a: ({ node, ...props }) => <a className="text-text hover:underline" {...props} />,
           ul: ({ node, ...props }) => <ul className="list-disc pl-6 my-4" {...props} />,
