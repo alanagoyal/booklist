@@ -2,37 +2,147 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation"; // Import useRouter hook
 import { ThemeToggle } from "./theme-toggle";
 import { useState, Suspense } from "react";
 import AboutDialog from "./about-dialog";
+import { usePathname } from "next/navigation";
+import { Menu } from "lucide-react";
 
 function HeaderContent() {
   const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const router = useRouter(); // Initialize useRouter hook
   const currentParams = searchParams.toString();
   const homeHref = currentParams ? `/?${currentParams}` : "/";
+  const isHomePage = pathname === "/";
+  const view = isHomePage ? (searchParams.get("view") as "books" | "people") || "books" : null;
+
+  // State for menu
   const [isAboutOpen, setIsAboutOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  
+  // Create new search params for view switching
+  const getViewHref = (view: "books" | "people") => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("view", view);
+    return `/?${params.toString()}`;
+  };
 
   return (
-    <div className="h-16 flex justify-between items-center">
-      <div className="px-3">
+    <div className="h-14 flex items-center border-b border-border">
+      <div className="flex items-center gap-4 px-4">
         <Link
           href={homeHref}
-          className="font-bold text-xl text-text transition-colors duration-200"
+          className="font-bold text-2xl text-text transition-colors duration-200"
         >
           BOOKLIST
         </Link>
+        <div className="hidden md:flex items-center h-14 text-sm">
+          <Link
+            href={getViewHref("books")}
+            className={`h-full flex items-center px-3 transition-colors duration-200 border-b-2 ${
+              isHomePage && view === "books"
+                ? "text-text border-text" 
+                : "text-text/70 md:hover:text-text border-transparent"
+            }`}
+          >
+            Books
+          </Link>
+          <Link
+            href={getViewHref("people")}
+            className={`h-full flex items-center px-3 transition-colors duration-200 border-b-2 ${
+              isHomePage && view === "people"
+                ? "text-text border-text" 
+                : "text-text/70 md:hover:text-text border-transparent"
+            }`}
+          >
+            People
+          </Link>
+          <Link
+            href="/insights"
+            className={`h-full flex items-center px-3 transition-colors duration-200 border-b-2 ${
+              pathname === "/insights"
+                ? "text-text border-text" 
+                : "text-text/70 md:hover:text-text border-transparent"
+            }`}
+          >
+            Insights
+          </Link>
+        </div>
       </div>
-      <div className="flex items-center gap-4 px-3">
-        <div className="min-w-[60px]">
+      <div className="ml-auto flex items-center gap-2">
+        <div className="hidden md:flex items-center gap-2 px-4">
           <button
             onClick={() => setIsAboutOpen(true)}
-            className="text-text/70 transition-colors duration-200 md:hover:text-text p-2 w-full"
+            className="h-full px-3 text-text/70 transition-colors duration-200 md:hover:text-text"
           >
             About
           </button>
+          <ThemeToggle className="h-full p-2 md:hover:text-text text-text/70" />
         </div>
-        <div className="min-w-[60px]">
-          <ThemeToggle className="p-2 h-10 md:hover:text-text text-text/70 w-full" />
+        <div className="md:hidden px-4 relative">
+          <button
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className="h-10 w-10 flex items-center justify-center text-text/70"
+            aria-label="Menu"
+          >
+            <Menu size={24} />
+          </button>
+          {isMenuOpen && (
+            <div className="absolute right-0 top-12 w-56 bg-background border-l border-b border-border z-50">
+              <Link
+                href={getViewHref("books")}
+                className="w-full px-4 py-2 flex items-center text-left text-text/70"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setIsMenuOpen(false);
+                  router.push(getViewHref("books"));
+                }}
+              >
+                <span className={`transition-all duration-200 ${isHomePage && view === "books" ? "border-b-2 border-text text-text" : ""}`}>
+                  Books
+                </span>
+              </Link>
+              <Link
+                href={getViewHref("people")}
+                className="w-full px-4 py-2 flex items-center text-left text-text/70"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setIsMenuOpen(false);
+                  router.push(getViewHref("people"));
+                }}
+              >
+                <span className={`transition-all duration-200 ${isHomePage && view === "people" ? "border-b-2 border-text text-text" : ""}`}>
+                  People
+                </span>
+              </Link>
+              <Link
+                href="/insights"
+                className="w-full px-4 py-2 flex items-center text-left text-text/70"
+                onClick={() => {
+                  setIsMenuOpen(false);
+                }}
+              >
+                <span className={`transition-all duration-200 ${pathname === "/insights" ? "border-b-2 border-text text-text" : ""}`}>
+                  Insights
+                </span>
+              </Link>
+              <button
+                onClick={() => {
+                  setIsAboutOpen(true);
+                  setIsMenuOpen(false);
+                }}
+                className="w-full px-4 py-2 flex items-center text-left text-text/70 transition-colors duration-200"
+              >
+                About
+              </button>
+              <ThemeToggle 
+                className="w-full px-4 py-2 flex items-center text-left text-text/70 transition-colors duration-200"
+                onClick={() => setIsMenuOpen(false)}
+              />
+            </div>
+          )}
         </div>
       </div>
       <AboutDialog open={isAboutOpen} onOpenChange={setIsAboutOpen} />
@@ -42,7 +152,7 @@ function HeaderContent() {
 
 export default function Header() {
   return (
-    <div className="bg-background border-b border-border">
+    <div className="bg-background">
       <Suspense fallback={<div className="h-16" />}>
         <HeaderContent />
       </Suspense>
