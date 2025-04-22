@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation"; // Import useRouter hook
 import { ThemeToggle } from "./theme-toggle";
-import { useState, Suspense } from "react";
+import { useState, Suspense, useEffect, useRef } from "react";
 import AboutDialog from "./about-dialog";
 import { usePathname } from "next/navigation";
 import { Menu } from "lucide-react";
@@ -27,6 +27,33 @@ function HeaderContent() {
   // State for menu
   const [isAboutOpen, setIsAboutOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  // Handle click outside
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (!isMenuOpen) return;
+      
+      const target = e.target as HTMLElement;
+      if (!menuRef.current?.contains(target)) {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsMenuOpen(false);
+        // Brief delay before allowing new clicks
+        const clickBlock = (e: Event) => {
+          e.preventDefault();
+          e.stopPropagation();
+        };
+        document.addEventListener("click", clickBlock, true);
+        setTimeout(() => {
+          document.removeEventListener("click", clickBlock, true);
+        }, 200);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClick, true);
+    return () => document.removeEventListener("mousedown", handleClick, true);
+  }, [isMenuOpen]);
 
   // Create new search params for view switching
   const getViewHref = (view: "books" | "people") => {
@@ -93,14 +120,17 @@ function HeaderContent() {
         </div>
         <div className="md:hidden px-4 pt-1 relative">
           <button
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsMenuOpen(!isMenuOpen);
+            }}
             className="h-10 w-10 flex items-center justify-center text-text/70"
             aria-label="Menu"
           >
             <Menu size={24} />
           </button>
           {isMenuOpen && (
-            <div className="absolute right-0 top-12 w-56 bg-background border-l border-b border-border z-50">
+            <div ref={menuRef} className="absolute right-0 top-12 w-56 bg-background border-l border-b border-border z-50">
               <Link
                 href={getViewHref("books")}
                 className="w-full px-4 py-2 flex items-center text-left text-text/70"
@@ -134,7 +164,8 @@ function HeaderContent() {
               <Link
                 href="/insights"
                 className="w-full px-4 py-2 flex items-center text-left text-text/70"
-                onClick={() => {
+                onClick={(e) => {
+                  e.preventDefault();
                   setIsMenuOpen(false);
                 }}
               >
@@ -147,7 +178,8 @@ function HeaderContent() {
               <Link
                 href="/about"
                 className="w-full px-4 py-2 flex items-center text-left text-text/70"
-                onClick={() => {
+                onClick={(e) => {
+                  e.preventDefault();
                   setIsMenuOpen(false);
                 }}
               >
@@ -159,7 +191,9 @@ function HeaderContent() {
               </Link>
               <ThemeToggle
                 className="w-full px-4 py-2 flex items-center text-left text-text/70 transition-colors duration-200"
-                onClick={() => setIsMenuOpen(false)}
+                onClick={() => {
+                  setIsMenuOpen(false);
+                }}
               />
             </div>
           )}
