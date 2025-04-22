@@ -87,7 +87,7 @@ function HeaderContent() {
         <div className="hidden md:flex items-center gap-2 pt-2 px-4 text-sm">
           <ThemeToggle className="h-full p-2 md:hover:text-text text-text/70" />
         </div>
-        <div className="md:hidden px-4 pt-2 relative">
+        <div className="md:hidden px-4 pt-1 relative">
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             className="h-10 w-10 flex items-center justify-center text-text/70"
