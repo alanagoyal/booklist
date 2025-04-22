@@ -14,7 +14,11 @@ function HeaderContent() {
   const pathname = usePathname();
   const router = useRouter(); // Initialize useRouter hook
   const currentParams = searchParams.toString();
-  const homeHref = currentParams ? `/?${currentParams}` : "/";
+  const homeHref = (() => {
+    const params = new URLSearchParams(currentParams);
+    params.set("view", "books");
+    return `/?${params.toString()}`;
+  })();
   const isHomePage = pathname === "/";
   const view = isHomePage
     ? (searchParams.get("view") as "books" | "people") || "books"
