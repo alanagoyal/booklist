@@ -622,35 +622,41 @@ export function DataGrid<T extends Record<string, any>>({
           </div>
         </div>
 
-        <div
-          className="relative"
-          style={{
-            height: `${rowVirtualizer.getTotalSize()}px`,
-          }}
-        >
-          {rowVirtualizer.getVirtualItems().map((virtualRow) => {
-            const row = filteredAndSortedData[virtualRow.index];
-            return (
-              <div
-                key={virtualRow.index}
-                className={`grid transition-colors duration-200 ${
-                  getRowClassName?.(row) || ""
-                }`}
-                style={{
-                  gridTemplateColumns: `repeat(${columns.length}, minmax(200px, 1fr))`,
-                  position: "absolute",
-                  top: `${virtualRow.start}px`,
-                  left: 0,
-                  width: "100%",
-                  height: `${virtualRow.size}px`,
-                }}
-                onClick={(e) => handleRowClick(e, row)}
-              >
-                {columns.map((column) => renderCell({ column, row }))}
-              </div>
-            );
-          })}
-        </div>
+        {filteredAndSortedData.length === 0 ? (
+          <div className="fixed left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 text-center px-4">
+            <div className="text-text/70">No results match this search</div>
+          </div>
+        ) : (
+          <div
+            className="relative"
+            style={{
+              height: `${rowVirtualizer.getTotalSize()}px`,
+            }}
+          >
+            {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+              const row = filteredAndSortedData[virtualRow.index];
+              return (
+                <div
+                  key={virtualRow.index}
+                  className={`grid transition-colors duration-200 ${
+                    getRowClassName?.(row) || ""
+                  }`}
+                  style={{
+                    gridTemplateColumns: `repeat(${columns.length}, minmax(200px, 1fr))`,
+                    position: "absolute",
+                    top: `${virtualRow.start}px`,
+                    left: 0,
+                    width: "100%",
+                    height: `${virtualRow.size}px`,
+                  }}
+                  onClick={(e) => handleRowClick(e, row)}
+                >
+                  {columns.map((column) => renderCell({ column, row }))}
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
     </div>
   );
