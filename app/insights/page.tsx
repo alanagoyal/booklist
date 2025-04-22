@@ -10,7 +10,7 @@ export default async function InsightsPage() {
 
   return (
     <div className="h-full p-4 bg-background text-text overflow-y-auto">
-      <div className="max-w-2xl mx-auto">
+      <div className="max-w-3xl mx-auto">
         {insightsPost ? (
           <MarkdownRenderer content={insightsPost.content} />
         ) : (

@@ -17,7 +17,7 @@ export default function AboutDialog({ open, onOpenChange }: AboutDialogProps) {
           <VisuallyHidden>About</VisuallyHidden>
         </DialogTitle>
         <DialogDescription asChild>
-          <div>
+          <div className="p-1">
             <About />
           </div>
         </DialogDescription>
