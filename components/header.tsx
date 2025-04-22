@@ -64,7 +64,7 @@ function HeaderContent() {
 
   return (
     <div className="h-[48px] flex border-b border-border">
-      <div className="flex gap-4 px-4">
+      <div className="flex gap-4 px-3">
         <Link
           href={homeHref}
           className="font-bold text-2xl text-text transition-colors duration-200 pt-3"
