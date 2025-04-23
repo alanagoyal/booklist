@@ -28,7 +28,7 @@ BEGIN
       books.description,
       books.genre,
       books.amazon_url,
-      COUNT(DISTINCT r.person_id) as recommendation_count,
+      COUNT(DISTINCT r.person_id)::int as recommendation_count,
       json_agg(
         json_build_object(
           'recommender', (
@@ -51,9 +51,9 @@ BEGIN
   ),
   book_stats AS (
     SELECT 
-      id,
-      recommendation_count,
-      NTILE(100) OVER (ORDER BY recommendation_count) as percentile
+      book_recommendations.id,
+      book_recommendations.recommendation_count,
+      NTILE(100) OVER (ORDER BY book_recommendations.recommendation_count) as percentile
     FROM book_recommendations
   ),
   related_books_data AS (
@@ -66,18 +66,19 @@ BEGIN
           'author', rb.author,
           'description', rb.description,
           'amazon_url', rb.amazon_url,
-          '_recommendationCount', (
-            SELECT COUNT(DISTINCT r2.person_id)
-            FROM recommendations r2
-            WHERE r2.book_id = rb.id
-          )
+          '_recommendationCount', rb_count.count::int
         )
-        ORDER BY COUNT(DISTINCT r2.person_id) DESC
+        ORDER BY rb_count.count DESC
       ) as related_books
     FROM book_recommendations br
     JOIN recommendations r1 ON br.id = r1.book_id
     JOIN recommendations r2 ON r1.person_id = r2.person_id
     JOIN books rb ON r2.book_id = rb.id
+    JOIN (
+      SELECT book_id, COUNT(DISTINCT person_id) as count
+      FROM recommendations
+      GROUP BY book_id
+    ) rb_count ON rb.id = rb_count.book_id
     WHERE rb.id != br.id
     GROUP BY br.id
     HAVING COUNT(DISTINCT rb.id) > 0
