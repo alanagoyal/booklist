@@ -26,7 +26,8 @@ create table "public"."people" (
     "updated_at" timestamp with time zone not null default timezone('utc'::text, now()),
     "url" text,
     "type" text,
-    "description" text
+    "description" text,
+    "description_embedding" vector(1536)
 );
 
 
@@ -429,6 +430,81 @@ begin
     left join related r on r.recommender_id = rb.id
     order by rb.full_name;
 end;
+$$;
+
+-- Get similar person embeddings
+create or replace function get_similar_people_by_description_embedding(
+  person_id_arg uuid
+)
+returns table (
+  person_id uuid,
+  full_name text,
+  type text,
+  similarity float
+)
+language sql
+as $$
+  with source_embedding as (
+    select avg(b.description_embedding) as embedding
+    from recommendations r
+    join books b on r.book_id = b.id
+    where r.person_id = person_id_arg and b.description_embedding is not null
+  ),
+  target_embeddings as (
+    select
+      p.id as person_id,
+      p.full_name,
+      p.type,
+      avg(b.description_embedding) as embedding
+    from people p
+    join recommendations r on p.id = r.person_id
+    join books b on r.book_id = b.id
+    where b.description_embedding is not null and p.id != person_id_arg
+    group by p.id, p.full_name, p.type
+  )
+  select
+    t.person_id,
+    t.full_name,
+    t.type,
+    1 - (t.embedding <=> s.embedding) as similarity
+  from target_embeddings t, source_embedding s
+  where s.embedding is not null and t.embedding is not null
+  order by t.embedding <=> s.embedding
+  limit 3
+$$;
+
+-- Get similar book embeddings
+create or replace function get_similar_books_to_book_by_description(
+  book_id_arg uuid
+)
+returns table (
+  id uuid,
+  title text,
+  author text,
+  genre text[],
+  description text,
+  amazon_url text,
+  similarity float
+)
+language sql
+as $$
+  with source as (
+    select description_embedding
+    from books
+    where id = book_id_arg and description_embedding is not null
+  )
+  select
+    b.id,
+    b.title,
+    b.author,
+    b.genre,
+    b.description,
+    b.amazon_url,
+    1 - (b.description_embedding <=> s.description_embedding) as similarity
+  from books b, source s
+  where b.id != book_id_arg and b.description_embedding is not null
+  order by b.description_embedding <=> s.description_embedding
+  limit 3
 $$;
 
 grant delete on table "public"."books" to "anon";

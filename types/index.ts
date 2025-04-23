@@ -18,6 +18,25 @@ export interface RelatedRecommender {
   shared_count: number;
 }
 
+// Similar recommender type
+export interface SimilarRecommender {
+  person_id: string;
+  full_name: string;
+  type: string;
+  similarity: number;
+}
+
+// Similar book type
+export interface SimilarBook {
+  id: string;
+  title: string;
+  author: string;
+  genre: string[];
+  description: string;
+  amazon_url: string;
+  similarity: number;
+}
+
 // Main extended recommender type
 export interface FormattedRecommender {
   id: string;
@@ -36,6 +55,7 @@ export interface FormattedRecommender {
     source_link: string | null;
   }[];
   related_recommenders: RelatedRecommender[];
+  similar_recommenders: SimilarRecommender[];
   _book_count: number;
   _percentile: number;
 }
@@ -61,4 +81,5 @@ export interface FormattedBook {
   _recommendation_count: number;
   _percentile: number;
   related_books: RelatedBook[];
+  similar_books: SimilarBook[];
 }

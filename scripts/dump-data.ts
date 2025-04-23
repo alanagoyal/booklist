@@ -59,6 +59,20 @@ async function dumpData() {
         console.error("Error fetching related books:", relatedError);
       }
 
+      // Get similar books for all books
+      const similarBooksPromises = allBooks.map(book => 
+        supabase.rpc("get_similar_books_to_book_by_description", { book_id_arg: book.id })
+      );
+      const similarBooksResults = await Promise.all(similarBooksPromises);
+      const similarBooksData = similarBooksResults.reduce<Record<string, any>>((acc, result, index) => {
+        if (result.error) {
+          console.error("Error fetching similar books:", result.error);
+          return acc;
+        }
+        acc[allBooks[index].id] = result.data || [];
+        return acc;
+      }, {});
+
       // Combine all data
       const formattedBooks: FormattedBook[] = allBooks.map(book => ({
         id: book.id,
@@ -105,6 +119,23 @@ async function dumpData() {
           amazon_url: rb.amazon_url || "",
           _recommendationCount: rb._recommendationCount,
         })),
+        similar_books: (similarBooksData?.[book.id] || []).map((sb: {
+          id: string;
+          title: string;
+          author: string;
+          genre: string[];
+          description: string;
+          amazon_url: string;
+          similarity: number;
+        }) => ({
+          id: sb.id,
+          title: sb.title,
+          author: sb.author,
+          genre: sb.genre,
+          description: sb.description || "",
+          amazon_url: sb.amazon_url || "",
+          similarity: sb.similarity,
+        })),
       }));
 
       writeFileSync(
@@ -122,8 +153,42 @@ async function dumpData() {
     if (recommendersError) {
       console.error("Error fetching recommenders:", recommendersError);
     } else if (recommenders) {
+      // Get similar recommenders for each recommender
+      const similarRecommendersPromises = recommenders.map((recommender: {
+        id: string;
+        full_name: string;
+        type: string | null;
+        url: string | null;
+        description: string | null;
+        recommendations: any[];
+        related_recommenders: any[];
+        _book_count: number;
+        _percentile: number;
+      }) => 
+        supabase.rpc("get_similar_people_by_description_embedding", { person_id_arg: recommender.id })
+      );
+      const similarRecommendersResults = await Promise.all(similarRecommendersPromises);
+      const similarRecommendersData = similarRecommendersResults.reduce<Record<string, any>>((acc, result, index) => {
+        if (result.error) {
+          console.error("Error fetching similar recommenders:", result.error);
+          return acc;
+        }
+        acc[recommenders[index].id] = result.data || [];
+        return acc;
+      }, {});
+
       // Format the recommenders data
-      const formattedRecommenders: FormattedRecommender[] = recommenders.map((recommender: any) => ({
+      const formattedRecommenders: FormattedRecommender[] = recommenders.map((recommender: {
+        id: string;
+        full_name: string;
+        type: string | null;
+        url: string | null;
+        description: string | null;
+        recommendations: any[];
+        related_recommenders: any[];
+        _book_count: number;
+        _percentile: number;
+      }) => ({
         id: recommender.id,
         full_name: recommender.full_name,
         type: recommender.type || "",
@@ -131,6 +196,7 @@ async function dumpData() {
         description: recommender.description || "",
         recommendations: recommender.recommendations || [],
         related_recommenders: recommender.related_recommenders || [],
+        similar_recommenders: similarRecommendersData[recommender.id] || [],
         _book_count: recommender._book_count,
         _percentile: recommender._percentile,
       }));

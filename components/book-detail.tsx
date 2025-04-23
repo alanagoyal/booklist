@@ -113,7 +113,7 @@ export default function BookDetail({
                   <h2 className="text-base text-text font-bold">About</h2>
                   <p className="text-text whitespace-pre-line leading-relaxed">
                     {book.description}
-                  </p>
+                  </p> 
                 </div>
               )}
 
@@ -194,7 +194,7 @@ export default function BookDetail({
               {book.related_books.length > 0 && (
                 <div className="space-y-2">
                   <h2 className="text-base text-text font-bold">
-                    Similar Recommendations
+                    Books With Similar Recommenders
                   </h2>
                   <div className="space-y-4">
                     {book.related_books.map((relatedBook) => (
@@ -223,6 +223,46 @@ export default function BookDetail({
                           <div className="text-sm text-text/70">
                             {relatedBook._recommendationCount} recommendation
                             {relatedBook._recommendationCount !== 1 && "s"}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Similar books */}
+              {book.similar_books.length > 0 && (
+                <div className="space-y-2">
+                  <h2 className="text-base text-text font-bold">
+                    Books With Similar Themes
+                  </h2>
+                  <div className="space-y-4">
+                    {book.similar_books.map((similarBook) => (
+                      <div
+                        key={similarBook.id}
+                        className="flex items-start gap-3 bg-accent/50 p-2 cursor-pointer transition-colors duration-200 border-l-2 border-transparent md:hover:bg-accent md:hover:border-border"
+                        onClick={() => {
+                          handleEntityClick(similarBook.id);
+                        }}
+                      >
+                        <BookOpen className="w-5 h-5 mt-0.5 text-text/70 shrink-0" />
+                        <div className="space-y-1 min-w-0 flex-1">
+                          <div className="flex items-baseline gap-2">
+                            <span className="text-text">
+                              <button
+                                onClick={() => {
+                                  handleEntityClick(similarBook.id);
+                                }}
+                                className="text-text text-left font-base md:hover:underline transition-colors duration-200"
+                              >
+                                {similarBook.title}
+                              </button>{" "}
+                              by {similarBook.author}
+                            </span>
+                          </div>
+                          <div className="text-sm text-text/70">
+                            {similarBook.similarity.toFixed(2)} similarity
                           </div>
                         </div>
                       </div>

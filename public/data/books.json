@@ -227,6 +227,41 @@
         "amazon_url": "https://www.amazon.com/dp/B01IAUGC5S?tag=9natree-20",
         "_recommendationCount": 2
       }
+    ],
+    "similar_books": [
+      {
+        "id": "fd93ca83-849e-4cb2-8f88-2434a37bd5f8",
+        "title": "The Launch Pad",
+        "author": "Randall Stross",
+        "genre": [
+          "Business"
+        ],
+        "description": "A behind-the-scenes look at startup culture and the early struggles of launching a company.",
+        "amazon_url": "https://www.amazon.com/Launch-Pad-Inside-Combinator/dp/1591846587",
+        "similarity": 0.930695303595633
+      },
+      {
+        "id": "e87fc45a-6049-47ba-a291-57965332432d",
+        "title": "Secrets of Sand Hill Road",
+        "author": "Scott Kupor",
+        "genre": [
+          "Business"
+        ],
+        "description": "An insider's guide to venture capital and startup funding.",
+        "amazon_url": "https://www.amazon.com/Secrets-Sand-Hill-Road-Venture/dp/059308358X",
+        "similarity": 0.887770500714685
+      },
+      {
+        "id": "d0cfd67a-01d1-48ba-8f4e-9a1580a55036",
+        "title": "The Startup Way",
+        "author": "Eric Ries",
+        "genre": [
+          "Business"
+        ],
+        "description": "A guide to scaling innovation in large organizations using startup principles and agile methods.",
+        "amazon_url": "https://www.amazon.com/Startup-Way-Companies-Entrepreneurial-Management/dp/1101903201",
+        "similarity": 0.863516271114349
+      }
     ]
   },
   {
@@ -347,6 +382,41 @@
         "amazon_url": "https://www.amazon.com/Courage-Be-Disliked-Phenomenon-Happiness-ebook/dp/B078MDSV8T",
         "_recommendationCount": 3
       }
+    ],
+    "similar_books": [
+      {
+        "id": "7b02c1b6-4295-4e95-83f7-71df8b8b7e8a",
+        "title": "Rainbows End",
+        "author": "Vernor Vinge",
+        "genre": [
+          "Fiction"
+        ],
+        "description": "A visionary science fiction novel exploring the future of technology, human cognition, and society.",
+        "amazon_url": "https://www.amazon.com/Rainbows-End-Novel-Foot-Future/dp/0812536363",
+        "similarity": 0.895200040793421
+      },
+      {
+        "id": "7573aaf6-a916-4c27-b85e-246b130cf757",
+        "title": "Kill Decision",
+        "author": "Daniel Suarez",
+        "genre": [
+          "Science Fiction"
+        ],
+        "description": "A techno-thriller that explores the potential future of autonomous warfare and unmanned combat systems.",
+        "amazon_url": "https://www.amazon.com/Kill-Decision-Daniel-Suarez/dp/0451417704",
+        "similarity": 0.872948773327545
+      },
+      {
+        "id": "65fbae96-3e76-405c-b82d-7115e0c21402",
+        "title": "Foundation",
+        "author": "Isaac Asimov",
+        "genre": [
+          "Science Fiction"
+        ],
+        "description": "A seminal science fiction saga about preserving knowledge in a crumbling galactic empire.",
+        "amazon_url": "https://www.amazon.com/Foundation-Isaac-Asimov/dp/0553293354?source=ps-sl-shoppingads-lpcontext&ref_=fplfs&psc=1&smid=ATVPDKIKX0DER",
+        "similarity": 0.840318381786346
+      }
     ]
   },
   {
@@ -457,6 +527,41 @@
         "amazon_url": "https://www.amazon.com/Extreme-Ownership-U-S-Navy-SEALs/dp/1250067057",
         "_recommendationCount": 3
       }
+    ],
+    "similar_books": [
+      {
+        "id": "63b27406-619b-4b72-9c87-27f10dabf903",
+        "title": "Behave: The Biology of Humans at Our Best and Worst",
+        "author": "Robert Sapolsky",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "An exploration of the science behind human behavior and decision making.",
+        "amazon_url": "https://www.amazon.com/dp/B01IAUGC5S?tag=9natree-20",
+        "similarity": 0.901373124450004
+      },
+      {
+        "id": "48e4bfbd-6da7-4b78-84a2-72b0ac168ec8",
+        "title": "Conspiracy",
+        "author": "Ryan Holiday",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "A deep dive into the hidden networks that shape cultural events and influence public discourse.",
+        "amazon_url": "https://www.amazon.com/Conspiracy-Peter-Gawker-Anatomy-Intrigue/dp/1788160835",
+        "similarity": 0.858497951954251
+      },
+      {
+        "id": "f006338f-99fd-4da0-8b6f-c9781c2f9e77",
+        "title": "Private Truths, Public Lies",
+        "author": "Timur Kuran",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "A deep dive into how hidden biases and concealed information shape political and economic outcomes.",
+        "amazon_url": "https://www.amazon.com/Private-Truths-Public-Lies-Falsification/dp/0674707583",
+        "similarity": 0.849764379816852
+      }
     ]
   },
   {
@@ -556,6 +661,41 @@
         "description": "A cyberpunk classic exploring virtual realities and dystopian futures.",
         "amazon_url": "https://www.amazon.com/Snow-Crash-Neal-Stephenson/dp/0553380958",
         "_recommendationCount": 8
+      }
+    ],
+    "similar_books": [
+      {
+        "id": "4a0bb40d-62b6-419a-a4e7-180edf8f54b1",
+        "title": "How to Live",
+        "author": "Sarah Bakewell",
+        "genre": [
+          "Self-Help"
+        ],
+        "description": "An engaging exploration of the art of living, drawing on the wisdom of philosophy and history.",
+        "amazon_url": "https://www.amazon.com/How-Live-Montaigne-Question-Attempts/dp/1590514831",
+        "similarity": 0.892959952354457
+      },
+      {
+        "id": "8526055f-a6dc-40e2-b3ef-91dc4f020a91",
+        "title": "12 Rules for Life",
+        "author": "Jordan B. Peterson",
+        "genre": [
+          "Self-Help"
+        ],
+        "description": "Practical life advice and philosophical insights for personal growth.",
+        "amazon_url": "https://www.amazon.com/12-Rules-Life-Antidote-Chaos/dp/0345816021",
+        "similarity": 0.882454619700324
+      },
+      {
+        "id": "998bba5d-6127-4835-bb00-c5942d510770",
+        "title": "The Courage to Be Disliked",
+        "author": "Ichiro Kishimi",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "A philosophical dialogue on embracing freedom and self-reliance.",
+        "amazon_url": "https://www.amazon.com/Courage-Be-Disliked-Phenomenon-Happiness-ebook/dp/B078MDSV8T",
+        "similarity": 0.853082777763652
       }
     ]
   },
@@ -657,6 +797,41 @@
         "amazon_url": "https://www.amazon.com/When-Wolves-Bite-Billionaires-Company/dp/1610398270",
         "_recommendationCount": 1
       }
+    ],
+    "similar_books": [
+      {
+        "id": "4a0bb40d-62b6-419a-a4e7-180edf8f54b1",
+        "title": "How to Live",
+        "author": "Sarah Bakewell",
+        "genre": [
+          "Self-Help"
+        ],
+        "description": "An engaging exploration of the art of living, drawing on the wisdom of philosophy and history.",
+        "amazon_url": "https://www.amazon.com/How-Live-Montaigne-Question-Attempts/dp/1590514831",
+        "similarity": 0.88846017901666
+      },
+      {
+        "id": "18144cab-e4af-4a29-ba17-855a41143105",
+        "title": "A Guide to the Good Life",
+        "author": "William B. Irvine",
+        "genre": [
+          "Philosophy"
+        ],
+        "description": "An introduction to Stoic philosophy for modern living.",
+        "amazon_url": "https://www.amazon.com/Guide-Good-Life-Ancient-Stoic/dp/0195374614",
+        "similarity": 0.882454619700324
+      },
+      {
+        "id": "998bba5d-6127-4835-bb00-c5942d510770",
+        "title": "The Courage to Be Disliked",
+        "author": "Ichiro Kishimi",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "A philosophical dialogue on embracing freedom and self-reliance.",
+        "amazon_url": "https://www.amazon.com/Courage-Be-Disliked-Phenomenon-Happiness-ebook/dp/B078MDSV8T",
+        "similarity": 0.868886061377289
+      }
     ]
   },
   {
@@ -746,6 +921,41 @@
         "description": "A leadership manual emphasizing personal accountability in high-stakes situations.",
         "amazon_url": "https://www.amazon.com/Extreme-Ownership-U-S-Navy-SEALs/dp/1250067057",
         "_recommendationCount": 3
+      }
+    ],
+    "similar_books": [
+      {
+        "id": "fd93ca83-849e-4cb2-8f88-2434a37bd5f8",
+        "title": "The Launch Pad",
+        "author": "Randall Stross",
+        "genre": [
+          "Business"
+        ],
+        "description": "A behind-the-scenes look at startup culture and the early struggles of launching a company.",
+        "amazon_url": "https://www.amazon.com/Launch-Pad-Inside-Combinator/dp/1591846587",
+        "similarity": 0.887776295741936
+      },
+      {
+        "id": "18d5c2f6-bef8-4892-b4bd-ca878c4de776",
+        "title": "The Hard Thing About Hard Things",
+        "author": "Ben Horowitz",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "Insights into startup struggles and leadership in the tech world.",
+        "amazon_url": "https://www.amazon.com/Hard-Thing-About-Things-Building/dp/0062273205",
+        "similarity": 0.887770500714685
+      },
+      {
+        "id": "d0cfd67a-01d1-48ba-8f4e-9a1580a55036",
+        "title": "The Startup Way",
+        "author": "Eric Ries",
+        "genre": [
+          "Business"
+        ],
+        "description": "A guide to scaling innovation in large organizations using startup principles and agile methods.",
+        "amazon_url": "https://www.amazon.com/Startup-Way-Companies-Entrepreneurial-Management/dp/1101903201",
+        "similarity": 0.8619618148895
       }
     ]
   },
@@ -837,6 +1047,41 @@
         "amazon_url": "https://www.amazon.com/Hard-Thing-About-Things-Building/dp/0062273205",
         "_recommendationCount": 19
       }
+    ],
+    "similar_books": [
+      {
+        "id": "e7f3c17f-6217-4119-b6d1-dd58f7a98648",
+        "title": "Walt Disney: The Triumph of the American Imagination",
+        "author": "Neal Gabler",
+        "genre": [
+          "Business"
+        ],
+        "description": "A definitive biography of Walt Disney that explores his creative vision and lasting impact on entertainment.",
+        "amazon_url": "https://www.amazon.com/Walt-Disney-Triumph-American-Imagination/dp/0739340298",
+        "similarity": 0.872535046704284
+      },
+      {
+        "id": "ae26d6f5-bb1b-4c8a-995e-31ce78b35976",
+        "title": "The Wizard of Menlo Park",
+        "author": "Randall Stross",
+        "genre": [
+          "Biography"
+        ],
+        "description": "A detailed biography of Thomas Edison that captures his genius and transformative impact on modern technology.",
+        "amazon_url": "https://www.amazon.com/Wizard-Menlo-Park-Thomas-Invented/dp/1400047633",
+        "similarity": 0.866438176227754
+      },
+      {
+        "id": "49dda154-8f1c-4035-b738-c3427cf12bd5",
+        "title": "Barbarian Days",
+        "author": "William Finnegan",
+        "genre": [
+          "Biography"
+        ],
+        "description": "A memoir that captures the life of a traveler and surfer, filled with cultural insights and personal adventure.",
+        "amazon_url": "https://www.amazon.com/Barbarian-Days-Surfing-William-Finnegan/dp/0143109391",
+        "similarity": 0.859579256747917
+      }
     ]
   },
   {
@@ -926,6 +1171,41 @@
         "description": "An analysis of how modern economies can achieve greater output with fewer resources, driving sustainable growth.",
         "amazon_url": "https://www.amazon.com/More-Less-Surprising-Learned-Resources_and/dp/1982103574",
         "_recommendationCount": 1
+      }
+    ],
+    "similar_books": [
+      {
+        "id": "18144cab-e4af-4a29-ba17-855a41143105",
+        "title": "A Guide to the Good Life",
+        "author": "William B. Irvine",
+        "genre": [
+          "Philosophy"
+        ],
+        "description": "An introduction to Stoic philosophy for modern living.",
+        "amazon_url": "https://www.amazon.com/Guide-Good-Life-Ancient-Stoic/dp/0195374614",
+        "similarity": 0.892959952354457
+      },
+      {
+        "id": "8526055f-a6dc-40e2-b3ef-91dc4f020a91",
+        "title": "12 Rules for Life",
+        "author": "Jordan B. Peterson",
+        "genre": [
+          "Self-Help"
+        ],
+        "description": "Practical life advice and philosophical insights for personal growth.",
+        "amazon_url": "https://www.amazon.com/12-Rules-Life-Antidote-Chaos/dp/0345816021",
+        "similarity": 0.88846017901666
+      },
+      {
+        "id": "aab6d161-6527-456b-9dd0-2085a982e8dd",
+        "title": "A Story Lately Told",
+        "author": "Anjelica Huston",
+        "genre": [
+          "Biography"
+        ],
+        "description": "A personal narrative that weaves art, life, and history into a compelling memoir.",
+        "amazon_url": "https://www.amazon.com/Story-Lately-Told-Coming-Ireland/dp/1451656300",
+        "similarity": 0.886574864387537
       }
     ]
   },
@@ -1017,6 +1297,43 @@
         "amazon_url": "https://www.amazon.com/Heart-Darkness-Joseph-Conrad/dp/1936594145",
         "_recommendationCount": 1
       }
+    ],
+    "similar_books": [
+      {
+        "id": "d89ef09e-cb4d-4f45-9c8c-e9b34e327759",
+        "title": "Middlemarch",
+        "author": "George Eliot",
+        "genre": [
+          "Classic",
+          "Fiction"
+        ],
+        "description": "An intricate portrait of ambition, marriage, and societal change in a small English town.",
+        "amazon_url": "https://www.amazon.com/Middlemarch-Wordsworth-Classics-George-Eliot/dp/1853262374",
+        "similarity": 0.865790553939919
+      },
+      {
+        "id": "b08aa61b-40da-4876-9007-e2a1c83b1dc0",
+        "title": "Jane Eyre",
+        "author": "Charlotte Brontë",
+        "genre": [
+          "Historical",
+          "Classic"
+        ],
+        "description": "A timeless tale of love, hardship, and morality through the eyes of a determined orphan.",
+        "amazon_url": "https://www.amazon.com/Jane-Penguin-Classics-Charlotte-Bront%C3%AB/dp/0141441143",
+        "similarity": 0.851506045550506
+      },
+      {
+        "id": "174a1cf7-3bcd-4057-ac7e-80404c363c48",
+        "title": "Madame Bovary",
+        "author": "Gustave Flaubert",
+        "genre": [
+          "Fiction"
+        ],
+        "description": "The tragic story of a woman’s desires and disillusionment, exposing societal hypocrisy.",
+        "amazon_url": "https://www.amazon.com/Madame-Penguin-Classics-Gustave-Flaubert/dp/0140449124",
+        "similarity": 0.847556249578901
+      }
     ]
   },
   {
@@ -1096,6 +1413,41 @@
         "description": "Charles Darwin’s personal reflections on his life and the groundbreaking discoveries that reshaped science.",
         "amazon_url": "https://www.amazon.com/Autobiography-Charles-Darwin-1809-1882/dp/0393310698",
         "_recommendationCount": 1
+      }
+    ],
+    "similar_books": [
+      {
+        "id": "7b02c1b6-4295-4e95-83f7-71df8b8b7e8a",
+        "title": "Rainbows End",
+        "author": "Vernor Vinge",
+        "genre": [
+          "Fiction"
+        ],
+        "description": "A visionary science fiction novel exploring the future of technology, human cognition, and society.",
+        "amazon_url": "https://www.amazon.com/Rainbows-End-Novel-Foot-Future/dp/0812536363",
+        "similarity": 0.878526177362388
+      },
+      {
+        "id": "3f0bc969-0c4d-4579-ad72-6b2be2202e5e",
+        "title": "The Extension of Man",
+        "author": "J. D. Bernal",
+        "genre": [
+          "Science"
+        ],
+        "description": "A seminal work discussing how technology expands human capabilities.",
+        "amazon_url": "https://www.amazon.com/Extension-Man-History-Physics-Quantum/dp/0262523868",
+        "similarity": 0.841875314712524
+      },
+      {
+        "id": "135483b6-099c-4c85-a916-cc692681969d",
+        "title": "Snow Crash",
+        "author": "Neal Stephenson",
+        "genre": [
+          "Science Fiction"
+        ],
+        "description": "A cyberpunk classic exploring virtual realities and dystopian futures.",
+        "amazon_url": "https://www.amazon.com/Snow-Crash-Neal-Stephenson/dp/0553380958",
+        "similarity": 0.840318381786346
       }
     ]
   },
@@ -1177,6 +1529,41 @@
         "amazon_url": "https://www.amazon.com/Secrets-Sand-Hill-Road-Venture/dp/059308358X",
         "_recommendationCount": 5
       }
+    ],
+    "similar_books": [
+      {
+        "id": "5fffc95f-badb-4fed-ad1f-634a24892862",
+        "title": "How to Decide",
+        "author": "Annie Duke",
+        "genre": [
+          "Self-Help"
+        ],
+        "description": "Strategies and tools to improve decision-making in everyday life.",
+        "amazon_url": "https://www.amazon.com/How-Decide-Simple-Making-Choices/dp/0593418484",
+        "similarity": 0.875771824431589
+      },
+      {
+        "id": "63b27406-619b-4b72-9c87-27f10dabf903",
+        "title": "Behave: The Biology of Humans at Our Best and Worst",
+        "author": "Robert Sapolsky",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "An exploration of the science behind human behavior and decision making.",
+        "amazon_url": "https://www.amazon.com/dp/B01IAUGC5S?tag=9natree-20",
+        "similarity": 0.857245062118377
+      },
+      {
+        "id": "00139908-04bd-4c26-ae8e-ecbf4cbf4339",
+        "title": "Expert Political Judgement",
+        "author": "Philip E. Tetlock",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "An analysis of forecasting and decision-making in politics that challenges conventional wisdom about expert predictions.",
+        "amazon_url": "https://www.amazon.com/Expert-Political-Judgment-Tetlock-2006-08-20/dp/B01FKRPVZQ",
+        "similarity": 0.856679924634656
+      }
     ]
   },
   {
@@ -1257,6 +1644,41 @@
         "amazon_url": "https://www.amazon.com/Spider-Network-Backstabbing-Greatest-Financial/dp/0062452983",
         "_recommendationCount": 1
       }
+    ],
+    "similar_books": [
+      {
+        "id": "52e10d00-ed77-4cfb-987c-21224a933bbc",
+        "title": "With the Old Breed",
+        "author": "E. B. Sledge",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "A harrowing memoir of combat in the Pacific during World War II, emphasizing sacrifice and resilience.",
+        "amazon_url": "https://www.amazon.com/Old-Breed-At-Peleliu-Okinawa/dp/0891419195",
+        "similarity": 0.877915158520328
+      },
+      {
+        "id": "49dda154-8f1c-4035-b738-c3427cf12bd5",
+        "title": "Barbarian Days",
+        "author": "William Finnegan",
+        "genre": [
+          "Biography"
+        ],
+        "description": "A memoir that captures the life of a traveler and surfer, filled with cultural insights and personal adventure.",
+        "amazon_url": "https://www.amazon.com/Barbarian-Days-Surfing-William-Finnegan/dp/0143109391",
+        "similarity": 0.871254231669135
+      },
+      {
+        "id": "b72b2df4-6eaf-4cae-9242-6193e046ed85",
+        "title": "Born Standing Up: A Comic's Life",
+        "author": "Steve Martin",
+        "genre": [
+          "Fiction"
+        ],
+        "description": "A humorous memoir detailing the rise of a stand-up comedian.",
+        "amazon_url": "https://www.amazon.com/Born-Standing-Up-Comics-Life/dp/1416553657",
+        "similarity": 0.868287550823428
+      }
     ]
   },
   {
@@ -1326,6 +1748,41 @@
         "description": "An analysis of how modern economies can achieve greater output with fewer resources, driving sustainable growth.",
         "amazon_url": "https://www.amazon.com/More-Less-Surprising-Learned-Resources_and/dp/1982103574",
         "_recommendationCount": 1
+      }
+    ],
+    "similar_books": [
+      {
+        "id": "931e6375-0c63-4a03-aa30-58c459d52cdd",
+        "title": "Becoming Steve Jobs",
+        "author": "Brent Schlender",
+        "genre": [
+          "Biography"
+        ],
+        "description": "A candid biography capturing the complex legacy of Steve Jobs.",
+        "amazon_url": "https://www.amazon.com/Becoming-Steve-Jobs-Evolution-Visionary/dp/0385347421",
+        "similarity": 0.872535046704284
+      },
+      {
+        "id": "ae26d6f5-bb1b-4c8a-995e-31ce78b35976",
+        "title": "The Wizard of Menlo Park",
+        "author": "Randall Stross",
+        "genre": [
+          "Biography"
+        ],
+        "description": "A detailed biography of Thomas Edison that captures his genius and transformative impact on modern technology.",
+        "amazon_url": "https://www.amazon.com/Wizard-Menlo-Park-Thomas-Invented/dp/1400047633",
+        "similarity": 0.870856137071602
+      },
+      {
+        "id": "ebe696d6-2fd7-4054-98e4-40438124b4c8",
+        "title": "Edison",
+        "author": "Edmund Morris",
+        "genre": [
+          "Biography"
+        ],
+        "description": "A captivating biography of Thomas Edison, the prolific inventor whose innovations transformed modern life.",
+        "amazon_url": "https://www.amazon.com/Edison-Edmund-Morris/dp/081299311X",
+        "similarity": 0.862616094919207
       }
     ]
   },
@@ -1397,6 +1854,41 @@
         "amazon_url": "https://www.amazon.com/Civilian-Warriors-Inside-Blackwater-Unsung/dp/1591847214",
         "_recommendationCount": 1
       }
+    ],
+    "similar_books": [
+      {
+        "id": "72de3c3a-3457-4daf-9338-e5d392a12fc7",
+        "title": "Lone Survivor",
+        "author": "Marcus Luttrell",
+        "genre": [
+          "Fiction"
+        ],
+        "description": "A harrowing account of a Navy SEAL team’s mission gone awry and the heroism of survival under fire.",
+        "amazon_url": "https://www.amazon.com/Lone-Survivor-Eyewitness-Account-Operation-ebook/dp/B000QRIGLC",
+        "similarity": 0.896683072253012
+      },
+      {
+        "id": "e00f4f49-51cb-425b-bc55-ba8eb56bdef9",
+        "title": "No Easy Day",
+        "author": "Mark Owen",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "A firsthand account of the mission that led to the death of Osama bin Laden, from an insider’s perspective.",
+        "amazon_url": "https://www.amazon.com/No-Easy-Day-Autobiography-Firsthand/dp/0525953728",
+        "similarity": 0.837579052159673
+      },
+      {
+        "id": "49dda154-8f1c-4035-b738-c3427cf12bd5",
+        "title": "Barbarian Days",
+        "author": "William Finnegan",
+        "genre": [
+          "Biography"
+        ],
+        "description": "A memoir that captures the life of a traveler and surfer, filled with cultural insights and personal adventure.",
+        "amazon_url": "https://www.amazon.com/Barbarian-Days-Surfing-William-Finnegan/dp/0143109391",
+        "similarity": 0.834477380020385
+      }
     ]
   },
   {
@@ -1466,6 +1958,41 @@
         "description": "An insider's guide to venture capital and startup funding.",
         "amazon_url": "https://www.amazon.com/Secrets-Sand-Hill-Road-Venture/dp/059308358X",
         "_recommendationCount": 5
+      }
+    ],
+    "similar_books": [
+      {
+        "id": "25923530-d84d-4028-a5ef-0b6e0fd70d40",
+        "title": "Thinking in Bets",
+        "author": "Annie Duke",
+        "genre": [
+          "Self-Help"
+        ],
+        "description": "A guide to making smarter decisions under uncertainty and risk.",
+        "amazon_url": "https://www.amazon.com/Thinking-Bets-Making-Smarter-Decisions/dp/0735216355",
+        "similarity": 0.875771824431589
+      },
+      {
+        "id": "8526055f-a6dc-40e2-b3ef-91dc4f020a91",
+        "title": "12 Rules for Life",
+        "author": "Jordan B. Peterson",
+        "genre": [
+          "Self-Help"
+        ],
+        "description": "Practical life advice and philosophical insights for personal growth.",
+        "amazon_url": "https://www.amazon.com/12-Rules-Life-Antidote-Chaos/dp/0345816021",
+        "similarity": 0.853479487118714
+      },
+      {
+        "id": "63b27406-619b-4b72-9c87-27f10dabf903",
+        "title": "Behave: The Biology of Humans at Our Best and Worst",
+        "author": "Robert Sapolsky",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "An exploration of the science behind human behavior and decision making.",
+        "amazon_url": "https://www.amazon.com/dp/B01IAUGC5S?tag=9natree-20",
+        "similarity": 0.849911460285709
       }
     ]
   },
@@ -1537,6 +2064,41 @@
         "amazon_url": "https://www.amazon.com/How-Live-Montaigne-Question-Attempts/dp/1590514831",
         "_recommendationCount": 5
       }
+    ],
+    "similar_books": [
+      {
+        "id": "8526055f-a6dc-40e2-b3ef-91dc4f020a91",
+        "title": "12 Rules for Life",
+        "author": "Jordan B. Peterson",
+        "genre": [
+          "Self-Help"
+        ],
+        "description": "Practical life advice and philosophical insights for personal growth.",
+        "amazon_url": "https://www.amazon.com/12-Rules-Life-Antidote-Chaos/dp/0345816021",
+        "similarity": 0.868886061377289
+      },
+      {
+        "id": "4a0bb40d-62b6-419a-a4e7-180edf8f54b1",
+        "title": "How to Live",
+        "author": "Sarah Bakewell",
+        "genre": [
+          "Self-Help"
+        ],
+        "description": "An engaging exploration of the art of living, drawing on the wisdom of philosophy and history.",
+        "amazon_url": "https://www.amazon.com/How-Live-Montaigne-Question-Attempts/dp/1590514831",
+        "similarity": 0.860061014879835
+      },
+      {
+        "id": "18144cab-e4af-4a29-ba17-855a41143105",
+        "title": "A Guide to the Good Life",
+        "author": "William B. Irvine",
+        "genre": [
+          "Philosophy"
+        ],
+        "description": "An introduction to Stoic philosophy for modern living.",
+        "amazon_url": "https://www.amazon.com/Guide-Good-Life-Ancient-Stoic/dp/0195374614",
+        "similarity": 0.853082777763652
+      }
     ]
   },
   {
@@ -1607,6 +2169,41 @@
         "amazon_url": "https://www.amazon.com/How-Decide-Simple-Making-Choices/dp/0593418484",
         "_recommendationCount": 3
       }
+    ],
+    "similar_books": [
+      {
+        "id": "25923530-d84d-4028-a5ef-0b6e0fd70d40",
+        "title": "Thinking in Bets",
+        "author": "Annie Duke",
+        "genre": [
+          "Self-Help"
+        ],
+        "description": "A guide to making smarter decisions under uncertainty and risk.",
+        "amazon_url": "https://www.amazon.com/Thinking-Bets-Making-Smarter-Decisions/dp/0735216355",
+        "similarity": 0.85059224532045
+      },
+      {
+        "id": "8526055f-a6dc-40e2-b3ef-91dc4f020a91",
+        "title": "12 Rules for Life",
+        "author": "Jordan B. Peterson",
+        "genre": [
+          "Self-Help"
+        ],
+        "description": "Practical life advice and philosophical insights for personal growth.",
+        "amazon_url": "https://www.amazon.com/12-Rules-Life-Antidote-Chaos/dp/0345816021",
+        "similarity": 0.83798518860079
+      },
+      {
+        "id": "55f0e069-44f7-4707-9aaf-089f1f64984e",
+        "title": "Can't Hurt Me",
+        "author": "David Goggins",
+        "genre": [
+          "Self-Help"
+        ],
+        "description": "A memoir on overcoming adversity and building mental toughness.",
+        "amazon_url": "https://www.amazon.com/Cant-Hurt-Me-Master-Your/dp/1544512287",
+        "similarity": 0.826891492194446
+      }
     ]
   },
   {
@@ -1676,6 +2273,41 @@
         "description": "An introduction to Stoic philosophy for modern living.",
         "amazon_url": "https://www.amazon.com/Guide-Good-Life-Ancient-Stoic/dp/0195374614",
         "_recommendationCount": 6
+      }
+    ],
+    "similar_books": [
+      {
+        "id": "f006338f-99fd-4da0-8b6f-c9781c2f9e77",
+        "title": "Private Truths, Public Lies",
+        "author": "Timur Kuran",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "A deep dive into how hidden biases and concealed information shape political and economic outcomes.",
+        "amazon_url": "https://www.amazon.com/Private-Truths-Public-Lies-Falsification/dp/0674707583",
+        "similarity": 0.896547079086304
+      },
+      {
+        "id": "d459a6b8-2e46-41a7-a737-47f263d293f7",
+        "title": "Thinking, Fast and Slow",
+        "author": "Daniel Kahneman",
+        "genre": [
+          "Self-Help"
+        ],
+        "description": "A deep dive into the two systems driving human thought and behavior.",
+        "amazon_url": "https://www.amazon.com/live/video/07f37281865849bb8650969e1931c367?ref_=dp_vse_rvc_8",
+        "similarity": 0.858497951954251
+      },
+      {
+        "id": "a3df23d9-616a-47df-9a2a-68a0fe9cb0dc",
+        "title": "Devil's Bargain",
+        "author": "Joshua Green",
+        "genre": [
+          "Politics"
+        ],
+        "description": "An incisive look into political power plays and the dynamics shaping modern policy and governance.",
+        "amazon_url": "https://www.amazon.com/Devils-Bargain-Bannon-Storming-Presidency/dp/0735225028",
+        "similarity": 0.854838081905958
       }
     ]
   },
@@ -1748,6 +2380,41 @@
         "amazon_url": "https://www.amazon.com/Anna-Karenina-Leo-Tolstoy/dp/0143035002",
         "_recommendationCount": 5
       }
+    ],
+    "similar_books": [
+      {
+        "id": "26a38dbb-9309-4291-87e7-824f0eb209c9",
+        "title": "Bleak House",
+        "author": "Charles Dickens",
+        "genre": [
+          "Classic"
+        ],
+        "description": "A masterful critique of the British legal system through a rich tapestry of lives and mysteries.",
+        "amazon_url": "https://www.amazon.com/Bleak-House-Charles-Dickens/dp/0143037617",
+        "similarity": 0.872382879257208
+      },
+      {
+        "id": "76fe1a81-4aa3-4c23-8041-cf2e8dd6933b",
+        "title": "Anna Karenina",
+        "author": "Leo Tolstoy",
+        "genre": [
+          "Classic"
+        ],
+        "description": "A profound exploration of love, jealousy, and societal pressures in 19th-century Russia.",
+        "amazon_url": "https://www.amazon.com/Anna-Karenina-Leo-Tolstoy/dp/0143035002",
+        "similarity": 0.865790553939919
+      },
+      {
+        "id": "174a1cf7-3bcd-4057-ac7e-80404c363c48",
+        "title": "Madame Bovary",
+        "author": "Gustave Flaubert",
+        "genre": [
+          "Fiction"
+        ],
+        "description": "The tragic story of a woman’s desires and disillusionment, exposing societal hypocrisy.",
+        "amazon_url": "https://www.amazon.com/Madame-Penguin-Classics-Gustave-Flaubert/dp/0140449124",
+        "similarity": 0.859845272857182
+      }
     ]
   },
   {
@@ -1807,6 +2474,41 @@
         "description": "A playbook for building successful tech companies and online communities.",
         "amazon_url": "https://www.amazon.com/Without-Their-Permission-Century-Managed/dp/1455520020",
         "_recommendationCount": 2
+      }
+    ],
+    "similar_books": [
+      {
+        "id": "a3df23d9-616a-47df-9a2a-68a0fe9cb0dc",
+        "title": "Devil's Bargain",
+        "author": "Joshua Green",
+        "genre": [
+          "Politics"
+        ],
+        "description": "An incisive look into political power plays and the dynamics shaping modern policy and governance.",
+        "amazon_url": "https://www.amazon.com/Devils-Bargain-Bannon-Storming-Presidency/dp/0735225028",
+        "similarity": 0.87377933390967
+      },
+      {
+        "id": "f46359aa-9dca-4ad0-b679-7291685777ca",
+        "title": "The Myth of the Rational Voter",
+        "author": "Bryan Caplan",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "A provocative examination of voter behavior and the irrational biases that shape democratic decision-making.",
+        "amazon_url": "https://www.amazon.com/Myth-Rational-Voter-Democracies-Policies/dp/0691138737",
+        "similarity": 0.870161398668512
+      },
+      {
+        "id": "f006338f-99fd-4da0-8b6f-c9781c2f9e77",
+        "title": "Private Truths, Public Lies",
+        "author": "Timur Kuran",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "A deep dive into how hidden biases and concealed information shape political and economic outcomes.",
+        "amazon_url": "https://www.amazon.com/Private-Truths-Public-Lies-Falsification/dp/0674707583",
+        "similarity": 0.860607471610921
       }
     ]
   },
@@ -1868,6 +2570,41 @@
         "amazon_url": "https://www.amazon.com/Autobiography-Charles-Darwin-1809-1882/dp/0393310698",
         "_recommendationCount": 1
       }
+    ],
+    "similar_books": [
+      {
+        "id": "8f8897dd-5a9a-4e9a-b1c4-a07da57d5507",
+        "title": "An Apology for the Builder",
+        "author": "Nicholas Barbon",
+        "genre": [
+          "Biography"
+        ],
+        "description": "A reflective exploration of the timeless principles of construction and the creative process behind building great things.",
+        "amazon_url": "https://www.amazon.com/apology-builder-discourse-increase-building/dp/1275835015",
+        "similarity": 0.854086493471529
+      },
+      {
+        "id": "4a0bb40d-62b6-419a-a4e7-180edf8f54b1",
+        "title": "How to Live",
+        "author": "Sarah Bakewell",
+        "genre": [
+          "Self-Help"
+        ],
+        "description": "An engaging exploration of the art of living, drawing on the wisdom of philosophy and history.",
+        "amazon_url": "https://www.amazon.com/How-Live-Montaigne-Question-Attempts/dp/1590514831",
+        "similarity": 0.835204620933035
+      },
+      {
+        "id": "5dd2bd34-7eed-4d60-a436-e128e80b8cae",
+        "title": "A Sense of Where You Are",
+        "author": "John McPhee",
+        "genre": [
+          "Biography"
+        ],
+        "description": "A reflective narrative capturing the essence of place and personal observation.",
+        "amazon_url": "https://www.amazon.com/Sense-Where-You-Are-Princeton/dp/0374526893",
+        "similarity": 0.830017332735423
+      }
     ]
   },
   {
@@ -1927,6 +2664,41 @@
         "description": "A detailed account of the rise of private military contractors and their evolving role in modern warfare.",
         "amazon_url": "https://www.amazon.com/Civilian-Warriors-Inside-Blackwater-Unsung/dp/1591847214",
         "_recommendationCount": 1
+      }
+    ],
+    "similar_books": [
+      {
+        "id": "998bba5d-6127-4835-bb00-c5942d510770",
+        "title": "The Courage to Be Disliked",
+        "author": "Ichiro Kishimi",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "A philosophical dialogue on embracing freedom and self-reliance.",
+        "amazon_url": "https://www.amazon.com/Courage-Be-Disliked-Phenomenon-Happiness-ebook/dp/B078MDSV8T",
+        "similarity": 0.844770079053025
+      },
+      {
+        "id": "00139908-04bd-4c26-ae8e-ecbf4cbf4339",
+        "title": "Expert Political Judgement",
+        "author": "Philip E. Tetlock",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "An analysis of forecasting and decision-making in politics that challenges conventional wisdom about expert predictions.",
+        "amazon_url": "https://www.amazon.com/Expert-Political-Judgment-Tetlock-2006-08-20/dp/B01FKRPVZQ",
+        "similarity": 0.842115443005072
+      },
+      {
+        "id": "55ca43a0-984d-4427-927a-200f2f9a3d0f",
+        "title": "Believe in People",
+        "author": "Charles Koch",
+        "genre": [
+          "Biography"
+        ],
+        "description": "An inspiring look at human potential and the power of optimism.",
+        "amazon_url": "https://www.amazon.com/Believe-People-Bottom-Up-Solutions-Top-Down/dp/1250200962",
+        "similarity": 0.841367003428822
       }
     ]
   },
@@ -1988,6 +2760,41 @@
         "amazon_url": "https://www.amazon.com/Why-Allies-Won-Richard-Overy/dp/039331619X",
         "_recommendationCount": 1
       }
+    ],
+    "similar_books": [
+      {
+        "id": "52e10d00-ed77-4cfb-987c-21224a933bbc",
+        "title": "With the Old Breed",
+        "author": "E. B. Sledge",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "A harrowing memoir of combat in the Pacific during World War II, emphasizing sacrifice and resilience.",
+        "amazon_url": "https://www.amazon.com/Old-Breed-At-Peleliu-Okinawa/dp/0891419195",
+        "similarity": 0.840019464492822
+      },
+      {
+        "id": "73737c3b-402a-4fa1-a69e-bb53f08881e9",
+        "title": "The Fall of Constantinople 1453",
+        "author": "Steven Runciman",
+        "genre": [
+          "Historical"
+        ],
+        "description": "A dramatic account of the siege and fall of Constantinople in 1453 that reshaped history.",
+        "amazon_url": "https://www.amazon.com/Fall-Constantinople-1453-Canto/dp/0521398320",
+        "similarity": 0.831571702893335
+      },
+      {
+        "id": "aab6d161-6527-456b-9dd0-2085a982e8dd",
+        "title": "A Story Lately Told",
+        "author": "Anjelica Huston",
+        "genre": [
+          "Biography"
+        ],
+        "description": "A personal narrative that weaves art, life, and history into a compelling memoir.",
+        "amazon_url": "https://www.amazon.com/Story-Lately-Told-Coming-Ireland/dp/1451656300",
+        "similarity": 0.82636255025866
+      }
     ]
   },
   {
@@ -2047,6 +2854,41 @@
         "description": "A playbook for building successful tech companies and online communities.",
         "amazon_url": "https://www.amazon.com/Without-Their-Permission-Century-Managed/dp/1455520020",
         "_recommendationCount": 2
+      }
+    ],
+    "similar_books": [
+      {
+        "id": "f518cc86-5fdf-446e-9616-b864364ebe55",
+        "title": "The Power of Productivity",
+        "author": "William W. Lewis",
+        "genre": [
+          "Economics"
+        ],
+        "description": "An exploration of how technological innovation boosts productivity and improves quality of life.",
+        "amazon_url": "https://www.amazon.com/Power-Productivity-Wealth-Poverty-Stability/dp/0226476766",
+        "similarity": 0.867170782763771
+      },
+      {
+        "id": "46489ec7-a8bf-43b8-8cc2-7dcd263888b9",
+        "title": "The Second Machine Age: Work, Progress, and Prosperity in a Time of Brilliant Technologies",
+        "author": "Erik Brynjolfsson",
+        "genre": [
+          "Economics"
+        ],
+        "description": "An analysis of how digital technologies are transforming the economy and redefining work and productivity.",
+        "amazon_url": "https://www.amazon.com/Second-Machine-Age-Prosperity-Technologies/dp/0393350649",
+        "similarity": 0.859803915023828
+      },
+      {
+        "id": "6fe494fc-39dd-4100-adaf-76548f132c2a",
+        "title": "The Fabric of Civilization",
+        "author": "Virginia Postrel",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "A historical journey through the evolution of technology and culture.",
+        "amazon_url": "https://www.amazon.com/Fabric-Civilization-Textiles-Made-World/dp/1541617606",
+        "similarity": 0.859103585641937
       }
     ]
   },
@@ -2109,6 +2951,42 @@
         "amazon_url": "https://www.amazon.com/Heart-Darkness-Joseph-Conrad/dp/1936594145",
         "_recommendationCount": 1
       }
+    ],
+    "similar_books": [
+      {
+        "id": "229d41a3-f641-4b8f-854d-a60e873fbe11",
+        "title": "Heart of Darkness",
+        "author": "Joseph Conrad",
+        "genre": [
+          "Fiction"
+        ],
+        "description": "A haunting journey into the heart of colonialism and the darkness within the human soul.",
+        "amazon_url": "https://www.amazon.com/Heart-Darkness-Joseph-Conrad/dp/1936594145",
+        "similarity": 0.85180989238202
+      },
+      {
+        "id": "76fe1a81-4aa3-4c23-8041-cf2e8dd6933b",
+        "title": "Anna Karenina",
+        "author": "Leo Tolstoy",
+        "genre": [
+          "Classic"
+        ],
+        "description": "A profound exploration of love, jealousy, and societal pressures in 19th-century Russia.",
+        "amazon_url": "https://www.amazon.com/Anna-Karenina-Leo-Tolstoy/dp/0143035002",
+        "similarity": 0.851506045550506
+      },
+      {
+        "id": "d89ef09e-cb4d-4f45-9c8c-e9b34e327759",
+        "title": "Middlemarch",
+        "author": "George Eliot",
+        "genre": [
+          "Classic",
+          "Fiction"
+        ],
+        "description": "An intricate portrait of ambition, marriage, and societal change in a small English town.",
+        "amazon_url": "https://www.amazon.com/Middlemarch-Wordsworth-Classics-George-Eliot/dp/1853262374",
+        "similarity": 0.850519442682139
+      }
     ]
   },
   {
@@ -2168,6 +3046,41 @@
         "description": "Practical life advice and philosophical insights for personal growth.",
         "amazon_url": "https://www.amazon.com/12-Rules-Life-Antidote-Chaos/dp/0345816021",
         "_recommendationCount": 6
+      }
+    ],
+    "similar_books": [
+      {
+        "id": "d459a6b8-2e46-41a7-a737-47f263d293f7",
+        "title": "Thinking, Fast and Slow",
+        "author": "Daniel Kahneman",
+        "genre": [
+          "Self-Help"
+        ],
+        "description": "A deep dive into the two systems driving human thought and behavior.",
+        "amazon_url": "https://www.amazon.com/live/video/07f37281865849bb8650969e1931c367?ref_=dp_vse_rvc_8",
+        "similarity": 0.901373124450004
+      },
+      {
+        "id": "00139908-04bd-4c26-ae8e-ecbf4cbf4339",
+        "title": "Expert Political Judgement",
+        "author": "Philip E. Tetlock",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "An analysis of forecasting and decision-making in politics that challenges conventional wisdom about expert predictions.",
+        "amazon_url": "https://www.amazon.com/Expert-Political-Judgment-Tetlock-2006-08-20/dp/B01FKRPVZQ",
+        "similarity": 0.860376018397827
+      },
+      {
+        "id": "25923530-d84d-4028-a5ef-0b6e0fd70d40",
+        "title": "Thinking in Bets",
+        "author": "Annie Duke",
+        "genre": [
+          "Self-Help"
+        ],
+        "description": "A guide to making smarter decisions under uncertainty and risk.",
+        "amazon_url": "https://www.amazon.com/Thinking-Bets-Making-Smarter-Decisions/dp/0735216355",
+        "similarity": 0.857245062118377
       }
     ]
   },
@@ -2229,6 +3142,41 @@
         "amazon_url": "https://www.amazon.com/More-Less-Surprising-Learned-Resources_and/dp/1982103574",
         "_recommendationCount": 1
       }
+    ],
+    "similar_books": [
+      {
+        "id": "3331e224-4a1e-4e22-9810-e435f6736a87",
+        "title": "Triumph of the City",
+        "author": "Edward Glaeser",
+        "genre": [
+          "Economics"
+        ],
+        "description": "A detailed analysis of how cities drive economic growth and innovation, making urbanization key to prosperity.",
+        "amazon_url": "https://www.amazon.com/Triumph-City-Greatest-Invention-Healthier/dp/0143120549",
+        "similarity": 0.903877041090482
+      },
+      {
+        "id": "ce05a2d7-6292-4dde-ab13-95b1b2da05fb",
+        "title": "The Ancient City",
+        "author": "Peter Connolly",
+        "genre": [
+          "Historical"
+        ],
+        "description": "A historical exploration of urban life and ancient civilizations.",
+        "amazon_url": "https://www.amazon.com/Ancient-City-Life-Classical-Athens/dp/0195215826",
+        "similarity": 0.87635505199433
+      },
+      {
+        "id": "abb46b21-3d3e-41d9-80ae-b10b41c5967c",
+        "title": "The Strange Death of Europe",
+        "author": "Douglas Murray",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "A provocative exploration of immigration and cultural change in Europe that challenges conventional narratives.",
+        "amazon_url": "https://www.amazon.com/Strange-Death-Europe-Immigration-Identity/dp/1472942248",
+        "similarity": 0.856290272608922
+      }
     ]
   },
   {
@@ -2288,6 +3236,41 @@
         "description": "A techno-thriller that explores the potential future of autonomous warfare and unmanned combat systems.",
         "amazon_url": "https://www.amazon.com/Kill-Decision-Daniel-Suarez/dp/0451417704",
         "_recommendationCount": 1
+      }
+    ],
+    "similar_books": [
+      {
+        "id": "18d5c2f6-bef8-4892-b4bd-ca878c4de776",
+        "title": "The Hard Thing About Hard Things",
+        "author": "Ben Horowitz",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "Insights into startup struggles and leadership in the tech world.",
+        "amazon_url": "https://www.amazon.com/Hard-Thing-About-Things-Building/dp/0062273205",
+        "similarity": 0.862399101257324
+      },
+      {
+        "id": "d0cfd67a-01d1-48ba-8f4e-9a1580a55036",
+        "title": "The Startup Way",
+        "author": "Eric Ries",
+        "genre": [
+          "Business"
+        ],
+        "description": "A guide to scaling innovation in large organizations using startup principles and agile methods.",
+        "amazon_url": "https://www.amazon.com/Startup-Way-Companies-Entrepreneurial-Management/dp/1101903201",
+        "similarity": 0.860065937042236
+      },
+      {
+        "id": "e87fc45a-6049-47ba-a291-57965332432d",
+        "title": "Secrets of Sand Hill Road",
+        "author": "Scott Kupor",
+        "genre": [
+          "Business"
+        ],
+        "description": "An insider's guide to venture capital and startup funding.",
+        "amazon_url": "https://www.amazon.com/Secrets-Sand-Hill-Road-Venture/dp/059308358X",
+        "similarity": 0.848689651801693
       }
     ]
   },
@@ -2349,6 +3332,42 @@
         "amazon_url": "https://www.amazon.com/Heart-Darkness-Joseph-Conrad/dp/1936594145",
         "_recommendationCount": 1
       }
+    ],
+    "similar_books": [
+      {
+        "id": "d89ef09e-cb4d-4f45-9c8c-e9b34e327759",
+        "title": "Middlemarch",
+        "author": "George Eliot",
+        "genre": [
+          "Classic",
+          "Fiction"
+        ],
+        "description": "An intricate portrait of ambition, marriage, and societal change in a small English town.",
+        "amazon_url": "https://www.amazon.com/Middlemarch-Wordsworth-Classics-George-Eliot/dp/1853262374",
+        "similarity": 0.872382879257208
+      },
+      {
+        "id": "5309551f-8fb4-49d0-8a21-15054a35c7bb",
+        "title": "A Very Expensive Poison",
+        "author": "Luke Harding",
+        "genre": [
+          "Politics"
+        ],
+        "description": "A gripping account of political assassinations in the UK, blending investigative journalism with a thrilling narrative.",
+        "amazon_url": "https://www.amazon.com/Very-Expensive-Poison-Assassination-Litvinenko/dp/1101973994",
+        "similarity": 0.861753071233083
+      },
+      {
+        "id": "229d41a3-f641-4b8f-854d-a60e873fbe11",
+        "title": "Heart of Darkness",
+        "author": "Joseph Conrad",
+        "genre": [
+          "Fiction"
+        ],
+        "description": "A haunting journey into the heart of colonialism and the darkness within the human soul.",
+        "amazon_url": "https://www.amazon.com/Heart-Darkness-Joseph-Conrad/dp/1936594145",
+        "similarity": 0.854614206873525
+      }
     ]
   },
   {
@@ -2398,6 +3417,41 @@
         "description": "A detailed account of the rise of private military contractors and their evolving role in modern warfare.",
         "amazon_url": "https://www.amazon.com/Civilian-Warriors-Inside-Blackwater-Unsung/dp/1591847214",
         "_recommendationCount": 1
+      }
+    ],
+    "similar_books": [
+      {
+        "id": "55ca43a0-984d-4427-927a-200f2f9a3d0f",
+        "title": "Believe in People",
+        "author": "Charles Koch",
+        "genre": [
+          "Biography"
+        ],
+        "description": "An inspiring look at human potential and the power of optimism.",
+        "amazon_url": "https://www.amazon.com/Believe-People-Bottom-Up-Solutions-Top-Down/dp/1250200962",
+        "similarity": 0.857890835562652
+      },
+      {
+        "id": "63b27406-619b-4b72-9c87-27f10dabf903",
+        "title": "Behave: The Biology of Humans at Our Best and Worst",
+        "author": "Robert Sapolsky",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "An exploration of the science behind human behavior and decision making.",
+        "amazon_url": "https://www.amazon.com/dp/B01IAUGC5S?tag=9natree-20",
+        "similarity": 0.846226939783888
+      },
+      {
+        "id": "3f0bc969-0c4d-4579-ad72-6b2be2202e5e",
+        "title": "The Extension of Man",
+        "author": "J. D. Bernal",
+        "genre": [
+          "Science"
+        ],
+        "description": "A seminal work discussing how technology expands human capabilities.",
+        "amazon_url": "https://www.amazon.com/Extension-Man-History-Physics-Quantum/dp/0262523868",
+        "similarity": 0.834838648457694
       }
     ]
   },
@@ -2449,6 +3503,41 @@
         "amazon_url": "https://www.amazon.com/Autobiography-Charles-Darwin-1809-1882/dp/0393310698",
         "_recommendationCount": 1
       }
+    ],
+    "similar_books": [
+      {
+        "id": "aab6d161-6527-456b-9dd0-2085a982e8dd",
+        "title": "A Story Lately Told",
+        "author": "Anjelica Huston",
+        "genre": [
+          "Biography"
+        ],
+        "description": "A personal narrative that weaves art, life, and history into a compelling memoir.",
+        "amazon_url": "https://www.amazon.com/Story-Lately-Told-Coming-Ireland/dp/1451656300",
+        "similarity": 0.899394670182953
+      },
+      {
+        "id": "52e10d00-ed77-4cfb-987c-21224a933bbc",
+        "title": "With the Old Breed",
+        "author": "E. B. Sledge",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "A harrowing memoir of combat in the Pacific during World War II, emphasizing sacrifice and resilience.",
+        "amazon_url": "https://www.amazon.com/Old-Breed-At-Peleliu-Okinawa/dp/0891419195",
+        "similarity": 0.877399366134472
+      },
+      {
+        "id": "b72b2df4-6eaf-4cae-9242-6193e046ed85",
+        "title": "Born Standing Up: A Comic's Life",
+        "author": "Steve Martin",
+        "genre": [
+          "Fiction"
+        ],
+        "description": "A humorous memoir detailing the rise of a stand-up comedian.",
+        "amazon_url": "https://www.amazon.com/Born-Standing-Up-Comics-Life/dp/1416553657",
+        "similarity": 0.875338744261146
+      }
     ]
   },
   {
@@ -2498,6 +3587,41 @@
         "description": "Charles Darwin’s personal reflections on his life and the groundbreaking discoveries that reshaped science.",
         "amazon_url": "https://www.amazon.com/Autobiography-Charles-Darwin-1809-1882/dp/0393310698",
         "_recommendationCount": 1
+      }
+    ],
+    "similar_books": [
+      {
+        "id": "4a0bb40d-62b6-419a-a4e7-180edf8f54b1",
+        "title": "How to Live",
+        "author": "Sarah Bakewell",
+        "genre": [
+          "Self-Help"
+        ],
+        "description": "An engaging exploration of the art of living, drawing on the wisdom of philosophy and history.",
+        "amazon_url": "https://www.amazon.com/How-Live-Montaigne-Question-Attempts/dp/1590514831",
+        "similarity": 0.863113991207732
+      },
+      {
+        "id": "aab6d161-6527-456b-9dd0-2085a982e8dd",
+        "title": "A Story Lately Told",
+        "author": "Anjelica Huston",
+        "genre": [
+          "Biography"
+        ],
+        "description": "A personal narrative that weaves art, life, and history into a compelling memoir.",
+        "amazon_url": "https://www.amazon.com/Story-Lately-Told-Coming-Ireland/dp/1451656300",
+        "similarity": 0.857701028996524
+      },
+      {
+        "id": "e507a04b-829c-4e7a-a7b0-1c2812838d10",
+        "title": "The Complete Novels of Jane Austen",
+        "author": "Jane Austen",
+        "genre": [
+          "Fiction"
+        ],
+        "description": "A complete collection of Jane Austen's celebrated novels, showcasing her keen observations of society.",
+        "amazon_url": "https://www.amazon.com/Complete-Novels-Austen-Leather-bound-Classics/dp/1684129060",
+        "similarity": 0.850929447953139
       }
     ]
   },
@@ -2549,6 +3673,41 @@
         "amazon_url": "https://www.amazon.com/Autobiography-Charles-Darwin-1809-1882/dp/0393310698",
         "_recommendationCount": 1
       }
+    ],
+    "similar_books": [
+      {
+        "id": "e507a04b-829c-4e7a-a7b0-1c2812838d10",
+        "title": "The Complete Novels of Jane Austen",
+        "author": "Jane Austen",
+        "genre": [
+          "Fiction"
+        ],
+        "description": "A complete collection of Jane Austen's celebrated novels, showcasing her keen observations of society.",
+        "amazon_url": "https://www.amazon.com/Complete-Novels-Austen-Leather-bound-Classics/dp/1684129060",
+        "similarity": 0.847504249066369
+      },
+      {
+        "id": "28e0ab25-324c-4537-a785-a1f8acbeda71",
+        "title": "How to Be Topp",
+        "author": "Ronald Searle",
+        "genre": [
+          "Fiction"
+        ],
+        "description": "A humorous exploration of what it means to be at the top, full of witty observations.",
+        "amazon_url": "https://www.amazon.com/How-Be-Topp-Ronald-Searle/dp/1851459650",
+        "similarity": 0.829047207392336
+      },
+      {
+        "id": "b72b2df4-6eaf-4cae-9242-6193e046ed85",
+        "title": "Born Standing Up: A Comic's Life",
+        "author": "Steve Martin",
+        "genre": [
+          "Fiction"
+        ],
+        "description": "A humorous memoir detailing the rise of a stand-up comedian.",
+        "amazon_url": "https://www.amazon.com/Born-Standing-Up-Comics-Life/dp/1416553657",
+        "similarity": 0.827053300424499
+      }
     ]
   },
   {
@@ -2598,6 +3757,41 @@
         "description": "A detailed account of the rise of private military contractors and their evolving role in modern warfare.",
         "amazon_url": "https://www.amazon.com/Civilian-Warriors-Inside-Blackwater-Unsung/dp/1591847214",
         "_recommendationCount": 1
+      }
+    ],
+    "similar_books": [
+      {
+        "id": "5309551f-8fb4-49d0-8a21-15054a35c7bb",
+        "title": "A Very Expensive Poison",
+        "author": "Luke Harding",
+        "genre": [
+          "Politics"
+        ],
+        "description": "A gripping account of political assassinations in the UK, blending investigative journalism with a thrilling narrative.",
+        "amazon_url": "https://www.amazon.com/Very-Expensive-Poison-Assassination-Litvinenko/dp/1101973994",
+        "similarity": 0.872511055246356
+      },
+      {
+        "id": "72de3c3a-3457-4daf-9338-e5d392a12fc7",
+        "title": "Lone Survivor",
+        "author": "Marcus Luttrell",
+        "genre": [
+          "Fiction"
+        ],
+        "description": "A harrowing account of a Navy SEAL team’s mission gone awry and the heroism of survival under fire.",
+        "amazon_url": "https://www.amazon.com/Lone-Survivor-Eyewitness-Account-Operation-ebook/dp/B000QRIGLC",
+        "similarity": 0.863184198588914
+      },
+      {
+        "id": "ebc509c3-25af-48d3-a59b-957246f4944d",
+        "title": "A Higher Loyalty",
+        "author": "James Comey",
+        "genre": [
+          "Politics"
+        ],
+        "description": "A candid memoir by former FBI director James Comey, revealing insights into power, ethics, and the pressures of public service.",
+        "amazon_url": "https://www.amazon.com/Higher-Loyalty-Truth-Lies-Leadership/dp/1250192455",
+        "similarity": 0.861925210414119
       }
     ]
   },
@@ -2649,6 +3843,41 @@
         "amazon_url": "https://www.amazon.com/Autobiography-Charles-Darwin-1809-1882/dp/0393310698",
         "_recommendationCount": 1
       }
+    ],
+    "similar_books": [
+      {
+        "id": "72de3c3a-3457-4daf-9338-e5d392a12fc7",
+        "title": "Lone Survivor",
+        "author": "Marcus Luttrell",
+        "genre": [
+          "Fiction"
+        ],
+        "description": "A harrowing account of a Navy SEAL team’s mission gone awry and the heroism of survival under fire.",
+        "amazon_url": "https://www.amazon.com/Lone-Survivor-Eyewitness-Account-Operation-ebook/dp/B000QRIGLC",
+        "similarity": 0.883798830735653
+      },
+      {
+        "id": "55f0e069-44f7-4707-9aaf-089f1f64984e",
+        "title": "Can't Hurt Me",
+        "author": "David Goggins",
+        "genre": [
+          "Self-Help"
+        ],
+        "description": "A memoir on overcoming adversity and building mental toughness.",
+        "amazon_url": "https://www.amazon.com/Cant-Hurt-Me-Master-Your/dp/1544512287",
+        "similarity": 0.877915158520328
+      },
+      {
+        "id": "49dda154-8f1c-4035-b738-c3427cf12bd5",
+        "title": "Barbarian Days",
+        "author": "William Finnegan",
+        "genre": [
+          "Biography"
+        ],
+        "description": "A memoir that captures the life of a traveler and surfer, filled with cultural insights and personal adventure.",
+        "amazon_url": "https://www.amazon.com/Barbarian-Days-Surfing-William-Finnegan/dp/0143109391",
+        "similarity": 0.877399366134472
+      }
     ]
   },
   {
@@ -2698,6 +3927,41 @@
         "description": "A detailed account of the rise of private military contractors and their evolving role in modern warfare.",
         "amazon_url": "https://www.amazon.com/Civilian-Warriors-Inside-Blackwater-Unsung/dp/1591847214",
         "_recommendationCount": 1
+      }
+    ],
+    "similar_books": [
+      {
+        "id": "4f22cd45-c944-411c-986e-75b8c12e4c15",
+        "title": "A Spy Among Friends",
+        "author": "Ben MacIntyre",
+        "genre": [
+          "Fiction"
+        ],
+        "description": "A riveting true account of espionage and betrayal among colleagues in the shadowy world of intelligence.",
+        "amazon_url": "https://www.amazon.com/Spy-Among-Friends-Philby-Betrayal/dp/0804136653",
+        "similarity": 0.872511055246356
+      },
+      {
+        "id": "26a38dbb-9309-4291-87e7-824f0eb209c9",
+        "title": "Bleak House",
+        "author": "Charles Dickens",
+        "genre": [
+          "Classic"
+        ],
+        "description": "A masterful critique of the British legal system through a rich tapestry of lives and mysteries.",
+        "amazon_url": "https://www.amazon.com/Bleak-House-Charles-Dickens/dp/0143037617",
+        "similarity": 0.861753071233083
+      },
+      {
+        "id": "5495fe0a-4db2-48be-8a69-4ba3745a5172",
+        "title": "Days of Rage",
+        "author": "Bryan Burrough",
+        "genre": [
+          "Politics"
+        ],
+        "description": "A vivid narrative of 1960s racial politics and domestic terrorism, chronicling a turbulent era in American history.",
+        "amazon_url": "https://www.amazon.com/Days-Rage-Underground-Forgotten-Revolutionary/dp/0143107976",
+        "similarity": 0.85282531909339
       }
     ]
   },
@@ -2749,6 +4013,41 @@
         "amazon_url": "https://www.amazon.com/Civilian-Warriors-Inside-Blackwater-Unsung/dp/1591847214",
         "_recommendationCount": 1
       }
+    ],
+    "similar_books": [
+      {
+        "id": "5309551f-8fb4-49d0-8a21-15054a35c7bb",
+        "title": "A Very Expensive Poison",
+        "author": "Luke Harding",
+        "genre": [
+          "Politics"
+        ],
+        "description": "A gripping account of political assassinations in the UK, blending investigative journalism with a thrilling narrative.",
+        "amazon_url": "https://www.amazon.com/Very-Expensive-Poison-Assassination-Litvinenko/dp/1101973994",
+        "similarity": 0.85282531909339
+      },
+      {
+        "id": "cf8b6a53-925c-4e92-aa51-a5a08b70017a",
+        "title": "Hacks",
+        "author": "Donna Brazile",
+        "genre": [
+          "Biography"
+        ],
+        "description": "A raw and unflinching memoir recounting the hack attacks and internal crises that rocked the DNC in 2016.",
+        "amazon_url": "https://www.amazon.com/Hacks-Inside-Break-ins-Breakdowns-Donald/dp/0316478512",
+        "similarity": 0.846758379097782
+      },
+      {
+        "id": "4f22cd45-c944-411c-986e-75b8c12e4c15",
+        "title": "A Spy Among Friends",
+        "author": "Ben MacIntyre",
+        "genre": [
+          "Fiction"
+        ],
+        "description": "A riveting true account of espionage and betrayal among colleagues in the shadowy world of intelligence.",
+        "amazon_url": "https://www.amazon.com/Spy-Among-Friends-Philby-Betrayal/dp/0804136653",
+        "similarity": 0.846369112919871
+      }
     ]
   },
   {
@@ -2798,6 +4097,41 @@
         "description": "An analysis of how modern economies can achieve greater output with fewer resources, driving sustainable growth.",
         "amazon_url": "https://www.amazon.com/More-Less-Surprising-Learned-Resources_and/dp/1982103574",
         "_recommendationCount": 1
+      }
+    ],
+    "similar_books": [
+      {
+        "id": "3f0bc969-0c4d-4579-ad72-6b2be2202e5e",
+        "title": "The Extension of Man",
+        "author": "J. D. Bernal",
+        "genre": [
+          "Science"
+        ],
+        "description": "A seminal work discussing how technology expands human capabilities.",
+        "amazon_url": "https://www.amazon.com/Extension-Man-History-Physics-Quantum/dp/0262523868",
+        "similarity": 0.866195472193868
+      },
+      {
+        "id": "1ebc5bf6-1922-4897-87fe-80757b5e4443",
+        "title": "Life and Fate",
+        "author": "Vasily Grossman",
+        "genre": [
+          "Classic"
+        ],
+        "description": "A vivid depiction of life, war, and ideology during Stalin’s reign, exploring human resilience.",
+        "amazon_url": "https://www.amazon.com/Life-Fate-Review-Books-Classics/dp/1590172019",
+        "similarity": 0.861972867434948
+      },
+      {
+        "id": "55f0e069-44f7-4707-9aaf-089f1f64984e",
+        "title": "Can't Hurt Me",
+        "author": "David Goggins",
+        "genre": [
+          "Self-Help"
+        ],
+        "description": "A memoir on overcoming adversity and building mental toughness.",
+        "amazon_url": "https://www.amazon.com/Cant-Hurt-Me-Master-Your/dp/1544512287",
+        "similarity": 0.859257612405417
       }
     ]
   },
@@ -2849,6 +4183,41 @@
         "amazon_url": "https://www.amazon.com/Civilian-Warriors-Inside-Blackwater-Unsung/dp/1591847214",
         "_recommendationCount": 1
       }
+    ],
+    "similar_books": [
+      {
+        "id": "48e4bfbd-6da7-4b78-84a2-72b0ac168ec8",
+        "title": "Conspiracy",
+        "author": "Ryan Holiday",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "A deep dive into the hidden networks that shape cultural events and influence public discourse.",
+        "amazon_url": "https://www.amazon.com/Conspiracy-Peter-Gawker-Anatomy-Intrigue/dp/1788160835",
+        "similarity": 0.896547079086304
+      },
+      {
+        "id": "a3df23d9-616a-47df-9a2a-68a0fe9cb0dc",
+        "title": "Devil's Bargain",
+        "author": "Joshua Green",
+        "genre": [
+          "Politics"
+        ],
+        "description": "An incisive look into political power plays and the dynamics shaping modern policy and governance.",
+        "amazon_url": "https://www.amazon.com/Devils-Bargain-Bannon-Storming-Presidency/dp/0735225028",
+        "similarity": 0.882447249743508
+      },
+      {
+        "id": "f46359aa-9dca-4ad0-b679-7291685777ca",
+        "title": "The Myth of the Rational Voter",
+        "author": "Bryan Caplan",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "A provocative examination of voter behavior and the irrational biases that shape democratic decision-making.",
+        "amazon_url": "https://www.amazon.com/Myth-Rational-Voter-Democracies-Policies/dp/0691138737",
+        "similarity": 0.869718328747955
+      }
     ]
   },
   {
@@ -2898,6 +4267,41 @@
         "description": "Charles Darwin’s personal reflections on his life and the groundbreaking discoveries that reshaped science.",
         "amazon_url": "https://www.amazon.com/Autobiography-Charles-Darwin-1809-1882/dp/0393310698",
         "_recommendationCount": 1
+      }
+    ],
+    "similar_books": [
+      {
+        "id": "fea81f19-ad46-4500-ac81-f4d77e34a7b9",
+        "title": "To the Lighthouse",
+        "author": "Virginia Woolf",
+        "genre": [
+          "Fiction"
+        ],
+        "description": "A poetic reflection on family, art, and the passage of time, blending inner thoughts and outer landscapes.",
+        "amazon_url": "https://www.amazon.com/Lighthouse-Virginia-Woolf/dp/B002ECEJ3G",
+        "similarity": 0.890466392463486
+      },
+      {
+        "id": "aab6d161-6527-456b-9dd0-2085a982e8dd",
+        "title": "A Story Lately Told",
+        "author": "Anjelica Huston",
+        "genre": [
+          "Biography"
+        ],
+        "description": "A personal narrative that weaves art, life, and history into a compelling memoir.",
+        "amazon_url": "https://www.amazon.com/Story-Lately-Told-Coming-Ireland/dp/1451656300",
+        "similarity": 0.888780117005851
+      },
+      {
+        "id": "49dda154-8f1c-4035-b738-c3427cf12bd5",
+        "title": "Barbarian Days",
+        "author": "William Finnegan",
+        "genre": [
+          "Biography"
+        ],
+        "description": "A memoir that captures the life of a traveler and surfer, filled with cultural insights and personal adventure.",
+        "amazon_url": "https://www.amazon.com/Barbarian-Days-Surfing-William-Finnegan/dp/0143109391",
+        "similarity": 0.872632629181703
       }
     ]
   },
@@ -2949,6 +4353,41 @@
         "amazon_url": "https://www.amazon.com/More-Less-Surprising-Learned-Resources_and/dp/1982103574",
         "_recommendationCount": 1
       }
+    ],
+    "similar_books": [
+      {
+        "id": "169962fd-ce2a-42cb-b1c5-299e545dc5ad",
+        "title": "The Spider Network",
+        "author": "David Enrich",
+        "genre": [
+          "Business"
+        ],
+        "description": "A thrilling saga of global financial market manipulation orchestrated by a secretive cabal of bankers.",
+        "amazon_url": "https://www.amazon.com/Spider-Network-Backstabbing-Greatest-Financial/dp/0062452983",
+        "similarity": 0.900009533763833
+      },
+      {
+        "id": "63668004-9c48-4378-9209-1c59afb07ab2",
+        "title": "More Money Than God",
+        "author": "Sebastian Mallaby",
+        "genre": [
+          "Business"
+        ],
+        "description": "A thrilling history of hedge funds and the evolution of a new financial elite in modern capitalism.",
+        "amazon_url": "https://www.amazon.com/More-Money-Than-God-Relations/dp/0143119419",
+        "similarity": 0.893773740901142
+      },
+      {
+        "id": "4f22cd45-c944-411c-986e-75b8c12e4c15",
+        "title": "A Spy Among Friends",
+        "author": "Ben MacIntyre",
+        "genre": [
+          "Fiction"
+        ],
+        "description": "A riveting true account of espionage and betrayal among colleagues in the shadowy world of intelligence.",
+        "amazon_url": "https://www.amazon.com/Spy-Among-Friends-Philby-Betrayal/dp/0804136653",
+        "similarity": 0.854088093462262
+      }
     ]
   },
   {
@@ -2998,6 +4437,41 @@
         "description": "A detailed account of the rise of private military contractors and their evolving role in modern warfare.",
         "amazon_url": "https://www.amazon.com/Civilian-Warriors-Inside-Blackwater-Unsung/dp/1591847214",
         "_recommendationCount": 1
+      }
+    ],
+    "similar_books": [
+      {
+        "id": "998bba5d-6127-4835-bb00-c5942d510770",
+        "title": "The Courage to Be Disliked",
+        "author": "Ichiro Kishimi",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "A philosophical dialogue on embracing freedom and self-reliance.",
+        "amazon_url": "https://www.amazon.com/Courage-Be-Disliked-Phenomenon-Happiness-ebook/dp/B078MDSV8T",
+        "similarity": 0.849020762829225
+      },
+      {
+        "id": "3331e224-4a1e-4e22-9810-e435f6736a87",
+        "title": "Triumph of the City",
+        "author": "Edward Glaeser",
+        "genre": [
+          "Economics"
+        ],
+        "description": "A detailed analysis of how cities drive economic growth and innovation, making urbanization key to prosperity.",
+        "amazon_url": "https://www.amazon.com/Triumph-City-Greatest-Invention-Healthier/dp/0143120549",
+        "similarity": 0.846569542850094
+      },
+      {
+        "id": "f518cc86-5fdf-446e-9616-b864364ebe55",
+        "title": "The Power of Productivity",
+        "author": "William W. Lewis",
+        "genre": [
+          "Economics"
+        ],
+        "description": "An exploration of how technological innovation boosts productivity and improves quality of life.",
+        "amazon_url": "https://www.amazon.com/Power-Productivity-Wealth-Poverty-Stability/dp/0226476766",
+        "similarity": 0.844634608444731
       }
     ]
   },
@@ -3049,6 +4523,41 @@
         "amazon_url": "https://www.amazon.com/Autobiography-Charles-Darwin-1809-1882/dp/0393310698",
         "_recommendationCount": 1
       }
+    ],
+    "similar_books": [
+      {
+        "id": "0ced0b09-3a84-44f8-8835-5887aea7d22a",
+        "title": "Making of Europe",
+        "author": "Robert Bartlett",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "An exploration of the forces that shaped the formation of modern Europe from its ancient roots.",
+        "amazon_url": "https://www.amazon.com/Making-Europe-Conquest-Colonization-Cultural/dp/0140154094",
+        "similarity": 0.876798830604776
+      },
+      {
+        "id": "abb46b21-3d3e-41d9-80ae-b10b41c5967c",
+        "title": "The Strange Death of Europe",
+        "author": "Douglas Murray",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "A provocative exploration of immigration and cultural change in Europe that challenges conventional narratives.",
+        "amazon_url": "https://www.amazon.com/Strange-Death-Europe-Immigration-Identity/dp/1472942248",
+        "similarity": 0.855672845519622
+      },
+      {
+        "id": "ff01b322-2048-40b5-88eb-43b9b87e7033",
+        "title": "The Rise and Fall of Modern Medicine",
+        "author": "James Le Fanu",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "A captivating account of breakthroughs and setbacks that shaped modern medical science.",
+        "amazon_url": "https://www.amazon.com/Rise-Fall-Modern-Medicine/dp/0786709677",
+        "similarity": 0.842915274401844
+      }
     ]
   },
   {
@@ -3098,6 +4607,41 @@
         "description": "An analysis of the strategic and political factors that led to the Allied victory in World War II.",
         "amazon_url": "https://www.amazon.com/Why-Allies-Won-Richard-Overy/dp/039331619X",
         "_recommendationCount": 1
+      }
+    ],
+    "similar_books": [
+      {
+        "id": "00139908-04bd-4c26-ae8e-ecbf4cbf4339",
+        "title": "Expert Political Judgement",
+        "author": "Philip E. Tetlock",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "An analysis of forecasting and decision-making in politics that challenges conventional wisdom about expert predictions.",
+        "amazon_url": "https://www.amazon.com/Expert-Political-Judgment-Tetlock-2006-08-20/dp/B01FKRPVZQ",
+        "similarity": 0.839905977249241
+      },
+      {
+        "id": "71de5878-4c3c-41a1-9609-9cf84179d7d6",
+        "title": "Intellectuals and Society",
+        "author": "Thomas Sowell",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "A critical analysis of the role intellectuals play in shaping public policy and societal trends.",
+        "amazon_url": "https://www.amazon.com/Intellectuals-Society-Thomas-Sowell/dp/0465025226",
+        "similarity": 0.837170470604174
+      },
+      {
+        "id": "a3df23d9-616a-47df-9a2a-68a0fe9cb0dc",
+        "title": "Devil's Bargain",
+        "author": "Joshua Green",
+        "genre": [
+          "Politics"
+        ],
+        "description": "An incisive look into political power plays and the dynamics shaping modern policy and governance.",
+        "amazon_url": "https://www.amazon.com/Devils-Bargain-Bannon-Storming-Presidency/dp/0735225028",
+        "similarity": 0.837107766536557
       }
     ]
   },
@@ -3149,6 +4693,41 @@
         "amazon_url": "https://www.amazon.com/Galileo-Newton-Rupert-Hall/dp/0486242277",
         "_recommendationCount": 1
       }
+    ],
+    "similar_books": [
+      {
+        "id": "5f53f667-41d0-4b0a-9ec3-ee1b6de176f7",
+        "title": "When the Wolves Bite",
+        "author": "Scott Wapner",
+        "genre": [
+          "Business"
+        ],
+        "description": "A detailed account of a high-stakes Wall Street battle that captures the drama of financial conflict.",
+        "amazon_url": "https://www.amazon.com/When-Wolves-Bite-Billionaires-Company/dp/1610398270",
+        "similarity": 0.893773740901142
+      },
+      {
+        "id": "169962fd-ce2a-42cb-b1c5-299e545dc5ad",
+        "title": "The Spider Network",
+        "author": "David Enrich",
+        "genre": [
+          "Business"
+        ],
+        "description": "A thrilling saga of global financial market manipulation orchestrated by a secretive cabal of bankers.",
+        "amazon_url": "https://www.amazon.com/Spider-Network-Backstabbing-Greatest-Financial/dp/0062452983",
+        "similarity": 0.889989257153977
+      },
+      {
+        "id": "e87fc45a-6049-47ba-a291-57965332432d",
+        "title": "Secrets of Sand Hill Road",
+        "author": "Scott Kupor",
+        "genre": [
+          "Business"
+        ],
+        "description": "An insider's guide to venture capital and startup funding.",
+        "amazon_url": "https://www.amazon.com/Secrets-Sand-Hill-Road-Venture/dp/059308358X",
+        "similarity": 0.851435389858154
+      }
     ]
   },
   {
@@ -3198,6 +4777,41 @@
         "description": "An economic and personal argument for the benefits of having more children.",
         "amazon_url": "https://www.amazon.com/Selfish-Reasons-Have-More-Kids/dp/0465028616",
         "_recommendationCount": 1
+      }
+    ],
+    "similar_books": [
+      {
+        "id": "0ced0b09-3a84-44f8-8835-5887aea7d22a",
+        "title": "Making of Europe",
+        "author": "Robert Bartlett",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "An exploration of the forces that shaped the formation of modern Europe from its ancient roots.",
+        "amazon_url": "https://www.amazon.com/Making-Europe-Conquest-Colonization-Cultural/dp/0140154094",
+        "similarity": 0.825859704716176
+      },
+      {
+        "id": "a3df23d9-616a-47df-9a2a-68a0fe9cb0dc",
+        "title": "Devil's Bargain",
+        "author": "Joshua Green",
+        "genre": [
+          "Politics"
+        ],
+        "description": "An incisive look into political power plays and the dynamics shaping modern policy and governance.",
+        "amazon_url": "https://www.amazon.com/Devils-Bargain-Bannon-Storming-Presidency/dp/0735225028",
+        "similarity": 0.815411854708914
+      },
+      {
+        "id": "00139908-04bd-4c26-ae8e-ecbf4cbf4339",
+        "title": "Expert Political Judgement",
+        "author": "Philip E. Tetlock",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "An analysis of forecasting and decision-making in politics that challenges conventional wisdom about expert predictions.",
+        "amazon_url": "https://www.amazon.com/Expert-Political-Judgment-Tetlock-2006-08-20/dp/B01FKRPVZQ",
+        "similarity": 0.813193612048731
       }
     ]
   },
@@ -3249,6 +4863,41 @@
         "amazon_url": "https://www.amazon.com/Civilian-Warriors-Inside-Blackwater-Unsung/dp/1591847214",
         "_recommendationCount": 1
       }
+    ],
+    "similar_books": [
+      {
+        "id": "ae26d6f5-bb1b-4c8a-995e-31ce78b35976",
+        "title": "The Wizard of Menlo Park",
+        "author": "Randall Stross",
+        "genre": [
+          "Biography"
+        ],
+        "description": "A detailed biography of Thomas Edison that captures his genius and transformative impact on modern technology.",
+        "amazon_url": "https://www.amazon.com/Wizard-Menlo-Park-Thomas-Invented/dp/1400047633",
+        "similarity": 0.968392670154572
+      },
+      {
+        "id": "ff01b322-2048-40b5-88eb-43b9b87e7033",
+        "title": "The Rise and Fall of Modern Medicine",
+        "author": "James Le Fanu",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "A captivating account of breakthroughs and setbacks that shaped modern medical science.",
+        "amazon_url": "https://www.amazon.com/Rise-Fall-Modern-Medicine/dp/0786709677",
+        "similarity": 0.867846973666731
+      },
+      {
+        "id": "ace98721-920c-411e-9232-382cc625bc71",
+        "title": "Kelly",
+        "author": "Clarence L. Johnson",
+        "genre": [
+          "Biography"
+        ],
+        "description": "A biography of the legendary aircraft designer whose innovations transformed aerospace engineering.",
+        "amazon_url": "https://www.amazon.com/Kelly-More-Than-Share-All/dp/0874744911",
+        "similarity": 0.865987549124303
+      }
     ]
   },
   {
@@ -3298,6 +4947,41 @@
         "description": "A detailed account of the rise of private military contractors and their evolving role in modern warfare.",
         "amazon_url": "https://www.amazon.com/Civilian-Warriors-Inside-Blackwater-Unsung/dp/1591847214",
         "_recommendationCount": 1
+      }
+    ],
+    "similar_books": [
+      {
+        "id": "ce05a2d7-6292-4dde-ab13-95b1b2da05fb",
+        "title": "The Ancient City",
+        "author": "Peter Connolly",
+        "genre": [
+          "Historical"
+        ],
+        "description": "A historical exploration of urban life and ancient civilizations.",
+        "amazon_url": "https://www.amazon.com/Ancient-City-Life-Classical-Athens/dp/0195215826",
+        "similarity": 0.889593601226813
+      },
+      {
+        "id": "3f0bc969-0c4d-4579-ad72-6b2be2202e5e",
+        "title": "The Extension of Man",
+        "author": "J. D. Bernal",
+        "genre": [
+          "Science"
+        ],
+        "description": "A seminal work discussing how technology expands human capabilities.",
+        "amazon_url": "https://www.amazon.com/Extension-Man-History-Physics-Quantum/dp/0262523868",
+        "similarity": 0.872573085273918
+      },
+      {
+        "id": "f518cc86-5fdf-446e-9616-b864364ebe55",
+        "title": "The Power of Productivity",
+        "author": "William W. Lewis",
+        "genre": [
+          "Economics"
+        ],
+        "description": "An exploration of how technological innovation boosts productivity and improves quality of life.",
+        "amazon_url": "https://www.amazon.com/Power-Productivity-Wealth-Poverty-Stability/dp/0226476766",
+        "similarity": 0.860468710577124
       }
     ]
   },
@@ -3349,6 +5033,41 @@
         "amazon_url": "https://www.amazon.com/Civilian-Warriors-Inside-Blackwater-Unsung/dp/1591847214",
         "_recommendationCount": 1
       }
+    ],
+    "similar_books": [
+      {
+        "id": "a3df23d9-616a-47df-9a2a-68a0fe9cb0dc",
+        "title": "Devil's Bargain",
+        "author": "Joshua Green",
+        "genre": [
+          "Politics"
+        ],
+        "description": "An incisive look into political power plays and the dynamics shaping modern policy and governance.",
+        "amazon_url": "https://www.amazon.com/Devils-Bargain-Bannon-Storming-Presidency/dp/0735225028",
+        "similarity": 0.872018114087806
+      },
+      {
+        "id": "48e4bfbd-6da7-4b78-84a2-72b0ac168ec8",
+        "title": "Conspiracy",
+        "author": "Ryan Holiday",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "A deep dive into the hidden networks that shape cultural events and influence public discourse.",
+        "amazon_url": "https://www.amazon.com/Conspiracy-Peter-Gawker-Anatomy-Intrigue/dp/1788160835",
+        "similarity": 0.849177190710475
+      },
+      {
+        "id": "00139908-04bd-4c26-ae8e-ecbf4cbf4339",
+        "title": "Expert Political Judgement",
+        "author": "Philip E. Tetlock",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "An analysis of forecasting and decision-making in politics that challenges conventional wisdom about expert predictions.",
+        "amazon_url": "https://www.amazon.com/Expert-Political-Judgment-Tetlock-2006-08-20/dp/B01FKRPVZQ",
+        "similarity": 0.848352345529656
+      }
     ]
   },
   {
@@ -3398,6 +5117,41 @@
         "description": "A detailed account of the rise of private military contractors and their evolving role in modern warfare.",
         "amazon_url": "https://www.amazon.com/Civilian-Warriors-Inside-Blackwater-Unsung/dp/1591847214",
         "_recommendationCount": 1
+      }
+    ],
+    "similar_books": [
+      {
+        "id": "8c4b4f03-6ffa-4ed2-a838-35dae447c2de",
+        "title": "Living With a Seal",
+        "author": "Jesse Itzler",
+        "genre": [
+          "Biography"
+        ],
+        "description": "A quirky account of a month spent training with a Navy SEAL.",
+        "amazon_url": "https://www.amazon.com/Living-SEAL-Training-Toughest-Planet-ebook/dp/B00U6DNZB2",
+        "similarity": 0.896683072253012
+      },
+      {
+        "id": "e00f4f49-51cb-425b-bc55-ba8eb56bdef9",
+        "title": "No Easy Day",
+        "author": "Mark Owen",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "A firsthand account of the mission that led to the death of Osama bin Laden, from an insider’s perspective.",
+        "amazon_url": "https://www.amazon.com/No-Easy-Day-Autobiography-Firsthand/dp/0525953728",
+        "similarity": 0.886091205141838
+      },
+      {
+        "id": "52e10d00-ed77-4cfb-987c-21224a933bbc",
+        "title": "With the Old Breed",
+        "author": "E. B. Sledge",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "A harrowing memoir of combat in the Pacific during World War II, emphasizing sacrifice and resilience.",
+        "amazon_url": "https://www.amazon.com/Old-Breed-At-Peleliu-Okinawa/dp/0891419195",
+        "similarity": 0.883798830735653
       }
     ]
   },
@@ -3449,6 +5203,41 @@
         "amazon_url": "https://www.amazon.com/Sense-Where-You-Are-Princeton/dp/0374526893",
         "_recommendationCount": 1
       }
+    ],
+    "similar_books": [
+      {
+        "id": "ce05a2d7-6292-4dde-ab13-95b1b2da05fb",
+        "title": "The Ancient City",
+        "author": "Peter Connolly",
+        "genre": [
+          "Historical"
+        ],
+        "description": "A historical exploration of urban life and ancient civilizations.",
+        "amazon_url": "https://www.amazon.com/Ancient-City-Life-Classical-Athens/dp/0195215826",
+        "similarity": 0.839758888461491
+      },
+      {
+        "id": "6150ba72-3f4a-4355-920a-75858d5e5398",
+        "title": "A History of Medieval Europe in Ancient Roman Times ",
+        "author": "R. H. C. Davis",
+        "genre": [
+          "Historical"
+        ],
+        "description": "A comprehensive account of medieval Europe, updated with the latest research and diverse viewpoints.",
+        "amazon_url": "https://www.amazon.com/History-Medieval-Constantine-Longman-Paperback/dp/0582482089",
+        "similarity": 0.836280102092031
+      },
+      {
+        "id": "e0a97b37-c3c4-4531-9c7f-55f68a5104d6",
+        "title": "The Iliad",
+        "author": "Homer",
+        "genre": [
+          "Classic"
+        ],
+        "description": "An epic poem recounting the heroics of Achilles and the tragedy of the Trojan War.",
+        "amazon_url": "https://www.amazon.com/Iliad-Homer/dp/0140275363",
+        "similarity": 0.831571702893335
+      }
     ]
   },
   {
@@ -3498,6 +5287,41 @@
         "description": "An insightful look at the lives and strategies of the great industrial builders of the 19th century.",
         "amazon_url": "https://www.amazon.com/Tycoons-Carnegie-Rockefeller-Invented-Supereconomy/dp/0805081348",
         "_recommendationCount": 1
+      }
+    ],
+    "similar_books": [
+      {
+        "id": "7b02c1b6-4295-4e95-83f7-71df8b8b7e8a",
+        "title": "Rainbows End",
+        "author": "Vernor Vinge",
+        "genre": [
+          "Fiction"
+        ],
+        "description": "A visionary science fiction novel exploring the future of technology, human cognition, and society.",
+        "amazon_url": "https://www.amazon.com/Rainbows-End-Novel-Foot-Future/dp/0812536363",
+        "similarity": 0.887388441342463
+      },
+      {
+        "id": "135483b6-099c-4c85-a916-cc692681969d",
+        "title": "Snow Crash",
+        "author": "Neal Stephenson",
+        "genre": [
+          "Science Fiction"
+        ],
+        "description": "A cyberpunk classic exploring virtual realities and dystopian futures.",
+        "amazon_url": "https://www.amazon.com/Snow-Crash-Neal-Stephenson/dp/0553380958",
+        "similarity": 0.872948773327545
+      },
+      {
+        "id": "3f0bc969-0c4d-4579-ad72-6b2be2202e5e",
+        "title": "The Extension of Man",
+        "author": "J. D. Bernal",
+        "genre": [
+          "Science"
+        ],
+        "description": "A seminal work discussing how technology expands human capabilities.",
+        "amazon_url": "https://www.amazon.com/Extension-Man-History-Physics-Quantum/dp/0262523868",
+        "similarity": 0.844854960152213
       }
     ]
   },
@@ -3549,6 +5373,41 @@
         "amazon_url": "https://www.amazon.com/More-Less-Surprising-Learned-Resources_and/dp/1982103574",
         "_recommendationCount": 1
       }
+    ],
+    "similar_books": [
+      {
+        "id": "4f22cd45-c944-411c-986e-75b8c12e4c15",
+        "title": "A Spy Among Friends",
+        "author": "Ben MacIntyre",
+        "genre": [
+          "Fiction"
+        ],
+        "description": "A riveting true account of espionage and betrayal among colleagues in the shadowy world of intelligence.",
+        "amazon_url": "https://www.amazon.com/Spy-Among-Friends-Philby-Betrayal/dp/0804136653",
+        "similarity": 0.861925210414119
+      },
+      {
+        "id": "cf8b6a53-925c-4e92-aa51-a5a08b70017a",
+        "title": "Hacks",
+        "author": "Donna Brazile",
+        "genre": [
+          "Biography"
+        ],
+        "description": "A raw and unflinching memoir recounting the hack attacks and internal crises that rocked the DNC in 2016.",
+        "amazon_url": "https://www.amazon.com/Hacks-Inside-Break-ins-Breakdowns-Donald/dp/0316478512",
+        "similarity": 0.846485330350266
+      },
+      {
+        "id": "1c94f878-3b2e-42b3-9973-cc806b6240a4",
+        "title": "Chasing Hillary",
+        "author": "Amy Chozick",
+        "genre": [
+          "Politics"
+        ],
+        "description": "A behind-the-scenes look at the 2016 Hillary Clinton campaign that blends personal insight with political analysis.",
+        "amazon_url": "https://www.amazon.com/Chasing-Hillary-Presidential-Campaigns-Ceiling/dp/0062413597",
+        "similarity": 0.844165350322913
+      }
     ]
   },
   {
@@ -3598,6 +5457,41 @@
         "description": "An analysis of how modern economies can achieve greater output with fewer resources, driving sustainable growth.",
         "amazon_url": "https://www.amazon.com/More-Less-Surprising-Learned-Resources_and/dp/1982103574",
         "_recommendationCount": 1
+      }
+    ],
+    "similar_books": [
+      {
+        "id": "3f0bc969-0c4d-4579-ad72-6b2be2202e5e",
+        "title": "The Extension of Man",
+        "author": "J. D. Bernal",
+        "genre": [
+          "Science"
+        ],
+        "description": "A seminal work discussing how technology expands human capabilities.",
+        "amazon_url": "https://www.amazon.com/Extension-Man-History-Physics-Quantum/dp/0262523868",
+        "similarity": 0.903920677421114
+      },
+      {
+        "id": "135483b6-099c-4c85-a916-cc692681969d",
+        "title": "Snow Crash",
+        "author": "Neal Stephenson",
+        "genre": [
+          "Science Fiction"
+        ],
+        "description": "A cyberpunk classic exploring virtual realities and dystopian futures.",
+        "amazon_url": "https://www.amazon.com/Snow-Crash-Neal-Stephenson/dp/0553380958",
+        "similarity": 0.895200040793421
+      },
+      {
+        "id": "7573aaf6-a916-4c27-b85e-246b130cf757",
+        "title": "Kill Decision",
+        "author": "Daniel Suarez",
+        "genre": [
+          "Science Fiction"
+        ],
+        "description": "A techno-thriller that explores the potential future of autonomous warfare and unmanned combat systems.",
+        "amazon_url": "https://www.amazon.com/Kill-Decision-Daniel-Suarez/dp/0451417704",
+        "similarity": 0.887388441342463
       }
     ]
   },
@@ -3649,6 +5543,41 @@
         "amazon_url": "https://www.amazon.com/Civilian-Warriors-Inside-Blackwater-Unsung/dp/1591847214",
         "_recommendationCount": 1
       }
+    ],
+    "similar_books": [
+      {
+        "id": "ebe696d6-2fd7-4054-98e4-40438124b4c8",
+        "title": "Edison",
+        "author": "Edmund Morris",
+        "genre": [
+          "Biography"
+        ],
+        "description": "A captivating biography of Thomas Edison, the prolific inventor whose innovations transformed modern life.",
+        "amazon_url": "https://www.amazon.com/Edison-Edmund-Morris/dp/081299311X",
+        "similarity": 0.84554055551421
+      },
+      {
+        "id": "49a48f0e-91b9-48e4-92a4-b68c875be423",
+        "title": "Golden Gates",
+        "author": "Conor Dougherty",
+        "genre": [
+          "Economics"
+        ],
+        "description": "A compelling exploration of urban development challenges and opportunities in modern American cities.",
+        "amazon_url": "https://www.amazon.com/Golden-Gates-Fighting-Housing-America/dp/0525560211",
+        "similarity": 0.842899422991231
+      },
+      {
+        "id": "ae26d6f5-bb1b-4c8a-995e-31ce78b35976",
+        "title": "The Wizard of Menlo Park",
+        "author": "Randall Stross",
+        "genre": [
+          "Biography"
+        ],
+        "description": "A detailed biography of Thomas Edison that captures his genius and transformative impact on modern technology.",
+        "amazon_url": "https://www.amazon.com/Wizard-Menlo-Park-Thomas-Invented/dp/1400047633",
+        "similarity": 0.840698750144033
+      }
     ]
   },
   {
@@ -3698,6 +5627,42 @@
         "description": "Charles Darwin’s personal reflections on his life and the groundbreaking discoveries that reshaped science.",
         "amazon_url": "https://www.amazon.com/Autobiography-Charles-Darwin-1809-1882/dp/0393310698",
         "_recommendationCount": 1
+      }
+    ],
+    "similar_books": [
+      {
+        "id": "d89ef09e-cb4d-4f45-9c8c-e9b34e327759",
+        "title": "Middlemarch",
+        "author": "George Eliot",
+        "genre": [
+          "Classic",
+          "Fiction"
+        ],
+        "description": "An intricate portrait of ambition, marriage, and societal change in a small English town.",
+        "amazon_url": "https://www.amazon.com/Middlemarch-Wordsworth-Classics-George-Eliot/dp/1853262374",
+        "similarity": 0.853992751478718
+      },
+      {
+        "id": "26a38dbb-9309-4291-87e7-824f0eb209c9",
+        "title": "Bleak House",
+        "author": "Charles Dickens",
+        "genre": [
+          "Classic"
+        ],
+        "description": "A masterful critique of the British legal system through a rich tapestry of lives and mysteries.",
+        "amazon_url": "https://www.amazon.com/Bleak-House-Charles-Dickens/dp/0143037617",
+        "similarity": 0.851547428873336
+      },
+      {
+        "id": "f23ea638-4b76-4619-8347-598b9e2b73d6",
+        "title": "Lives of the Artists",
+        "author": "Giorgio Vasari",
+        "genre": [
+          "Historical"
+        ],
+        "description": "A classic collection of biographies detailing the lives and works of Renaissance painters and sculptors.",
+        "amazon_url": "https://www.amazon.com/Lives-Artists-Oxford-Worlds-Classics/dp/0199537194",
+        "similarity": 0.850929447953139
       }
     ]
   },
@@ -3749,6 +5714,41 @@
         "amazon_url": "https://www.amazon.com/Sense-Where-You-Are-Princeton/dp/0374526893",
         "_recommendationCount": 1
       }
+    ],
+    "similar_books": [
+      {
+        "id": "72de3c3a-3457-4daf-9338-e5d392a12fc7",
+        "title": "Lone Survivor",
+        "author": "Marcus Luttrell",
+        "genre": [
+          "Fiction"
+        ],
+        "description": "A harrowing account of a Navy SEAL team’s mission gone awry and the heroism of survival under fire.",
+        "amazon_url": "https://www.amazon.com/Lone-Survivor-Eyewitness-Account-Operation-ebook/dp/B000QRIGLC",
+        "similarity": 0.886091205141838
+      },
+      {
+        "id": "4f22cd45-c944-411c-986e-75b8c12e4c15",
+        "title": "A Spy Among Friends",
+        "author": "Ben MacIntyre",
+        "genre": [
+          "Fiction"
+        ],
+        "description": "A riveting true account of espionage and betrayal among colleagues in the shadowy world of intelligence.",
+        "amazon_url": "https://www.amazon.com/Spy-Among-Friends-Philby-Betrayal/dp/0804136653",
+        "similarity": 0.849435149015372
+      },
+      {
+        "id": "8c4b4f03-6ffa-4ed2-a838-35dae447c2de",
+        "title": "Living With a Seal",
+        "author": "Jesse Itzler",
+        "genre": [
+          "Biography"
+        ],
+        "description": "A quirky account of a month spent training with a Navy SEAL.",
+        "amazon_url": "https://www.amazon.com/Living-SEAL-Training-Toughest-Planet-ebook/dp/B00U6DNZB2",
+        "similarity": 0.837579052159673
+      }
     ]
   },
   {
@@ -3798,6 +5798,41 @@
         "description": "Charles Darwin’s personal reflections on his life and the groundbreaking discoveries that reshaped science.",
         "amazon_url": "https://www.amazon.com/Autobiography-Charles-Darwin-1809-1882/dp/0393310698",
         "_recommendationCount": 1
+      }
+    ],
+    "similar_books": [
+      {
+        "id": "f48568b2-43bb-4101-b567-ffeb0bdb3875",
+        "title": "From Galileo to Newton",
+        "author": "A. Rupert Hall",
+        "genre": [
+          "Science"
+        ],
+        "description": "A compelling narrative tracing the revolution in physics from Galileo’s discoveries to Newton’s theories.",
+        "amazon_url": "https://www.amazon.com/Galileo-Newton-Rupert-Hall/dp/0486242277",
+        "similarity": 0.847662625719264
+      },
+      {
+        "id": "63b27406-619b-4b72-9c87-27f10dabf903",
+        "title": "Behave: The Biology of Humans at Our Best and Worst",
+        "author": "Robert Sapolsky",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "An exploration of the science behind human behavior and decision making.",
+        "amazon_url": "https://www.amazon.com/dp/B01IAUGC5S?tag=9natree-20",
+        "similarity": 0.825310269035133
+      },
+      {
+        "id": "4a0bb40d-62b6-419a-a4e7-180edf8f54b1",
+        "title": "How to Live",
+        "author": "Sarah Bakewell",
+        "genre": [
+          "Self-Help"
+        ],
+        "description": "An engaging exploration of the art of living, drawing on the wisdom of philosophy and history.",
+        "amazon_url": "https://www.amazon.com/How-Live-Montaigne-Question-Attempts/dp/1590514831",
+        "similarity": 0.819111255248415
       }
     ]
   },
@@ -3849,6 +5884,41 @@
         "amazon_url": "https://www.amazon.com/Civilian-Warriors-Inside-Blackwater-Unsung/dp/1591847214",
         "_recommendationCount": 1
       }
+    ],
+    "similar_books": [
+      {
+        "id": "5309551f-8fb4-49d0-8a21-15054a35c7bb",
+        "title": "A Very Expensive Poison",
+        "author": "Luke Harding",
+        "genre": [
+          "Politics"
+        ],
+        "description": "A gripping account of political assassinations in the UK, blending investigative journalism with a thrilling narrative.",
+        "amazon_url": "https://www.amazon.com/Very-Expensive-Poison-Assassination-Litvinenko/dp/1101973994",
+        "similarity": 0.842796410405559
+      },
+      {
+        "id": "5f53f667-41d0-4b0a-9ec3-ee1b6de176f7",
+        "title": "When the Wolves Bite",
+        "author": "Scott Wapner",
+        "genre": [
+          "Business"
+        ],
+        "description": "A detailed account of a high-stakes Wall Street battle that captures the drama of financial conflict.",
+        "amazon_url": "https://www.amazon.com/When-Wolves-Bite-Billionaires-Company/dp/1610398270",
+        "similarity": 0.84235682613724
+      },
+      {
+        "id": "f006338f-99fd-4da0-8b6f-c9781c2f9e77",
+        "title": "Private Truths, Public Lies",
+        "author": "Timur Kuran",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "A deep dive into how hidden biases and concealed information shape political and economic outcomes.",
+        "amazon_url": "https://www.amazon.com/Private-Truths-Public-Lies-Falsification/dp/0674707583",
+        "similarity": 0.841609841825054
+      }
     ]
   },
   {
@@ -3898,6 +5968,41 @@
         "description": "A detailed account of the rise of private military contractors and their evolving role in modern warfare.",
         "amazon_url": "https://www.amazon.com/Civilian-Warriors-Inside-Blackwater-Unsung/dp/1591847214",
         "_recommendationCount": 1
+      }
+    ],
+    "similar_books": [
+      {
+        "id": "4a0bb40d-62b6-419a-a4e7-180edf8f54b1",
+        "title": "How to Live",
+        "author": "Sarah Bakewell",
+        "genre": [
+          "Self-Help"
+        ],
+        "description": "An engaging exploration of the art of living, drawing on the wisdom of philosophy and history.",
+        "amazon_url": "https://www.amazon.com/How-Live-Montaigne-Question-Attempts/dp/1590514831",
+        "similarity": 0.870419367601802
+      },
+      {
+        "id": "fafb4fb2-8071-414f-b88a-54def50c37b0",
+        "title": "A Mathematician's Apology",
+        "author": "G. H. Hardy",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "A reflective essay on the beauty and purpose of mathematics by one of its greatest advocates.",
+        "amazon_url": "https://www.amazon.com/Mathematicians-Apology-G-H-Hardy/dp/1466402695",
+        "similarity": 0.854086493471529
+      },
+      {
+        "id": "5dd2bd34-7eed-4d60-a436-e128e80b8cae",
+        "title": "A Sense of Where You Are",
+        "author": "John McPhee",
+        "genre": [
+          "Biography"
+        ],
+        "description": "A reflective narrative capturing the essence of place and personal observation.",
+        "amazon_url": "https://www.amazon.com/Sense-Where-You-Are-Princeton/dp/0374526893",
+        "similarity": 0.849213035099852
       }
     ]
   },
@@ -3949,6 +6054,41 @@
         "amazon_url": "https://www.amazon.com/Autobiography-Charles-Darwin-1809-1882/dp/0393310698",
         "_recommendationCount": 1
       }
+    ],
+    "similar_books": [
+      {
+        "id": "18d5c2f6-bef8-4892-b4bd-ca878c4de776",
+        "title": "The Hard Thing About Hard Things",
+        "author": "Ben Horowitz",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "Insights into startup struggles and leadership in the tech world.",
+        "amazon_url": "https://www.amazon.com/Hard-Thing-About-Things-Building/dp/0062273205",
+        "similarity": 0.863516271114349
+      },
+      {
+        "id": "e87fc45a-6049-47ba-a291-57965332432d",
+        "title": "Secrets of Sand Hill Road",
+        "author": "Scott Kupor",
+        "genre": [
+          "Business"
+        ],
+        "description": "An insider's guide to venture capital and startup funding.",
+        "amazon_url": "https://www.amazon.com/Secrets-Sand-Hill-Road-Venture/dp/059308358X",
+        "similarity": 0.8619618148895
+      },
+      {
+        "id": "3560a1d3-117d-4afb-bf7c-c7cffb8be368",
+        "title": "Without Their Permission",
+        "author": "Alexis Ohanian",
+        "genre": [
+          "Business"
+        ],
+        "description": "A playbook for building successful tech companies and online communities.",
+        "amazon_url": "https://www.amazon.com/Without-Their-Permission-Century-Managed/dp/1455520020",
+        "similarity": 0.860065937042236
+      }
     ]
   },
   {
@@ -3998,6 +6138,41 @@
         "description": "A thrilling saga of global financial market manipulation orchestrated by a secretive cabal of bankers.",
         "amazon_url": "https://www.amazon.com/Spider-Network-Backstabbing-Greatest-Financial/dp/0062452983",
         "_recommendationCount": 1
+      }
+    ],
+    "similar_books": [
+      {
+        "id": "471ca2b4-b11a-4198-a760-2196da156f64",
+        "title": "Schulz and Peanuts",
+        "author": "David Michaelis",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "An in-depth look at Charles Schulz’s creative process and the cultural impact of the Peanuts comic strip.",
+        "amazon_url": "https://www.amazon.com/Schulz-Peanuts-Biography-David-Michaelis/dp/0060937998",
+        "similarity": 0.859682269247886
+      },
+      {
+        "id": "e7f3c17f-6217-4119-b6d1-dd58f7a98648",
+        "title": "Walt Disney: The Triumph of the American Imagination",
+        "author": "Neal Gabler",
+        "genre": [
+          "Business"
+        ],
+        "description": "A definitive biography of Walt Disney that explores his creative vision and lasting impact on entertainment.",
+        "amazon_url": "https://www.amazon.com/Walt-Disney-Triumph-American-Imagination/dp/0739340298",
+        "similarity": 0.855274797265318
+      },
+      {
+        "id": "6fe494fc-39dd-4100-adaf-76548f132c2a",
+        "title": "The Fabric of Civilization",
+        "author": "Virginia Postrel",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "A historical journey through the evolution of technology and culture.",
+        "amazon_url": "https://www.amazon.com/Fabric-Civilization-Textiles-Made-World/dp/1541617606",
+        "similarity": 0.847633100120288
       }
     ]
   },
@@ -4049,6 +6224,41 @@
         "amazon_url": "https://www.amazon.com/Civilian-Warriors-Inside-Blackwater-Unsung/dp/1591847214",
         "_recommendationCount": 1
       }
+    ],
+    "similar_books": [
+      {
+        "id": "ebe696d6-2fd7-4054-98e4-40438124b4c8",
+        "title": "Edison",
+        "author": "Edmund Morris",
+        "genre": [
+          "Biography"
+        ],
+        "description": "A captivating biography of Thomas Edison, the prolific inventor whose innovations transformed modern life.",
+        "amazon_url": "https://www.amazon.com/Edison-Edmund-Morris/dp/081299311X",
+        "similarity": 0.968392670154572
+      },
+      {
+        "id": "e7f3c17f-6217-4119-b6d1-dd58f7a98648",
+        "title": "Walt Disney: The Triumph of the American Imagination",
+        "author": "Neal Gabler",
+        "genre": [
+          "Business"
+        ],
+        "description": "A definitive biography of Walt Disney that explores his creative vision and lasting impact on entertainment.",
+        "amazon_url": "https://www.amazon.com/Walt-Disney-Triumph-American-Imagination/dp/0739340298",
+        "similarity": 0.870856137071602
+      },
+      {
+        "id": "931e6375-0c63-4a03-aa30-58c459d52cdd",
+        "title": "Becoming Steve Jobs",
+        "author": "Brent Schlender",
+        "genre": [
+          "Biography"
+        ],
+        "description": "A candid biography capturing the complex legacy of Steve Jobs.",
+        "amazon_url": "https://www.amazon.com/Becoming-Steve-Jobs-Evolution-Visionary/dp/0385347421",
+        "similarity": 0.866438176227754
+      }
     ]
   },
   {
@@ -4098,6 +6308,41 @@
         "description": "Charles Darwin’s personal reflections on his life and the groundbreaking discoveries that reshaped science.",
         "amazon_url": "https://www.amazon.com/Autobiography-Charles-Darwin-1809-1882/dp/0393310698",
         "_recommendationCount": 1
+      }
+    ],
+    "similar_books": [
+      {
+        "id": "998bba5d-6127-4835-bb00-c5942d510770",
+        "title": "The Courage to Be Disliked",
+        "author": "Ichiro Kishimi",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "A philosophical dialogue on embracing freedom and self-reliance.",
+        "amazon_url": "https://www.amazon.com/Courage-Be-Disliked-Phenomenon-Happiness-ebook/dp/B078MDSV8T",
+        "similarity": 0.851619502033264
+      },
+      {
+        "id": "5dd2bd34-7eed-4d60-a436-e128e80b8cae",
+        "title": "A Sense of Where You Are",
+        "author": "John McPhee",
+        "genre": [
+          "Biography"
+        ],
+        "description": "A reflective narrative capturing the essence of place and personal observation.",
+        "amazon_url": "https://www.amazon.com/Sense-Where-You-Are-Princeton/dp/0374526893",
+        "similarity": 0.835819607350335
+      },
+      {
+        "id": "fea81f19-ad46-4500-ac81-f4d77e34a7b9",
+        "title": "To the Lighthouse",
+        "author": "Virginia Woolf",
+        "genre": [
+          "Fiction"
+        ],
+        "description": "A poetic reflection on family, art, and the passage of time, blending inner thoughts and outer landscapes.",
+        "amazon_url": "https://www.amazon.com/Lighthouse-Virginia-Woolf/dp/B002ECEJ3G",
+        "similarity": 0.835189639858142
       }
     ]
   },
@@ -4149,6 +6394,41 @@
         "amazon_url": "https://www.amazon.com/Civilian-Warriors-Inside-Blackwater-Unsung/dp/1591847214",
         "_recommendationCount": 1
       }
+    ],
+    "similar_books": [
+      {
+        "id": "f006338f-99fd-4da0-8b6f-c9781c2f9e77",
+        "title": "Private Truths, Public Lies",
+        "author": "Timur Kuran",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "A deep dive into how hidden biases and concealed information shape political and economic outcomes.",
+        "amazon_url": "https://www.amazon.com/Private-Truths-Public-Lies-Falsification/dp/0674707583",
+        "similarity": 0.882447249743508
+      },
+      {
+        "id": "00139908-04bd-4c26-ae8e-ecbf4cbf4339",
+        "title": "Expert Political Judgement",
+        "author": "Philip E. Tetlock",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "An analysis of forecasting and decision-making in politics that challenges conventional wisdom about expert predictions.",
+        "amazon_url": "https://www.amazon.com/Expert-Political-Judgment-Tetlock-2006-08-20/dp/B01FKRPVZQ",
+        "similarity": 0.87377933390967
+      },
+      {
+        "id": "71de5878-4c3c-41a1-9609-9cf84179d7d6",
+        "title": "Intellectuals and Society",
+        "author": "Thomas Sowell",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "A critical analysis of the role intellectuals play in shaping public policy and societal trends.",
+        "amazon_url": "https://www.amazon.com/Intellectuals-Society-Thomas-Sowell/dp/0465025226",
+        "similarity": 0.872018114087806
+      }
     ]
   },
   {
@@ -4198,6 +6478,41 @@
         "description": "An analysis of how modern economies can achieve greater output with fewer resources, driving sustainable growth.",
         "amazon_url": "https://www.amazon.com/More-Less-Surprising-Learned-Resources_and/dp/1982103574",
         "_recommendationCount": 1
+      }
+    ],
+    "similar_books": [
+      {
+        "id": "1c94f878-3b2e-42b3-9973-cc806b6240a4",
+        "title": "Chasing Hillary",
+        "author": "Amy Chozick",
+        "genre": [
+          "Politics"
+        ],
+        "description": "A behind-the-scenes look at the 2016 Hillary Clinton campaign that blends personal insight with political analysis.",
+        "amazon_url": "https://www.amazon.com/Chasing-Hillary-Presidential-Campaigns-Ceiling/dp/0062413597",
+        "similarity": 0.887049330331295
+      },
+      {
+        "id": "cf8b6a53-925c-4e92-aa51-a5a08b70017a",
+        "title": "Hacks",
+        "author": "Donna Brazile",
+        "genre": [
+          "Biography"
+        ],
+        "description": "A raw and unflinching memoir recounting the hack attacks and internal crises that rocked the DNC in 2016.",
+        "amazon_url": "https://www.amazon.com/Hacks-Inside-Break-ins-Breakdowns-Donald/dp/0316478512",
+        "similarity": 0.868649648910942
+      },
+      {
+        "id": "f006338f-99fd-4da0-8b6f-c9781c2f9e77",
+        "title": "Private Truths, Public Lies",
+        "author": "Timur Kuran",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "A deep dive into how hidden biases and concealed information shape political and economic outcomes.",
+        "amazon_url": "https://www.amazon.com/Private-Truths-Public-Lies-Falsification/dp/0674707583",
+        "similarity": 0.857758641242981
       }
     ]
   },
@@ -4249,6 +6564,41 @@
         "amazon_url": "https://www.amazon.com/Autobiography-Charles-Darwin-1809-1882/dp/0393310698",
         "_recommendationCount": 1
       }
+    ],
+    "similar_books": [
+      {
+        "id": "49a48f0e-91b9-48e4-92a4-b68c875be423",
+        "title": "Golden Gates",
+        "author": "Conor Dougherty",
+        "genre": [
+          "Economics"
+        ],
+        "description": "A compelling exploration of urban development challenges and opportunities in modern American cities.",
+        "amazon_url": "https://www.amazon.com/Golden-Gates-Fighting-Housing-America/dp/0525560211",
+        "similarity": 0.819011569023138
+      },
+      {
+        "id": "ce05a2d7-6292-4dde-ab13-95b1b2da05fb",
+        "title": "The Ancient City",
+        "author": "Peter Connolly",
+        "genre": [
+          "Historical"
+        ],
+        "description": "A historical exploration of urban life and ancient civilizations.",
+        "amazon_url": "https://www.amazon.com/Ancient-City-Life-Classical-Athens/dp/0195215826",
+        "similarity": 0.816455819184282
+      },
+      {
+        "id": "6fe494fc-39dd-4100-adaf-76548f132c2a",
+        "title": "The Fabric of Civilization",
+        "author": "Virginia Postrel",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "A historical journey through the evolution of technology and culture.",
+        "amazon_url": "https://www.amazon.com/Fabric-Civilization-Textiles-Made-World/dp/1541617606",
+        "similarity": 0.808487355709082
+      }
     ]
   },
   {
@@ -4298,6 +6648,41 @@
         "description": "Charles Darwin’s personal reflections on his life and the groundbreaking discoveries that reshaped science.",
         "amazon_url": "https://www.amazon.com/Autobiography-Charles-Darwin-1809-1882/dp/0393310698",
         "_recommendationCount": 1
+      }
+    ],
+    "similar_books": [
+      {
+        "id": "49dda154-8f1c-4035-b738-c3427cf12bd5",
+        "title": "Barbarian Days",
+        "author": "William Finnegan",
+        "genre": [
+          "Biography"
+        ],
+        "description": "A memoir that captures the life of a traveler and surfer, filled with cultural insights and personal adventure.",
+        "amazon_url": "https://www.amazon.com/Barbarian-Days-Surfing-William-Finnegan/dp/0143109391",
+        "similarity": 0.899394670182953
+      },
+      {
+        "id": "5dd2bd34-7eed-4d60-a436-e128e80b8cae",
+        "title": "A Sense of Where You Are",
+        "author": "John McPhee",
+        "genre": [
+          "Biography"
+        ],
+        "description": "A reflective narrative capturing the essence of place and personal observation.",
+        "amazon_url": "https://www.amazon.com/Sense-Where-You-Are-Princeton/dp/0374526893",
+        "similarity": 0.888780117005851
+      },
+      {
+        "id": "4a0bb40d-62b6-419a-a4e7-180edf8f54b1",
+        "title": "How to Live",
+        "author": "Sarah Bakewell",
+        "genre": [
+          "Self-Help"
+        ],
+        "description": "An engaging exploration of the art of living, drawing on the wisdom of philosophy and history.",
+        "amazon_url": "https://www.amazon.com/How-Live-Montaigne-Question-Attempts/dp/1590514831",
+        "similarity": 0.886574864387537
       }
     ]
   },
@@ -4349,6 +6734,41 @@
         "amazon_url": "https://www.amazon.com/Civilian-Warriors-Inside-Blackwater-Unsung/dp/1591847214",
         "_recommendationCount": 1
       }
+    ],
+    "similar_books": [
+      {
+        "id": "0ced0b09-3a84-44f8-8835-5887aea7d22a",
+        "title": "Making of Europe",
+        "author": "Robert Bartlett",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "An exploration of the forces that shaped the formation of modern Europe from its ancient roots.",
+        "amazon_url": "https://www.amazon.com/Making-Europe-Conquest-Colonization-Cultural/dp/0140154094",
+        "similarity": 0.877219653958224
+      },
+      {
+        "id": "46dca70c-ccc2-41f0-bd27-8b5a3285c525",
+        "title": "Towns, Villages and Countryside of Celtic Europe",
+        "author": "Francoise Audouze",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "An exploration of the rural and cultural landscapes of Celtic Europe.",
+        "amazon_url": "https://www.amazon.com/Towns-Villages-Countryside-Celtic-Europe/dp/0253310822",
+        "similarity": 0.863929390907441
+      },
+      {
+        "id": "49a48f0e-91b9-48e4-92a4-b68c875be423",
+        "title": "Golden Gates",
+        "author": "Conor Dougherty",
+        "genre": [
+          "Economics"
+        ],
+        "description": "A compelling exploration of urban development challenges and opportunities in modern American cities.",
+        "amazon_url": "https://www.amazon.com/Golden-Gates-Fighting-Housing-America/dp/0525560211",
+        "similarity": 0.856290272608922
+      }
     ]
   },
   {
@@ -4398,6 +6818,42 @@
         "description": "A haunting journey into the heart of colonialism and the darkness within the human soul.",
         "amazon_url": "https://www.amazon.com/Heart-Darkness-Joseph-Conrad/dp/1936594145",
         "_recommendationCount": 1
+      }
+    ],
+    "similar_books": [
+      {
+        "id": "d89ef09e-cb4d-4f45-9c8c-e9b34e327759",
+        "title": "Middlemarch",
+        "author": "George Eliot",
+        "genre": [
+          "Classic",
+          "Fiction"
+        ],
+        "description": "An intricate portrait of ambition, marriage, and societal change in a small English town.",
+        "amazon_url": "https://www.amazon.com/Middlemarch-Wordsworth-Classics-George-Eliot/dp/1853262374",
+        "similarity": 0.857227453158663
+      },
+      {
+        "id": "174a1cf7-3bcd-4057-ac7e-80404c363c48",
+        "title": "Madame Bovary",
+        "author": "Gustave Flaubert",
+        "genre": [
+          "Fiction"
+        ],
+        "description": "The tragic story of a woman’s desires and disillusionment, exposing societal hypocrisy.",
+        "amazon_url": "https://www.amazon.com/Madame-Penguin-Classics-Gustave-Flaubert/dp/0140449124",
+        "similarity": 0.850556270827959
+      },
+      {
+        "id": "76fe1a81-4aa3-4c23-8041-cf2e8dd6933b",
+        "title": "Anna Karenina",
+        "author": "Leo Tolstoy",
+        "genre": [
+          "Classic"
+        ],
+        "description": "A profound exploration of love, jealousy, and societal pressures in 19th-century Russia.",
+        "amazon_url": "https://www.amazon.com/Anna-Karenina-Leo-Tolstoy/dp/0143035002",
+        "similarity": 0.841556348429597
       }
     ]
   },
@@ -4449,6 +6905,41 @@
         "amazon_url": "https://www.amazon.com/Autobiography-Charles-Darwin-1809-1882/dp/0393310698",
         "_recommendationCount": 1
       }
+    ],
+    "similar_books": [
+      {
+        "id": "ebe696d6-2fd7-4054-98e4-40438124b4c8",
+        "title": "Edison",
+        "author": "Edmund Morris",
+        "genre": [
+          "Biography"
+        ],
+        "description": "A captivating biography of Thomas Edison, the prolific inventor whose innovations transformed modern life.",
+        "amazon_url": "https://www.amazon.com/Edison-Edmund-Morris/dp/081299311X",
+        "similarity": 0.865987549124303
+      },
+      {
+        "id": "ae26d6f5-bb1b-4c8a-995e-31ce78b35976",
+        "title": "The Wizard of Menlo Park",
+        "author": "Randall Stross",
+        "genre": [
+          "Biography"
+        ],
+        "description": "A detailed biography of Thomas Edison that captures his genius and transformative impact on modern technology.",
+        "amazon_url": "https://www.amazon.com/Wizard-Menlo-Park-Thomas-Invented/dp/1400047633",
+        "similarity": 0.861462125400035
+      },
+      {
+        "id": "931e6375-0c63-4a03-aa30-58c459d52cdd",
+        "title": "Becoming Steve Jobs",
+        "author": "Brent Schlender",
+        "genre": [
+          "Biography"
+        ],
+        "description": "A candid biography capturing the complex legacy of Steve Jobs.",
+        "amazon_url": "https://www.amazon.com/Becoming-Steve-Jobs-Evolution-Visionary/dp/0385347421",
+        "similarity": 0.850646349903294
+      }
     ]
   },
   {
@@ -4498,6 +6989,41 @@
         "description": "A detailed account of the rise of private military contractors and their evolving role in modern warfare.",
         "amazon_url": "https://www.amazon.com/Civilian-Warriors-Inside-Blackwater-Unsung/dp/1591847214",
         "_recommendationCount": 1
+      }
+    ],
+    "similar_books": [
+      {
+        "id": "1c94f878-3b2e-42b3-9973-cc806b6240a4",
+        "title": "Chasing Hillary",
+        "author": "Amy Chozick",
+        "genre": [
+          "Politics"
+        ],
+        "description": "A behind-the-scenes look at the 2016 Hillary Clinton campaign that blends personal insight with political analysis.",
+        "amazon_url": "https://www.amazon.com/Chasing-Hillary-Presidential-Campaigns-Ceiling/dp/0062413597",
+        "similarity": 0.883236641208747
+      },
+      {
+        "id": "a8b0777e-fd99-4e14-b7ca-20156948e8a2",
+        "title": "Shattered",
+        "author": "Jonathan Allen",
+        "genre": [
+          "Politics"
+        ],
+        "description": "A revealing look at how media coverage impacted political campaigns during the turbulent 2016 election.",
+        "amazon_url": "https://www.amazon.com/Shattered-Inside-Hillary-Clintons-Campaign/dp/0553447084",
+        "similarity": 0.868649648910942
+      },
+      {
+        "id": "5495fe0a-4db2-48be-8a69-4ba3745a5172",
+        "title": "Days of Rage",
+        "author": "Bryan Burrough",
+        "genre": [
+          "Politics"
+        ],
+        "description": "A vivid narrative of 1960s racial politics and domestic terrorism, chronicling a turbulent era in American history.",
+        "amazon_url": "https://www.amazon.com/Days-Rage-Underground-Forgotten-Revolutionary/dp/0143107976",
+        "similarity": 0.846758379097782
       }
     ]
   },
@@ -4549,6 +7075,41 @@
         "amazon_url": "https://www.amazon.com/Autobiography-Charles-Darwin-1809-1882/dp/0393310698",
         "_recommendationCount": 1
       }
+    ],
+    "similar_books": [
+      {
+        "id": "4a0bb40d-62b6-419a-a4e7-180edf8f54b1",
+        "title": "How to Live",
+        "author": "Sarah Bakewell",
+        "genre": [
+          "Self-Help"
+        ],
+        "description": "An engaging exploration of the art of living, drawing on the wisdom of philosophy and history.",
+        "amazon_url": "https://www.amazon.com/How-Live-Montaigne-Question-Attempts/dp/1590514831",
+        "similarity": 0.88441669940951
+      },
+      {
+        "id": "ce05a2d7-6292-4dde-ab13-95b1b2da05fb",
+        "title": "The Ancient City",
+        "author": "Peter Connolly",
+        "genre": [
+          "Historical"
+        ],
+        "description": "A historical exploration of urban life and ancient civilizations.",
+        "amazon_url": "https://www.amazon.com/Ancient-City-Life-Classical-Athens/dp/0195215826",
+        "similarity": 0.865742274180529
+      },
+      {
+        "id": "46dca70c-ccc2-41f0-bd27-8b5a3285c525",
+        "title": "Towns, Villages and Countryside of Celtic Europe",
+        "author": "Francoise Audouze",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "An exploration of the rural and cultural landscapes of Celtic Europe.",
+        "amazon_url": "https://www.amazon.com/Towns-Villages-Countryside-Celtic-Europe/dp/0253310822",
+        "similarity": 0.861760293560156
+      }
     ]
   },
   {
@@ -4598,6 +7159,41 @@
         "description": "An analysis of the strategic and political factors that led to the Allied victory in World War II.",
         "amazon_url": "https://www.amazon.com/Why-Allies-Won-Richard-Overy/dp/039331619X",
         "_recommendationCount": 1
+      }
+    ],
+    "similar_books": [
+      {
+        "id": "ff01b322-2048-40b5-88eb-43b9b87e7033",
+        "title": "The Rise and Fall of Modern Medicine",
+        "author": "James Le Fanu",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "A captivating account of breakthroughs and setbacks that shaped modern medical science.",
+        "amazon_url": "https://www.amazon.com/Rise-Fall-Modern-Medicine/dp/0786709677",
+        "similarity": 0.85817997802378
+      },
+      {
+        "id": "ebe696d6-2fd7-4054-98e4-40438124b4c8",
+        "title": "Edison",
+        "author": "Edmund Morris",
+        "genre": [
+          "Biography"
+        ],
+        "description": "A captivating biography of Thomas Edison, the prolific inventor whose innovations transformed modern life.",
+        "amazon_url": "https://www.amazon.com/Edison-Edmund-Morris/dp/081299311X",
+        "similarity": 0.839377264902272
+      },
+      {
+        "id": "ae26d6f5-bb1b-4c8a-995e-31ce78b35976",
+        "title": "The Wizard of Menlo Park",
+        "author": "Randall Stross",
+        "genre": [
+          "Biography"
+        ],
+        "description": "A detailed biography of Thomas Edison that captures his genius and transformative impact on modern technology.",
+        "amazon_url": "https://www.amazon.com/Wizard-Menlo-Park-Thomas-Invented/dp/1400047633",
+        "similarity": 0.839289884482614
       }
     ]
   },
@@ -4649,6 +7245,41 @@
         "amazon_url": "https://www.amazon.com/More-Less-Surprising-Learned-Resources_and/dp/1982103574",
         "_recommendationCount": 1
       }
+    ],
+    "similar_books": [
+      {
+        "id": "28e0ab25-324c-4537-a785-a1f8acbeda71",
+        "title": "How to Be Topp",
+        "author": "Ronald Searle",
+        "genre": [
+          "Fiction"
+        ],
+        "description": "A humorous exploration of what it means to be at the top, full of witty observations.",
+        "amazon_url": "https://www.amazon.com/How-Be-Topp-Ronald-Searle/dp/1851459650",
+        "similarity": 0.877742591509808
+      },
+      {
+        "id": "49dda154-8f1c-4035-b738-c3427cf12bd5",
+        "title": "Barbarian Days",
+        "author": "William Finnegan",
+        "genre": [
+          "Biography"
+        ],
+        "description": "A memoir that captures the life of a traveler and surfer, filled with cultural insights and personal adventure.",
+        "amazon_url": "https://www.amazon.com/Barbarian-Days-Surfing-William-Finnegan/dp/0143109391",
+        "similarity": 0.875338744261146
+      },
+      {
+        "id": "55f0e069-44f7-4707-9aaf-089f1f64984e",
+        "title": "Can't Hurt Me",
+        "author": "David Goggins",
+        "genre": [
+          "Self-Help"
+        ],
+        "description": "A memoir on overcoming adversity and building mental toughness.",
+        "amazon_url": "https://www.amazon.com/Cant-Hurt-Me-Master-Your/dp/1544512287",
+        "similarity": 0.868287550823428
+      }
     ]
   },
   {
@@ -4698,6 +7329,41 @@
         "description": "An intricate portrait of ambition, marriage, and societal change in a small English town.",
         "amazon_url": "https://www.amazon.com/Middlemarch-Wordsworth-Classics-George-Eliot/dp/1853262374",
         "_recommendationCount": 3
+      }
+    ],
+    "similar_books": [
+      {
+        "id": "4a0bb40d-62b6-419a-a4e7-180edf8f54b1",
+        "title": "How to Live",
+        "author": "Sarah Bakewell",
+        "genre": [
+          "Self-Help"
+        ],
+        "description": "An engaging exploration of the art of living, drawing on the wisdom of philosophy and history.",
+        "amazon_url": "https://www.amazon.com/How-Live-Montaigne-Question-Attempts/dp/1590514831",
+        "similarity": 0.863248331934021
+      },
+      {
+        "id": "76fe1a81-4aa3-4c23-8041-cf2e8dd6933b",
+        "title": "Anna Karenina",
+        "author": "Leo Tolstoy",
+        "genre": [
+          "Classic"
+        ],
+        "description": "A profound exploration of love, jealousy, and societal pressures in 19th-century Russia.",
+        "amazon_url": "https://www.amazon.com/Anna-Karenina-Leo-Tolstoy/dp/0143035002",
+        "similarity": 0.845308083855148
+      },
+      {
+        "id": "998bba5d-6127-4835-bb00-c5942d510770",
+        "title": "The Courage to Be Disliked",
+        "author": "Ichiro Kishimi",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "A philosophical dialogue on embracing freedom and self-reliance.",
+        "amazon_url": "https://www.amazon.com/Courage-Be-Disliked-Phenomenon-Happiness-ebook/dp/B078MDSV8T",
+        "similarity": 0.842530237874355
       }
     ]
   },
@@ -4749,6 +7415,41 @@
         "amazon_url": "https://www.amazon.com/Heart-Darkness-Joseph-Conrad/dp/1936594145",
         "_recommendationCount": 1
       }
+    ],
+    "similar_books": [
+      {
+        "id": "f48568b2-43bb-4101-b567-ffeb0bdb3875",
+        "title": "From Galileo to Newton",
+        "author": "A. Rupert Hall",
+        "genre": [
+          "Science"
+        ],
+        "description": "A compelling narrative tracing the revolution in physics from Galileo’s discoveries to Newton’s theories.",
+        "amazon_url": "https://www.amazon.com/Galileo-Newton-Rupert-Hall/dp/0486242277",
+        "similarity": 0.87203760791163
+      },
+      {
+        "id": "ebe696d6-2fd7-4054-98e4-40438124b4c8",
+        "title": "Edison",
+        "author": "Edmund Morris",
+        "genre": [
+          "Biography"
+        ],
+        "description": "A captivating biography of Thomas Edison, the prolific inventor whose innovations transformed modern life.",
+        "amazon_url": "https://www.amazon.com/Edison-Edmund-Morris/dp/081299311X",
+        "similarity": 0.867846973666731
+      },
+      {
+        "id": "ae26d6f5-bb1b-4c8a-995e-31ce78b35976",
+        "title": "The Wizard of Menlo Park",
+        "author": "Randall Stross",
+        "genre": [
+          "Biography"
+        ],
+        "description": "A detailed biography of Thomas Edison that captures his genius and transformative impact on modern technology.",
+        "amazon_url": "https://www.amazon.com/Wizard-Menlo-Park-Thomas-Invented/dp/1400047633",
+        "similarity": 0.860270925744122
+      }
     ]
   },
   {
@@ -4798,6 +7499,41 @@
         "description": "An analysis of how modern economies can achieve greater output with fewer resources, driving sustainable growth.",
         "amazon_url": "https://www.amazon.com/More-Less-Surprising-Learned-Resources_and/dp/1982103574",
         "_recommendationCount": 1
+      }
+    ],
+    "similar_books": [
+      {
+        "id": "6fe494fc-39dd-4100-adaf-76548f132c2a",
+        "title": "The Fabric of Civilization",
+        "author": "Virginia Postrel",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "A historical journey through the evolution of technology and culture.",
+        "amazon_url": "https://www.amazon.com/Fabric-Civilization-Textiles-Made-World/dp/1541617606",
+        "similarity": 0.889593601226813
+      },
+      {
+        "id": "4a0bb40d-62b6-419a-a4e7-180edf8f54b1",
+        "title": "How to Live",
+        "author": "Sarah Bakewell",
+        "genre": [
+          "Self-Help"
+        ],
+        "description": "An engaging exploration of the art of living, drawing on the wisdom of philosophy and history.",
+        "amazon_url": "https://www.amazon.com/How-Live-Montaigne-Question-Attempts/dp/1590514831",
+        "similarity": 0.880491294948692
+      },
+      {
+        "id": "49a48f0e-91b9-48e4-92a4-b68c875be423",
+        "title": "Golden Gates",
+        "author": "Conor Dougherty",
+        "genre": [
+          "Economics"
+        ],
+        "description": "A compelling exploration of urban development challenges and opportunities in modern American cities.",
+        "amazon_url": "https://www.amazon.com/Golden-Gates-Fighting-Housing-America/dp/0525560211",
+        "similarity": 0.87635505199433
       }
     ]
   },
@@ -4849,6 +7585,41 @@
         "amazon_url": "https://www.amazon.com/Autobiography-Charles-Darwin-1809-1882/dp/0393310698",
         "_recommendationCount": 1
       }
+    ],
+    "similar_books": [
+      {
+        "id": "f518cc86-5fdf-446e-9616-b864364ebe55",
+        "title": "The Power of Productivity",
+        "author": "William W. Lewis",
+        "genre": [
+          "Economics"
+        ],
+        "description": "An exploration of how technological innovation boosts productivity and improves quality of life.",
+        "amazon_url": "https://www.amazon.com/Power-Productivity-Wealth-Poverty-Stability/dp/0226476766",
+        "similarity": 0.816020077698209
+      },
+      {
+        "id": "05227c5a-ab9d-4769-8380-44de3442f6af",
+        "title": "More From Less",
+        "author": "Andrew McAfee",
+        "genre": [
+          "Economics"
+        ],
+        "description": "An analysis of how modern economies can achieve greater output with fewer resources, driving sustainable growth.",
+        "amazon_url": "https://www.amazon.com/More-Less-Surprising-Learned-Resources_and/dp/1982103574",
+        "similarity": 0.815824925899598
+      },
+      {
+        "id": "8526055f-a6dc-40e2-b3ef-91dc4f020a91",
+        "title": "12 Rules for Life",
+        "author": "Jordan B. Peterson",
+        "genre": [
+          "Self-Help"
+        ],
+        "description": "Practical life advice and philosophical insights for personal growth.",
+        "amazon_url": "https://www.amazon.com/12-Rules-Life-Antidote-Chaos/dp/0345816021",
+        "similarity": 0.804046034813019
+      }
     ]
   },
   {
@@ -4898,6 +7669,41 @@
         "description": "An analysis of how modern economies can achieve greater output with fewer resources, driving sustainable growth.",
         "amazon_url": "https://www.amazon.com/More-Less-Surprising-Learned-Resources_and/dp/1982103574",
         "_recommendationCount": 1
+      }
+    ],
+    "similar_books": [
+      {
+        "id": "5f53f667-41d0-4b0a-9ec3-ee1b6de176f7",
+        "title": "When the Wolves Bite",
+        "author": "Scott Wapner",
+        "genre": [
+          "Business"
+        ],
+        "description": "A detailed account of a high-stakes Wall Street battle that captures the drama of financial conflict.",
+        "amazon_url": "https://www.amazon.com/When-Wolves-Bite-Billionaires-Company/dp/1610398270",
+        "similarity": 0.900009533763833
+      },
+      {
+        "id": "63668004-9c48-4378-9209-1c59afb07ab2",
+        "title": "More Money Than God",
+        "author": "Sebastian Mallaby",
+        "genre": [
+          "Business"
+        ],
+        "description": "A thrilling history of hedge funds and the evolution of a new financial elite in modern capitalism.",
+        "amazon_url": "https://www.amazon.com/More-Money-Than-God-Relations/dp/0143119419",
+        "similarity": 0.889989257153977
+      },
+      {
+        "id": "4f22cd45-c944-411c-986e-75b8c12e4c15",
+        "title": "A Spy Among Friends",
+        "author": "Ben MacIntyre",
+        "genre": [
+          "Fiction"
+        ],
+        "description": "A riveting true account of espionage and betrayal among colleagues in the shadowy world of intelligence.",
+        "amazon_url": "https://www.amazon.com/Spy-Among-Friends-Philby-Betrayal/dp/0804136653",
+        "similarity": 0.84392375132695
       }
     ]
   },
@@ -4949,6 +7755,41 @@
         "amazon_url": "https://www.amazon.com/More-Money-Than-God-Relations/dp/0143119419",
         "_recommendationCount": 1
       }
+    ],
+    "similar_books": [
+      {
+        "id": "ce05a2d7-6292-4dde-ab13-95b1b2da05fb",
+        "title": "The Ancient City",
+        "author": "Peter Connolly",
+        "genre": [
+          "Historical"
+        ],
+        "description": "A historical exploration of urban life and ancient civilizations.",
+        "amazon_url": "https://www.amazon.com/Ancient-City-Life-Classical-Athens/dp/0195215826",
+        "similarity": 0.855721303479608
+      },
+      {
+        "id": "6150ba72-3f4a-4355-920a-75858d5e5398",
+        "title": "A History of Medieval Europe in Ancient Roman Times ",
+        "author": "R. H. C. Davis",
+        "genre": [
+          "Historical"
+        ],
+        "description": "A comprehensive account of medieval Europe, updated with the latest research and diverse viewpoints.",
+        "amazon_url": "https://www.amazon.com/History-Medieval-Constantine-Longman-Paperback/dp/0582482089",
+        "similarity": 0.839384901706905
+      },
+      {
+        "id": "6fe494fc-39dd-4100-adaf-76548f132c2a",
+        "title": "The Fabric of Civilization",
+        "author": "Virginia Postrel",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "A historical journey through the evolution of technology and culture.",
+        "amazon_url": "https://www.amazon.com/Fabric-Civilization-Textiles-Made-World/dp/1541617606",
+        "similarity": 0.835118859687057
+      }
     ]
   },
   {
@@ -4998,6 +7839,42 @@
         "description": "A captivating account of breakthroughs and setbacks that shaped modern medical science.",
         "amazon_url": "https://www.amazon.com/Rise-Fall-Modern-Medicine/dp/0786709677",
         "_recommendationCount": 1
+      }
+    ],
+    "similar_books": [
+      {
+        "id": "d89ef09e-cb4d-4f45-9c8c-e9b34e327759",
+        "title": "Middlemarch",
+        "author": "George Eliot",
+        "genre": [
+          "Classic",
+          "Fiction"
+        ],
+        "description": "An intricate portrait of ambition, marriage, and societal change in a small English town.",
+        "amazon_url": "https://www.amazon.com/Middlemarch-Wordsworth-Classics-George-Eliot/dp/1853262374",
+        "similarity": 0.859845272857182
+      },
+      {
+        "id": "ac172430-a2d5-4a08-b766-e79b0f7d9906",
+        "title": "Portrait of a Lady",
+        "author": "Henry James",
+        "genre": [
+          "Fiction"
+        ],
+        "description": "Isabel Archer faces the trials of independence, betrayal, and self-discovery in a stifling society.",
+        "amazon_url": "https://www.amazon.com/Portrait-Lady-Penguin-Classics/dp/014043223X",
+        "similarity": 0.850556270827959
+      },
+      {
+        "id": "76fe1a81-4aa3-4c23-8041-cf2e8dd6933b",
+        "title": "Anna Karenina",
+        "author": "Leo Tolstoy",
+        "genre": [
+          "Classic"
+        ],
+        "description": "A profound exploration of love, jealousy, and societal pressures in 19th-century Russia.",
+        "amazon_url": "https://www.amazon.com/Anna-Karenina-Leo-Tolstoy/dp/0143035002",
+        "similarity": 0.847556249578901
       }
     ]
   },
@@ -5049,6 +7926,41 @@
         "amazon_url": "https://www.amazon.com/Heart-Darkness-Joseph-Conrad/dp/1936594145",
         "_recommendationCount": 1
       }
+    ],
+    "similar_books": [
+      {
+        "id": "5dd2bd34-7eed-4d60-a436-e128e80b8cae",
+        "title": "A Sense of Where You Are",
+        "author": "John McPhee",
+        "genre": [
+          "Biography"
+        ],
+        "description": "A reflective narrative capturing the essence of place and personal observation.",
+        "amazon_url": "https://www.amazon.com/Sense-Where-You-Are-Princeton/dp/0374526893",
+        "similarity": 0.890466392463486
+      },
+      {
+        "id": "aab6d161-6527-456b-9dd0-2085a982e8dd",
+        "title": "A Story Lately Told",
+        "author": "Anjelica Huston",
+        "genre": [
+          "Biography"
+        ],
+        "description": "A personal narrative that weaves art, life, and history into a compelling memoir.",
+        "amazon_url": "https://www.amazon.com/Story-Lately-Told-Coming-Ireland/dp/1451656300",
+        "similarity": 0.871727020328755
+      },
+      {
+        "id": "4a0bb40d-62b6-419a-a4e7-180edf8f54b1",
+        "title": "How to Live",
+        "author": "Sarah Bakewell",
+        "genre": [
+          "Self-Help"
+        ],
+        "description": "An engaging exploration of the art of living, drawing on the wisdom of philosophy and history.",
+        "amazon_url": "https://www.amazon.com/How-Live-Montaigne-Question-Attempts/dp/1590514831",
+        "similarity": 0.863300263881708
+      }
     ]
   },
   {
@@ -5098,6 +8010,41 @@
         "description": "Charles Darwin’s personal reflections on his life and the groundbreaking discoveries that reshaped science.",
         "amazon_url": "https://www.amazon.com/Autobiography-Charles-Darwin-1809-1882/dp/0393310698",
         "_recommendationCount": 1
+      }
+    ],
+    "similar_books": [
+      {
+        "id": "18d5c2f6-bef8-4892-b4bd-ca878c4de776",
+        "title": "The Hard Thing About Hard Things",
+        "author": "Ben Horowitz",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "Insights into startup struggles and leadership in the tech world.",
+        "amazon_url": "https://www.amazon.com/Hard-Thing-About-Things-Building/dp/0062273205",
+        "similarity": 0.930695303595633
+      },
+      {
+        "id": "e87fc45a-6049-47ba-a291-57965332432d",
+        "title": "Secrets of Sand Hill Road",
+        "author": "Scott Kupor",
+        "genre": [
+          "Business"
+        ],
+        "description": "An insider's guide to venture capital and startup funding.",
+        "amazon_url": "https://www.amazon.com/Secrets-Sand-Hill-Road-Venture/dp/059308358X",
+        "similarity": 0.887776295741936
+      },
+      {
+        "id": "931e6375-0c63-4a03-aa30-58c459d52cdd",
+        "title": "Becoming Steve Jobs",
+        "author": "Brent Schlender",
+        "genre": [
+          "Biography"
+        ],
+        "description": "A candid biography capturing the complex legacy of Steve Jobs.",
+        "amazon_url": "https://www.amazon.com/Becoming-Steve-Jobs-Evolution-Visionary/dp/0385347421",
+        "similarity": 0.849141164200807
       }
     ]
   },
@@ -5149,6 +8096,41 @@
         "amazon_url": "https://www.amazon.com/Spider-Network-Backstabbing-Greatest-Financial/dp/0062452983",
         "_recommendationCount": 1
       }
+    ],
+    "similar_books": [
+      {
+        "id": "a8b0777e-fd99-4e14-b7ca-20156948e8a2",
+        "title": "Shattered",
+        "author": "Jonathan Allen",
+        "genre": [
+          "Politics"
+        ],
+        "description": "A revealing look at how media coverage impacted political campaigns during the turbulent 2016 election.",
+        "amazon_url": "https://www.amazon.com/Shattered-Inside-Hillary-Clintons-Campaign/dp/0553447084",
+        "similarity": 0.887049330331295
+      },
+      {
+        "id": "cf8b6a53-925c-4e92-aa51-a5a08b70017a",
+        "title": "Hacks",
+        "author": "Donna Brazile",
+        "genre": [
+          "Biography"
+        ],
+        "description": "A raw and unflinching memoir recounting the hack attacks and internal crises that rocked the DNC in 2016.",
+        "amazon_url": "https://www.amazon.com/Hacks-Inside-Break-ins-Breakdowns-Donald/dp/0316478512",
+        "similarity": 0.883236641208747
+      },
+      {
+        "id": "f006338f-99fd-4da0-8b6f-c9781c2f9e77",
+        "title": "Private Truths, Public Lies",
+        "author": "Timur Kuran",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "A deep dive into how hidden biases and concealed information shape political and economic outcomes.",
+        "amazon_url": "https://www.amazon.com/Private-Truths-Public-Lies-Falsification/dp/0674707583",
+        "similarity": 0.847406871230443
+      }
     ]
   },
   {
@@ -5198,6 +8180,41 @@
         "description": "A masterful critique of the British legal system through a rich tapestry of lives and mysteries.",
         "amazon_url": "https://www.amazon.com/Bleak-House-Charles-Dickens/dp/0143037617",
         "_recommendationCount": 2
+      }
+    ],
+    "similar_books": [
+      {
+        "id": "52e10d00-ed77-4cfb-987c-21224a933bbc",
+        "title": "With the Old Breed",
+        "author": "E. B. Sledge",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "A harrowing memoir of combat in the Pacific during World War II, emphasizing sacrifice and resilience.",
+        "amazon_url": "https://www.amazon.com/Old-Breed-At-Peleliu-Okinawa/dp/0891419195",
+        "similarity": 0.867461007762471
+      },
+      {
+        "id": "55ca43a0-984d-4427-927a-200f2f9a3d0f",
+        "title": "Believe in People",
+        "author": "Charles Koch",
+        "genre": [
+          "Biography"
+        ],
+        "description": "An inspiring look at human potential and the power of optimism.",
+        "amazon_url": "https://www.amazon.com/Believe-People-Bottom-Up-Solutions-Top-Down/dp/1250200962",
+        "similarity": 0.861972867434948
+      },
+      {
+        "id": "aab6d161-6527-456b-9dd0-2085a982e8dd",
+        "title": "A Story Lately Told",
+        "author": "Anjelica Huston",
+        "genre": [
+          "Biography"
+        ],
+        "description": "A personal narrative that weaves art, life, and history into a compelling memoir.",
+        "amazon_url": "https://www.amazon.com/Story-Lately-Told-Coming-Ireland/dp/1451656300",
+        "similarity": 0.844899459639249
       }
     ]
   },
@@ -5249,6 +8266,41 @@
         "amazon_url": "https://www.amazon.com/More-Less-Surprising-Learned-Resources_and/dp/1982103574",
         "_recommendationCount": 1
       }
+    ],
+    "similar_books": [
+      {
+        "id": "26a38dbb-9309-4291-87e7-824f0eb209c9",
+        "title": "Bleak House",
+        "author": "Charles Dickens",
+        "genre": [
+          "Classic"
+        ],
+        "description": "A masterful critique of the British legal system through a rich tapestry of lives and mysteries.",
+        "amazon_url": "https://www.amazon.com/Bleak-House-Charles-Dickens/dp/0143037617",
+        "similarity": 0.818321639799596
+      },
+      {
+        "id": "5309551f-8fb4-49d0-8a21-15054a35c7bb",
+        "title": "A Very Expensive Poison",
+        "author": "Luke Harding",
+        "genre": [
+          "Politics"
+        ],
+        "description": "A gripping account of political assassinations in the UK, blending investigative journalism with a thrilling narrative.",
+        "amazon_url": "https://www.amazon.com/Very-Expensive-Poison-Assassination-Litvinenko/dp/1101973994",
+        "similarity": 0.814748353452085
+      },
+      {
+        "id": "b72b2df4-6eaf-4cae-9242-6193e046ed85",
+        "title": "Born Standing Up: A Comic's Life",
+        "author": "Steve Martin",
+        "genre": [
+          "Fiction"
+        ],
+        "description": "A humorous memoir detailing the rise of a stand-up comedian.",
+        "amazon_url": "https://www.amazon.com/Born-Standing-Up-Comics-Life/dp/1416553657",
+        "similarity": 0.808249468654717
+      }
     ]
   },
   {
@@ -5298,6 +8350,42 @@
         "description": "An intricate portrait of ambition, marriage, and societal change in a small English town.",
         "amazon_url": "https://www.amazon.com/Middlemarch-Wordsworth-Classics-George-Eliot/dp/1853262374",
         "_recommendationCount": 3
+      }
+    ],
+    "similar_books": [
+      {
+        "id": "26a38dbb-9309-4291-87e7-824f0eb209c9",
+        "title": "Bleak House",
+        "author": "Charles Dickens",
+        "genre": [
+          "Classic"
+        ],
+        "description": "A masterful critique of the British legal system through a rich tapestry of lives and mysteries.",
+        "amazon_url": "https://www.amazon.com/Bleak-House-Charles-Dickens/dp/0143037617",
+        "similarity": 0.854614206873525
+      },
+      {
+        "id": "abb46b21-3d3e-41d9-80ae-b10b41c5967c",
+        "title": "The Strange Death of Europe",
+        "author": "Douglas Murray",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "A provocative exploration of immigration and cultural change in Europe that challenges conventional narratives.",
+        "amazon_url": "https://www.amazon.com/Strange-Death-Europe-Immigration-Identity/dp/1472942248",
+        "similarity": 0.851862951557987
+      },
+      {
+        "id": "b08aa61b-40da-4876-9007-e2a1c83b1dc0",
+        "title": "Jane Eyre",
+        "author": "Charlotte Brontë",
+        "genre": [
+          "Historical",
+          "Classic"
+        ],
+        "description": "A timeless tale of love, hardship, and morality through the eyes of a determined orphan.",
+        "amazon_url": "https://www.amazon.com/Jane-Penguin-Classics-Charlotte-Bront%C3%AB/dp/0141441143",
+        "similarity": 0.85180989238202
       }
     ]
   },
@@ -5349,6 +8437,41 @@
         "amazon_url": "https://www.amazon.com/Civilian-Warriors-Inside-Blackwater-Unsung/dp/1591847214",
         "_recommendationCount": 1
       }
+    ],
+    "similar_books": [
+      {
+        "id": "46489ec7-a8bf-43b8-8cc2-7dcd263888b9",
+        "title": "The Second Machine Age: Work, Progress, and Prosperity in a Time of Brilliant Technologies",
+        "author": "Erik Brynjolfsson",
+        "genre": [
+          "Economics"
+        ],
+        "description": "An analysis of how digital technologies are transforming the economy and redefining work and productivity.",
+        "amazon_url": "https://www.amazon.com/Second-Machine-Age-Prosperity-Technologies/dp/0393350649",
+        "similarity": 0.904783904552485
+      },
+      {
+        "id": "3f0bc969-0c4d-4579-ad72-6b2be2202e5e",
+        "title": "The Extension of Man",
+        "author": "J. D. Bernal",
+        "genre": [
+          "Science"
+        ],
+        "description": "A seminal work discussing how technology expands human capabilities.",
+        "amazon_url": "https://www.amazon.com/Extension-Man-History-Physics-Quantum/dp/0262523868",
+        "similarity": 0.879533186014517
+      },
+      {
+        "id": "cb8652ee-4c35-4124-9fe2-85bcf14e991f",
+        "title": "Whole Earth Discipline",
+        "author": "Stewart Brand",
+        "genre": [
+          "Science"
+        ],
+        "description": "Examines how technology and environment intersect in modern society.",
+        "amazon_url": "https://www.amazon.com/Whole-Earth-Discipline-Transgenic-Geoengineering/dp/0143118285",
+        "similarity": 0.867170782763771
+      }
     ]
   },
   {
@@ -5398,6 +8521,41 @@
         "description": "A cyberpunk classic exploring virtual realities and dystopian futures.",
         "amazon_url": "https://www.amazon.com/Snow-Crash-Neal-Stephenson/dp/0553380958",
         "_recommendationCount": 8
+      }
+    ],
+    "similar_books": [
+      {
+        "id": "3331e224-4a1e-4e22-9810-e435f6736a87",
+        "title": "Triumph of the City",
+        "author": "Edward Glaeser",
+        "genre": [
+          "Economics"
+        ],
+        "description": "A detailed analysis of how cities drive economic growth and innovation, making urbanization key to prosperity.",
+        "amazon_url": "https://www.amazon.com/Triumph-City-Greatest-Invention-Healthier/dp/0143120549",
+        "similarity": 0.881558938630412
+      },
+      {
+        "id": "46489ec7-a8bf-43b8-8cc2-7dcd263888b9",
+        "title": "The Second Machine Age: Work, Progress, and Prosperity in a Time of Brilliant Technologies",
+        "author": "Erik Brynjolfsson",
+        "genre": [
+          "Economics"
+        ],
+        "description": "An analysis of how digital technologies are transforming the economy and redefining work and productivity.",
+        "amazon_url": "https://www.amazon.com/Second-Machine-Age-Prosperity-Technologies/dp/0393350649",
+        "similarity": 0.880433457052758
+      },
+      {
+        "id": "f518cc86-5fdf-446e-9616-b864364ebe55",
+        "title": "The Power of Productivity",
+        "author": "William W. Lewis",
+        "genre": [
+          "Economics"
+        ],
+        "description": "An exploration of how technological innovation boosts productivity and improves quality of life.",
+        "amazon_url": "https://www.amazon.com/Power-Productivity-Wealth-Poverty-Stability/dp/0226476766",
+        "similarity": 0.86426369717886
       }
     ]
   },
@@ -5449,6 +8607,41 @@
         "amazon_url": "https://www.amazon.com/Autobiography-Charles-Darwin-1809-1882/dp/0393310698",
         "_recommendationCount": 1
       }
+    ],
+    "similar_books": [
+      {
+        "id": "b72b2df4-6eaf-4cae-9242-6193e046ed85",
+        "title": "Born Standing Up: A Comic's Life",
+        "author": "Steve Martin",
+        "genre": [
+          "Fiction"
+        ],
+        "description": "A humorous memoir detailing the rise of a stand-up comedian.",
+        "amazon_url": "https://www.amazon.com/Born-Standing-Up-Comics-Life/dp/1416553657",
+        "similarity": 0.877742591509808
+      },
+      {
+        "id": "26a38dbb-9309-4291-87e7-824f0eb209c9",
+        "title": "Bleak House",
+        "author": "Charles Dickens",
+        "genre": [
+          "Classic"
+        ],
+        "description": "A masterful critique of the British legal system through a rich tapestry of lives and mysteries.",
+        "amazon_url": "https://www.amazon.com/Bleak-House-Charles-Dickens/dp/0143037617",
+        "similarity": 0.835833634013949
+      },
+      {
+        "id": "4a0bb40d-62b6-419a-a4e7-180edf8f54b1",
+        "title": "How to Live",
+        "author": "Sarah Bakewell",
+        "genre": [
+          "Self-Help"
+        ],
+        "description": "An engaging exploration of the art of living, drawing on the wisdom of philosophy and history.",
+        "amazon_url": "https://www.amazon.com/How-Live-Montaigne-Question-Attempts/dp/1590514831",
+        "similarity": 0.8331145594061
+      }
     ]
   },
   {
@@ -5498,6 +8691,41 @@
         "description": "An analysis of how modern economies can achieve greater output with fewer resources, driving sustainable growth.",
         "amazon_url": "https://www.amazon.com/More-Less-Surprising-Learned-Resources_and/dp/1982103574",
         "_recommendationCount": 1
+      }
+    ],
+    "similar_books": [
+      {
+        "id": "49a48f0e-91b9-48e4-92a4-b68c875be423",
+        "title": "Golden Gates",
+        "author": "Conor Dougherty",
+        "genre": [
+          "Economics"
+        ],
+        "description": "A compelling exploration of urban development challenges and opportunities in modern American cities.",
+        "amazon_url": "https://www.amazon.com/Golden-Gates-Fighting-Housing-America/dp/0525560211",
+        "similarity": 0.903877041090482
+      },
+      {
+        "id": "05227c5a-ab9d-4769-8380-44de3442f6af",
+        "title": "More From Less",
+        "author": "Andrew McAfee",
+        "genre": [
+          "Economics"
+        ],
+        "description": "An analysis of how modern economies can achieve greater output with fewer resources, driving sustainable growth.",
+        "amazon_url": "https://www.amazon.com/More-Less-Surprising-Learned-Resources_and/dp/1982103574",
+        "similarity": 0.881558938630412
+      },
+      {
+        "id": "f518cc86-5fdf-446e-9616-b864364ebe55",
+        "title": "The Power of Productivity",
+        "author": "William W. Lewis",
+        "genre": [
+          "Economics"
+        ],
+        "description": "An exploration of how technological innovation boosts productivity and improves quality of life.",
+        "amazon_url": "https://www.amazon.com/Power-Productivity-Wealth-Poverty-Stability/dp/0226476766",
+        "similarity": 0.864722754500025
       }
     ]
   },
@@ -5549,6 +8777,41 @@
         "amazon_url": "https://www.amazon.com/Snow-Crash-Neal-Stephenson/dp/0553380958",
         "_recommendationCount": 8
       }
+    ],
+    "similar_books": [
+      {
+        "id": "7573aaf6-a916-4c27-b85e-246b130cf757",
+        "title": "Kill Decision",
+        "author": "Daniel Suarez",
+        "genre": [
+          "Science Fiction"
+        ],
+        "description": "A techno-thriller that explores the potential future of autonomous warfare and unmanned combat systems.",
+        "amazon_url": "https://www.amazon.com/Kill-Decision-Daniel-Suarez/dp/0451417704",
+        "similarity": 0.842797348332565
+      },
+      {
+        "id": "63668004-9c48-4378-9209-1c59afb07ab2",
+        "title": "More Money Than God",
+        "author": "Sebastian Mallaby",
+        "genre": [
+          "Business"
+        ],
+        "description": "A thrilling history of hedge funds and the evolution of a new financial elite in modern capitalism.",
+        "amazon_url": "https://www.amazon.com/More-Money-Than-God-Relations/dp/0143119419",
+        "similarity": 0.835462619987884
+      },
+      {
+        "id": "5f53f667-41d0-4b0a-9ec3-ee1b6de176f7",
+        "title": "When the Wolves Bite",
+        "author": "Scott Wapner",
+        "genre": [
+          "Business"
+        ],
+        "description": "A detailed account of a high-stakes Wall Street battle that captures the drama of financial conflict.",
+        "amazon_url": "https://www.amazon.com/When-Wolves-Bite-Billionaires-Company/dp/1610398270",
+        "similarity": 0.833588441182567
+      }
     ]
   },
   {
@@ -5598,6 +8861,41 @@
         "description": "A timely analysis of the coronavirus’ impact on society that blends history, epidemiology, and social science.",
         "amazon_url": "https://www.amazon.com/Apollos-Arrow-Profound-Enduring-Coronavirus/dp/0316628212",
         "_recommendationCount": 1
+      }
+    ],
+    "similar_books": [
+      {
+        "id": "7b02c1b6-4295-4e95-83f7-71df8b8b7e8a",
+        "title": "Rainbows End",
+        "author": "Vernor Vinge",
+        "genre": [
+          "Fiction"
+        ],
+        "description": "A visionary science fiction novel exploring the future of technology, human cognition, and society.",
+        "amazon_url": "https://www.amazon.com/Rainbows-End-Novel-Foot-Future/dp/0812536363",
+        "similarity": 0.903920677421114
+      },
+      {
+        "id": "f518cc86-5fdf-446e-9616-b864364ebe55",
+        "title": "The Power of Productivity",
+        "author": "William W. Lewis",
+        "genre": [
+          "Economics"
+        ],
+        "description": "An exploration of how technological innovation boosts productivity and improves quality of life.",
+        "amazon_url": "https://www.amazon.com/Power-Productivity-Wealth-Poverty-Stability/dp/0226476766",
+        "similarity": 0.879533186014517
+      },
+      {
+        "id": "6fe494fc-39dd-4100-adaf-76548f132c2a",
+        "title": "The Fabric of Civilization",
+        "author": "Virginia Postrel",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "A historical journey through the evolution of technology and culture.",
+        "amazon_url": "https://www.amazon.com/Fabric-Civilization-Textiles-Made-World/dp/1541617606",
+        "similarity": 0.872573085273918
       }
     ]
   },
@@ -5649,6 +8947,41 @@
         "amazon_url": "https://www.amazon.com/Autobiography-Charles-Darwin-1809-1882/dp/0393310698",
         "_recommendationCount": 1
       }
+    ],
+    "similar_books": [
+      {
+        "id": "ff01b322-2048-40b5-88eb-43b9b87e7033",
+        "title": "The Rise and Fall of Modern Medicine",
+        "author": "James Le Fanu",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "A captivating account of breakthroughs and setbacks that shaped modern medical science.",
+        "amazon_url": "https://www.amazon.com/Rise-Fall-Modern-Medicine/dp/0786709677",
+        "similarity": 0.87203760791163
+      },
+      {
+        "id": "6fe494fc-39dd-4100-adaf-76548f132c2a",
+        "title": "The Fabric of Civilization",
+        "author": "Virginia Postrel",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "A historical journey through the evolution of technology and culture.",
+        "amazon_url": "https://www.amazon.com/Fabric-Civilization-Textiles-Made-World/dp/1541617606",
+        "similarity": 0.850915031216911
+      },
+      {
+        "id": "8cca0763-4a9c-41d4-8047-cbacfb15a556",
+        "title": "To Explain the World",
+        "author": "Steven Weinberg",
+        "genre": [
+          "Science"
+        ],
+        "description": "An attempt to elucidate the fundamental principles underlying the physical world through clear scientific explanation.",
+        "amazon_url": "https://www.amazon.com/Explain-World-Discovery-Modern-Science/dp/0062346652",
+        "similarity": 0.847662625719264
+      }
     ]
   },
   {
@@ -5698,6 +9031,41 @@
         "description": "A detailed account of the rise of private military contractors and their evolving role in modern warfare.",
         "amazon_url": "https://www.amazon.com/Civilian-Warriors-Inside-Blackwater-Unsung/dp/1591847214",
         "_recommendationCount": 1
+      }
+    ],
+    "similar_books": [
+      {
+        "id": "f518cc86-5fdf-446e-9616-b864364ebe55",
+        "title": "The Power of Productivity",
+        "author": "William W. Lewis",
+        "genre": [
+          "Economics"
+        ],
+        "description": "An exploration of how technological innovation boosts productivity and improves quality of life.",
+        "amazon_url": "https://www.amazon.com/Power-Productivity-Wealth-Poverty-Stability/dp/0226476766",
+        "similarity": 0.904783904552485
+      },
+      {
+        "id": "05227c5a-ab9d-4769-8380-44de3442f6af",
+        "title": "More From Less",
+        "author": "Andrew McAfee",
+        "genre": [
+          "Economics"
+        ],
+        "description": "An analysis of how modern economies can achieve greater output with fewer resources, driving sustainable growth.",
+        "amazon_url": "https://www.amazon.com/More-Less-Surprising-Learned-Resources_and/dp/1982103574",
+        "similarity": 0.880433457052758
+      },
+      {
+        "id": "3331e224-4a1e-4e22-9810-e435f6736a87",
+        "title": "Triumph of the City",
+        "author": "Edward Glaeser",
+        "genre": [
+          "Economics"
+        ],
+        "description": "A detailed analysis of how cities drive economic growth and innovation, making urbanization key to prosperity.",
+        "amazon_url": "https://www.amazon.com/Triumph-City-Greatest-Invention-Healthier/dp/0143120549",
+        "similarity": 0.863020055508033
       }
     ]
   },
@@ -5749,6 +9117,41 @@
         "amazon_url": "https://www.amazon.com/Autobiography-Charles-Darwin-1809-1882/dp/0393310698",
         "_recommendationCount": 1
       }
+    ],
+    "similar_books": [
+      {
+        "id": "0ced0b09-3a84-44f8-8835-5887aea7d22a",
+        "title": "Making of Europe",
+        "author": "Robert Bartlett",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "An exploration of the forces that shaped the formation of modern Europe from its ancient roots.",
+        "amazon_url": "https://www.amazon.com/Making-Europe-Conquest-Colonization-Cultural/dp/0140154094",
+        "similarity": 0.866306324692504
+      },
+      {
+        "id": "abb46b21-3d3e-41d9-80ae-b10b41c5967c",
+        "title": "The Strange Death of Europe",
+        "author": "Douglas Murray",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "A provocative exploration of immigration and cultural change in Europe that challenges conventional narratives.",
+        "amazon_url": "https://www.amazon.com/Strange-Death-Europe-Immigration-Identity/dp/1472942248",
+        "similarity": 0.863929390907441
+      },
+      {
+        "id": "b07869a2-6d31-4d94-b577-f0ad68b1a4c3",
+        "title": "The Harmless People",
+        "author": "Elizabeth Marshall Thomas",
+        "genre": [
+          "Biography"
+        ],
+        "description": "A gentle exploration of indigenous cultures and the enduring wisdom of traditional societies.",
+        "amazon_url": "https://www.amazon.com/Harmless-People-Elizabeth-Marshall-Thomas/dp/067972446X",
+        "similarity": 0.861760293560156
+      }
     ]
   },
   {
@@ -5798,6 +9201,41 @@
         "description": "An analysis of how modern economies can achieve greater output with fewer resources, driving sustainable growth.",
         "amazon_url": "https://www.amazon.com/More-Less-Surprising-Learned-Resources_and/dp/1982103574",
         "_recommendationCount": 1
+      }
+    ],
+    "similar_books": [
+      {
+        "id": "93f3f0ad-ae4e-46fd-95b3-6ce1b951f9fa",
+        "title": "Slugfest",
+        "author": "Reed Tucker",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "A creative account of the comic book industry’s early days and its evolution into a global cultural force.",
+        "amazon_url": "https://www.amazon.com/Slugfest-Inside-50-year-Battle-between/dp/0306825465",
+        "similarity": 0.859682269247886
+      },
+      {
+        "id": "e7f3c17f-6217-4119-b6d1-dd58f7a98648",
+        "title": "Walt Disney: The Triumph of the American Imagination",
+        "author": "Neal Gabler",
+        "genre": [
+          "Business"
+        ],
+        "description": "A definitive biography of Walt Disney that explores his creative vision and lasting impact on entertainment.",
+        "amazon_url": "https://www.amazon.com/Walt-Disney-Triumph-American-Imagination/dp/0739340298",
+        "similarity": 0.832897931570926
+      },
+      {
+        "id": "931e6375-0c63-4a03-aa30-58c459d52cdd",
+        "title": "Becoming Steve Jobs",
+        "author": "Brent Schlender",
+        "genre": [
+          "Biography"
+        ],
+        "description": "A candid biography capturing the complex legacy of Steve Jobs.",
+        "amazon_url": "https://www.amazon.com/Becoming-Steve-Jobs-Evolution-Visionary/dp/0385347421",
+        "similarity": 0.811780831038177
       }
     ]
   },
@@ -5849,6 +9287,41 @@
         "amazon_url": "https://www.amazon.com/Civilian-Warriors-Inside-Blackwater-Unsung/dp/1591847214",
         "_recommendationCount": 1
       }
+    ],
+    "similar_books": [
+      {
+        "id": "00139908-04bd-4c26-ae8e-ecbf4cbf4339",
+        "title": "Expert Political Judgement",
+        "author": "Philip E. Tetlock",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "An analysis of forecasting and decision-making in politics that challenges conventional wisdom about expert predictions.",
+        "amazon_url": "https://www.amazon.com/Expert-Political-Judgment-Tetlock-2006-08-20/dp/B01FKRPVZQ",
+        "similarity": 0.870161398668512
+      },
+      {
+        "id": "a3df23d9-616a-47df-9a2a-68a0fe9cb0dc",
+        "title": "Devil's Bargain",
+        "author": "Joshua Green",
+        "genre": [
+          "Politics"
+        ],
+        "description": "An incisive look into political power plays and the dynamics shaping modern policy and governance.",
+        "amazon_url": "https://www.amazon.com/Devils-Bargain-Bannon-Storming-Presidency/dp/0735225028",
+        "similarity": 0.86998107374053
+      },
+      {
+        "id": "f006338f-99fd-4da0-8b6f-c9781c2f9e77",
+        "title": "Private Truths, Public Lies",
+        "author": "Timur Kuran",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "A deep dive into how hidden biases and concealed information shape political and economic outcomes.",
+        "amazon_url": "https://www.amazon.com/Private-Truths-Public-Lies-Falsification/dp/0674707583",
+        "similarity": 0.869718328747955
+      }
     ]
   },
   {
@@ -5898,6 +9371,41 @@
         "description": "An economic and personal argument for the benefits of having more children.",
         "amazon_url": "https://www.amazon.com/Selfish-Reasons-Have-More-Kids/dp/0465028616",
         "_recommendationCount": 1
+      }
+    ],
+    "similar_books": [
+      {
+        "id": "abb46b21-3d3e-41d9-80ae-b10b41c5967c",
+        "title": "The Strange Death of Europe",
+        "author": "Douglas Murray",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "A provocative exploration of immigration and cultural change in Europe that challenges conventional narratives.",
+        "amazon_url": "https://www.amazon.com/Strange-Death-Europe-Immigration-Identity/dp/1472942248",
+        "similarity": 0.877219653958224
+      },
+      {
+        "id": "6150ba72-3f4a-4355-920a-75858d5e5398",
+        "title": "A History of Medieval Europe in Ancient Roman Times ",
+        "author": "R. H. C. Davis",
+        "genre": [
+          "Historical"
+        ],
+        "description": "A comprehensive account of medieval Europe, updated with the latest research and diverse viewpoints.",
+        "amazon_url": "https://www.amazon.com/History-Medieval-Constantine-Longman-Paperback/dp/0582482089",
+        "similarity": 0.876798830604776
+      },
+      {
+        "id": "46dca70c-ccc2-41f0-bd27-8b5a3285c525",
+        "title": "Towns, Villages and Countryside of Celtic Europe",
+        "author": "Francoise Audouze",
+        "genre": [
+          "Nonfiction"
+        ],
+        "description": "An exploration of the rural and cultural landscapes of Celtic Europe.",
+        "amazon_url": "https://www.amazon.com/Towns-Villages-Countryside-Celtic-Europe/dp/0253310822",
+        "similarity": 0.866306324692504
       }
     ]
   }

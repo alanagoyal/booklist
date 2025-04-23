@@ -20,6 +20,26 @@
       }
     ],
     "related_recommenders": [],
+    "similar_recommenders": [
+      {
+        "person_id": "54e6aac3-d96f-4b5b-a1a1-9dae2cc735c3",
+        "full_name": "Alexis Ohanian",
+        "type": "Entrepreneur",
+        "similarity": 1
+      },
+      {
+        "person_id": "dcdb66bc-551a-4a44-a2ff-b0cf8750670a",
+        "full_name": "Naval Ravikant",
+        "type": "Entrepreneur",
+        "similarity": 1
+      },
+      {
+        "person_id": "ab42f513-3327-4fd4-a098-e1e93fde3443",
+        "full_name": "Reid Hoffman",
+        "type": "Entrepreneur",
+        "similarity": 1
+      }
+    ],
     "_book_count": 1,
     "_percentile": 1.72
   },
@@ -44,6 +64,26 @@
       }
     ],
     "related_recommenders": [],
+    "similar_recommenders": [
+      {
+        "person_id": "8c74e5de-813d-419a-854b-8171280de53b",
+        "full_name": "Adam Savage",
+        "type": "Entertainer",
+        "similarity": 1
+      },
+      {
+        "person_id": "dcdb66bc-551a-4a44-a2ff-b0cf8750670a",
+        "full_name": "Naval Ravikant",
+        "type": "Entrepreneur",
+        "similarity": 1
+      },
+      {
+        "person_id": "ab42f513-3327-4fd4-a098-e1e93fde3443",
+        "full_name": "Reid Hoffman",
+        "type": "Entrepreneur",
+        "similarity": 1
+      }
+    ],
     "_book_count": 1,
     "_percentile": 1.72
   },
@@ -92,6 +132,26 @@
       }
     ],
     "related_recommenders": [],
+    "similar_recommenders": [
+      {
+        "person_id": "25a773c4-13fb-479b-83f4-0213b6c0ba82",
+        "full_name": "Satya Nadella",
+        "type": "Executive",
+        "similarity": 0.97972711604823
+      },
+      {
+        "person_id": "bd91df9a-316c-4714-b6dc-e78218a85a69",
+        "full_name": "Keith Rabois",
+        "type": "Investor",
+        "similarity": 0.964438639888693
+      },
+      {
+        "person_id": "1568e1de-342e-4c99-be85-229e54f2248f",
+        "full_name": "Marc Andreessen",
+        "type": "Investor",
+        "similarity": 0.959324062995087
+      }
+    ],
     "_book_count": 3,
     "_percentile": 5.17
   },
@@ -116,6 +176,26 @@
       }
     ],
     "related_recommenders": [],
+    "similar_recommenders": [
+      {
+        "person_id": "7865327f-7316-46af-be7f-faf91696013c",
+        "full_name": "Dustin Moskovitz",
+        "type": "Entrepreneur",
+        "similarity": 1
+      },
+      {
+        "person_id": "fc5e1c0f-aac3-4a25-aa6f-dc528e19d5fa",
+        "full_name": "Chris Dixon",
+        "type": "Investor",
+        "similarity": 1
+      },
+      {
+        "person_id": "da4bf484-1d99-426a-850d-61ad455c02bd",
+        "full_name": "Andrew Wilkinson",
+        "type": "Entrepreneur",
+        "similarity": 1
+      }
+    ],
     "_book_count": 1,
     "_percentile": 1.72
   },
@@ -140,6 +220,26 @@
       }
     ],
     "related_recommenders": [],
+    "similar_recommenders": [
+      {
+        "person_id": "aa1f2e94-bc0c-490f-a37f-2de6c135def4",
+        "full_name": "Karlie Kloss",
+        "type": "Entrepreneur",
+        "similarity": 1
+      },
+      {
+        "person_id": "b47bd147-f5ad-49d1-b24f-946f71c9841b",
+        "full_name": "Joe Rogan",
+        "type": "Journalist",
+        "similarity": 0.959999879151568
+      },
+      {
+        "person_id": "fd359f15-fcbd-4d84-a322-b626043bba75",
+        "full_name": "Howard Marks",
+        "type": "Investor",
+        "similarity": 0.958779962155962
+      }
+    ],
     "_book_count": 1,
     "_percentile": 1.72
   },
@@ -164,6 +264,26 @@
       }
     ],
     "related_recommenders": [],
+    "similar_recommenders": [
+      {
+        "person_id": "7865327f-7316-46af-be7f-faf91696013c",
+        "full_name": "Dustin Moskovitz",
+        "type": "Entrepreneur",
+        "similarity": 1
+      },
+      {
+        "person_id": "fc5e1c0f-aac3-4a25-aa6f-dc528e19d5fa",
+        "full_name": "Chris Dixon",
+        "type": "Investor",
+        "similarity": 1
+      },
+      {
+        "person_id": "64a6f793-a9ff-42f1-85d5-d1495161a40e",
+        "full_name": "Elad Gil",
+        "type": "Entrepreneur",
+        "similarity": 1
+      }
+    ],
     "_book_count": 1,
     "_percentile": 1.72
   },
@@ -188,6 +308,26 @@
       }
     ],
     "related_recommenders": [],
+    "similar_recommenders": [
+      {
+        "person_id": "30793e1f-9647-4e73-a0b0-201144d736a7",
+        "full_name": "Ev Williams",
+        "type": "Entrepreneur",
+        "similarity": 0.948931384214408
+      },
+      {
+        "person_id": "fd359f15-fcbd-4d84-a322-b626043bba75",
+        "full_name": "Howard Marks",
+        "type": "Investor",
+        "similarity": 0.948931384214408
+      },
+      {
+        "person_id": "5ea43269-a2ed-4b73-8527-dff2aba45047",
+        "full_name": "Tim Ferriss",
+        "type": "Entrepreneur",
+        "similarity": 0.94138372418651
+      }
+    ],
     "_book_count": 1,
     "_percentile": 1.72
   },
@@ -212,6 +352,26 @@
       }
     ],
     "related_recommenders": [],
+    "similar_recommenders": [
+      {
+        "person_id": "593cd166-5884-4dc5-94a0-1b1fbc71f8e5",
+        "full_name": "Ryan Hoover",
+        "type": "Entrepreneur",
+        "similarity": 1
+      },
+      {
+        "person_id": "62978431-6853-47c2-b4a4-0ad6cb646a7c",
+        "full_name": "Ryan Holiday",
+        "type": "Author",
+        "similarity": 1
+      },
+      {
+        "person_id": "2f02e30a-b47a-459e-a3d4-7cb4f1a1ee08",
+        "full_name": "Bruce Springsteen",
+        "type": "Musician or Filmmaker",
+        "similarity": 0.9549951075903
+      }
+    ],
     "_book_count": 1,
     "_percentile": 1.72
   },
@@ -236,6 +396,26 @@
       }
     ],
     "related_recommenders": [],
+    "similar_recommenders": [
+      {
+        "person_id": "2c18d3c4-9745-4c2e-9668-f6f92ab9005f",
+        "full_name": "Seth Godin",
+        "type": "Entrepreneur",
+        "similarity": 0.968445339803558
+      },
+      {
+        "person_id": "840424c3-515e-4042-b34d-7560b1027521",
+        "full_name": "Michael Mauboussin",
+        "type": "Economist",
+        "similarity": 0.956509878274891
+      },
+      {
+        "person_id": "1568e1de-342e-4c99-be85-229e54f2248f",
+        "full_name": "Marc Andreessen",
+        "type": "Investor",
+        "similarity": 0.889995386697657
+      }
+    ],
     "_book_count": 1,
     "_percentile": 1.72
   },
@@ -260,6 +440,26 @@
       }
     ],
     "related_recommenders": [],
+    "similar_recommenders": [
+      {
+        "person_id": "362f2770-962b-457c-addb-bd60c3b42787",
+        "full_name": "Eric Schmidt",
+        "type": "Entrepreneur",
+        "similarity": 1
+      },
+      {
+        "person_id": "197e13ce-b553-4654-a122-0983af28bb64",
+        "full_name": "Sam Altman",
+        "type": "Entrepreneur",
+        "similarity": 0.918089797721407
+      },
+      {
+        "person_id": "840424c3-515e-4042-b34d-7560b1027521",
+        "full_name": "Michael Mauboussin",
+        "type": "Economist",
+        "similarity": 0.909021240195605
+      }
+    ],
     "_book_count": 1,
     "_percentile": 1.72
   },
@@ -284,6 +484,26 @@
       }
     ],
     "related_recommenders": [],
+    "similar_recommenders": [
+      {
+        "person_id": "1568e1de-342e-4c99-be85-229e54f2248f",
+        "full_name": "Marc Andreessen",
+        "type": "Investor",
+        "similarity": 0.89229584037661
+      },
+      {
+        "person_id": "7d70640c-825f-4a70-b983-cb56c5bb64f3",
+        "full_name": "Paul Graham",
+        "type": "Entrepreneur",
+        "similarity": 0.883568595405121
+      },
+      {
+        "person_id": "dae85c72-6a38-494e-8c67-f9da5971b6e2",
+        "full_name": "Tobi Lutke",
+        "type": "Entrepreneur",
+        "similarity": 0.876061730130254
+      }
+    ],
     "_book_count": 1,
     "_percentile": 1.72
   },
@@ -308,6 +528,26 @@
       }
     ],
     "related_recommenders": [],
+    "similar_recommenders": [
+      {
+        "person_id": "70af5394-3955-4869-9ef6-2c8077d1ea27",
+        "full_name": "Shreyas Narlaka",
+        "type": "Entrepreneur",
+        "similarity": 1
+      },
+      {
+        "person_id": "7d70640c-825f-4a70-b983-cb56c5bb64f3",
+        "full_name": "Paul Graham",
+        "type": "Entrepreneur",
+        "similarity": 0.893988300471995
+      },
+      {
+        "person_id": "1568e1de-342e-4c99-be85-229e54f2248f",
+        "full_name": "Marc Andreessen",
+        "type": "Investor",
+        "similarity": 0.888423989864009
+      }
+    ],
     "_book_count": 1,
     "_percentile": 1.72
   },
@@ -344,6 +584,26 @@
       }
     ],
     "related_recommenders": [],
+    "similar_recommenders": [
+      {
+        "person_id": "b999bd2e-c0b2-4b16-abb2-c657b4b4e975",
+        "full_name": "Patrick Collison",
+        "type": "Entrepreneur",
+        "similarity": 0.959252957595647
+      },
+      {
+        "person_id": "cd688549-6d27-4d87-b43b-ba09e1b6cc4f",
+        "full_name": "Oprah Winfrey",
+        "type": "Journalist",
+        "similarity": 0.954996003345469
+      },
+      {
+        "person_id": "d0a77752-00b0-4c5c-8413-5a153635b741",
+        "full_name": "Jennifer Lawrence",
+        "type": "Entertainer",
+        "similarity": 0.954996003345469
+      }
+    ],
     "_book_count": 2,
     "_percentile": 3.45
   },
@@ -368,6 +628,26 @@
       }
     ],
     "related_recommenders": [],
+    "similar_recommenders": [
+      {
+        "person_id": "7865327f-7316-46af-be7f-faf91696013c",
+        "full_name": "Dustin Moskovitz",
+        "type": "Entrepreneur",
+        "similarity": 1
+      },
+      {
+        "person_id": "da4bf484-1d99-426a-850d-61ad455c02bd",
+        "full_name": "Andrew Wilkinson",
+        "type": "Entrepreneur",
+        "similarity": 1
+      },
+      {
+        "person_id": "64a6f793-a9ff-42f1-85d5-d1495161a40e",
+        "full_name": "Elad Gil",
+        "type": "Entrepreneur",
+        "similarity": 1
+      }
+    ],
     "_book_count": 1,
     "_percentile": 1.72
   },
@@ -392,6 +672,26 @@
       }
     ],
     "related_recommenders": [],
+    "similar_recommenders": [
+      {
+        "person_id": "55d45cbf-a0c7-408e-acc0-9cd59b4baa2d",
+        "full_name": "Ray Dalio",
+        "type": "Investor",
+        "similarity": 1
+      },
+      {
+        "person_id": "1a8c205c-9ae6-44f6-b982-742bc201f3ac",
+        "full_name": "Ron Conway",
+        "type": "Investor",
+        "similarity": 1
+      },
+      {
+        "person_id": "25a773c4-13fb-479b-83f4-0213b6c0ba82",
+        "full_name": "Satya Nadella",
+        "type": "Executive",
+        "similarity": 0.948345690064345
+      }
+    ],
     "_book_count": 1,
     "_percentile": 1.72
   },
@@ -416,6 +716,26 @@
       }
     ],
     "related_recommenders": [],
+    "similar_recommenders": [
+      {
+        "person_id": "4f742ab3-d021-452c-8ad5-1d2dab59b1c4",
+        "full_name": "Raoul Pal",
+        "type": "Economist",
+        "similarity": 0.953701095327226
+      },
+      {
+        "person_id": "1568e1de-342e-4c99-be85-229e54f2248f",
+        "full_name": "Marc Andreessen",
+        "type": "Investor",
+        "similarity": 0.902607178953616
+      },
+      {
+        "person_id": "25a773c4-13fb-479b-83f4-0213b6c0ba82",
+        "full_name": "Satya Nadella",
+        "type": "Executive",
+        "similarity": 0.884481863961081
+      }
+    ],
     "_book_count": 1,
     "_percentile": 1.72
   },
@@ -440,6 +760,26 @@
       }
     ],
     "related_recommenders": [],
+    "similar_recommenders": [
+      {
+        "person_id": "7865327f-7316-46af-be7f-faf91696013c",
+        "full_name": "Dustin Moskovitz",
+        "type": "Entrepreneur",
+        "similarity": 1
+      },
+      {
+        "person_id": "fc5e1c0f-aac3-4a25-aa6f-dc528e19d5fa",
+        "full_name": "Chris Dixon",
+        "type": "Investor",
+        "similarity": 1
+      },
+      {
+        "person_id": "da4bf484-1d99-426a-850d-61ad455c02bd",
+        "full_name": "Andrew Wilkinson",
+        "type": "Entrepreneur",
+        "similarity": 1
+      }
+    ],
     "_book_count": 1,
     "_percentile": 1.72
   },
@@ -464,6 +804,26 @@
       }
     ],
     "related_recommenders": [],
+    "similar_recommenders": [
+      {
+        "person_id": "fc5e1c0f-aac3-4a25-aa6f-dc528e19d5fa",
+        "full_name": "Chris Dixon",
+        "type": "Investor",
+        "similarity": 1
+      },
+      {
+        "person_id": "da4bf484-1d99-426a-850d-61ad455c02bd",
+        "full_name": "Andrew Wilkinson",
+        "type": "Entrepreneur",
+        "similarity": 1
+      },
+      {
+        "person_id": "64a6f793-a9ff-42f1-85d5-d1495161a40e",
+        "full_name": "Elad Gil",
+        "type": "Entrepreneur",
+        "similarity": 1
+      }
+    ],
     "_book_count": 1,
     "_percentile": 1.72
   },
@@ -488,6 +848,26 @@
       }
     ],
     "related_recommenders": [],
+    "similar_recommenders": [
+      {
+        "person_id": "d304a5f5-edab-4931-a041-7605546b5d84",
+        "full_name": "Jim Collins",
+        "type": "Executive",
+        "similarity": 1
+      },
+      {
+        "person_id": "5c8107ba-a540-40ab-ab2e-ab7b905fc475",
+        "full_name": "Jack Dorsey",
+        "type": "Entrepreneur",
+        "similarity": 0.946554043197057
+      },
+      {
+        "person_id": "bd91df9a-316c-4714-b6dc-e78218a85a69",
+        "full_name": "Keith Rabois",
+        "type": "Investor",
+        "similarity": 0.93852228914502
+      }
+    ],
     "_book_count": 1,
     "_percentile": 1.72
   },
@@ -512,6 +892,26 @@
       }
     ],
     "related_recommenders": [],
+    "similar_recommenders": [
+      {
+        "person_id": "7865327f-7316-46af-be7f-faf91696013c",
+        "full_name": "Dustin Moskovitz",
+        "type": "Entrepreneur",
+        "similarity": 1
+      },
+      {
+        "person_id": "fc5e1c0f-aac3-4a25-aa6f-dc528e19d5fa",
+        "full_name": "Chris Dixon",
+        "type": "Investor",
+        "similarity": 1
+      },
+      {
+        "person_id": "da4bf484-1d99-426a-850d-61ad455c02bd",
+        "full_name": "Andrew Wilkinson",
+        "type": "Entrepreneur",
+        "similarity": 1
+      }
+    ],
     "_book_count": 1,
     "_percentile": 1.72
   },
@@ -536,6 +936,26 @@
       }
     ],
     "related_recommenders": [],
+    "similar_recommenders": [
+      {
+        "person_id": "93b556b5-a799-4bf9-a895-06dcf51a538a",
+        "full_name": "Sahil Lavingia",
+        "type": "Entrepreneur",
+        "similarity": 1
+      },
+      {
+        "person_id": "197e13ce-b553-4654-a122-0983af28bb64",
+        "full_name": "Sam Altman",
+        "type": "Entrepreneur",
+        "similarity": 0.916183408572985
+      },
+      {
+        "person_id": "7d70640c-825f-4a70-b983-cb56c5bb64f3",
+        "full_name": "Paul Graham",
+        "type": "Entrepreneur",
+        "similarity": 0.892241072423264
+      }
+    ],
     "_book_count": 1,
     "_percentile": 1.72
   },
@@ -560,6 +980,26 @@
       }
     ],
     "related_recommenders": [],
+    "similar_recommenders": [
+      {
+        "person_id": "2db22d1d-67c5-4d0d-9d91-32c0446b88aa",
+        "full_name": "Benedict Evans",
+        "type": "Technologist",
+        "similarity": 1
+      },
+      {
+        "person_id": "197e13ce-b553-4654-a122-0983af28bb64",
+        "full_name": "Sam Altman",
+        "type": "Entrepreneur",
+        "similarity": 0.918089797721407
+      },
+      {
+        "person_id": "840424c3-515e-4042-b34d-7560b1027521",
+        "full_name": "Michael Mauboussin",
+        "type": "Economist",
+        "similarity": 0.909021240195605
+      }
+    ],
     "_book_count": 1,
     "_percentile": 1.72
   },
@@ -632,6 +1072,26 @@
         "shared_count": 2
       }
     ],
+    "similar_recommenders": [
+      {
+        "person_id": "fd359f15-fcbd-4d84-a322-b626043bba75",
+        "full_name": "Howard Marks",
+        "type": "Investor",
+        "similarity": 1
+      },
+      {
+        "person_id": "b47bd147-f5ad-49d1-b24f-946f71c9841b",
+        "full_name": "Joe Rogan",
+        "type": "Journalist",
+        "similarity": 0.986408068131938
+      },
+      {
+        "person_id": "1f12b227-6e7c-4ed2-8fd1-1c1b74d72490",
+        "full_name": "Andrew Garfield",
+        "type": "Entertainer",
+        "similarity": 0.958779962155962
+      }
+    ],
     "_book_count": 3,
     "_percentile": 5.17
   },
@@ -668,6 +1128,26 @@
       }
     ],
     "related_recommenders": [],
+    "similar_recommenders": [
+      {
+        "person_id": "cfee863c-c29b-4930-9b76-3bba84c73c45",
+        "full_name": "Larry Page",
+        "type": "Entrepreneur",
+        "similarity": 1
+      },
+      {
+        "person_id": "fc5e1c0f-aac3-4a25-aa6f-dc528e19d5fa",
+        "full_name": "Chris Dixon",
+        "type": "Investor",
+        "similarity": 0.946070343660487
+      },
+      {
+        "person_id": "7865327f-7316-46af-be7f-faf91696013c",
+        "full_name": "Dustin Moskovitz",
+        "type": "Entrepreneur",
+        "similarity": 0.946070343660487
+      }
+    ],
     "_book_count": 2,
     "_percentile": 3.45
   },
@@ -692,6 +1172,26 @@
       }
     ],
     "related_recommenders": [],
+    "similar_recommenders": [
+      {
+        "person_id": "1568e1de-342e-4c99-be85-229e54f2248f",
+        "full_name": "Marc Andreessen",
+        "type": "Investor",
+        "similarity": 0.8815053537188
+      },
+      {
+        "person_id": "840424c3-515e-4042-b34d-7560b1027521",
+        "full_name": "Michael Mauboussin",
+        "type": "Economist",
+        "similarity": 0.877371001569108
+      },
+      {
+        "person_id": "cfee863c-c29b-4930-9b76-3bba84c73c45",
+        "full_name": "Larry Page",
+        "type": "Entrepreneur",
+        "similarity": 0.877041434225189
+      }
+    ],
     "_book_count": 1,
     "_percentile": 1.72
   },
@@ -740,6 +1240,26 @@
       }
     ],
     "related_recommenders": [],
+    "similar_recommenders": [
+      {
+        "person_id": "30793e1f-9647-4e73-a0b0-201144d736a7",
+        "full_name": "Ev Williams",
+        "type": "Entrepreneur",
+        "similarity": 1
+      },
+      {
+        "person_id": "b47bd147-f5ad-49d1-b24f-946f71c9841b",
+        "full_name": "Joe Rogan",
+        "type": "Journalist",
+        "similarity": 0.986408068131938
+      },
+      {
+        "person_id": "1f12b227-6e7c-4ed2-8fd1-1c1b74d72490",
+        "full_name": "Andrew Garfield",
+        "type": "Entertainer",
+        "similarity": 0.958779962155962
+      }
+    ],
     "_book_count": 3,
     "_percentile": 5.17
   },
@@ -764,6 +1284,26 @@
       }
     ],
     "related_recommenders": [],
+    "similar_recommenders": [
+      {
+        "person_id": "7d70640c-825f-4a70-b983-cb56c5bb64f3",
+        "full_name": "Paul Graham",
+        "type": "Entrepreneur",
+        "similarity": 0.883695591610424
+      },
+      {
+        "person_id": "b999bd2e-c0b2-4b16-abb2-c657b4b4e975",
+        "full_name": "Patrick Collison",
+        "type": "Entrepreneur",
+        "similarity": 0.866509256280081
+      },
+      {
+        "person_id": "1568e1de-342e-4c99-be85-229e54f2248f",
+        "full_name": "Marc Andreessen",
+        "type": "Investor",
+        "similarity": 0.853914864925064
+      }
+    ],
     "_book_count": 1,
     "_percentile": 1.72
   },
@@ -788,6 +1328,26 @@
       }
     ],
     "related_recommenders": [],
+    "similar_recommenders": [
+      {
+        "person_id": "7d70640c-825f-4a70-b983-cb56c5bb64f3",
+        "full_name": "Paul Graham",
+        "type": "Entrepreneur",
+        "similarity": 0.885344291647924
+      },
+      {
+        "person_id": "1568e1de-342e-4c99-be85-229e54f2248f",
+        "full_name": "Marc Andreessen",
+        "type": "Investor",
+        "similarity": 0.869982992168919
+      },
+      {
+        "person_id": "b999bd2e-c0b2-4b16-abb2-c657b4b4e975",
+        "full_name": "Patrick Collison",
+        "type": "Entrepreneur",
+        "similarity": 0.861794785123343
+      }
+    ],
     "_book_count": 1,
     "_percentile": 1.72
   },
@@ -824,6 +1384,26 @@
       }
     ],
     "related_recommenders": [],
+    "similar_recommenders": [
+      {
+        "person_id": "bd91df9a-316c-4714-b6dc-e78218a85a69",
+        "full_name": "Keith Rabois",
+        "type": "Investor",
+        "similarity": 0.950247018516088
+      },
+      {
+        "person_id": "1568e1de-342e-4c99-be85-229e54f2248f",
+        "full_name": "Marc Andreessen",
+        "type": "Investor",
+        "similarity": 0.948913565809432
+      },
+      {
+        "person_id": "ab732c1f-3826-46bb-8312-d9ed95b9b9f3",
+        "full_name": "Ed Catmull",
+        "type": "Technologist",
+        "similarity": 0.946554043197057
+      }
+    ],
     "_book_count": 2,
     "_percentile": 3.45
   },
@@ -848,6 +1428,26 @@
       }
     ],
     "related_recommenders": [],
+    "similar_recommenders": [
+      {
+        "person_id": "2a6f9d43-a50f-46eb-97c8-f34be0d5f414",
+        "full_name": "Jordan Peterson",
+        "type": "Historian or Philosopher",
+        "similarity": 1
+      },
+      {
+        "person_id": "cd688549-6d27-4d87-b43b-ba09e1b6cc4f",
+        "full_name": "Oprah Winfrey",
+        "type": "Journalist",
+        "similarity": 1
+      },
+      {
+        "person_id": "2f02e30a-b47a-459e-a3d4-7cb4f1a1ee08",
+        "full_name": "Bruce Springsteen",
+        "type": "Musician or Filmmaker",
+        "similarity": 0.954996003345469
+      }
+    ],
     "_book_count": 1,
     "_percentile": 1.72
   },
@@ -872,6 +1472,26 @@
       }
     ],
     "related_recommenders": [],
+    "similar_recommenders": [
+      {
+        "person_id": "7865327f-7316-46af-be7f-faf91696013c",
+        "full_name": "Dustin Moskovitz",
+        "type": "Entrepreneur",
+        "similarity": 1
+      },
+      {
+        "person_id": "fc5e1c0f-aac3-4a25-aa6f-dc528e19d5fa",
+        "full_name": "Chris Dixon",
+        "type": "Investor",
+        "similarity": 1
+      },
+      {
+        "person_id": "da4bf484-1d99-426a-850d-61ad455c02bd",
+        "full_name": "Andrew Wilkinson",
+        "type": "Entrepreneur",
+        "similarity": 1
+      }
+    ],
     "_book_count": 1,
     "_percentile": 1.72
   },
@@ -896,6 +1516,26 @@
       }
     ],
     "related_recommenders": [],
+    "similar_recommenders": [
+      {
+        "person_id": "ab732c1f-3826-46bb-8312-d9ed95b9b9f3",
+        "full_name": "Ed Catmull",
+        "type": "Technologist",
+        "similarity": 1
+      },
+      {
+        "person_id": "5c8107ba-a540-40ab-ab2e-ab7b905fc475",
+        "full_name": "Jack Dorsey",
+        "type": "Entrepreneur",
+        "similarity": 0.946554043197057
+      },
+      {
+        "person_id": "bd91df9a-316c-4714-b6dc-e78218a85a69",
+        "full_name": "Keith Rabois",
+        "type": "Investor",
+        "similarity": 0.93852228914502
+      }
+    ],
     "_book_count": 1,
     "_percentile": 1.72
   },
@@ -944,6 +1584,26 @@
         "shared_count": 2
       }
     ],
+    "similar_recommenders": [
+      {
+        "person_id": "30793e1f-9647-4e73-a0b0-201144d736a7",
+        "full_name": "Ev Williams",
+        "type": "Entrepreneur",
+        "similarity": 0.986408068131938
+      },
+      {
+        "person_id": "fd359f15-fcbd-4d84-a322-b626043bba75",
+        "full_name": "Howard Marks",
+        "type": "Investor",
+        "similarity": 0.986408068131938
+      },
+      {
+        "person_id": "1f12b227-6e7c-4ed2-8fd1-1c1b74d72490",
+        "full_name": "Andrew Garfield",
+        "type": "Entertainer",
+        "similarity": 0.959999879151568
+      }
+    ],
     "_book_count": 2,
     "_percentile": 3.45
   },
@@ -968,6 +1628,26 @@
       }
     ],
     "related_recommenders": [],
+    "similar_recommenders": [
+      {
+        "person_id": "d0a77752-00b0-4c5c-8413-5a153635b741",
+        "full_name": "Jennifer Lawrence",
+        "type": "Entertainer",
+        "similarity": 1
+      },
+      {
+        "person_id": "cd688549-6d27-4d87-b43b-ba09e1b6cc4f",
+        "full_name": "Oprah Winfrey",
+        "type": "Journalist",
+        "similarity": 1
+      },
+      {
+        "person_id": "2f02e30a-b47a-459e-a3d4-7cb4f1a1ee08",
+        "full_name": "Bruce Springsteen",
+        "type": "Musician or Filmmaker",
+        "similarity": 0.954996003345469
+      }
+    ],
     "_book_count": 1,
     "_percentile": 1.72
   },
@@ -992,6 +1672,26 @@
       }
     ],
     "related_recommenders": [],
+    "similar_recommenders": [
+      {
+        "person_id": "7865327f-7316-46af-be7f-faf91696013c",
+        "full_name": "Dustin Moskovitz",
+        "type": "Entrepreneur",
+        "similarity": 1
+      },
+      {
+        "person_id": "fc5e1c0f-aac3-4a25-aa6f-dc528e19d5fa",
+        "full_name": "Chris Dixon",
+        "type": "Investor",
+        "similarity": 1
+      },
+      {
+        "person_id": "da4bf484-1d99-426a-850d-61ad455c02bd",
+        "full_name": "Andrew Wilkinson",
+        "type": "Entrepreneur",
+        "similarity": 1
+      }
+    ],
     "_book_count": 1,
     "_percentile": 1.72
   },
@@ -1016,6 +1716,26 @@
       }
     ],
     "related_recommenders": [],
+    "similar_recommenders": [
+      {
+        "person_id": "1f12b227-6e7c-4ed2-8fd1-1c1b74d72490",
+        "full_name": "Andrew Garfield",
+        "type": "Entertainer",
+        "similarity": 1
+      },
+      {
+        "person_id": "b47bd147-f5ad-49d1-b24f-946f71c9841b",
+        "full_name": "Joe Rogan",
+        "type": "Journalist",
+        "similarity": 0.959999879151568
+      },
+      {
+        "person_id": "fd359f15-fcbd-4d84-a322-b626043bba75",
+        "full_name": "Howard Marks",
+        "type": "Investor",
+        "similarity": 0.958779962155962
+      }
+    ],
     "_book_count": 1,
     "_percentile": 1.72
   },
@@ -1064,6 +1784,26 @@
       }
     ],
     "related_recommenders": [],
+    "similar_recommenders": [
+      {
+        "person_id": "1568e1de-342e-4c99-be85-229e54f2248f",
+        "full_name": "Marc Andreessen",
+        "type": "Investor",
+        "similarity": 0.967886802172019
+      },
+      {
+        "person_id": "25a773c4-13fb-479b-83f4-0213b6c0ba82",
+        "full_name": "Satya Nadella",
+        "type": "Executive",
+        "similarity": 0.964711706933227
+      },
+      {
+        "person_id": "ff9d3fbe-adb7-4ce5-8be9-cf16b374ae72",
+        "full_name": "Alfred Lin",
+        "type": "Entrepreneur",
+        "similarity": 0.964438639888693
+      }
+    ],
     "_book_count": 3,
     "_percentile": 5.17
   },
@@ -1112,6 +1852,26 @@
         "shared_count": 2
       }
     ],
+    "similar_recommenders": [
+      {
+        "person_id": "f09eb6c4-f515-4805-9a54-644436b56665",
+        "full_name": "Fred Wilson",
+        "type": "Investor",
+        "similarity": 1
+      },
+      {
+        "person_id": "fc5e1c0f-aac3-4a25-aa6f-dc528e19d5fa",
+        "full_name": "Chris Dixon",
+        "type": "Investor",
+        "similarity": 0.946070343660487
+      },
+      {
+        "person_id": "7865327f-7316-46af-be7f-faf91696013c",
+        "full_name": "Dustin Moskovitz",
+        "type": "Entrepreneur",
+        "similarity": 0.946070343660487
+      }
+    ],
     "_book_count": 2,
     "_percentile": 3.45
   },
@@ -1136,6 +1896,26 @@
       }
     ],
     "related_recommenders": [],
+    "similar_recommenders": [
+      {
+        "person_id": "43d97b64-ac23-4072-b759-2beccd516dfa",
+        "full_name": "Sara Blakely",
+        "type": "Entrepreneur",
+        "similarity": 1
+      },
+      {
+        "person_id": "1568e1de-342e-4c99-be85-229e54f2248f",
+        "full_name": "Marc Andreessen",
+        "type": "Investor",
+        "similarity": 0.872898945948042
+      },
+      {
+        "person_id": "7d70640c-825f-4a70-b983-cb56c5bb64f3",
+        "full_name": "Paul Graham",
+        "type": "Entrepreneur",
+        "similarity": 0.866758640339371
+      }
+    ],
     "_book_count": 1,
     "_percentile": 1.72
   },
@@ -1882,6 +2662,26 @@
         "shared_count": 3
       }
     ],
+    "similar_recommenders": [
+      {
+        "person_id": "7d70640c-825f-4a70-b983-cb56c5bb64f3",
+        "full_name": "Paul Graham",
+        "type": "Entrepreneur",
+        "similarity": 0.986759513701155
+      },
+      {
+        "person_id": "bd91df9a-316c-4714-b6dc-e78218a85a69",
+        "full_name": "Keith Rabois",
+        "type": "Investor",
+        "similarity": 0.967886802172019
+      },
+      {
+        "person_id": "197e13ce-b553-4654-a122-0983af28bb64",
+        "full_name": "Sam Altman",
+        "type": "Entrepreneur",
+        "similarity": 0.963575905514653
+      }
+    ],
     "_book_count": 58,
     "_percentile": 100
   },
@@ -1906,6 +2706,26 @@
       }
     ],
     "related_recommenders": [],
+    "similar_recommenders": [
+      {
+        "person_id": "7865327f-7316-46af-be7f-faf91696013c",
+        "full_name": "Dustin Moskovitz",
+        "type": "Entrepreneur",
+        "similarity": 1
+      },
+      {
+        "person_id": "fc5e1c0f-aac3-4a25-aa6f-dc528e19d5fa",
+        "full_name": "Chris Dixon",
+        "type": "Investor",
+        "similarity": 1
+      },
+      {
+        "person_id": "da4bf484-1d99-426a-850d-61ad455c02bd",
+        "full_name": "Andrew Wilkinson",
+        "type": "Entrepreneur",
+        "similarity": 1
+      }
+    ],
     "_book_count": 1,
     "_percentile": 1.72
   },
@@ -1966,6 +2786,26 @@
       }
     ],
     "related_recommenders": [],
+    "similar_recommenders": [
+      {
+        "person_id": "2c18d3c4-9745-4c2e-9668-f6f92ab9005f",
+        "full_name": "Seth Godin",
+        "type": "Entrepreneur",
+        "similarity": 0.974343447102605
+      },
+      {
+        "person_id": "7f134fec-0f7a-4a2c-a029-b9a44cf55962",
+        "full_name": "Auren Hoffman",
+        "type": "Entrepreneur",
+        "similarity": 0.956509878274891
+      },
+      {
+        "person_id": "ff9d3fbe-adb7-4ce5-8be9-cf16b374ae72",
+        "full_name": "Alfred Lin",
+        "type": "Entrepreneur",
+        "similarity": 0.949451831907935
+      }
+    ],
     "_book_count": 4,
     "_percentile": 6.9
   },
@@ -1991,6 +2831,26 @@
       }
     ],
     "related_recommenders": [],
+    "similar_recommenders": [
+      {
+        "person_id": "81eeb31e-5364-4fbd-b6f2-8752eae29356",
+        "full_name": "Scarlett Johansson",
+        "type": "Musician or Filmmaker",
+        "similarity": 1
+      },
+      {
+        "person_id": "b999bd2e-c0b2-4b16-abb2-c657b4b4e975",
+        "full_name": "Patrick Collison",
+        "type": "Entrepreneur",
+        "similarity": 0.935405994108499
+      },
+      {
+        "person_id": "7d70640c-825f-4a70-b983-cb56c5bb64f3",
+        "full_name": "Paul Graham",
+        "type": "Entrepreneur",
+        "similarity": 0.898396560149315
+      }
+    ],
     "_book_count": 1,
     "_percentile": 1.72
   },
@@ -2015,6 +2875,26 @@
       }
     ],
     "related_recommenders": [],
+    "similar_recommenders": [
+      {
+        "person_id": "8c74e5de-813d-419a-854b-8171280de53b",
+        "full_name": "Adam Savage",
+        "type": "Entertainer",
+        "similarity": 1
+      },
+      {
+        "person_id": "54e6aac3-d96f-4b5b-a1a1-9dae2cc735c3",
+        "full_name": "Alexis Ohanian",
+        "type": "Entrepreneur",
+        "similarity": 1
+      },
+      {
+        "person_id": "ab42f513-3327-4fd4-a098-e1e93fde3443",
+        "full_name": "Reid Hoffman",
+        "type": "Entrepreneur",
+        "similarity": 1
+      }
+    ],
     "_book_count": 1,
     "_percentile": 1.72
   },
@@ -2039,6 +2919,26 @@
       }
     ],
     "related_recommenders": [],
+    "similar_recommenders": [
+      {
+        "person_id": "2a6f9d43-a50f-46eb-97c8-f34be0d5f414",
+        "full_name": "Jordan Peterson",
+        "type": "Historian or Philosopher",
+        "similarity": 1
+      },
+      {
+        "person_id": "d0a77752-00b0-4c5c-8413-5a153635b741",
+        "full_name": "Jennifer Lawrence",
+        "type": "Entertainer",
+        "similarity": 1
+      },
+      {
+        "person_id": "2f02e30a-b47a-459e-a3d4-7cb4f1a1ee08",
+        "full_name": "Bruce Springsteen",
+        "type": "Musician or Filmmaker",
+        "similarity": 0.954996003345469
+      }
+    ],
     "_book_count": 1,
     "_percentile": 1.72
   },
@@ -2185,6 +3085,26 @@
       }
     ],
     "related_recommenders": [],
+    "similar_recommenders": [
+      {
+        "person_id": "7d70640c-825f-4a70-b983-cb56c5bb64f3",
+        "full_name": "Paul Graham",
+        "type": "Entrepreneur",
+        "similarity": 0.971718286848641
+      },
+      {
+        "person_id": "1568e1de-342e-4c99-be85-229e54f2248f",
+        "full_name": "Marc Andreessen",
+        "type": "Investor",
+        "similarity": 0.961386906648135
+      },
+      {
+        "person_id": "2f02e30a-b47a-459e-a3d4-7cb4f1a1ee08",
+        "full_name": "Bruce Springsteen",
+        "type": "Musician or Filmmaker",
+        "similarity": 0.959252957595647
+      }
+    ],
     "_book_count": 11,
     "_percentile": 18.97
   },
@@ -2569,6 +3489,26 @@
       }
     ],
     "related_recommenders": [],
+    "similar_recommenders": [
+      {
+        "person_id": "1568e1de-342e-4c99-be85-229e54f2248f",
+        "full_name": "Marc Andreessen",
+        "type": "Investor",
+        "similarity": 0.986759513701155
+      },
+      {
+        "person_id": "b999bd2e-c0b2-4b16-abb2-c657b4b4e975",
+        "full_name": "Patrick Collison",
+        "type": "Entrepreneur",
+        "similarity": 0.971718286848641
+      },
+      {
+        "person_id": "197e13ce-b553-4654-a122-0983af28bb64",
+        "full_name": "Sam Altman",
+        "type": "Entrepreneur",
+        "similarity": 0.953667743508976
+      }
+    ],
     "_book_count": 31,
     "_percentile": 53.45
   },
@@ -2593,6 +3533,26 @@
       }
     ],
     "related_recommenders": [],
+    "similar_recommenders": [
+      {
+        "person_id": "b999bd2e-c0b2-4b16-abb2-c657b4b4e975",
+        "full_name": "Patrick Collison",
+        "type": "Entrepreneur",
+        "similarity": 0.920472002169813
+      },
+      {
+        "person_id": "7d70640c-825f-4a70-b983-cb56c5bb64f3",
+        "full_name": "Paul Graham",
+        "type": "Entrepreneur",
+        "similarity": 0.899880668352125
+      },
+      {
+        "person_id": "1568e1de-342e-4c99-be85-229e54f2248f",
+        "full_name": "Marc Andreessen",
+        "type": "Investor",
+        "similarity": 0.892831009509215
+      }
+    ],
     "_book_count": 1,
     "_percentile": 1.72
   },
@@ -2617,6 +3577,26 @@
       }
     ],
     "related_recommenders": [],
+    "similar_recommenders": [
+      {
+        "person_id": "7865327f-7316-46af-be7f-faf91696013c",
+        "full_name": "Dustin Moskovitz",
+        "type": "Entrepreneur",
+        "similarity": 1
+      },
+      {
+        "person_id": "fc5e1c0f-aac3-4a25-aa6f-dc528e19d5fa",
+        "full_name": "Chris Dixon",
+        "type": "Investor",
+        "similarity": 1
+      },
+      {
+        "person_id": "da4bf484-1d99-426a-850d-61ad455c02bd",
+        "full_name": "Andrew Wilkinson",
+        "type": "Entrepreneur",
+        "similarity": 1
+      }
+    ],
     "_book_count": 1,
     "_percentile": 1.72
   },
@@ -2653,6 +3633,26 @@
       }
     ],
     "related_recommenders": [],
+    "similar_recommenders": [
+      {
+        "person_id": "25a773c4-13fb-479b-83f4-0213b6c0ba82",
+        "full_name": "Satya Nadella",
+        "type": "Executive",
+        "similarity": 0.960903195089416
+      },
+      {
+        "person_id": "d6912a12-a684-41fc-939f-65c9e6f7f488",
+        "full_name": "David Perell",
+        "type": "Entrepreneur",
+        "similarity": 0.953701095327226
+      },
+      {
+        "person_id": "fc5e1c0f-aac3-4a25-aa6f-dc528e19d5fa",
+        "full_name": "Chris Dixon",
+        "type": "Investor",
+        "similarity": 0.953700845334148
+      }
+    ],
     "_book_count": 2,
     "_percentile": 3.45
   },
@@ -2677,6 +3677,26 @@
       }
     ],
     "related_recommenders": [],
+    "similar_recommenders": [
+      {
+        "person_id": "306cf908-6d9f-4ff2-a037-2602108c6bd8",
+        "full_name": "Chris Messina",
+        "type": "Entrepreneur",
+        "similarity": 1
+      },
+      {
+        "person_id": "1a8c205c-9ae6-44f6-b982-742bc201f3ac",
+        "full_name": "Ron Conway",
+        "type": "Investor",
+        "similarity": 1
+      },
+      {
+        "person_id": "25a773c4-13fb-479b-83f4-0213b6c0ba82",
+        "full_name": "Satya Nadella",
+        "type": "Executive",
+        "similarity": 0.948345690064345
+      }
+    ],
     "_book_count": 1,
     "_percentile": 1.72
   },
@@ -2701,6 +3721,26 @@
       }
     ],
     "related_recommenders": [],
+    "similar_recommenders": [
+      {
+        "person_id": "8c74e5de-813d-419a-854b-8171280de53b",
+        "full_name": "Adam Savage",
+        "type": "Entertainer",
+        "similarity": 1
+      },
+      {
+        "person_id": "54e6aac3-d96f-4b5b-a1a1-9dae2cc735c3",
+        "full_name": "Alexis Ohanian",
+        "type": "Entrepreneur",
+        "similarity": 1
+      },
+      {
+        "person_id": "dcdb66bc-551a-4a44-a2ff-b0cf8750670a",
+        "full_name": "Naval Ravikant",
+        "type": "Entrepreneur",
+        "similarity": 1
+      }
+    ],
     "_book_count": 1,
     "_percentile": 1.72
   },
@@ -2725,6 +3765,26 @@
       }
     ],
     "related_recommenders": [],
+    "similar_recommenders": [
+      {
+        "person_id": "306cf908-6d9f-4ff2-a037-2602108c6bd8",
+        "full_name": "Chris Messina",
+        "type": "Entrepreneur",
+        "similarity": 1
+      },
+      {
+        "person_id": "55d45cbf-a0c7-408e-acc0-9cd59b4baa2d",
+        "full_name": "Ray Dalio",
+        "type": "Investor",
+        "similarity": 1
+      },
+      {
+        "person_id": "25a773c4-13fb-479b-83f4-0213b6c0ba82",
+        "full_name": "Satya Nadella",
+        "type": "Executive",
+        "similarity": 0.948345690064345
+      }
+    ],
     "_book_count": 1,
     "_percentile": 1.72
   },
@@ -2749,6 +3809,26 @@
       }
     ],
     "related_recommenders": [],
+    "similar_recommenders": [
+      {
+        "person_id": "593cd166-5884-4dc5-94a0-1b1fbc71f8e5",
+        "full_name": "Ryan Hoover",
+        "type": "Entrepreneur",
+        "similarity": 1
+      },
+      {
+        "person_id": "5d796270-7b67-4d25-849a-0f9246beb36f",
+        "full_name": "Anthony Bourdain",
+        "type": "Chef or Food Writer",
+        "similarity": 1
+      },
+      {
+        "person_id": "2f02e30a-b47a-459e-a3d4-7cb4f1a1ee08",
+        "full_name": "Bruce Springsteen",
+        "type": "Musician or Filmmaker",
+        "similarity": 0.9549951075903
+      }
+    ],
     "_book_count": 1,
     "_percentile": 1.72
   },
@@ -2773,6 +3853,26 @@
       }
     ],
     "related_recommenders": [],
+    "similar_recommenders": [
+      {
+        "person_id": "62978431-6853-47c2-b4a4-0ad6cb646a7c",
+        "full_name": "Ryan Holiday",
+        "type": "Author",
+        "similarity": 1
+      },
+      {
+        "person_id": "5d796270-7b67-4d25-849a-0f9246beb36f",
+        "full_name": "Anthony Bourdain",
+        "type": "Chef or Food Writer",
+        "similarity": 1
+      },
+      {
+        "person_id": "2f02e30a-b47a-459e-a3d4-7cb4f1a1ee08",
+        "full_name": "Bruce Springsteen",
+        "type": "Musician or Filmmaker",
+        "similarity": 0.9549951075903
+      }
+    ],
     "_book_count": 1,
     "_percentile": 1.72
   },
@@ -2797,6 +3897,26 @@
       }
     ],
     "related_recommenders": [],
+    "similar_recommenders": [
+      {
+        "person_id": "bcb21b05-bde5-42fd-917e-b87ce8bf6d4a",
+        "full_name": "Elon Musk",
+        "type": "Entrepreneur",
+        "similarity": 1
+      },
+      {
+        "person_id": "197e13ce-b553-4654-a122-0983af28bb64",
+        "full_name": "Sam Altman",
+        "type": "Entrepreneur",
+        "similarity": 0.916183408572985
+      },
+      {
+        "person_id": "7d70640c-825f-4a70-b983-cb56c5bb64f3",
+        "full_name": "Paul Graham",
+        "type": "Entrepreneur",
+        "similarity": 0.892241072423264
+      }
+    ],
     "_book_count": 1,
     "_percentile": 1.72
   },
@@ -2845,6 +3965,26 @@
       }
     ],
     "related_recommenders": [],
+    "similar_recommenders": [
+      {
+        "person_id": "1568e1de-342e-4c99-be85-229e54f2248f",
+        "full_name": "Marc Andreessen",
+        "type": "Investor",
+        "similarity": 0.963575905514653
+      },
+      {
+        "person_id": "25a773c4-13fb-479b-83f4-0213b6c0ba82",
+        "full_name": "Satya Nadella",
+        "type": "Executive",
+        "similarity": 0.956061729818579
+      },
+      {
+        "person_id": "ff9d3fbe-adb7-4ce5-8be9-cf16b374ae72",
+        "full_name": "Alfred Lin",
+        "type": "Entrepreneur",
+        "similarity": 0.953862965564312
+      }
+    ],
     "_book_count": 3,
     "_percentile": 5.17
   },
@@ -2869,6 +4009,26 @@
       }
     ],
     "related_recommenders": [],
+    "similar_recommenders": [
+      {
+        "person_id": "c1ffc866-e5bb-48eb-967a-bfb6914e183c",
+        "full_name": "LeBron James",
+        "type": "Entertainer",
+        "similarity": 1
+      },
+      {
+        "person_id": "1568e1de-342e-4c99-be85-229e54f2248f",
+        "full_name": "Marc Andreessen",
+        "type": "Investor",
+        "similarity": 0.872898945948042
+      },
+      {
+        "person_id": "7d70640c-825f-4a70-b983-cb56c5bb64f3",
+        "full_name": "Paul Graham",
+        "type": "Entrepreneur",
+        "similarity": 0.866758640339371
+      }
+    ],
     "_book_count": 1,
     "_percentile": 1.72
   },
@@ -2917,6 +4077,26 @@
         "shared_count": 2
       }
     ],
+    "similar_recommenders": [
+      {
+        "person_id": "ff9d3fbe-adb7-4ce5-8be9-cf16b374ae72",
+        "full_name": "Alfred Lin",
+        "type": "Entrepreneur",
+        "similarity": 0.97972711604823
+      },
+      {
+        "person_id": "bd91df9a-316c-4714-b6dc-e78218a85a69",
+        "full_name": "Keith Rabois",
+        "type": "Investor",
+        "similarity": 0.964711706933227
+      },
+      {
+        "person_id": "4f742ab3-d021-452c-8ad5-1d2dab59b1c4",
+        "full_name": "Raoul Pal",
+        "type": "Economist",
+        "similarity": 0.960903195089416
+      }
+    ],
     "_book_count": 2,
     "_percentile": 3.45
   },
@@ -2942,6 +4122,26 @@
       }
     ],
     "related_recommenders": [],
+    "similar_recommenders": [
+      {
+        "person_id": "f37e4174-e67d-479c-aa69-a6f556295a01",
+        "full_name": "Natalie Portman",
+        "type": "Musician or Filmmaker",
+        "similarity": 1
+      },
+      {
+        "person_id": "b999bd2e-c0b2-4b16-abb2-c657b4b4e975",
+        "full_name": "Patrick Collison",
+        "type": "Entrepreneur",
+        "similarity": 0.935405994108499
+      },
+      {
+        "person_id": "7d70640c-825f-4a70-b983-cb56c5bb64f3",
+        "full_name": "Paul Graham",
+        "type": "Entrepreneur",
+        "similarity": 0.898396560149315
+      }
+    ],
     "_book_count": 1,
     "_percentile": 1.72
   },
@@ -2990,6 +4190,26 @@
         "shared_count": 2
       }
     ],
+    "similar_recommenders": [
+      {
+        "person_id": "840424c3-515e-4042-b34d-7560b1027521",
+        "full_name": "Michael Mauboussin",
+        "type": "Economist",
+        "similarity": 0.974343447102605
+      },
+      {
+        "person_id": "7f134fec-0f7a-4a2c-a029-b9a44cf55962",
+        "full_name": "Auren Hoffman",
+        "type": "Entrepreneur",
+        "similarity": 0.968445339803558
+      },
+      {
+        "person_id": "1568e1de-342e-4c99-be85-229e54f2248f",
+        "full_name": "Marc Andreessen",
+        "type": "Investor",
+        "similarity": 0.906069131127787
+      }
+    ],
     "_book_count": 2,
     "_percentile": 3.45
   },
@@ -3015,6 +4235,26 @@
       }
     ],
     "related_recommenders": [],
+    "similar_recommenders": [
+      {
+        "person_id": "b999bd2e-c0b2-4b16-abb2-c657b4b4e975",
+        "full_name": "Patrick Collison",
+        "type": "Entrepreneur",
+        "similarity": 0.924719427190525
+      },
+      {
+        "person_id": "7d70640c-825f-4a70-b983-cb56c5bb64f3",
+        "full_name": "Paul Graham",
+        "type": "Entrepreneur",
+        "similarity": 0.890834053121097
+      },
+      {
+        "person_id": "2f02e30a-b47a-459e-a3d4-7cb4f1a1ee08",
+        "full_name": "Bruce Springsteen",
+        "type": "Musician or Filmmaker",
+        "similarity": 0.879848553470186
+      }
+    ],
     "_book_count": 1,
     "_percentile": 1.72
   },
@@ -3039,6 +4279,26 @@
       }
     ],
     "related_recommenders": [],
+    "similar_recommenders": [
+      {
+        "person_id": "959d031c-5613-4013-bfe6-2565486f044a",
+        "full_name": "Brian Chesky",
+        "type": "Entrepreneur",
+        "similarity": 1
+      },
+      {
+        "person_id": "7d70640c-825f-4a70-b983-cb56c5bb64f3",
+        "full_name": "Paul Graham",
+        "type": "Entrepreneur",
+        "similarity": 0.893988300471995
+      },
+      {
+        "person_id": "1568e1de-342e-4c99-be85-229e54f2248f",
+        "full_name": "Marc Andreessen",
+        "type": "Investor",
+        "similarity": 0.888423989864009
+      }
+    ],
     "_book_count": 1,
     "_percentile": 1.72
   },
@@ -3063,6 +4323,26 @@
       }
     ],
     "related_recommenders": [],
+    "similar_recommenders": [
+      {
+        "person_id": "7865327f-7316-46af-be7f-faf91696013c",
+        "full_name": "Dustin Moskovitz",
+        "type": "Entrepreneur",
+        "similarity": 1
+      },
+      {
+        "person_id": "fc5e1c0f-aac3-4a25-aa6f-dc528e19d5fa",
+        "full_name": "Chris Dixon",
+        "type": "Investor",
+        "similarity": 1
+      },
+      {
+        "person_id": "da4bf484-1d99-426a-850d-61ad455c02bd",
+        "full_name": "Andrew Wilkinson",
+        "type": "Entrepreneur",
+        "similarity": 1
+      }
+    ],
     "_book_count": 1,
     "_percentile": 1.72
   },
@@ -3087,6 +4367,26 @@
       }
     ],
     "related_recommenders": [],
+    "similar_recommenders": [
+      {
+        "person_id": "dae85c72-6a38-494e-8c67-f9da5971b6e2",
+        "full_name": "Tobi Lutke",
+        "type": "Entrepreneur",
+        "similarity": 0.944892230464629
+      },
+      {
+        "person_id": "30793e1f-9647-4e73-a0b0-201144d736a7",
+        "full_name": "Ev Williams",
+        "type": "Entrepreneur",
+        "similarity": 0.897481256081338
+      },
+      {
+        "person_id": "fd359f15-fcbd-4d84-a322-b626043bba75",
+        "full_name": "Howard Marks",
+        "type": "Investor",
+        "similarity": 0.897481256081338
+      }
+    ],
     "_book_count": 1,
     "_percentile": 1.72
   },
@@ -3123,6 +4423,26 @@
       }
     ],
     "related_recommenders": [],
+    "similar_recommenders": [
+      {
+        "person_id": "30793e1f-9647-4e73-a0b0-201144d736a7",
+        "full_name": "Ev Williams",
+        "type": "Entrepreneur",
+        "similarity": 0.954621827728966
+      },
+      {
+        "person_id": "fd359f15-fcbd-4d84-a322-b626043bba75",
+        "full_name": "Howard Marks",
+        "type": "Investor",
+        "similarity": 0.954621827728966
+      },
+      {
+        "person_id": "bd91df9a-316c-4714-b6dc-e78218a85a69",
+        "full_name": "Keith Rabois",
+        "type": "Investor",
+        "similarity": 0.953894935906671
+      }
+    ],
     "_book_count": 2,
     "_percentile": 3.45
   },
@@ -3171,6 +4491,26 @@
       }
     ],
     "related_recommenders": [],
+    "similar_recommenders": [
+      {
+        "person_id": "30793e1f-9647-4e73-a0b0-201144d736a7",
+        "full_name": "Ev Williams",
+        "type": "Entrepreneur",
+        "similarity": 0.951467974319278
+      },
+      {
+        "person_id": "fd359f15-fcbd-4d84-a322-b626043bba75",
+        "full_name": "Howard Marks",
+        "type": "Investor",
+        "similarity": 0.951467974319278
+      },
+      {
+        "person_id": "1568e1de-342e-4c99-be85-229e54f2248f",
+        "full_name": "Marc Andreessen",
+        "type": "Investor",
+        "similarity": 0.948564792836614
+      }
+    ],
     "_book_count": 3,
     "_percentile": 5.17
   },
@@ -3195,6 +4535,26 @@
       }
     ],
     "related_recommenders": [],
+    "similar_recommenders": [
+      {
+        "person_id": "1568e1de-342e-4c99-be85-229e54f2248f",
+        "full_name": "Marc Andreessen",
+        "type": "Investor",
+        "similarity": 0.916752708902369
+      },
+      {
+        "person_id": "7d70640c-825f-4a70-b983-cb56c5bb64f3",
+        "full_name": "Paul Graham",
+        "type": "Entrepreneur",
+        "similarity": 0.899206914927998
+      },
+      {
+        "person_id": "5c8107ba-a540-40ab-ab2e-ab7b905fc475",
+        "full_name": "Jack Dorsey",
+        "type": "Entrepreneur",
+        "similarity": 0.876748472096577
+      }
+    ],
     "_book_count": 1,
     "_percentile": 1.72
   },
@@ -3219,6 +4579,26 @@
       }
     ],
     "related_recommenders": [],
+    "similar_recommenders": [
+      {
+        "person_id": "1568e1de-342e-4c99-be85-229e54f2248f",
+        "full_name": "Marc Andreessen",
+        "type": "Investor",
+        "similarity": 0.901292106271063
+      },
+      {
+        "person_id": "840424c3-515e-4042-b34d-7560b1027521",
+        "full_name": "Michael Mauboussin",
+        "type": "Economist",
+        "similarity": 0.877206678811213
+      },
+      {
+        "person_id": "7d70640c-825f-4a70-b983-cb56c5bb64f3",
+        "full_name": "Paul Graham",
+        "type": "Entrepreneur",
+        "similarity": 0.87186374119336
+      }
+    ],
     "_book_count": 1,
     "_percentile": 1.72
   }
