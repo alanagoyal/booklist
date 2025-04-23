@@ -143,27 +143,27 @@ BEGIN
 END;
 $function$;
 
-DROP FUNCTION IF EXISTS get_books_by_recommendation_count();
-create or replace function get_books_by_recommendation_count(
+-- Basic book data with counts and percentiles
+CREATE OR REPLACE FUNCTION get_books_with_counts(
   p_limit int default 1000,
   p_offset int default 0
 )
-returns table (
+RETURNS TABLE (
   id uuid,
   title text,
   author text,
   description text,
   genre text[],
   amazon_url text,
-  recommendations json,
-  related_books json
+  _recommendation_count int,
+  _percentile float
 )
-language plpgsql
-volatile
-as $$
+LANGUAGE plpgsql
+VOLATILE
+AS $$
 BEGIN
   RETURN QUERY
-  WITH book_recommendations AS (
+  WITH book_counts AS (
     SELECT 
       books.id,
       books.title,
@@ -171,149 +171,264 @@ BEGIN
       books.description,
       books.genre,
       books.amazon_url,
-      json_agg(
-        json_build_object(
-          'recommender', CASE WHEN people.id IS NOT NULL THEN
-            json_build_object(
-              'id', people.id,
-              'full_name', people.full_name,
-              'url', people.url,
-              'type', people.type
-            )
-          ELSE NULL END,
-          'source', recommendations.source,
-          'source_link', recommendations.source_link
-        ) ORDER BY people.full_name ASC
-      ) as recommendations,
-      COUNT(DISTINCT recommendations.id) as recommendation_count
+      COUNT(DISTINCT r.person_id)::int as recommendation_count
     FROM books
-    INNER JOIN recommendations ON books.id = recommendations.book_id
-    LEFT JOIN people ON recommendations.person_id = people.id
-    GROUP BY books.id
-    ORDER BY COUNT(DISTINCT recommendations.id) DESC
-    LIMIT p_limit OFFSET p_offset
-  )
-  SELECT
-    br.id,
-    br.title,
-    br.author,
-    br.description,
-    br.genre,
-    br.amazon_url,
-    br.recommendations,
-    '[]'::json as related_books
-  FROM book_recommendations br
-  ORDER BY br.recommendation_count DESC;
-END;
-$$;
-
--- Also optimize the get_recommender_details function
-DROP FUNCTION IF EXISTS get_recommender_details();
-CREATE OR REPLACE FUNCTION get_recommender_details(p_recommender_id UUID)
-RETURNS TABLE (
-  id UUID,
-  full_name TEXT,
-  url TEXT,
-  type TEXT,
-  description TEXT,
-  recommendations JSON,
-  related_recommenders JSON
-)
-LANGUAGE plpgsql
-volatile
-AS $$
-BEGIN
-  RETURN QUERY
-  WITH recommender_books AS (
-    SELECT 
-      b.id,
-      b.title,
-      b.author,
-      b.description,
-      b.genre,
-      b.amazon_url,
-      r.source,
-      r.source_link
-    FROM recommendations r
-    JOIN books b ON r.book_id = b.id
-    WHERE r.person_id = p_recommender_id
-  ),
-  related_recommenders_data AS (
-    SELECT 
-      p2.id,
-      p2.full_name,
-      p2.url,
-      p2.type,
-      string_agg(DISTINCT b.title, ', ') as shared_books,
-      COUNT(DISTINCT r2.id) as shared_count
-    FROM recommendations r1
-    JOIN recommendations r2 ON r1.book_id = r2.book_id AND r1.person_id != r2.person_id
-    JOIN people p2 ON r2.person_id = p2.id
-    JOIN books b ON r1.book_id = b.id
-    WHERE r1.person_id = p_recommender_id
-    GROUP BY p2.id, p2.full_name, p2.url, p2.type
-    HAVING COUNT(DISTINCT r2.id) >= 2
-    ORDER BY COUNT(DISTINCT r2.id) DESC
-    LIMIT 5
+    LEFT JOIN recommendations r ON books.id = r.book_id
+    GROUP BY books.id, books.title, books.author, books.description, books.genre, books.amazon_url
   )
   SELECT 
-    p.id,
-    p.full_name,
-    p.url,
-    p.type,
-    p.description,
-    COALESCE(
-      (
-        SELECT json_agg(
-          json_build_object(
-            'id', rb.id,
-            'title', rb.title,
-            'author', rb.author,
-            'description', rb.description,
-            'genre', rb.genre,
-            'amazon_url', rb.amazon_url,
-            'source', rb.source,
-            'source_link', rb.source_link
-          ) ORDER BY rb.title ASC
-        )
-        FROM recommender_books rb
-      ),
-      '[]'::json
-    ) as recommendations,
-    COALESCE(
-      (
-        SELECT json_agg(
-          json_build_object(
-            'id', rr.id,
-            'full_name', rr.full_name,
-            'url', rr.url,
-            'type', rr.type,
-            'shared_books', rr.shared_books,
-            'shared_count', rr.shared_count
-          ) ORDER BY rr.full_name ASC
-        )
-        FROM related_recommenders_data rr
-      ),
-      '[]'::json
-    ) as related_recommenders
-  FROM people p
-  WHERE p.id = p_recommender_id;
+    bc.id,
+    bc.title,
+    bc.author,
+    bc.description,
+    bc.genre,
+    bc.amazon_url,
+    bc.recommendation_count,
+    NTILE(100) OVER (ORDER BY bc.recommendation_count)::float as percentile
+  FROM book_counts bc
+  ORDER BY bc.recommendation_count DESC
+  LIMIT p_limit
+  OFFSET p_offset;
 END;
 $$;
 
--- Create a new function to get just the count of books
-DROP FUNCTION IF EXISTS get_books_count();
-CREATE OR REPLACE FUNCTION get_books_count()
-RETURNS INTEGER
+-- Get recommendations for specific books
+CREATE OR REPLACE FUNCTION get_book_recommendations(book_ids uuid[])
+RETURNS json
 LANGUAGE plpgsql
-STABLE
+VOLATILE
 AS $$
-DECLARE
-  book_count INTEGER;
 BEGIN
-  SELECT COUNT(*) INTO book_count FROM books;
-  RETURN book_count;
+  RETURN (
+    SELECT json_object_agg(
+      book_id,
+      recommendations
+    )
+    FROM (
+      SELECT 
+        r.book_id,
+        json_agg(
+          json_build_object(
+            'recommender', json_build_object(
+              'id', p.id,
+              'full_name', p.full_name,
+              'url', p.url,
+              'type', p.type
+            ),
+            'source', r.source,
+            'source_link', r.source_link
+          )
+        ) as recommendations
+      FROM recommendations r
+      JOIN people p ON r.person_id = p.id
+      WHERE r.book_id = ANY(book_ids)
+      GROUP BY r.book_id
+    ) book_recommendations
+  );
 END;
+$$;
+
+-- Get related books
+CREATE OR REPLACE FUNCTION get_related_books(
+  book_ids uuid[],
+  p_limit int default 3
+)
+RETURNS json
+LANGUAGE plpgsql
+VOLATILE
+AS $$
+BEGIN
+  RETURN (
+    SELECT json_object_agg(
+      book_id,
+      related_books
+    )
+    FROM (
+      SELECT 
+        book_id,
+        json_agg(
+          json_build_object(
+            'id', id,
+            'title', title,
+            'author', author,
+            'description', description,
+            'amazon_url', amazon_url,
+            '_recommendationCount', recommendation_count
+          )
+        ) as related_books
+      FROM (
+        SELECT 
+          br.book_id,
+          rb.id,
+          rb.title,
+          rb.author,
+          rb.description,
+          rb.amazon_url,
+          rb.recommendation_count,
+          row_number() OVER (PARTITION BY br.book_id ORDER BY br.shared_recommenders DESC) as rn
+        FROM (
+          SELECT 
+            r1.book_id,
+            r2.book_id as related_id,
+            COUNT(DISTINCT r2.person_id) as shared_recommenders
+          FROM recommendations r1
+          JOIN recommendations r2 ON r1.person_id = r2.person_id
+          WHERE r1.book_id = ANY(book_ids)
+          AND r1.book_id != r2.book_id
+          GROUP BY r1.book_id, r2.book_id
+        ) br
+        JOIN (
+          SELECT 
+            b.id,
+            b.title,
+            b.author,
+            b.description,
+            b.amazon_url,
+            COUNT(DISTINCT r.person_id)::int as recommendation_count
+          FROM books b
+          LEFT JOIN recommendations r ON b.id = r.book_id
+          GROUP BY b.id
+        ) rb ON br.related_id = rb.id
+      ) ranked
+      WHERE rn <= p_limit
+      GROUP BY book_id
+    ) book_related
+  );
+END;
+$$;
+
+-- Get related recommenders based on shared books
+create or replace function get_related_recommenders(p_recommender_ids uuid[])
+returns table (
+  recommender_id uuid,
+  related_recommenders jsonb
+)
+language plpgsql
+security definer
+as $$
+begin
+  return query
+    with shared_books as (
+      -- Get all books recommended by each recommender
+      select 
+        r1.person_id as recommender1,
+        r2.person_id as recommender2,
+        count(*) as shared_count,
+        array_agg(b.title) as shared_books
+      from recommendations r1
+      join recommendations r2 on r1.book_id = r2.book_id and r1.person_id < r2.person_id
+      join books b on b.id = r1.book_id
+      where r1.person_id = any(p_recommender_ids)
+      group by r1.person_id, r2.person_id
+      having count(*) >= 2  -- Only include pairs with at least 2 shared books
+    ),
+    top_related as (
+      -- Get top 3 related recommenders for each recommender
+      select 
+        recommender1,
+        recommender2,
+        shared_count,
+        shared_books,
+        row_number() over (partition by recommender1 order by shared_count desc) as rn
+      from shared_books
+    )
+    select 
+      tr.recommender1 as recommender_id,
+      jsonb_agg(
+        jsonb_build_object(
+          'id', p.id,
+          'full_name', p.full_name,
+          'url', p.url,
+          'type', p.type,
+          'shared_books', tr.shared_books,
+          'shared_count', tr.shared_count
+        )
+      ) as related_recommenders
+    from top_related tr
+    join people p on p.id = tr.recommender2
+    where tr.rn <= 3  -- Limit to top 3 related recommenders
+    group by tr.recommender1;
+end;
+$$;
+
+-- Get related recommenders for each recommender
+create or replace function get_recommender_with_books()
+returns table (
+  id uuid,
+  full_name text,
+  type text,
+  url text,
+  description text,
+  recommendations jsonb,
+  related_recommenders jsonb,
+  _book_count bigint,
+  _percentile numeric
+)
+language plpgsql
+security definer
+as $$
+declare
+  max_books bigint;
+  recommender_ids uuid[];
+begin
+  -- Get max book count for percentile calculation
+  select max(book_count) into max_books
+  from (
+    select count(*) as book_count
+    from recommendations r
+    join people p on p.id = r.person_id
+    group by p.id
+  ) counts;
+
+  -- Get all recommender IDs first
+  select array_agg(p.id) into recommender_ids
+  from people p;
+
+  return query
+    with recommender_base as (
+      select
+        p.id,
+        p.full_name,
+        p.type,
+        p.url,
+        p.description,
+        jsonb_agg(
+          jsonb_build_object(
+            'id', b.id,
+            'title', b.title,
+            'author', b.author,
+            'description', b.description,
+            'genre', b.genre,
+            'amazon_url', b.amazon_url,
+            'source', r.source,
+            'source_link', r.source_link
+          )
+          order by b.title
+        ) filter (where b.id is not null) as recommendations,
+        count(b.id)::bigint as book_count,
+        round((count(b.id)::numeric / max_books::numeric * 100)::numeric, 2) as percentile
+      from people p
+      left join recommendations r on r.person_id = p.id
+      left join books b on b.id = r.book_id
+      group by p.id, p.full_name, p.type, p.url, p.description
+    ),
+    related as (
+      select * from get_related_recommenders(recommender_ids)
+    )
+    select
+      rb.id,
+      rb.full_name,
+      rb.type,
+      rb.url,
+      rb.description,
+      rb.recommendations,
+      coalesce(r.related_recommenders, '[]'::jsonb) as related_recommenders,
+      rb.book_count as _book_count,
+      rb.percentile as _percentile
+    from recommender_base rb
+    left join related r on r.recommender_id = rb.id
+    order by rb.full_name;
+end;
 $$;
 
 grant delete on table "public"."books" to "anon";

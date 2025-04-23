@@ -4,7 +4,7 @@
     "full_name": "Adam Savage",
     "type": "Entertainer",
     "url": "https://x.com/donttrythis",
-    "description": "Adam Savage is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "description": "Adam Savage is a lorel impusem who dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     "recommendations": [
       {
         "id": "135483b6-099c-4c85-a916-cc692681969d",
@@ -21,14 +21,14 @@
     ],
     "related_recommenders": [],
     "_book_count": 1,
-    "_percentile": 1.75
+    "_percentile": 1.72
   },
   {
     "id": "54e6aac3-d96f-4b5b-a1a1-9dae2cc735c3",
     "full_name": "Alexis Ohanian",
     "type": "Entrepreneur",
     "url": "https://x.com/alexisohanian",
-    "description": "Alexis Ohanian is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "description": "Alexis Ohanian is a lorel impusem who dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     "recommendations": [
       {
         "id": "135483b6-099c-4c85-a916-cc692681969d",
@@ -45,14 +45,14 @@
     ],
     "related_recommenders": [],
     "_book_count": 1,
-    "_percentile": 1.75
+    "_percentile": 1.72
   },
   {
     "id": "ff9d3fbe-adb7-4ce5-8be9-cf16b374ae72",
     "full_name": "Alfred Lin",
     "type": "Entrepreneur",
     "url": "https://x.com/alfred_lin",
-    "description": "Alfred Lin is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "description": "Alfred Lin is a lorel impusem who dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     "recommendations": [
       {
         "id": "4132339e-02fe-4334-933d-c1ef9867bd63",
@@ -69,8 +69,7 @@
       {
         "id": "18d5c2f6-bef8-4892-b4bd-ca878c4de776",
         "genre": [
-          "Nonfiction",
-          "Business"
+          "Nonfiction"
         ],
         "title": "The Hard Thing About Hard Things",
         "author": "Ben Horowitz",
@@ -82,8 +81,7 @@
       {
         "id": "d459a6b8-2e46-41a7-a737-47f263d293f7",
         "genre": [
-          "Self-Help",
-          "Nonfiction"
+          "Self-Help"
         ],
         "title": "Thinking, Fast and Slow",
         "author": "Daniel Kahneman",
@@ -95,20 +93,19 @@
     ],
     "related_recommenders": [],
     "_book_count": 3,
-    "_percentile": 5.26
+    "_percentile": 5.17
   },
   {
     "id": "e11d24e2-00e1-4631-a136-0ab47869d931",
     "full_name": "Andrew Chen",
     "type": "Investor",
     "url": "https://x.com/andrewchen",
-    "description": "Andrew Chen is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "description": "Andrew Chen is a lorel impusem who dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     "recommendations": [
       {
         "id": "18d5c2f6-bef8-4892-b4bd-ca878c4de776",
         "genre": [
-          "Nonfiction",
-          "Business"
+          "Nonfiction"
         ],
         "title": "The Hard Thing About Hard Things",
         "author": "Ben Horowitz",
@@ -120,14 +117,14 @@
     ],
     "related_recommenders": [],
     "_book_count": 1,
-    "_percentile": 1.75
+    "_percentile": 1.72
   },
   {
     "id": "1f12b227-6e7c-4ed2-8fd1-1c1b74d72490",
     "full_name": "Andrew Garfield",
     "type": "Entertainer",
     "url": "https://x.com/itsagarfield",
-    "description": "Andrew Garfield is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "description": "Andrew Garfield is a lorel impusem who dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     "recommendations": [
       {
         "id": "8526055f-a6dc-40e2-b3ef-91dc4f020a91",
@@ -144,20 +141,19 @@
     ],
     "related_recommenders": [],
     "_book_count": 1,
-    "_percentile": 1.75
+    "_percentile": 1.72
   },
   {
     "id": "da4bf484-1d99-426a-850d-61ad455c02bd",
     "full_name": "Andrew Wilkinson",
     "type": "Entrepreneur",
     "url": "https://x.com/awilkinson",
-    "description": "Andrew Wilkinson is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "description": "Andrew Wilkinson is a lorel impusem who dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     "recommendations": [
       {
         "id": "18d5c2f6-bef8-4892-b4bd-ca878c4de776",
         "genre": [
-          "Nonfiction",
-          "Business"
+          "Nonfiction"
         ],
         "title": "The Hard Thing About Hard Things",
         "author": "Ben Horowitz",
@@ -169,14 +165,14 @@
     ],
     "related_recommenders": [],
     "_book_count": 1,
-    "_percentile": 1.75
+    "_percentile": 1.72
   },
   {
     "id": "ef9e1a7d-737c-4b40-a587-85e0785aa741",
     "full_name": "Ann Miura-Ko",
     "type": "Investor",
     "url": "https://x.com/annimaniac",
-    "description": "Ann Miura-Ko is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "description": "Ann Miura-Ko is a lorel impusem who dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     "recommendations": [
       {
         "id": "18144cab-e4af-4a29-ba17-855a41143105",
@@ -193,14 +189,14 @@
     ],
     "related_recommenders": [],
     "_book_count": 1,
-    "_percentile": 1.75
+    "_percentile": 1.72
   },
   {
     "id": "5d796270-7b67-4d25-849a-0f9246beb36f",
     "full_name": "Anthony Bourdain",
     "type": "Chef or Food Writer",
     "url": "https://en.wikipedia.org/wiki/Anthony_Bourdain",
-    "description": "Anthony Bourdain is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "description": "Anthony Bourdain is a lorel impusem who dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     "recommendations": [
       {
         "id": "4a0bb40d-62b6-419a-a4e7-180edf8f54b1",
@@ -217,14 +213,14 @@
     ],
     "related_recommenders": [],
     "_book_count": 1,
-    "_percentile": 1.75
+    "_percentile": 1.72
   },
   {
     "id": "7f134fec-0f7a-4a2c-a029-b9a44cf55962",
     "full_name": "Auren Hoffman",
     "type": "Entrepreneur",
     "url": "https://x.com/auren",
-    "description": "Auren Hoffman is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "description": "Auren Hoffman is a lorel impusem who dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     "recommendations": [
       {
         "id": "25923530-d84d-4028-a5ef-0b6e0fd70d40",
@@ -241,14 +237,14 @@
     ],
     "related_recommenders": [],
     "_book_count": 1,
-    "_percentile": 1.75
+    "_percentile": 1.72
   },
   {
     "id": "2db22d1d-67c5-4d0d-9d91-32c0446b88aa",
     "full_name": "Benedict Evans",
     "type": "Technologist",
     "url": "https://x.com/benedictevans",
-    "description": "Benedict Evans is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "description": "Benedict Evans is a lorel impusem who dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     "recommendations": [
       {
         "id": "e87fc45a-6049-47ba-a291-57965332432d",
@@ -265,14 +261,14 @@
     ],
     "related_recommenders": [],
     "_book_count": 1,
-    "_percentile": 1.75
+    "_percentile": 1.72
   },
   {
     "id": "c1f6a9a1-4039-48b5-8b6b-51d11940174f",
     "full_name": "Brad Feld",
     "type": "Investor",
     "url": "https://x.com/bfeld",
-    "description": "Brad Feld is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "description": "Brad Feld is a lorel impusem who dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     "recommendations": [
       {
         "id": "f7f87ae0-b2b6-45e7-97f6-6a5730a729c1",
@@ -289,14 +285,14 @@
     ],
     "related_recommenders": [],
     "_book_count": 1,
-    "_percentile": 1.75
+    "_percentile": 1.72
   },
   {
     "id": "959d031c-5613-4013-bfe6-2565486f044a",
     "full_name": "Brian Chesky",
     "type": "Entrepreneur",
     "url": "https://x.com/bchesky",
-    "description": "Brian Chesky is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "description": "Brian Chesky is a lorel impusem who dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     "recommendations": [
       {
         "id": "e7f3c17f-6217-4119-b6d1-dd58f7a98648",
@@ -313,14 +309,14 @@
     ],
     "related_recommenders": [],
     "_book_count": 1,
-    "_percentile": 1.75
+    "_percentile": 1.72
   },
   {
     "id": "2f02e30a-b47a-459e-a3d4-7cb4f1a1ee08",
     "full_name": "Bruce Springsteen",
     "type": "Musician or Filmmaker",
     "url": "https://x.com/springsteen",
-    "description": "Bruce Springsteen is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "description": "Bruce Springsteen is a lorel impusem who dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     "recommendations": [
       {
         "id": "76fe1a81-4aa3-4c23-8041-cf2e8dd6933b",
@@ -349,20 +345,19 @@
     ],
     "related_recommenders": [],
     "_book_count": 2,
-    "_percentile": 3.51
+    "_percentile": 3.45
   },
   {
     "id": "fc5e1c0f-aac3-4a25-aa6f-dc528e19d5fa",
     "full_name": "Chris Dixon",
     "type": "Investor",
     "url": "https://x.com/cdixon",
-    "description": "Chris Dixon is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "description": "Chris Dixon is a lorel impusem who dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     "recommendations": [
       {
         "id": "18d5c2f6-bef8-4892-b4bd-ca878c4de776",
         "genre": [
-          "Nonfiction",
-          "Business"
+          "Nonfiction"
         ],
         "title": "The Hard Thing About Hard Things",
         "author": "Ben Horowitz",
@@ -374,20 +369,19 @@
     ],
     "related_recommenders": [],
     "_book_count": 1,
-    "_percentile": 1.75
+    "_percentile": 1.72
   },
   {
     "id": "306cf908-6d9f-4ff2-a037-2602108c6bd8",
     "full_name": "Chris Messina",
     "type": "Entrepreneur",
     "url": "https://en.wikipedia.org/wiki/Chris_Messina",
-    "description": "Chris Messina is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "description": "Chris Messina is a lorel impusem who dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     "recommendations": [
       {
         "id": "d459a6b8-2e46-41a7-a737-47f263d293f7",
         "genre": [
-          "Self-Help",
-          "Nonfiction"
+          "Self-Help"
         ],
         "title": "Thinking, Fast and Slow",
         "author": "Daniel Kahneman",
@@ -399,14 +393,14 @@
     ],
     "related_recommenders": [],
     "_book_count": 1,
-    "_percentile": 1.75
+    "_percentile": 1.72
   },
   {
     "id": "d6912a12-a684-41fc-939f-65c9e6f7f488",
     "full_name": "David Perell",
     "type": "Entrepreneur",
     "url": "https://x.com/david_perell",
-    "description": "David Perell is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "description": "David Perell is a lorel impusem who dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     "recommendations": [
       {
         "id": "48e4bfbd-6da7-4b78-84a2-72b0ac168ec8",
@@ -423,20 +417,19 @@
     ],
     "related_recommenders": [],
     "_book_count": 1,
-    "_percentile": 1.75
+    "_percentile": 1.72
   },
   {
     "id": "fa35b2e7-5f37-4036-9de7-065f8dcbed1c",
     "full_name": "Drew Houston",
     "type": "Entrepreneur",
     "url": "https://x.com/drewhouston",
-    "description": "Drew Houston is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "description": "Drew Houston is a lorel impusem who dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     "recommendations": [
       {
         "id": "18d5c2f6-bef8-4892-b4bd-ca878c4de776",
         "genre": [
-          "Nonfiction",
-          "Business"
+          "Nonfiction"
         ],
         "title": "The Hard Thing About Hard Things",
         "author": "Ben Horowitz",
@@ -448,20 +441,19 @@
     ],
     "related_recommenders": [],
     "_book_count": 1,
-    "_percentile": 1.75
+    "_percentile": 1.72
   },
   {
     "id": "7865327f-7316-46af-be7f-faf91696013c",
     "full_name": "Dustin Moskovitz",
     "type": "Entrepreneur",
     "url": "https://en.wikipedia.org/wiki/Dustin_Moskovitz",
-    "description": "Dustin Moskovitz is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "description": "Dustin Moskovitz is a lorel impusem who dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     "recommendations": [
       {
         "id": "18d5c2f6-bef8-4892-b4bd-ca878c4de776",
         "genre": [
-          "Nonfiction",
-          "Business"
+          "Nonfiction"
         ],
         "title": "The Hard Thing About Hard Things",
         "author": "Ben Horowitz",
@@ -473,14 +465,14 @@
     ],
     "related_recommenders": [],
     "_book_count": 1,
-    "_percentile": 1.75
+    "_percentile": 1.72
   },
   {
     "id": "ab732c1f-3826-46bb-8312-d9ed95b9b9f3",
     "full_name": "Ed Catmull",
     "type": "Technologist",
     "url": "https://en.wikipedia.org/wiki/Edwin_Catmull",
-    "description": "Ed Catmull is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "description": "Ed Catmull is a lorel impusem who dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     "recommendations": [
       {
         "id": "931e6375-0c63-4a03-aa30-58c459d52cdd",
@@ -497,20 +489,19 @@
     ],
     "related_recommenders": [],
     "_book_count": 1,
-    "_percentile": 1.75
+    "_percentile": 1.72
   },
   {
     "id": "64a6f793-a9ff-42f1-85d5-d1495161a40e",
     "full_name": "Elad Gil",
     "type": "Entrepreneur",
     "url": "https://x.com/eladgil",
-    "description": "Elad Gil is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "description": "Elad Gil is a lorel impusem who dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     "recommendations": [
       {
         "id": "18d5c2f6-bef8-4892-b4bd-ca878c4de776",
         "genre": [
-          "Nonfiction",
-          "Business"
+          "Nonfiction"
         ],
         "title": "The Hard Thing About Hard Things",
         "author": "Ben Horowitz",
@@ -522,14 +513,14 @@
     ],
     "related_recommenders": [],
     "_book_count": 1,
-    "_percentile": 1.75
+    "_percentile": 1.72
   },
   {
     "id": "bcb21b05-bde5-42fd-917e-b87ce8bf6d4a",
     "full_name": "Elon Musk",
     "type": "Entrepreneur",
     "url": "https://x.com/elonmusk",
-    "description": "Elon Musk is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "description": "Elon Musk is a lorel impusem who dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     "recommendations": [
       {
         "id": "65fbae96-3e76-405c-b82d-7115e0c21402",
@@ -546,14 +537,14 @@
     ],
     "related_recommenders": [],
     "_book_count": 1,
-    "_percentile": 1.75
+    "_percentile": 1.72
   },
   {
     "id": "362f2770-962b-457c-addb-bd60c3b42787",
     "full_name": "Eric Schmidt",
     "type": "Entrepreneur",
     "url": "https://x.com/ericschmidt",
-    "description": "Eric Schmidt is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "description": "Eric Schmidt is a lorel impusem who dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     "recommendations": [
       {
         "id": "e87fc45a-6049-47ba-a291-57965332432d",
@@ -570,14 +561,14 @@
     ],
     "related_recommenders": [],
     "_book_count": 1,
-    "_percentile": 1.75
+    "_percentile": 1.72
   },
   {
     "id": "30793e1f-9647-4e73-a0b0-201144d736a7",
     "full_name": "Ev Williams",
     "type": "Entrepreneur",
     "url": "https://x.com/ev",
-    "description": "Ev Williams is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "description": "Ev Williams is a lorel impusem who dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     "recommendations": [
       {
         "id": "8526055f-a6dc-40e2-b3ef-91dc4f020a91",
@@ -618,6 +609,17 @@
     ],
     "related_recommenders": [
       {
+        "id": "b47bd147-f5ad-49d1-b24f-946f71c9841b",
+        "url": "https://x.com/joerogan",
+        "type": "Journalist",
+        "full_name": "Joe Rogan",
+        "shared_books": [
+          "Can't Hurt Me",
+          "12 Rules for Life"
+        ],
+        "shared_count": 2
+      },
+      {
         "id": "fd359f15-fcbd-4d84-a322-b626043bba75",
         "url": "https://en.wikipedia.org/wiki/Howard_Marks_(investor)",
         "type": "Investor",
@@ -628,28 +630,17 @@
           "12 Rules for Life"
         ],
         "shared_count": 3
-      },
-      {
-        "id": "b47bd147-f5ad-49d1-b24f-946f71c9841b",
-        "url": "https://x.com/joerogan",
-        "type": "Journalist",
-        "full_name": "Joe Rogan",
-        "shared_books": [
-          "Can't Hurt Me",
-          "12 Rules for Life"
-        ],
-        "shared_count": 2
       }
     ],
     "_book_count": 3,
-    "_percentile": 5.26
+    "_percentile": 5.17
   },
   {
     "id": "f09eb6c4-f515-4805-9a54-644436b56665",
     "full_name": "Fred Wilson",
     "type": "Investor",
     "url": "https://x.com/fredwilson",
-    "description": "Fred Wilson is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "description": "Fred Wilson is a lorel impusem who dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     "recommendations": [
       {
         "id": "135483b6-099c-4c85-a916-cc692681969d",
@@ -666,8 +657,7 @@
       {
         "id": "18d5c2f6-bef8-4892-b4bd-ca878c4de776",
         "genre": [
-          "Nonfiction",
-          "Business"
+          "Nonfiction"
         ],
         "title": "The Hard Thing About Hard Things",
         "author": "Ben Horowitz",
@@ -679,14 +669,14 @@
     ],
     "related_recommenders": [],
     "_book_count": 2,
-    "_percentile": 3.51
+    "_percentile": 3.45
   },
   {
     "id": "ba8b1d8e-3055-41fa-a0de-e68f7f2a03d3",
     "full_name": "Garry Tan",
     "type": "Entrepreneur",
     "url": "https://x.com/garrytan",
-    "description": "Garry Tan is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "description": "Garry Tan is a lorel impusem who dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     "recommendations": [
       {
         "id": "3560a1d3-117d-4afb-bf7c-c7cffb8be368",
@@ -703,14 +693,14 @@
     ],
     "related_recommenders": [],
     "_book_count": 1,
-    "_percentile": 1.75
+    "_percentile": 1.72
   },
   {
     "id": "fd359f15-fcbd-4d84-a322-b626043bba75",
     "full_name": "Howard Marks",
     "type": "Investor",
     "url": "https://en.wikipedia.org/wiki/Howard_Marks_(investor)",
-    "description": "Howard Marks is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "description": "Howard Marks is a lorel impusem who dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     "recommendations": [
       {
         "id": "8526055f-a6dc-40e2-b3ef-91dc4f020a91",
@@ -751,14 +741,14 @@
     ],
     "related_recommenders": [],
     "_book_count": 3,
-    "_percentile": 5.26
+    "_percentile": 5.17
   },
   {
     "id": "83842e58-6b23-4046-9901-07034c31b28c",
     "full_name": "J.K. Rowling",
     "type": "Author",
     "url": "https://en.wikipedia.org/wiki/J._K._Rowling",
-    "description": "J.K. Rowling is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "description": "J.K. Rowling is a lorel impusem who dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     "recommendations": [
       {
         "id": "e0a97b37-c3c4-4531-9c7f-55f68a5104d6",
@@ -775,14 +765,14 @@
     ],
     "related_recommenders": [],
     "_book_count": 1,
-    "_percentile": 1.75
+    "_percentile": 1.72
   },
   {
     "id": "3cf23b17-e1e2-48b6-800e-2889593db96a",
     "full_name": "Jack Altman",
     "type": "Entrepreneur",
     "url": "https://x.com/jaltma",
-    "description": "Jack Altman is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "description": "Jack Altman is a lorel impusem who dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     "recommendations": [
       {
         "id": "fafb4fb2-8071-414f-b88a-54def50c37b0",
@@ -799,14 +789,14 @@
     ],
     "related_recommenders": [],
     "_book_count": 1,
-    "_percentile": 1.75
+    "_percentile": 1.72
   },
   {
     "id": "5c8107ba-a540-40ab-ab2e-ab7b905fc475",
     "full_name": "Jack Dorsey",
     "type": "Entrepreneur",
     "url": "https://x.com/jack",
-    "description": "Jack Dorsey is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "description": "Jack Dorsey is a lorel impusem who dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     "recommendations": [
       {
         "id": "931e6375-0c63-4a03-aa30-58c459d52cdd",
@@ -835,14 +825,14 @@
     ],
     "related_recommenders": [],
     "_book_count": 2,
-    "_percentile": 3.51
+    "_percentile": 3.45
   },
   {
     "id": "d0a77752-00b0-4c5c-8413-5a153635b741",
     "full_name": "Jennifer Lawrence",
     "type": "Entertainer",
     "url": "https://en.wikipedia.org/wiki/Jennifer_Lawrence",
-    "description": "Jennifer Lawrence is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "description": "Jennifer Lawrence is a lorel impusem who dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     "recommendations": [
       {
         "id": "76fe1a81-4aa3-4c23-8041-cf2e8dd6933b",
@@ -859,20 +849,19 @@
     ],
     "related_recommenders": [],
     "_book_count": 1,
-    "_percentile": 1.75
+    "_percentile": 1.72
   },
   {
     "id": "40c43eeb-e46d-4cf7-8a8f-477a9d7c9d59",
     "full_name": "Jensen Huang",
     "type": "Technologist",
     "url": "https://en.wikipedia.org/wiki/Jensen_Huang",
-    "description": "Jensen Huang is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "description": "Jensen Huang is a lorel impusem who dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     "recommendations": [
       {
         "id": "18d5c2f6-bef8-4892-b4bd-ca878c4de776",
         "genre": [
-          "Nonfiction",
-          "Business"
+          "Nonfiction"
         ],
         "title": "The Hard Thing About Hard Things",
         "author": "Ben Horowitz",
@@ -884,14 +873,14 @@
     ],
     "related_recommenders": [],
     "_book_count": 1,
-    "_percentile": 1.75
+    "_percentile": 1.72
   },
   {
     "id": "d304a5f5-edab-4931-a041-7605546b5d84",
     "full_name": "Jim Collins",
     "type": "Executive",
     "url": "https://x.com/level5leaders",
-    "description": "Jim Collins is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "description": "Jim Collins is a lorel impusem who dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     "recommendations": [
       {
         "id": "931e6375-0c63-4a03-aa30-58c459d52cdd",
@@ -908,14 +897,14 @@
     ],
     "related_recommenders": [],
     "_book_count": 1,
-    "_percentile": 1.75
+    "_percentile": 1.72
   },
   {
     "id": "b47bd147-f5ad-49d1-b24f-946f71c9841b",
     "full_name": "Joe Rogan",
     "type": "Journalist",
     "url": "https://x.com/joerogan",
-    "description": "Joe Rogan is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "description": "Joe Rogan is a lorel impusem who dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     "recommendations": [
       {
         "id": "8526055f-a6dc-40e2-b3ef-91dc4f020a91",
@@ -956,14 +945,14 @@
       }
     ],
     "_book_count": 2,
-    "_percentile": 3.51
+    "_percentile": 3.45
   },
   {
     "id": "2a6f9d43-a50f-46eb-97c8-f34be0d5f414",
     "full_name": "Jordan Peterson",
     "type": "Historian or Philosopher",
     "url": "https://x.com/jordanbpeterson",
-    "description": "Jordan Peterson is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "description": "Jordan Peterson is a lorel impusem who dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     "recommendations": [
       {
         "id": "76fe1a81-4aa3-4c23-8041-cf2e8dd6933b",
@@ -980,20 +969,19 @@
     ],
     "related_recommenders": [],
     "_book_count": 1,
-    "_percentile": 1.75
+    "_percentile": 1.72
   },
   {
     "id": "94fd096a-10b2-4580-a3a9-95180c140700",
     "full_name": "Julie Zhuo",
     "type": "Engineer or Product Manager",
     "url": "https://twitter.com/joulee?ref_src=twsrc%5Egoogle%7Ctwcamp%5Eserp%7Ctwgr%5Eauthor",
-    "description": "Julie Zhuo is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "description": "Julie Zhuo is a lorel impusem who dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     "recommendations": [
       {
         "id": "18d5c2f6-bef8-4892-b4bd-ca878c4de776",
         "genre": [
-          "Nonfiction",
-          "Business"
+          "Nonfiction"
         ],
         "title": "The Hard Thing About Hard Things",
         "author": "Ben Horowitz",
@@ -1005,14 +993,14 @@
     ],
     "related_recommenders": [],
     "_book_count": 1,
-    "_percentile": 1.75
+    "_percentile": 1.72
   },
   {
     "id": "aa1f2e94-bc0c-490f-a37f-2de6c135def4",
     "full_name": "Karlie Kloss",
     "type": "Entrepreneur",
     "url": "https://x.com/karliekloss",
-    "description": "Karlie Kloss is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "description": "Karlie Kloss is a lorel impusem who dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     "recommendations": [
       {
         "id": "8526055f-a6dc-40e2-b3ef-91dc4f020a91",
@@ -1029,14 +1017,14 @@
     ],
     "related_recommenders": [],
     "_book_count": 1,
-    "_percentile": 1.75
+    "_percentile": 1.72
   },
   {
     "id": "bd91df9a-316c-4714-b6dc-e78218a85a69",
     "full_name": "Keith Rabois",
     "type": "Investor",
     "url": "https://x.com/rabois",
-    "description": "Keith Rabois is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "description": "Keith Rabois is a lorel impusem who dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     "recommendations": [
       {
         "id": "931e6375-0c63-4a03-aa30-58c459d52cdd",
@@ -1065,8 +1053,7 @@
       {
         "id": "18d5c2f6-bef8-4892-b4bd-ca878c4de776",
         "genre": [
-          "Nonfiction",
-          "Business"
+          "Nonfiction"
         ],
         "title": "The Hard Thing About Hard Things",
         "author": "Ben Horowitz",
@@ -1078,14 +1065,14 @@
     ],
     "related_recommenders": [],
     "_book_count": 3,
-    "_percentile": 5.26
+    "_percentile": 5.17
   },
   {
     "id": "cfee863c-c29b-4930-9b76-3bba84c73c45",
     "full_name": "Larry Page",
     "type": "Entrepreneur",
     "url": "https://en.wikipedia.org/wiki/Larry_Page",
-    "description": "Larry Page is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "description": "Larry Page is a lorel impusem who dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     "recommendations": [
       {
         "id": "135483b6-099c-4c85-a916-cc692681969d",
@@ -1102,8 +1089,7 @@
       {
         "id": "18d5c2f6-bef8-4892-b4bd-ca878c4de776",
         "genre": [
-          "Nonfiction",
-          "Business"
+          "Nonfiction"
         ],
         "title": "The Hard Thing About Hard Things",
         "author": "Ben Horowitz",
@@ -1127,14 +1113,14 @@
       }
     ],
     "_book_count": 2,
-    "_percentile": 3.51
+    "_percentile": 3.45
   },
   {
     "id": "c1ffc866-e5bb-48eb-967a-bfb6914e183c",
     "full_name": "LeBron James",
     "type": "Entertainer",
     "url": "https://x.com/KingJames",
-    "description": "LeBron James is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "description": "LeBron James is a lorel impusem who dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     "recommendations": [
       {
         "id": "8c4b4f03-6ffa-4ed2-a838-35dae447c2de",
@@ -1151,14 +1137,14 @@
     ],
     "related_recommenders": [],
     "_book_count": 1,
-    "_percentile": 1.75
+    "_percentile": 1.72
   },
   {
     "id": "1568e1de-342e-4c99-be85-229e54f2248f",
     "full_name": "Marc Andreessen",
     "type": "Investor",
     "url": "https://x.com/pmarca",
-    "description": "Marc Andreessen is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "description": "Marc Andreessen is a lorel impusem who dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     "recommendations": [
       {
         "id": "8526055f-a6dc-40e2-b3ef-91dc4f020a91",
@@ -1449,6 +1435,18 @@
         "source_link": "https://www.kevinrooke.com/book-recommendations/marc-andreessen"
       },
       {
+        "id": "5fffc95f-badb-4fed-ad1f-634a24892862",
+        "genre": [
+          "Self-Help"
+        ],
+        "title": "How to Decide",
+        "author": "Annie Duke",
+        "source": "Bookmarked",
+        "amazon_url": "https://www.amazon.com/How-Decide-Simple-Making-Choices/dp/0593418484",
+        "description": "Strategies and tools to improve decision-making in everyday life.",
+        "source_link": "https://www.kevinrooke.com/book-recommendations/marc-andreessen"
+      },
+      {
         "id": "4a0bb40d-62b6-419a-a4e7-180edf8f54b1",
         "genre": [
           "Self-Help"
@@ -1655,8 +1653,7 @@
       {
         "id": "18d5c2f6-bef8-4892-b4bd-ca878c4de776",
         "genre": [
-          "Nonfiction",
-          "Business"
+          "Nonfiction"
         ],
         "title": "The Hard Thing About Hard Things",
         "author": "Ben Horowitz",
@@ -1776,8 +1773,7 @@
       {
         "id": "d459a6b8-2e46-41a7-a737-47f263d293f7",
         "genre": [
-          "Self-Help",
-          "Nonfiction"
+          "Self-Help"
         ],
         "title": "Thinking, Fast and Slow",
         "author": "Daniel Kahneman",
@@ -1861,6 +1857,19 @@
         "shared_count": 3
       },
       {
+        "id": "840424c3-515e-4042-b34d-7560b1027521",
+        "url": "https://x.com/mjmauboussin",
+        "type": "Economist",
+        "full_name": "Michael Mauboussin",
+        "shared_books": [
+          "Thinking in Bets",
+          "How to Decide",
+          "Secrets of Sand Hill Road",
+          "Extreme Ownership"
+        ],
+        "shared_count": 4
+      },
+      {
         "id": "dae85c72-6a38-494e-8c67-f9da5971b6e2",
         "url": "https://x.com/tobi",
         "type": "Entrepreneur",
@@ -1871,21 +1880,9 @@
           "A Guide to the Good Life"
         ],
         "shared_count": 3
-      },
-      {
-        "id": "fd359f15-fcbd-4d84-a322-b626043bba75",
-        "url": "https://en.wikipedia.org/wiki/Howard_Marks_(investor)",
-        "type": "Investor",
-        "full_name": "Howard Marks",
-        "shared_books": [
-          "Can't Hurt Me",
-          "A Guide to the Good Life",
-          "12 Rules for Life"
-        ],
-        "shared_count": 3
       }
     ],
-    "_book_count": 57,
+    "_book_count": 58,
     "_percentile": 100
   },
   {
@@ -1893,13 +1890,12 @@
     "full_name": "Marty Cagan",
     "type": "Engineer or Product Manager",
     "url": "https://x.com/cagan",
-    "description": "Marty Cagan is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "description": "Marty Cagan is a lorel impusem who dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     "recommendations": [
       {
         "id": "18d5c2f6-bef8-4892-b4bd-ca878c4de776",
         "genre": [
-          "Nonfiction",
-          "Business"
+          "Nonfiction"
         ],
         "title": "The Hard Thing About Hard Things",
         "author": "Ben Horowitz",
@@ -1911,14 +1907,14 @@
     ],
     "related_recommenders": [],
     "_book_count": 1,
-    "_percentile": 1.75
+    "_percentile": 1.72
   },
   {
     "id": "840424c3-515e-4042-b34d-7560b1027521",
     "full_name": "Michael Mauboussin",
     "type": "Economist",
     "url": "https://x.com/mjmauboussin",
-    "description": "Michael Mauboussin is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "description": "Michael Mauboussin is a lorel impusem who dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     "recommendations": [
       {
         "id": "4132339e-02fe-4334-933d-c1ef9867bd63",
@@ -1930,6 +1926,18 @@
         "source": "Bookmarked",
         "amazon_url": "https://www.amazon.com/Extreme-Ownership-U-S-Navy-SEALs/dp/1250067057",
         "description": "A leadership manual emphasizing personal accountability in high-stakes situations.",
+        "source_link": "https://www.bookmarked.club/people/michael-mauboussin"
+      },
+      {
+        "id": "5fffc95f-badb-4fed-ad1f-634a24892862",
+        "genre": [
+          "Self-Help"
+        ],
+        "title": "How to Decide",
+        "author": "Annie Duke",
+        "source": "Bookmarked",
+        "amazon_url": "https://www.amazon.com/How-Decide-Simple-Making-Choices/dp/0593418484",
+        "description": "Strategies and tools to improve decision-making in everyday life.",
         "source_link": "https://www.bookmarked.club/people/michael-mauboussin"
       },
       {
@@ -1958,20 +1966,21 @@
       }
     ],
     "related_recommenders": [],
-    "_book_count": 3,
-    "_percentile": 5.26
+    "_book_count": 4,
+    "_percentile": 6.9
   },
   {
     "id": "f37e4174-e67d-479c-aa69-a6f556295a01",
     "full_name": "Natalie Portman",
     "type": "Musician or Filmmaker",
     "url": "https://en.wikipedia.org/wiki/Natalie_Portman",
-    "description": "Natalie Portman is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "description": "Natalie Portman is a lorel impusem who dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     "recommendations": [
       {
         "id": "d89ef09e-cb4d-4f45-9c8c-e9b34e327759",
         "genre": [
-          "Classic"
+          "Classic",
+          "Fiction"
         ],
         "title": "Middlemarch",
         "author": "George Eliot",
@@ -1983,14 +1992,14 @@
     ],
     "related_recommenders": [],
     "_book_count": 1,
-    "_percentile": 1.75
+    "_percentile": 1.72
   },
   {
     "id": "dcdb66bc-551a-4a44-a2ff-b0cf8750670a",
     "full_name": "Naval Ravikant",
     "type": "Entrepreneur",
     "url": "https://x.com/naval",
-    "description": "Naval Ravikant is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "description": "Naval Ravikant is a lorel impusem who dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     "recommendations": [
       {
         "id": "135483b6-099c-4c85-a916-cc692681969d",
@@ -2007,14 +2016,14 @@
     ],
     "related_recommenders": [],
     "_book_count": 1,
-    "_percentile": 1.75
+    "_percentile": 1.72
   },
   {
     "id": "cd688549-6d27-4d87-b43b-ba09e1b6cc4f",
     "full_name": "Oprah Winfrey",
     "type": "Journalist",
     "url": "https://x.com/Oprah",
-    "description": "Oprah Winfrey is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "description": "Oprah Winfrey is a lorel impusem who dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     "recommendations": [
       {
         "id": "76fe1a81-4aa3-4c23-8041-cf2e8dd6933b",
@@ -2031,14 +2040,14 @@
     ],
     "related_recommenders": [],
     "_book_count": 1,
-    "_percentile": 1.75
+    "_percentile": 1.72
   },
   {
     "id": "b999bd2e-c0b2-4b16-abb2-c657b4b4e975",
     "full_name": "Patrick Collison",
     "type": "Entrepreneur",
     "url": "https://x.com/patrickc",
-    "description": "Patrick Collison is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "description": "Patrick Collison is a lorel impusem who dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     "recommendations": [
       {
         "id": "76fe1a81-4aa3-4c23-8041-cf2e8dd6933b",
@@ -2079,7 +2088,8 @@
       {
         "id": "b08aa61b-40da-4876-9007-e2a1c83b1dc0",
         "genre": [
-          "Historical"
+          "Historical",
+          "Classic"
         ],
         "title": "Jane Eyre",
         "author": "Charlotte Brontë",
@@ -2115,7 +2125,8 @@
       {
         "id": "d89ef09e-cb4d-4f45-9c8c-e9b34e327759",
         "genre": [
-          "Classic"
+          "Classic",
+          "Fiction"
         ],
         "title": "Middlemarch",
         "author": "George Eliot",
@@ -2175,14 +2186,14 @@
     ],
     "related_recommenders": [],
     "_book_count": 11,
-    "_percentile": 19.3
+    "_percentile": 18.97
   },
   {
     "id": "7d70640c-825f-4a70-b983-cb56c5bb64f3",
     "full_name": "Paul Graham",
     "type": "Entrepreneur",
     "url": "https://x.com/paulg",
-    "description": "Paul Graham is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "description": "Paul Graham is a lorel impusem who dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     "recommendations": [
       {
         "id": "6150ba72-3f4a-4355-920a-75858d5e5398",
@@ -2559,14 +2570,14 @@
     ],
     "related_recommenders": [],
     "_book_count": 31,
-    "_percentile": 54.39
+    "_percentile": 53.45
   },
   {
     "id": "0ef50665-1a3e-485e-a2aa-7e1cf21de0ae",
     "full_name": "Peter Ackroyd",
     "type": "Biographer",
     "url": "https://en.wikipedia.org/wiki/Peter_Ackroyd",
-    "description": "Peter Ackroyd is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "description": "Peter Ackroyd is a lorel impusem who dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     "recommendations": [
       {
         "id": "26a38dbb-9309-4291-87e7-824f0eb209c9",
@@ -2583,20 +2594,19 @@
     ],
     "related_recommenders": [],
     "_book_count": 1,
-    "_percentile": 1.75
+    "_percentile": 1.72
   },
   {
     "id": "80ed8150-1404-4498-b7e4-485333ebd2f2",
     "full_name": "Peter Thiel",
     "type": "Investor",
     "url": "https://en.wikipedia.org/wiki/Peter_Thiel",
-    "description": "Peter Thiel is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "description": "Peter Thiel is a lorel impusem who dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     "recommendations": [
       {
         "id": "18d5c2f6-bef8-4892-b4bd-ca878c4de776",
         "genre": [
-          "Nonfiction",
-          "Business"
+          "Nonfiction"
         ],
         "title": "The Hard Thing About Hard Things",
         "author": "Ben Horowitz",
@@ -2608,14 +2618,14 @@
     ],
     "related_recommenders": [],
     "_book_count": 1,
-    "_percentile": 1.75
+    "_percentile": 1.72
   },
   {
     "id": "4f742ab3-d021-452c-8ad5-1d2dab59b1c4",
     "full_name": "Raoul Pal",
     "type": "Economist",
     "url": "https://x.com/RaoulGMI",
-    "description": "Raoul Pal is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "description": "Raoul Pal is a lorel impusem who dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     "recommendations": [
       {
         "id": "48e4bfbd-6da7-4b78-84a2-72b0ac168ec8",
@@ -2632,8 +2642,7 @@
       {
         "id": "18d5c2f6-bef8-4892-b4bd-ca878c4de776",
         "genre": [
-          "Nonfiction",
-          "Business"
+          "Nonfiction"
         ],
         "title": "The Hard Thing About Hard Things",
         "author": "Ben Horowitz",
@@ -2645,20 +2654,19 @@
     ],
     "related_recommenders": [],
     "_book_count": 2,
-    "_percentile": 3.51
+    "_percentile": 3.45
   },
   {
     "id": "55d45cbf-a0c7-408e-acc0-9cd59b4baa2d",
     "full_name": "Ray Dalio",
     "type": "Investor",
     "url": "https://x.com/RayDalio",
-    "description": "Ray Dalio is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "description": "Ray Dalio is a lorel impusem who dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     "recommendations": [
       {
         "id": "d459a6b8-2e46-41a7-a737-47f263d293f7",
         "genre": [
-          "Self-Help",
-          "Nonfiction"
+          "Self-Help"
         ],
         "title": "Thinking, Fast and Slow",
         "author": "Daniel Kahneman",
@@ -2670,14 +2678,14 @@
     ],
     "related_recommenders": [],
     "_book_count": 1,
-    "_percentile": 1.75
+    "_percentile": 1.72
   },
   {
     "id": "ab42f513-3327-4fd4-a098-e1e93fde3443",
     "full_name": "Reid Hoffman",
     "type": "Entrepreneur",
     "url": "https://x.com/reidhoffman",
-    "description": "Reid Hoffman is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "description": "Reid Hoffman is a lorel impusem who dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     "recommendations": [
       {
         "id": "135483b6-099c-4c85-a916-cc692681969d",
@@ -2694,20 +2702,19 @@
     ],
     "related_recommenders": [],
     "_book_count": 1,
-    "_percentile": 1.75
+    "_percentile": 1.72
   },
   {
     "id": "1a8c205c-9ae6-44f6-b982-742bc201f3ac",
     "full_name": "Ron Conway",
     "type": "Investor",
     "url": "https://x.com/ronconway",
-    "description": "Ron Conway is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "description": "Ron Conway is a lorel impusem who dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     "recommendations": [
       {
         "id": "d459a6b8-2e46-41a7-a737-47f263d293f7",
         "genre": [
-          "Self-Help",
-          "Nonfiction"
+          "Self-Help"
         ],
         "title": "Thinking, Fast and Slow",
         "author": "Daniel Kahneman",
@@ -2719,14 +2726,14 @@
     ],
     "related_recommenders": [],
     "_book_count": 1,
-    "_percentile": 1.75
+    "_percentile": 1.72
   },
   {
     "id": "62978431-6853-47c2-b4a4-0ad6cb646a7c",
     "full_name": "Ryan Holiday",
     "type": "Author",
     "url": "https://x.com/RyanHoliday",
-    "description": "Ryan Holiday is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "description": "Ryan Holiday is a lorel impusem who dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     "recommendations": [
       {
         "id": "4a0bb40d-62b6-419a-a4e7-180edf8f54b1",
@@ -2743,14 +2750,14 @@
     ],
     "related_recommenders": [],
     "_book_count": 1,
-    "_percentile": 1.75
+    "_percentile": 1.72
   },
   {
     "id": "593cd166-5884-4dc5-94a0-1b1fbc71f8e5",
     "full_name": "Ryan Hoover",
     "type": "Entrepreneur",
     "url": "https://x.com/rrhoover",
-    "description": "Ryan Hoover is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "description": "Ryan Hoover is a lorel impusem who dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     "recommendations": [
       {
         "id": "4a0bb40d-62b6-419a-a4e7-180edf8f54b1",
@@ -2767,14 +2774,14 @@
     ],
     "related_recommenders": [],
     "_book_count": 1,
-    "_percentile": 1.75
+    "_percentile": 1.72
   },
   {
     "id": "93b556b5-a799-4bf9-a895-06dcf51a538a",
     "full_name": "Sahil Lavingia",
     "type": "Entrepreneur",
     "url": "https://x.com/shl",
-    "description": "Sahil Lavingia is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "description": "Sahil Lavingia is a lorel impusem who dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     "recommendations": [
       {
         "id": "65fbae96-3e76-405c-b82d-7115e0c21402",
@@ -2791,14 +2798,14 @@
     ],
     "related_recommenders": [],
     "_book_count": 1,
-    "_percentile": 1.75
+    "_percentile": 1.72
   },
   {
     "id": "197e13ce-b553-4654-a122-0983af28bb64",
     "full_name": "Sam Altman",
     "type": "Entrepreneur",
     "url": "https://x.com/sama",
-    "description": "Sam Altman is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "description": "Sam Altman is a lorel impusem who dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     "recommendations": [
       {
         "id": "65fbae96-3e76-405c-b82d-7115e0c21402",
@@ -2827,8 +2834,7 @@
       {
         "id": "d459a6b8-2e46-41a7-a737-47f263d293f7",
         "genre": [
-          "Self-Help",
-          "Nonfiction"
+          "Self-Help"
         ],
         "title": "Thinking, Fast and Slow",
         "author": "Daniel Kahneman",
@@ -2840,14 +2846,14 @@
     ],
     "related_recommenders": [],
     "_book_count": 3,
-    "_percentile": 5.26
+    "_percentile": 5.17
   },
   {
     "id": "43d97b64-ac23-4072-b759-2beccd516dfa",
     "full_name": "Sara Blakely",
     "type": "Entrepreneur",
     "url": "https://x.com/sarablakely",
-    "description": "Sara Blakely is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "description": "Sara Blakely is a lorel impusem who dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     "recommendations": [
       {
         "id": "8c4b4f03-6ffa-4ed2-a838-35dae447c2de",
@@ -2864,20 +2870,19 @@
     ],
     "related_recommenders": [],
     "_book_count": 1,
-    "_percentile": 1.75
+    "_percentile": 1.72
   },
   {
     "id": "25a773c4-13fb-479b-83f4-0213b6c0ba82",
     "full_name": "Satya Nadella",
     "type": "Executive",
     "url": "https://en.wikipedia.org/wiki/Satya_Nadella",
-    "description": "Satya Nadella is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "description": "Satya Nadella is a lorel impusem who dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     "recommendations": [
       {
         "id": "18d5c2f6-bef8-4892-b4bd-ca878c4de776",
         "genre": [
-          "Nonfiction",
-          "Business"
+          "Nonfiction"
         ],
         "title": "The Hard Thing About Hard Things",
         "author": "Ben Horowitz",
@@ -2889,8 +2894,7 @@
       {
         "id": "d459a6b8-2e46-41a7-a737-47f263d293f7",
         "genre": [
-          "Self-Help",
-          "Nonfiction"
+          "Self-Help"
         ],
         "title": "Thinking, Fast and Slow",
         "author": "Daniel Kahneman",
@@ -2914,19 +2918,20 @@
       }
     ],
     "_book_count": 2,
-    "_percentile": 3.51
+    "_percentile": 3.45
   },
   {
     "id": "81eeb31e-5364-4fbd-b6f2-8752eae29356",
     "full_name": "Scarlett Johansson",
     "type": "Musician or Filmmaker",
     "url": "https://en.wikipedia.org/wiki/Scarlett_Johansson",
-    "description": "Scarlett Johansson is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "description": "Scarlett Johansson is a lorel impusem who dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     "recommendations": [
       {
         "id": "d89ef09e-cb4d-4f45-9c8c-e9b34e327759",
         "genre": [
-          "Classic"
+          "Classic",
+          "Fiction"
         ],
         "title": "Middlemarch",
         "author": "George Eliot",
@@ -2938,15 +2943,27 @@
     ],
     "related_recommenders": [],
     "_book_count": 1,
-    "_percentile": 1.75
+    "_percentile": 1.72
   },
   {
     "id": "2c18d3c4-9745-4c2e-9668-f6f92ab9005f",
     "full_name": "Seth Godin",
     "type": "Entrepreneur",
     "url": "https://en.wikipedia.org/wiki/Seth_Godin",
-    "description": "Seth Godin is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "description": "Seth Godin is a lorel impusem who dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     "recommendations": [
+      {
+        "id": "5fffc95f-badb-4fed-ad1f-634a24892862",
+        "genre": [
+          "Self-Help"
+        ],
+        "title": "How to Decide",
+        "author": "Annie Duke",
+        "source": "Bookauthority",
+        "amazon_url": "https://www.amazon.com/How-Decide-Simple-Making-Choices/dp/0593418484",
+        "description": "Strategies and tools to improve decision-making in everyday life.",
+        "source_link": "https://bookauthority.org/profile/seth-godin"
+      },
       {
         "id": "25923530-d84d-4028-a5ef-0b6e0fd70d40",
         "genre": [
@@ -2960,21 +2977,34 @@
         "source_link": "https://bookauthority.org/profile/seth-godin"
       }
     ],
-    "related_recommenders": [],
-    "_book_count": 1,
-    "_percentile": 1.75
+    "related_recommenders": [
+      {
+        "id": "840424c3-515e-4042-b34d-7560b1027521",
+        "url": "https://x.com/mjmauboussin",
+        "type": "Economist",
+        "full_name": "Michael Mauboussin",
+        "shared_books": [
+          "Thinking in Bets",
+          "How to Decide"
+        ],
+        "shared_count": 2
+      }
+    ],
+    "_book_count": 2,
+    "_percentile": 3.45
   },
   {
     "id": "aaa928ba-7b30-4d20-b935-12a7f3786bbb",
     "full_name": "Shonda Rhimes",
     "type": "Journalist",
     "url": "https://x.com/shondarhimes",
-    "description": "Shonda Rhimes is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "description": "Shonda Rhimes is a lorel impusem who dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     "recommendations": [
       {
         "id": "b08aa61b-40da-4876-9007-e2a1c83b1dc0",
         "genre": [
-          "Historical"
+          "Historical",
+          "Classic"
         ],
         "title": "Jane Eyre",
         "author": "Charlotte Brontë",
@@ -2986,14 +3016,14 @@
     ],
     "related_recommenders": [],
     "_book_count": 1,
-    "_percentile": 1.75
+    "_percentile": 1.72
   },
   {
     "id": "70af5394-3955-4869-9ef6-2c8077d1ea27",
     "full_name": "Shreyas Narlaka",
     "type": "Entrepreneur",
     "url": "https://x.com/66_shrey",
-    "description": "Shreyas Narlaka is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "description": "Shreyas Narlaka is a lorel impusem who dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     "recommendations": [
       {
         "id": "e7f3c17f-6217-4119-b6d1-dd58f7a98648",
@@ -3010,20 +3040,19 @@
     ],
     "related_recommenders": [],
     "_book_count": 1,
-    "_percentile": 1.75
+    "_percentile": 1.72
   },
   {
     "id": "d6467e99-35e3-486d-aff5-2e0cc2f47228",
     "full_name": "Steve Blank",
     "type": "Entrepreneur",
     "url": "https://en.wikipedia.org/wiki/Steve_Blank",
-    "description": "Steve Blank is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "description": "Steve Blank is a lorel impusem who dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     "recommendations": [
       {
         "id": "18d5c2f6-bef8-4892-b4bd-ca878c4de776",
         "genre": [
-          "Nonfiction",
-          "Business"
+          "Nonfiction"
         ],
         "title": "The Hard Thing About Hard Things",
         "author": "Ben Horowitz",
@@ -3035,14 +3064,14 @@
     ],
     "related_recommenders": [],
     "_book_count": 1,
-    "_percentile": 1.75
+    "_percentile": 1.72
   },
   {
     "id": "d9272357-10db-44ac-8ed2-6c84a2c4d8c7",
     "full_name": "Stewart Butterfield",
     "type": "Entrepreneur",
     "url": "https://x.com/stewart",
-    "description": "Stewart Butterfield is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "description": "Stewart Butterfield is a lorel impusem who dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     "recommendations": [
       {
         "id": "998bba5d-6127-4835-bb00-c5942d510770",
@@ -3059,14 +3088,14 @@
     ],
     "related_recommenders": [],
     "_book_count": 1,
-    "_percentile": 1.75
+    "_percentile": 1.72
   },
   {
     "id": "5ea43269-a2ed-4b73-8527-dff2aba45047",
     "full_name": "Tim Ferriss",
     "type": "Entrepreneur",
     "url": "https://x.com/tferriss",
-    "description": "Tim Ferriss is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "description": "Tim Ferriss is a lorel impusem who dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     "recommendations": [
       {
         "id": "18144cab-e4af-4a29-ba17-855a41143105",
@@ -3083,8 +3112,7 @@
       {
         "id": "18d5c2f6-bef8-4892-b4bd-ca878c4de776",
         "genre": [
-          "Nonfiction",
-          "Business"
+          "Nonfiction"
         ],
         "title": "The Hard Thing About Hard Things",
         "author": "Ben Horowitz",
@@ -3096,14 +3124,14 @@
     ],
     "related_recommenders": [],
     "_book_count": 2,
-    "_percentile": 3.51
+    "_percentile": 3.45
   },
   {
     "id": "dae85c72-6a38-494e-8c67-f9da5971b6e2",
     "full_name": "Tobi Lutke",
     "type": "Entrepreneur",
     "url": "https://x.com/tobi",
-    "description": "Tobi Lutke is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "description": "Tobi Lutke is a lorel impusem who dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     "recommendations": [
       {
         "id": "18144cab-e4af-4a29-ba17-855a41143105",
@@ -3144,14 +3172,14 @@
     ],
     "related_recommenders": [],
     "_book_count": 3,
-    "_percentile": 5.26
+    "_percentile": 5.17
   },
   {
     "id": "b3ea0954-cf99-4441-837d-15945b071c40",
     "full_name": "Tyler Cowen",
     "type": "Economist",
     "url": "https://en.wikipedia.org/wiki/Tyler_Cowen",
-    "description": "Tyler Cowen is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "description": "Tyler Cowen is a lorel impusem who dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     "recommendations": [
       {
         "id": "49a48f0e-91b9-48e4-92a4-b68c875be423",
@@ -3168,14 +3196,14 @@
     ],
     "related_recommenders": [],
     "_book_count": 1,
-    "_percentile": 1.75
+    "_percentile": 1.72
   },
   {
     "id": "80d8faa2-9e55-41f1-a12c-55e4b575fb28",
     "full_name": "Vinod Khosla",
     "type": "Investor",
     "url": "https://x.com/vkhosla",
-    "description": "Vinod Khosla is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "description": "Vinod Khosla is a lorel impusem who dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     "recommendations": [
       {
         "id": "00139908-04bd-4c26-ae8e-ecbf4cbf4339",
@@ -3192,6 +3220,6 @@
     ],
     "related_recommenders": [],
     "_book_count": 1,
-    "_percentile": 1.75
+    "_percentile": 1.72
   }
 ]
