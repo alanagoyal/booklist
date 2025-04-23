@@ -2,622 +2,2587 @@
   {
     "id": "8c74e5de-813d-419a-854b-8171280de53b",
     "full_name": "Adam Savage",
-    "created_at": "2025-03-13T19:47:36.936+00:00",
-    "updated_at": "2025-03-13T19:47:36.936+00:00",
-    "url": "https://x.com/donttrythis",
     "type": "Entertainer",
-    "description": "Adam Savage is a blah blah blah who blah blah blah and is known for blah blah blah"
+    "description": "Adam Savage is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "recommendations": [
+      {
+        "id": "135483b6-099c-4c85-a916-cc692681969d",
+        "genre": [
+          "Science Fiction"
+        ],
+        "title": "Snow Crash",
+        "author": "Neal Stephenson",
+        "amazon_url": "https://www.amazon.com/Snow-Crash-Neal-Stephenson/dp/0553380958",
+        "description": "A cyberpunk classic exploring virtual realities and dystopian futures."
+      }
+    ],
+    "_book_count": 1,
+    "_percentile": 1.75
   },
   {
     "id": "54e6aac3-d96f-4b5b-a1a1-9dae2cc735c3",
     "full_name": "Alexis Ohanian",
-    "created_at": "2025-03-06T19:56:54.139+00:00",
-    "updated_at": "2025-03-06T19:56:54.139+00:00",
-    "url": "https://x.com/alexisohanian",
     "type": "Entrepreneur",
-    "description": "Alexis Ohanian is a blah blah blah who blah blah blah and is known for blah blah blah"
+    "description": "Alexis Ohanian is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "recommendations": [
+      {
+        "id": "135483b6-099c-4c85-a916-cc692681969d",
+        "genre": [
+          "Science Fiction"
+        ],
+        "title": "Snow Crash",
+        "author": "Neal Stephenson",
+        "amazon_url": "https://www.amazon.com/Snow-Crash-Neal-Stephenson/dp/0553380958",
+        "description": "A cyberpunk classic exploring virtual realities and dystopian futures."
+      }
+    ],
+    "_book_count": 1,
+    "_percentile": 1.75
   },
   {
     "id": "ff9d3fbe-adb7-4ce5-8be9-cf16b374ae72",
     "full_name": "Alfred Lin",
-    "created_at": "2025-03-08T21:19:38.239+00:00",
-    "updated_at": "2025-03-08T21:19:38.239+00:00",
-    "url": "https://x.com/alfred_lin",
     "type": "Entrepreneur",
-    "description": "Alfred Lin is a blah blah blah who blah blah blah and is known for blah blah blah"
+    "description": "Alfred Lin is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "recommendations": [
+      {
+        "id": "d459a6b8-2e46-41a7-a737-47f263d293f7",
+        "genre": [
+          "Self-Help",
+          "Nonfiction"
+        ],
+        "title": "Thinking, Fast and Slow",
+        "author": "Daniel Kahneman",
+        "amazon_url": "https://www.amazon.com/live/video/07f37281865849bb8650969e1931c367?ref_=dp_vse_rvc_8",
+        "description": "A deep dive into the two systems driving human thought and behavior."
+      },
+      {
+        "id": "18d5c2f6-bef8-4892-b4bd-ca878c4de776",
+        "genre": [
+          "Nonfiction",
+          "Business"
+        ],
+        "title": "The Hard Thing About Hard Things",
+        "author": "Ben Horowitz",
+        "amazon_url": "https://www.amazon.com/Hard-Thing-About-Things-Building/dp/0062273205",
+        "description": "Insights into startup struggles and leadership in the tech world."
+      },
+      {
+        "id": "4132339e-02fe-4334-933d-c1ef9867bd63",
+        "genre": [
+          "Nonfiction"
+        ],
+        "title": "Extreme Ownership",
+        "author": "Jocko Willink",
+        "amazon_url": "https://www.amazon.com/Extreme-Ownership-U-S-Navy-SEALs/dp/1250067057",
+        "description": "A leadership manual emphasizing personal accountability in high-stakes situations."
+      }
+    ],
+    "_book_count": 3,
+    "_percentile": 5.26
   },
   {
     "id": "e11d24e2-00e1-4631-a136-0ab47869d931",
     "full_name": "Andrew Chen",
-    "created_at": "2025-03-14T18:23:37.706+00:00",
-    "updated_at": "2025-03-14T18:23:37.706+00:00",
-    "url": "https://x.com/andrewchen",
     "type": "Investor",
-    "description": "Andrew Chen is a blah blah blah who blah blah blah and is known for blah blah blah"
+    "description": "Andrew Chen is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "recommendations": [
+      {
+        "id": "18d5c2f6-bef8-4892-b4bd-ca878c4de776",
+        "genre": [
+          "Nonfiction",
+          "Business"
+        ],
+        "title": "The Hard Thing About Hard Things",
+        "author": "Ben Horowitz",
+        "amazon_url": "https://www.amazon.com/Hard-Thing-About-Things-Building/dp/0062273205",
+        "description": "Insights into startup struggles and leadership in the tech world."
+      }
+    ],
+    "_book_count": 1,
+    "_percentile": 1.75
   },
   {
     "id": "1f12b227-6e7c-4ed2-8fd1-1c1b74d72490",
     "full_name": "Andrew Garfield",
-    "created_at": "2025-03-14T03:35:56.181+00:00",
-    "updated_at": "2025-03-14T03:35:56.181+00:00",
-    "url": "https://x.com/itsagarfield",
     "type": "Entertainer",
-    "description": "Andrew Garfield is a blah blah blah who blah blah blah and is known for blah blah blah"
+    "description": "Andrew Garfield is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "recommendations": [
+      {
+        "id": "8526055f-a6dc-40e2-b3ef-91dc4f020a91",
+        "genre": [
+          "Self-Help"
+        ],
+        "title": "12 Rules for Life",
+        "author": "Jordan B. Peterson",
+        "amazon_url": "https://www.amazon.com/12-Rules-Life-Antidote-Chaos/dp/0345816021",
+        "description": "Practical life advice and philosophical insights for personal growth."
+      }
+    ],
+    "_book_count": 1,
+    "_percentile": 1.75
   },
   {
     "id": "da4bf484-1d99-426a-850d-61ad455c02bd",
     "full_name": "Andrew Wilkinson",
-    "created_at": "2025-03-07T20:14:13.261+00:00",
-    "updated_at": "2025-03-07T20:14:13.261+00:00",
-    "url": "https://x.com/awilkinson",
     "type": "Entrepreneur",
-    "description": "Andrew Wilkinson is a blah blah blah who blah blah blah and is known for blah blah blah"
+    "description": "Andrew Wilkinson is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "recommendations": [
+      {
+        "id": "18d5c2f6-bef8-4892-b4bd-ca878c4de776",
+        "genre": [
+          "Nonfiction",
+          "Business"
+        ],
+        "title": "The Hard Thing About Hard Things",
+        "author": "Ben Horowitz",
+        "amazon_url": "https://www.amazon.com/Hard-Thing-About-Things-Building/dp/0062273205",
+        "description": "Insights into startup struggles and leadership in the tech world."
+      }
+    ],
+    "_book_count": 1,
+    "_percentile": 1.75
   },
   {
     "id": "ef9e1a7d-737c-4b40-a587-85e0785aa741",
     "full_name": "Ann Miura-Ko",
-    "created_at": "2025-03-10T18:12:23.161+00:00",
-    "updated_at": "2025-03-10T18:12:23.161+00:00",
-    "url": "https://x.com/annimaniac",
     "type": "Investor",
-    "description": "Ann Miura-Ko is a blah blah blah who blah blah blah and is known for blah blah blah"
+    "description": "Ann Miura-Ko is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "recommendations": [
+      {
+        "id": "18144cab-e4af-4a29-ba17-855a41143105",
+        "genre": [
+          "Philosophy"
+        ],
+        "title": "A Guide to the Good Life",
+        "author": "William B. Irvine",
+        "amazon_url": "https://www.amazon.com/Guide-Good-Life-Ancient-Stoic/dp/0195374614",
+        "description": "An introduction to Stoic philosophy for modern living."
+      }
+    ],
+    "_book_count": 1,
+    "_percentile": 1.75
   },
   {
     "id": "5d796270-7b67-4d25-849a-0f9246beb36f",
     "full_name": "Anthony Bourdain",
-    "created_at": "2025-03-13T17:53:09.872+00:00",
-    "updated_at": "2025-03-13T17:53:09.872+00:00",
-    "url": "https://en.wikipedia.org/wiki/Anthony_Bourdain",
     "type": "Chef or Food Writer",
-    "description": "Anthony Bourdain is a blah blah blah who blah blah blah and is known for blah blah blah"
+    "description": "Anthony Bourdain is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "recommendations": [
+      {
+        "id": "4a0bb40d-62b6-419a-a4e7-180edf8f54b1",
+        "genre": [
+          "Self-Help"
+        ],
+        "title": "How to Live",
+        "author": "Sarah Bakewell",
+        "amazon_url": "https://www.amazon.com/How-Live-Montaigne-Question-Attempts/dp/1590514831",
+        "description": "An engaging exploration of the art of living, drawing on the wisdom of philosophy and history."
+      }
+    ],
+    "_book_count": 1,
+    "_percentile": 1.75
   },
   {
     "id": "7f134fec-0f7a-4a2c-a029-b9a44cf55962",
     "full_name": "Auren Hoffman",
-    "created_at": "2025-03-09T17:46:00.031+00:00",
-    "updated_at": "2025-03-09T17:46:00.031+00:00",
-    "url": "https://x.com/auren",
     "type": "Entrepreneur",
-    "description": "Auren Hoffman is a blah blah blah who blah blah blah and is known for blah blah blah"
+    "description": "Auren Hoffman is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "recommendations": [
+      {
+        "id": "25923530-d84d-4028-a5ef-0b6e0fd70d40",
+        "genre": [
+          "Self-Help"
+        ],
+        "title": "Thinking in Bets",
+        "author": "Annie Duke",
+        "amazon_url": "https://www.amazon.com/Thinking-Bets-Making-Smarter-Decisions/dp/0735216355",
+        "description": "A guide to making smarter decisions under uncertainty and risk."
+      }
+    ],
+    "_book_count": 1,
+    "_percentile": 1.75
   },
   {
     "id": "2db22d1d-67c5-4d0d-9d91-32c0446b88aa",
     "full_name": "Benedict Evans",
-    "created_at": "2025-03-09T22:17:58.733+00:00",
-    "updated_at": "2025-03-09T22:17:58.733+00:00",
-    "url": "https://x.com/benedictevans",
     "type": "Technologist",
-    "description": "Benedict Evans is a blah blah blah who blah blah blah and is known for blah blah blah"
+    "description": "Benedict Evans is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "recommendations": [
+      {
+        "id": "e87fc45a-6049-47ba-a291-57965332432d",
+        "genre": [
+          "Business"
+        ],
+        "title": "Secrets of Sand Hill Road",
+        "author": "Scott Kupor",
+        "amazon_url": "https://www.amazon.com/Secrets-Sand-Hill-Road-Venture/dp/059308358X",
+        "description": "An insider's guide to venture capital and startup funding."
+      }
+    ],
+    "_book_count": 1,
+    "_percentile": 1.75
   },
   {
     "id": "c1f6a9a1-4039-48b5-8b6b-51d11940174f",
     "full_name": "Brad Feld",
-    "created_at": "2025-03-20T02:17:59.208+00:00",
-    "updated_at": "2025-03-20T02:17:59.208+00:00",
-    "url": "https://x.com/bfeld",
     "type": "Investor",
-    "description": "Brad Feld is a blah blah blah who blah blah blah and is known for blah blah blah"
+    "description": "Brad Feld is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "recommendations": [
+      {
+        "id": "f7f87ae0-b2b6-45e7-97f6-6a5730a729c1",
+        "genre": [
+          "Self-Help"
+        ],
+        "title": "But What if We're Wrong?",
+        "author": "Chuck Klosterman",
+        "amazon_url": "https://www.amazon.com/But-What-If-Were-Wrong/dp/0451484878",
+        "description": "A thought-provoking meditation on uncertainty and the possibility that many of our beliefs about the world are mistaken."
+      }
+    ],
+    "_book_count": 1,
+    "_percentile": 1.75
   },
   {
     "id": "959d031c-5613-4013-bfe6-2565486f044a",
     "full_name": "Brian Chesky",
-    "created_at": "2025-03-05T22:29:23.764+00:00",
-    "updated_at": "2025-03-05T22:29:23.764+00:00",
-    "url": "https://x.com/bchesky",
     "type": "Entrepreneur",
-    "description": "Brian Chesky is a blah blah blah who blah blah blah and is known for blah blah blah"
+    "description": "Brian Chesky is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "recommendations": [
+      {
+        "id": "e7f3c17f-6217-4119-b6d1-dd58f7a98648",
+        "genre": [
+          "Business"
+        ],
+        "title": "Walt Disney: The Triumph of the American Imagination",
+        "author": "Neal Gabler",
+        "amazon_url": "https://www.amazon.com/Walt-Disney-Triumph-American-Imagination/dp/0739340298",
+        "description": "A definitive biography of Walt Disney that explores his creative vision and lasting impact on entertainment."
+      }
+    ],
+    "_book_count": 1,
+    "_percentile": 1.75
   },
   {
     "id": "2f02e30a-b47a-459e-a3d4-7cb4f1a1ee08",
     "full_name": "Bruce Springsteen",
-    "created_at": "2025-03-20T20:49:43.191+00:00",
-    "updated_at": "2025-03-20T20:49:43.191+00:00",
-    "url": "https://x.com/springsteen",
     "type": "Musician or Filmmaker",
-    "description": "Bruce Springsteen is a blah blah blah who blah blah blah and is known for blah blah blah"
+    "description": "Bruce Springsteen is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "recommendations": [
+      {
+        "id": "76fe1a81-4aa3-4c23-8041-cf2e8dd6933b",
+        "genre": [
+          "Classic"
+        ],
+        "title": "Anna Karenina",
+        "author": "Leo Tolstoy",
+        "amazon_url": "https://www.amazon.com/Anna-Karenina-Leo-Tolstoy/dp/0143035002",
+        "description": "A profound exploration of love, jealousy, and societal pressures in 19th-century Russia."
+      },
+      {
+        "id": "4a0bb40d-62b6-419a-a4e7-180edf8f54b1",
+        "genre": [
+          "Self-Help"
+        ],
+        "title": "How to Live",
+        "author": "Sarah Bakewell",
+        "amazon_url": "https://www.amazon.com/How-Live-Montaigne-Question-Attempts/dp/1590514831",
+        "description": "An engaging exploration of the art of living, drawing on the wisdom of philosophy and history."
+      }
+    ],
+    "_book_count": 2,
+    "_percentile": 3.51
   },
   {
     "id": "fc5e1c0f-aac3-4a25-aa6f-dc528e19d5fa",
     "full_name": "Chris Dixon",
-    "created_at": "2025-03-03T20:51:46.43+00:00",
-    "updated_at": "2025-03-03T20:51:46.43+00:00",
-    "url": "https://x.com/cdixon",
     "type": "Investor",
-    "description": "Chris Dixon is a blah blah blah who blah blah blah and is known for blah blah blah"
+    "description": "Chris Dixon is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "recommendations": [
+      {
+        "id": "18d5c2f6-bef8-4892-b4bd-ca878c4de776",
+        "genre": [
+          "Nonfiction",
+          "Business"
+        ],
+        "title": "The Hard Thing About Hard Things",
+        "author": "Ben Horowitz",
+        "amazon_url": "https://www.amazon.com/Hard-Thing-About-Things-Building/dp/0062273205",
+        "description": "Insights into startup struggles and leadership in the tech world."
+      }
+    ],
+    "_book_count": 1,
+    "_percentile": 1.75
   },
   {
     "id": "306cf908-6d9f-4ff2-a037-2602108c6bd8",
     "full_name": "Chris Messina",
-    "created_at": "2025-03-19T02:38:18.216+00:00",
-    "updated_at": "2025-03-19T02:38:18.216+00:00",
-    "url": "https://en.wikipedia.org/wiki/Chris_Messina",
     "type": "Entrepreneur",
-    "description": "Chris Messina is a blah blah blah who blah blah blah and is known for blah blah blah"
+    "description": "Chris Messina is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "recommendations": [
+      {
+        "id": "d459a6b8-2e46-41a7-a737-47f263d293f7",
+        "genre": [
+          "Self-Help",
+          "Nonfiction"
+        ],
+        "title": "Thinking, Fast and Slow",
+        "author": "Daniel Kahneman",
+        "amazon_url": "https://www.amazon.com/live/video/07f37281865849bb8650969e1931c367?ref_=dp_vse_rvc_8",
+        "description": "A deep dive into the two systems driving human thought and behavior."
+      }
+    ],
+    "_book_count": 1,
+    "_percentile": 1.75
   },
   {
     "id": "d6912a12-a684-41fc-939f-65c9e6f7f488",
     "full_name": "David Perell",
-    "created_at": "2025-03-10T17:09:27.303+00:00",
-    "updated_at": "2025-03-10T17:09:27.303+00:00",
-    "url": "https://x.com/david_perell",
     "type": "Entrepreneur",
-    "description": "David Perell is a blah blah blah who blah blah blah and is known for blah blah blah"
+    "description": "David Perell is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "recommendations": [
+      {
+        "id": "48e4bfbd-6da7-4b78-84a2-72b0ac168ec8",
+        "genre": [
+          "Nonfiction"
+        ],
+        "title": "Conspiracy",
+        "author": "Ryan Holiday",
+        "amazon_url": "https://www.amazon.com/Conspiracy-Peter-Gawker-Anatomy-Intrigue/dp/1788160835",
+        "description": "A deep dive into the hidden networks that shape cultural events and influence public discourse."
+      }
+    ],
+    "_book_count": 1,
+    "_percentile": 1.75
   },
   {
     "id": "fa35b2e7-5f37-4036-9de7-065f8dcbed1c",
     "full_name": "Drew Houston",
-    "created_at": "2025-03-13T20:22:51.548+00:00",
-    "updated_at": "2025-03-13T20:22:51.548+00:00",
-    "url": "https://x.com/drewhouston",
     "type": "Entrepreneur",
-    "description": "Drew Houston is a blah blah blah who blah blah blah and is known for blah blah blah"
+    "description": "Drew Houston is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "recommendations": [
+      {
+        "id": "18d5c2f6-bef8-4892-b4bd-ca878c4de776",
+        "genre": [
+          "Nonfiction",
+          "Business"
+        ],
+        "title": "The Hard Thing About Hard Things",
+        "author": "Ben Horowitz",
+        "amazon_url": "https://www.amazon.com/Hard-Thing-About-Things-Building/dp/0062273205",
+        "description": "Insights into startup struggles and leadership in the tech world."
+      }
+    ],
+    "_book_count": 1,
+    "_percentile": 1.75
   },
   {
     "id": "7865327f-7316-46af-be7f-faf91696013c",
     "full_name": "Dustin Moskovitz",
-    "created_at": "2025-03-13T16:31:04.178+00:00",
-    "updated_at": "2025-03-13T16:31:04.178+00:00",
-    "url": "https://en.wikipedia.org/wiki/Dustin_Moskovitz",
     "type": "Entrepreneur",
-    "description": "Dustin Moskovitz is a blah blah blah who blah blah blah and is known for blah blah blah"
+    "description": "Dustin Moskovitz is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "recommendations": [
+      {
+        "id": "18d5c2f6-bef8-4892-b4bd-ca878c4de776",
+        "genre": [
+          "Nonfiction",
+          "Business"
+        ],
+        "title": "The Hard Thing About Hard Things",
+        "author": "Ben Horowitz",
+        "amazon_url": "https://www.amazon.com/Hard-Thing-About-Things-Building/dp/0062273205",
+        "description": "Insights into startup struggles and leadership in the tech world."
+      }
+    ],
+    "_book_count": 1,
+    "_percentile": 1.75
   },
   {
     "id": "ab732c1f-3826-46bb-8312-d9ed95b9b9f3",
     "full_name": "Ed Catmull",
-    "created_at": "2025-03-07T20:53:44.942+00:00",
-    "updated_at": "2025-03-07T20:53:44.942+00:00",
-    "url": "https://en.wikipedia.org/wiki/Edwin_Catmull",
     "type": "Technologist",
-    "description": "Ed Catmull is a blah blah blah who blah blah blah and is known for blah blah blah"
+    "description": "Ed Catmull is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "recommendations": [
+      {
+        "id": "931e6375-0c63-4a03-aa30-58c459d52cdd",
+        "genre": [
+          "Biography"
+        ],
+        "title": "Becoming Steve Jobs",
+        "author": "Brent Schlender",
+        "amazon_url": "https://www.amazon.com/Becoming-Steve-Jobs-Evolution-Visionary/dp/0385347421",
+        "description": "A candid biography capturing the complex legacy of Steve Jobs."
+      }
+    ],
+    "_book_count": 1,
+    "_percentile": 1.75
   },
   {
     "id": "64a6f793-a9ff-42f1-85d5-d1495161a40e",
     "full_name": "Elad Gil",
-    "created_at": "2025-03-02T19:31:55.942+00:00",
-    "updated_at": "2025-03-02T19:31:55.942+00:00",
-    "url": "https://x.com/eladgil",
     "type": "Entrepreneur",
-    "description": "Elad Gil is a blah blah blah who blah blah blah and is known for blah blah blah"
+    "description": "Elad Gil is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "recommendations": [
+      {
+        "id": "18d5c2f6-bef8-4892-b4bd-ca878c4de776",
+        "genre": [
+          "Nonfiction",
+          "Business"
+        ],
+        "title": "The Hard Thing About Hard Things",
+        "author": "Ben Horowitz",
+        "amazon_url": "https://www.amazon.com/Hard-Thing-About-Things-Building/dp/0062273205",
+        "description": "Insights into startup struggles and leadership in the tech world."
+      }
+    ],
+    "_book_count": 1,
+    "_percentile": 1.75
   },
   {
     "id": "bcb21b05-bde5-42fd-917e-b87ce8bf6d4a",
     "full_name": "Elon Musk",
-    "created_at": "2025-03-07T19:41:59.369+00:00",
-    "updated_at": "2025-03-07T19:41:59.369+00:00",
-    "url": "https://x.com/elonmusk",
     "type": "Entrepreneur",
-    "description": "Elon Musk is a blah blah blah who blah blah blah and is known for blah blah blah"
+    "description": "Elon Musk is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "recommendations": [
+      {
+        "id": "65fbae96-3e76-405c-b82d-7115e0c21402",
+        "genre": [
+          "Science Fiction"
+        ],
+        "title": "Foundation",
+        "author": "Isaac Asimov",
+        "amazon_url": "https://www.amazon.com/Foundation-Isaac-Asimov/dp/0553293354?source=ps-sl-shoppingads-lpcontext&ref_=fplfs&psc=1&smid=ATVPDKIKX0DER",
+        "description": "A seminal science fiction saga about preserving knowledge in a crumbling galactic empire."
+      }
+    ],
+    "_book_count": 1,
+    "_percentile": 1.75
   },
   {
     "id": "362f2770-962b-457c-addb-bd60c3b42787",
     "full_name": "Eric Schmidt",
-    "created_at": "2025-03-17T18:41:11.791+00:00",
-    "updated_at": "2025-03-17T18:41:11.791+00:00",
-    "url": "https://x.com/ericschmidt",
     "type": "Entrepreneur",
-    "description": "Eric Schmidt is a blah blah blah who blah blah blah and is known for blah blah blah"
+    "description": "Eric Schmidt is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "recommendations": [
+      {
+        "id": "e87fc45a-6049-47ba-a291-57965332432d",
+        "genre": [
+          "Business"
+        ],
+        "title": "Secrets of Sand Hill Road",
+        "author": "Scott Kupor",
+        "amazon_url": "https://www.amazon.com/Secrets-Sand-Hill-Road-Venture/dp/059308358X",
+        "description": "An insider's guide to venture capital and startup funding."
+      }
+    ],
+    "_book_count": 1,
+    "_percentile": 1.75
   },
   {
     "id": "30793e1f-9647-4e73-a0b0-201144d736a7",
     "full_name": "Ev Williams",
-    "created_at": "2025-03-12T17:15:47.98+00:00",
-    "updated_at": "2025-03-12T17:15:47.98+00:00",
-    "url": "https://x.com/ev",
     "type": "Entrepreneur",
-    "description": "Ev Williams is a blah blah blah who blah blah blah and is known for blah blah blah"
+    "description": "Ev Williams is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "recommendations": [
+      {
+        "id": "55f0e069-44f7-4707-9aaf-089f1f64984e",
+        "genre": [
+          "Self-Help"
+        ],
+        "title": "Can't Hurt Me",
+        "author": "David Goggins",
+        "amazon_url": "https://www.amazon.com/Cant-Hurt-Me-Master-Your/dp/1544512287",
+        "description": "A memoir on overcoming adversity and building mental toughness."
+      },
+      {
+        "id": "18144cab-e4af-4a29-ba17-855a41143105",
+        "genre": [
+          "Philosophy"
+        ],
+        "title": "A Guide to the Good Life",
+        "author": "William B. Irvine",
+        "amazon_url": "https://www.amazon.com/Guide-Good-Life-Ancient-Stoic/dp/0195374614",
+        "description": "An introduction to Stoic philosophy for modern living."
+      },
+      {
+        "id": "8526055f-a6dc-40e2-b3ef-91dc4f020a91",
+        "genre": [
+          "Self-Help"
+        ],
+        "title": "12 Rules for Life",
+        "author": "Jordan B. Peterson",
+        "amazon_url": "https://www.amazon.com/12-Rules-Life-Antidote-Chaos/dp/0345816021",
+        "description": "Practical life advice and philosophical insights for personal growth."
+      }
+    ],
+    "_book_count": 3,
+    "_percentile": 5.26
   },
   {
     "id": "f09eb6c4-f515-4805-9a54-644436b56665",
     "full_name": "Fred Wilson",
-    "created_at": "2025-03-08T00:32:38.483+00:00",
-    "updated_at": "2025-03-08T00:32:38.483+00:00",
-    "url": "https://x.com/fredwilson",
     "type": "Investor",
-    "description": "Fred Wilson is a blah blah blah who blah blah blah and is known for blah blah blah"
+    "description": "Fred Wilson is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "recommendations": [
+      {
+        "id": "135483b6-099c-4c85-a916-cc692681969d",
+        "genre": [
+          "Science Fiction"
+        ],
+        "title": "Snow Crash",
+        "author": "Neal Stephenson",
+        "amazon_url": "https://www.amazon.com/Snow-Crash-Neal-Stephenson/dp/0553380958",
+        "description": "A cyberpunk classic exploring virtual realities and dystopian futures."
+      },
+      {
+        "id": "18d5c2f6-bef8-4892-b4bd-ca878c4de776",
+        "genre": [
+          "Nonfiction",
+          "Business"
+        ],
+        "title": "The Hard Thing About Hard Things",
+        "author": "Ben Horowitz",
+        "amazon_url": "https://www.amazon.com/Hard-Thing-About-Things-Building/dp/0062273205",
+        "description": "Insights into startup struggles and leadership in the tech world."
+      }
+    ],
+    "_book_count": 2,
+    "_percentile": 3.51
   },
   {
     "id": "ba8b1d8e-3055-41fa-a0de-e68f7f2a03d3",
     "full_name": "Garry Tan",
-    "created_at": "2025-02-28T01:15:10.571+00:00",
-    "updated_at": "2025-02-28T01:15:10.571+00:00",
-    "url": "https://x.com/garrytan",
     "type": "Entrepreneur",
-    "description": "Garry Tan is a blah blah blah who blah blah blah and is known for blah blah blah"
+    "description": "Garry Tan is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "recommendations": [
+      {
+        "id": "3560a1d3-117d-4afb-bf7c-c7cffb8be368",
+        "genre": [
+          "Business"
+        ],
+        "title": "Without Their Permission",
+        "author": "Alexis Ohanian",
+        "amazon_url": "https://www.amazon.com/Without-Their-Permission-Century-Managed/dp/1455520020",
+        "description": "A playbook for building successful tech companies and online communities."
+      }
+    ],
+    "_book_count": 1,
+    "_percentile": 1.75
   },
   {
     "id": "fd359f15-fcbd-4d84-a322-b626043bba75",
     "full_name": "Howard Marks",
-    "created_at": "2025-03-12T17:08:49.211+00:00",
-    "updated_at": "2025-03-12T17:08:49.211+00:00",
-    "url": "https://en.wikipedia.org/wiki/Howard_Marks_(investor)",
     "type": "Investor",
-    "description": "Howard Marks is a blah blah blah who blah blah blah and is known for blah blah blah"
+    "description": "Howard Marks is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "recommendations": [
+      {
+        "id": "55f0e069-44f7-4707-9aaf-089f1f64984e",
+        "genre": [
+          "Self-Help"
+        ],
+        "title": "Can't Hurt Me",
+        "author": "David Goggins",
+        "amazon_url": "https://www.amazon.com/Cant-Hurt-Me-Master-Your/dp/1544512287",
+        "description": "A memoir on overcoming adversity and building mental toughness."
+      },
+      {
+        "id": "18144cab-e4af-4a29-ba17-855a41143105",
+        "genre": [
+          "Philosophy"
+        ],
+        "title": "A Guide to the Good Life",
+        "author": "William B. Irvine",
+        "amazon_url": "https://www.amazon.com/Guide-Good-Life-Ancient-Stoic/dp/0195374614",
+        "description": "An introduction to Stoic philosophy for modern living."
+      },
+      {
+        "id": "8526055f-a6dc-40e2-b3ef-91dc4f020a91",
+        "genre": [
+          "Self-Help"
+        ],
+        "title": "12 Rules for Life",
+        "author": "Jordan B. Peterson",
+        "amazon_url": "https://www.amazon.com/12-Rules-Life-Antidote-Chaos/dp/0345816021",
+        "description": "Practical life advice and philosophical insights for personal growth."
+      }
+    ],
+    "_book_count": 3,
+    "_percentile": 5.26
   },
   {
     "id": "83842e58-6b23-4046-9901-07034c31b28c",
     "full_name": "J.K. Rowling",
-    "created_at": "2025-03-17T18:01:36.328+00:00",
-    "updated_at": "2025-03-17T18:01:36.328+00:00",
-    "url": "https://en.wikipedia.org/wiki/J._K._Rowling",
     "type": "Author",
-    "description": "J.K. Rowling is a blah blah blah who blah blah blah and is known for blah blah blah"
+    "description": "J.K. Rowling is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "recommendations": [
+      {
+        "id": "e0a97b37-c3c4-4531-9c7f-55f68a5104d6",
+        "genre": [
+          "Classic"
+        ],
+        "title": "The Iliad",
+        "author": "Homer",
+        "amazon_url": "https://www.amazon.com/Iliad-Homer/dp/0140275363",
+        "description": "An epic poem recounting the heroics of Achilles and the tragedy of the Trojan War."
+      }
+    ],
+    "_book_count": 1,
+    "_percentile": 1.75
   },
   {
     "id": "3cf23b17-e1e2-48b6-800e-2889593db96a",
     "full_name": "Jack Altman",
-    "created_at": "2025-03-18T03:27:31.830467+00:00",
-    "updated_at": "2025-03-18T03:27:31.830467+00:00",
-    "url": "https://x.com/jaltma",
     "type": "Entrepreneur",
-    "description": "Jack Altman is a blah blah blah who blah blah blah and is known for blah blah blah"
+    "description": "Jack Altman is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "recommendations": [
+      {
+        "id": "fafb4fb2-8071-414f-b88a-54def50c37b0",
+        "genre": [
+          "Nonfiction"
+        ],
+        "title": "A Mathematician's Apology",
+        "author": "G. H. Hardy",
+        "amazon_url": "https://www.amazon.com/Mathematicians-Apology-G-H-Hardy/dp/1466402695",
+        "description": "A reflective essay on the beauty and purpose of mathematics by one of its greatest advocates."
+      }
+    ],
+    "_book_count": 1,
+    "_percentile": 1.75
   },
   {
     "id": "5c8107ba-a540-40ab-ab2e-ab7b905fc475",
     "full_name": "Jack Dorsey",
-    "created_at": "2025-03-03T21:51:29.199+00:00",
-    "updated_at": "2025-03-03T21:51:29.199+00:00",
-    "url": "https://x.com/jack",
     "type": "Entrepreneur",
-    "description": "Jack Dorsey is a blah blah blah who blah blah blah and is known for blah blah blah"
+    "description": "Jack Dorsey is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "recommendations": [
+      {
+        "id": "cb8652ee-4c35-4124-9fe2-85bcf14e991f",
+        "genre": [
+          "Science"
+        ],
+        "title": "Whole Earth Discipline",
+        "author": "Stewart Brand",
+        "amazon_url": "https://www.amazon.com/Whole-Earth-Discipline-Transgenic-Geoengineering/dp/0143118285",
+        "description": "Examines how technology and environment intersect in modern society."
+      },
+      {
+        "id": "931e6375-0c63-4a03-aa30-58c459d52cdd",
+        "genre": [
+          "Biography"
+        ],
+        "title": "Becoming Steve Jobs",
+        "author": "Brent Schlender",
+        "amazon_url": "https://www.amazon.com/Becoming-Steve-Jobs-Evolution-Visionary/dp/0385347421",
+        "description": "A candid biography capturing the complex legacy of Steve Jobs."
+      }
+    ],
+    "_book_count": 2,
+    "_percentile": 3.51
   },
   {
     "id": "d0a77752-00b0-4c5c-8413-5a153635b741",
     "full_name": "Jennifer Lawrence",
-    "created_at": "2025-03-17T21:10:54.856+00:00",
-    "updated_at": "2025-03-17T21:10:54.856+00:00",
-    "url": "https://en.wikipedia.org/wiki/Jennifer_Lawrence",
     "type": "Entertainer",
-    "description": "Jennifer Lawrence is a blah blah blah who blah blah blah and is known for blah blah blah"
+    "description": "Jennifer Lawrence is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "recommendations": [
+      {
+        "id": "76fe1a81-4aa3-4c23-8041-cf2e8dd6933b",
+        "genre": [
+          "Classic"
+        ],
+        "title": "Anna Karenina",
+        "author": "Leo Tolstoy",
+        "amazon_url": "https://www.amazon.com/Anna-Karenina-Leo-Tolstoy/dp/0143035002",
+        "description": "A profound exploration of love, jealousy, and societal pressures in 19th-century Russia."
+      }
+    ],
+    "_book_count": 1,
+    "_percentile": 1.75
   },
   {
     "id": "40c43eeb-e46d-4cf7-8a8f-477a9d7c9d59",
     "full_name": "Jensen Huang",
-    "created_at": "2025-03-01T16:29:33.34+00:00",
-    "updated_at": "2025-03-01T16:29:33.34+00:00",
-    "url": "https://en.wikipedia.org/wiki/Jensen_Huang",
     "type": "Technologist",
-    "description": "Jensen Huang is a blah blah blah who blah blah blah and is known for blah blah blah"
+    "description": "Jensen Huang is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "recommendations": [
+      {
+        "id": "18d5c2f6-bef8-4892-b4bd-ca878c4de776",
+        "genre": [
+          "Nonfiction",
+          "Business"
+        ],
+        "title": "The Hard Thing About Hard Things",
+        "author": "Ben Horowitz",
+        "amazon_url": "https://www.amazon.com/Hard-Thing-About-Things-Building/dp/0062273205",
+        "description": "Insights into startup struggles and leadership in the tech world."
+      }
+    ],
+    "_book_count": 1,
+    "_percentile": 1.75
   },
   {
     "id": "d304a5f5-edab-4931-a041-7605546b5d84",
     "full_name": "Jim Collins",
-    "created_at": "2025-03-20T15:11:24.92+00:00",
-    "updated_at": "2025-03-20T15:11:24.92+00:00",
-    "url": "https://x.com/level5leaders",
     "type": "Executive",
-    "description": "Jim Collins is a blah blah blah who blah blah blah and is known for blah blah blah"
+    "description": "Jim Collins is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "recommendations": [
+      {
+        "id": "931e6375-0c63-4a03-aa30-58c459d52cdd",
+        "genre": [
+          "Biography"
+        ],
+        "title": "Becoming Steve Jobs",
+        "author": "Brent Schlender",
+        "amazon_url": "https://www.amazon.com/Becoming-Steve-Jobs-Evolution-Visionary/dp/0385347421",
+        "description": "A candid biography capturing the complex legacy of Steve Jobs."
+      }
+    ],
+    "_book_count": 1,
+    "_percentile": 1.75
   },
   {
     "id": "b47bd147-f5ad-49d1-b24f-946f71c9841b",
     "full_name": "Joe Rogan",
-    "created_at": "2025-03-08T18:41:16.153+00:00",
-    "updated_at": "2025-03-08T18:41:16.153+00:00",
-    "url": "https://x.com/joerogan",
     "type": "Journalist",
-    "description": "Joe Rogan is a blah blah blah who blah blah blah and is known for blah blah blah"
+    "description": "Joe Rogan is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "recommendations": [
+      {
+        "id": "55f0e069-44f7-4707-9aaf-089f1f64984e",
+        "genre": [
+          "Self-Help"
+        ],
+        "title": "Can't Hurt Me",
+        "author": "David Goggins",
+        "amazon_url": "https://www.amazon.com/Cant-Hurt-Me-Master-Your/dp/1544512287",
+        "description": "A memoir on overcoming adversity and building mental toughness."
+      },
+      {
+        "id": "8526055f-a6dc-40e2-b3ef-91dc4f020a91",
+        "genre": [
+          "Self-Help"
+        ],
+        "title": "12 Rules for Life",
+        "author": "Jordan B. Peterson",
+        "amazon_url": "https://www.amazon.com/12-Rules-Life-Antidote-Chaos/dp/0345816021",
+        "description": "Practical life advice and philosophical insights for personal growth."
+      }
+    ],
+    "_book_count": 2,
+    "_percentile": 3.51
   },
   {
     "id": "2a6f9d43-a50f-46eb-97c8-f34be0d5f414",
     "full_name": "Jordan Peterson",
-    "created_at": "2025-03-13T01:03:02.573+00:00",
-    "updated_at": "2025-03-13T01:03:02.573+00:00",
-    "url": "https://x.com/jordanbpeterson",
     "type": "Historian or Philosopher",
-    "description": "Jordan Peterson is a blah blah blah who blah blah blah and is known for blah blah blah"
+    "description": "Jordan Peterson is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "recommendations": [
+      {
+        "id": "76fe1a81-4aa3-4c23-8041-cf2e8dd6933b",
+        "genre": [
+          "Classic"
+        ],
+        "title": "Anna Karenina",
+        "author": "Leo Tolstoy",
+        "amazon_url": "https://www.amazon.com/Anna-Karenina-Leo-Tolstoy/dp/0143035002",
+        "description": "A profound exploration of love, jealousy, and societal pressures in 19th-century Russia."
+      }
+    ],
+    "_book_count": 1,
+    "_percentile": 1.75
   },
   {
     "id": "94fd096a-10b2-4580-a3a9-95180c140700",
     "full_name": "Julie Zhuo",
-    "created_at": "2025-03-19T02:09:23.487+00:00",
-    "updated_at": "2025-03-19T02:09:23.487+00:00",
-    "url": "https://twitter.com/joulee?ref_src=twsrc%5Egoogle%7Ctwcamp%5Eserp%7Ctwgr%5Eauthor",
     "type": "Engineer or Product Manager",
-    "description": "Julie Zhuo is a blah blah blah who blah blah blah and is known for blah blah blah"
+    "description": "Julie Zhuo is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "recommendations": [
+      {
+        "id": "18d5c2f6-bef8-4892-b4bd-ca878c4de776",
+        "genre": [
+          "Nonfiction",
+          "Business"
+        ],
+        "title": "The Hard Thing About Hard Things",
+        "author": "Ben Horowitz",
+        "amazon_url": "https://www.amazon.com/Hard-Thing-About-Things-Building/dp/0062273205",
+        "description": "Insights into startup struggles and leadership in the tech world."
+      }
+    ],
+    "_book_count": 1,
+    "_percentile": 1.75
   },
   {
     "id": "aa1f2e94-bc0c-490f-a37f-2de6c135def4",
     "full_name": "Karlie Kloss",
-    "created_at": "2025-03-14T03:19:33.17+00:00",
-    "updated_at": "2025-03-14T03:19:33.17+00:00",
-    "url": "https://x.com/karliekloss",
     "type": "Entrepreneur",
-    "description": "Karlie Kloss is a blah blah blah who blah blah blah and is known for blah blah blah"
+    "description": "Karlie Kloss is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "recommendations": [
+      {
+        "id": "8526055f-a6dc-40e2-b3ef-91dc4f020a91",
+        "genre": [
+          "Self-Help"
+        ],
+        "title": "12 Rules for Life",
+        "author": "Jordan B. Peterson",
+        "amazon_url": "https://www.amazon.com/12-Rules-Life-Antidote-Chaos/dp/0345816021",
+        "description": "Practical life advice and philosophical insights for personal growth."
+      }
+    ],
+    "_book_count": 1,
+    "_percentile": 1.75
   },
   {
     "id": "bd91df9a-316c-4714-b6dc-e78218a85a69",
     "full_name": "Keith Rabois",
-    "created_at": "2025-03-03T21:25:33.713+00:00",
-    "updated_at": "2025-03-03T21:25:33.713+00:00",
-    "url": "https://x.com/rabois",
     "type": "Investor",
-    "description": "Keith Rabois is a blah blah blah who blah blah blah and is known for blah blah blah"
+    "description": "Keith Rabois is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "recommendations": [
+      {
+        "id": "931e6375-0c63-4a03-aa30-58c459d52cdd",
+        "genre": [
+          "Biography"
+        ],
+        "title": "Becoming Steve Jobs",
+        "author": "Brent Schlender",
+        "amazon_url": "https://www.amazon.com/Becoming-Steve-Jobs-Evolution-Visionary/dp/0385347421",
+        "description": "A candid biography capturing the complex legacy of Steve Jobs."
+      },
+      {
+        "id": "63b27406-619b-4b72-9c87-27f10dabf903",
+        "genre": [
+          "Nonfiction"
+        ],
+        "title": "Behave: The Biology of Humans at Our Best and Worst",
+        "author": "Robert Sapolsky",
+        "amazon_url": "https://www.amazon.com/dp/B01IAUGC5S?tag=9natree-20",
+        "description": "An exploration of the science behind human behavior and decision making."
+      },
+      {
+        "id": "18d5c2f6-bef8-4892-b4bd-ca878c4de776",
+        "genre": [
+          "Nonfiction",
+          "Business"
+        ],
+        "title": "The Hard Thing About Hard Things",
+        "author": "Ben Horowitz",
+        "amazon_url": "https://www.amazon.com/Hard-Thing-About-Things-Building/dp/0062273205",
+        "description": "Insights into startup struggles and leadership in the tech world."
+      }
+    ],
+    "_book_count": 3,
+    "_percentile": 5.26
   },
   {
     "id": "cfee863c-c29b-4930-9b76-3bba84c73c45",
     "full_name": "Larry Page",
-    "created_at": "2025-03-17T17:53:20.649+00:00",
-    "updated_at": "2025-03-17T17:53:20.649+00:00",
-    "url": "https://en.wikipedia.org/wiki/Larry_Page",
     "type": "Entrepreneur",
-    "description": "Larry Page is a blah blah blah who blah blah blah and is known for blah blah blah"
+    "description": "Larry Page is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "recommendations": [
+      {
+        "id": "135483b6-099c-4c85-a916-cc692681969d",
+        "genre": [
+          "Science Fiction"
+        ],
+        "title": "Snow Crash",
+        "author": "Neal Stephenson",
+        "amazon_url": "https://www.amazon.com/Snow-Crash-Neal-Stephenson/dp/0553380958",
+        "description": "A cyberpunk classic exploring virtual realities and dystopian futures."
+      },
+      {
+        "id": "18d5c2f6-bef8-4892-b4bd-ca878c4de776",
+        "genre": [
+          "Nonfiction",
+          "Business"
+        ],
+        "title": "The Hard Thing About Hard Things",
+        "author": "Ben Horowitz",
+        "amazon_url": "https://www.amazon.com/Hard-Thing-About-Things-Building/dp/0062273205",
+        "description": "Insights into startup struggles and leadership in the tech world."
+      }
+    ],
+    "_book_count": 2,
+    "_percentile": 3.51
   },
   {
     "id": "c1ffc866-e5bb-48eb-967a-bfb6914e183c",
     "full_name": "LeBron James",
-    "created_at": "2025-03-08T17:54:19.837+00:00",
-    "updated_at": "2025-03-08T17:54:19.837+00:00",
-    "url": "https://x.com/KingJames",
     "type": "Entertainer",
-    "description": "LeBron James is a blah blah blah who blah blah blah and is known for blah blah blah"
+    "description": "LeBron James is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "recommendations": [
+      {
+        "id": "8c4b4f03-6ffa-4ed2-a838-35dae447c2de",
+        "genre": [
+          "Biography"
+        ],
+        "title": "Living With a Seal",
+        "author": "Jesse Itzler",
+        "amazon_url": "https://www.amazon.com/Living-SEAL-Training-Toughest-Planet-ebook/dp/B00U6DNZB2",
+        "description": "A quirky account of a month spent training with a Navy SEAL."
+      }
+    ],
+    "_book_count": 1,
+    "_percentile": 1.75
   },
   {
     "id": "1568e1de-342e-4c99-be85-229e54f2248f",
     "full_name": "Marc Andreessen",
-    "created_at": "2025-02-15T21:15:47.206692+00:00",
-    "updated_at": "2025-02-15T21:15:47.206692+00:00",
-    "url": "https://x.com/pmarca",
     "type": "Investor",
-    "description": "Marc Andreessen is a blah blah blah who blah blah blah and is known for blah blah blah"
+    "description": "Marc Andreessen is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "recommendations": [
+      {
+        "id": "25923530-d84d-4028-a5ef-0b6e0fd70d40",
+        "genre": [
+          "Self-Help"
+        ],
+        "title": "Thinking in Bets",
+        "author": "Annie Duke",
+        "amazon_url": "https://www.amazon.com/Thinking-Bets-Making-Smarter-Decisions/dp/0735216355",
+        "description": "A guide to making smarter decisions under uncertainty and risk."
+      },
+      {
+        "id": "46489ec7-a8bf-43b8-8cc2-7dcd263888b9",
+        "genre": [
+          "Economics"
+        ],
+        "title": "The Second Machine Age: Work, Progress, and Prosperity in a Time of Brilliant Technologies",
+        "author": "Erik Brynjolfsson",
+        "amazon_url": "https://www.amazon.com/Second-Machine-Age-Prosperity-Technologies/dp/0393350649",
+        "description": "An analysis of how digital technologies are transforming the economy and redefining work and productivity."
+      },
+      {
+        "id": "49a48f0e-91b9-48e4-92a4-b68c875be423",
+        "genre": [
+          "Economics"
+        ],
+        "title": "Golden Gates",
+        "author": "Conor Dougherty",
+        "amazon_url": "https://www.amazon.com/Golden-Gates-Fighting-Housing-America/dp/0525560211",
+        "description": "A compelling exploration of urban development challenges and opportunities in modern American cities."
+      },
+      {
+        "id": "cb8652ee-4c35-4124-9fe2-85bcf14e991f",
+        "genre": [
+          "Science"
+        ],
+        "title": "Whole Earth Discipline",
+        "author": "Stewart Brand",
+        "amazon_url": "https://www.amazon.com/Whole-Earth-Discipline-Transgenic-Geoengineering/dp/0143118285",
+        "description": "Examines how technology and environment intersect in modern society."
+      },
+      {
+        "id": "93f3f0ad-ae4e-46fd-95b3-6ce1b951f9fa",
+        "genre": [
+          "Nonfiction"
+        ],
+        "title": "Slugfest",
+        "author": "Reed Tucker",
+        "amazon_url": "https://www.amazon.com/Slugfest-Inside-50-year-Battle-between/dp/0306825465",
+        "description": "A creative account of the comic book industry’s early days and its evolution into a global cultural force."
+      },
+      {
+        "id": "d459a6b8-2e46-41a7-a737-47f263d293f7",
+        "genre": [
+          "Self-Help",
+          "Nonfiction"
+        ],
+        "title": "Thinking, Fast and Slow",
+        "author": "Daniel Kahneman",
+        "amazon_url": "https://www.amazon.com/live/video/07f37281865849bb8650969e1931c367?ref_=dp_vse_rvc_8",
+        "description": "A deep dive into the two systems driving human thought and behavior."
+      },
+      {
+        "id": "ae26d6f5-bb1b-4c8a-995e-31ce78b35976",
+        "genre": [
+          "Biography"
+        ],
+        "title": "The Wizard of Menlo Park",
+        "author": "Randall Stross",
+        "amazon_url": "https://www.amazon.com/Wizard-Menlo-Park-Thomas-Invented/dp/1400047633",
+        "description": "A detailed biography of Thomas Edison that captures his genius and transformative impact on modern technology."
+      },
+      {
+        "id": "3331e224-4a1e-4e22-9810-e435f6736a87",
+        "genre": [
+          "Economics"
+        ],
+        "title": "Triumph of the City",
+        "author": "Edward Glaeser",
+        "amazon_url": "https://www.amazon.com/Triumph-City-Greatest-Invention-Healthier/dp/0143120549",
+        "description": "A detailed analysis of how cities drive economic growth and innovation, making urbanization key to prosperity."
+      },
+      {
+        "id": "135483b6-099c-4c85-a916-cc692681969d",
+        "genre": [
+          "Science Fiction"
+        ],
+        "title": "Snow Crash",
+        "author": "Neal Stephenson",
+        "amazon_url": "https://www.amazon.com/Snow-Crash-Neal-Stephenson/dp/0553380958",
+        "description": "A cyberpunk classic exploring virtual realities and dystopian futures."
+      },
+      {
+        "id": "5495fe0a-4db2-48be-8a69-4ba3745a5172",
+        "genre": [
+          "Politics"
+        ],
+        "title": "Days of Rage",
+        "author": "Bryan Burrough",
+        "amazon_url": "https://www.amazon.com/Days-Rage-Underground-Forgotten-Revolutionary/dp/0143107976",
+        "description": "A vivid narrative of 1960s racial politics and domestic terrorism, chronicling a turbulent era in American history."
+      },
+      {
+        "id": "1c94f878-3b2e-42b3-9973-cc806b6240a4",
+        "genre": [
+          "Politics"
+        ],
+        "title": "Chasing Hillary",
+        "author": "Amy Chozick",
+        "amazon_url": "https://www.amazon.com/Chasing-Hillary-Presidential-Campaigns-Ceiling/dp/0062413597",
+        "description": "A behind-the-scenes look at the 2016 Hillary Clinton campaign that blends personal insight with political analysis."
+      },
+      {
+        "id": "8f8897dd-5a9a-4e9a-b1c4-a07da57d5507",
+        "genre": [
+          "Biography"
+        ],
+        "title": "An Apology for the Builder",
+        "author": "Nicholas Barbon",
+        "amazon_url": "https://www.amazon.com/apology-builder-discourse-increase-building/dp/1275835015",
+        "description": "A reflective exploration of the timeless principles of construction and the creative process behind building great things."
+      },
+      {
+        "id": "e7f3c17f-6217-4119-b6d1-dd58f7a98648",
+        "genre": [
+          "Business"
+        ],
+        "title": "Walt Disney: The Triumph of the American Imagination",
+        "author": "Neal Gabler",
+        "amazon_url": "https://www.amazon.com/Walt-Disney-Triumph-American-Imagination/dp/0739340298",
+        "description": "A definitive biography of Walt Disney that explores his creative vision and lasting impact on entertainment."
+      },
+      {
+        "id": "f006338f-99fd-4da0-8b6f-c9781c2f9e77",
+        "genre": [
+          "Nonfiction"
+        ],
+        "title": "Private Truths, Public Lies",
+        "author": "Timur Kuran",
+        "amazon_url": "https://www.amazon.com/Private-Truths-Public-Lies-Falsification/dp/0674707583",
+        "description": "A deep dive into how hidden biases and concealed information shape political and economic outcomes."
+      },
+      {
+        "id": "72de3c3a-3457-4daf-9338-e5d392a12fc7",
+        "genre": [
+          "Fiction"
+        ],
+        "title": "Lone Survivor",
+        "author": "Marcus Luttrell",
+        "amazon_url": "https://www.amazon.com/Lone-Survivor-Eyewitness-Account-Operation-ebook/dp/B000QRIGLC",
+        "description": "A harrowing account of a Navy SEAL team’s mission gone awry and the heroism of survival under fire."
+      },
+      {
+        "id": "ebe696d6-2fd7-4054-98e4-40438124b4c8",
+        "genre": [
+          "Biography"
+        ],
+        "title": "Edison",
+        "author": "Edmund Morris",
+        "amazon_url": "https://www.amazon.com/Edison-Edmund-Morris/dp/081299311X",
+        "description": "A captivating biography of Thomas Edison, the prolific inventor whose innovations transformed modern life."
+      },
+      {
+        "id": "55f0e069-44f7-4707-9aaf-089f1f64984e",
+        "genre": [
+          "Self-Help"
+        ],
+        "title": "Can't Hurt Me",
+        "author": "David Goggins",
+        "amazon_url": "https://www.amazon.com/Cant-Hurt-Me-Master-Your/dp/1544512287",
+        "description": "A memoir on overcoming adversity and building mental toughness."
+      },
+      {
+        "id": "228e4f61-ab06-4720-a3b1-0a7e730286b2",
+        "genre": [
+          "Fiction"
+        ],
+        "title": "Elvis Cole Series",
+        "author": "Robert Crais",
+        "amazon_url": "https://www.amazon.com/Books-Robert-Crais/s?rh=n%3A283155%2Cp_27%3ARobert%2BCrais",
+        "description": "A series of engaging crime novels featuring detective Elvis Cole and his witty, compelling investigations."
+      },
+      {
+        "id": "931e6375-0c63-4a03-aa30-58c459d52cdd",
+        "genre": [
+          "Biography"
+        ],
+        "title": "Becoming Steve Jobs",
+        "author": "Brent Schlender",
+        "amazon_url": "https://www.amazon.com/Becoming-Steve-Jobs-Evolution-Visionary/dp/0385347421",
+        "description": "A candid biography capturing the complex legacy of Steve Jobs."
+      },
+      {
+        "id": "3560a1d3-117d-4afb-bf7c-c7cffb8be368",
+        "genre": [
+          "Business"
+        ],
+        "title": "Without Their Permission",
+        "author": "Alexis Ohanian",
+        "amazon_url": "https://www.amazon.com/Without-Their-Permission-Century-Managed/dp/1455520020",
+        "description": "A playbook for building successful tech companies and online communities."
+      },
+      {
+        "id": "f46359aa-9dca-4ad0-b679-7291685777ca",
+        "genre": [
+          "Nonfiction"
+        ],
+        "title": "The Myth of the Rational Voter",
+        "author": "Bryan Caplan",
+        "amazon_url": "https://www.amazon.com/Myth-Rational-Voter-Democracies-Policies/dp/0691138737",
+        "description": "A provocative examination of voter behavior and the irrational biases that shape democratic decision-making."
+      },
+      {
+        "id": "5f53f667-41d0-4b0a-9ec3-ee1b6de176f7",
+        "genre": [
+          "Business"
+        ],
+        "title": "When the Wolves Bite",
+        "author": "Scott Wapner",
+        "amazon_url": "https://www.amazon.com/When-Wolves-Bite-Billionaires-Company/dp/1610398270",
+        "description": "A detailed account of a high-stakes Wall Street battle that captures the drama of financial conflict."
+      },
+      {
+        "id": "f518cc86-5fdf-446e-9616-b864364ebe55",
+        "genre": [
+          "Economics"
+        ],
+        "title": "The Power of Productivity",
+        "author": "William W. Lewis",
+        "amazon_url": "https://www.amazon.com/Power-Productivity-Wealth-Poverty-Stability/dp/0226476766",
+        "description": "An exploration of how technological innovation boosts productivity and improves quality of life."
+      },
+      {
+        "id": "63b27406-619b-4b72-9c87-27f10dabf903",
+        "genre": [
+          "Nonfiction"
+        ],
+        "title": "Behave: The Biology of Humans at Our Best and Worst",
+        "author": "Robert Sapolsky",
+        "amazon_url": "https://www.amazon.com/dp/B01IAUGC5S?tag=9natree-20",
+        "description": "An exploration of the science behind human behavior and decision making."
+      },
+      {
+        "id": "a3df23d9-616a-47df-9a2a-68a0fe9cb0dc",
+        "genre": [
+          "Politics"
+        ],
+        "title": "Devil's Bargain",
+        "author": "Joshua Green",
+        "amazon_url": "https://www.amazon.com/Devils-Bargain-Bannon-Storming-Presidency/dp/0735225028",
+        "description": "An incisive look into political power plays and the dynamics shaping modern policy and governance."
+      },
+      {
+        "id": "a8b0777e-fd99-4e14-b7ca-20156948e8a2",
+        "genre": [
+          "Politics"
+        ],
+        "title": "Shattered",
+        "author": "Jonathan Allen",
+        "amazon_url": "https://www.amazon.com/Shattered-Inside-Hillary-Clintons-Campaign/dp/0553447084",
+        "description": "A revealing look at how media coverage impacted political campaigns during the turbulent 2016 election."
+      },
+      {
+        "id": "7b02c1b6-4295-4e95-83f7-71df8b8b7e8a",
+        "genre": [
+          "Fiction"
+        ],
+        "title": "Rainbows End",
+        "author": "Vernor Vinge",
+        "amazon_url": "https://www.amazon.com/Rainbows-End-Novel-Foot-Future/dp/0812536363",
+        "description": "A visionary science fiction novel exploring the future of technology, human cognition, and society."
+      },
+      {
+        "id": "079b9c34-0d3e-445a-82b5-84e174d22690",
+        "genre": [
+          "Nonfiction"
+        ],
+        "title": "Civilian Warriors",
+        "author": "Erik Prince",
+        "amazon_url": "https://www.amazon.com/Civilian-Warriors-Inside-Blackwater-Unsung/dp/1591847214",
+        "description": "A detailed account of the rise of private military contractors and their evolving role in modern warfare."
+      },
+      {
+        "id": "f7f87ae0-b2b6-45e7-97f6-6a5730a729c1",
+        "genre": [
+          "Self-Help"
+        ],
+        "title": "But What if We're Wrong?",
+        "author": "Chuck Klosterman",
+        "amazon_url": "https://www.amazon.com/But-What-If-Were-Wrong/dp/0451484878",
+        "description": "A thought-provoking meditation on uncertainty and the possibility that many of our beliefs about the world are mistaken."
+      },
+      {
+        "id": "4a0bb40d-62b6-419a-a4e7-180edf8f54b1",
+        "genre": [
+          "Self-Help"
+        ],
+        "title": "How to Live",
+        "author": "Sarah Bakewell",
+        "amazon_url": "https://www.amazon.com/How-Live-Montaigne-Question-Attempts/dp/1590514831",
+        "description": "An engaging exploration of the art of living, drawing on the wisdom of philosophy and history."
+      },
+      {
+        "id": "4f22cd45-c944-411c-986e-75b8c12e4c15",
+        "genre": [
+          "Fiction"
+        ],
+        "title": "A Spy Among Friends",
+        "author": "Ben MacIntyre",
+        "amazon_url": "https://www.amazon.com/Spy-Among-Friends-Philby-Betrayal/dp/0804136653",
+        "description": "A riveting true account of espionage and betrayal among colleagues in the shadowy world of intelligence."
+      },
+      {
+        "id": "71de5878-4c3c-41a1-9609-9cf84179d7d6",
+        "genre": [
+          "Nonfiction"
+        ],
+        "title": "Intellectuals and Society",
+        "author": "Thomas Sowell",
+        "amazon_url": "https://www.amazon.com/Intellectuals-Society-Thomas-Sowell/dp/0465025226",
+        "description": "A critical analysis of the role intellectuals play in shaping public policy and societal trends."
+      },
+      {
+        "id": "ebc509c3-25af-48d3-a59b-957246f4944d",
+        "genre": [
+          "Politics"
+        ],
+        "title": "A Higher Loyalty",
+        "author": "James Comey",
+        "amazon_url": "https://www.amazon.com/Higher-Loyalty-Truth-Lies-Leadership/dp/1250192455",
+        "description": "A candid memoir by former FBI director James Comey, revealing insights into power, ethics, and the pressures of public service."
+      },
+      {
+        "id": "6fe494fc-39dd-4100-adaf-76548f132c2a",
+        "genre": [
+          "Nonfiction"
+        ],
+        "title": "The Fabric of Civilization",
+        "author": "Virginia Postrel",
+        "amazon_url": "https://www.amazon.com/Fabric-Civilization-Textiles-Made-World/dp/1541617606",
+        "description": "A historical journey through the evolution of technology and culture."
+      },
+      {
+        "id": "ce05a2d7-6292-4dde-ab13-95b1b2da05fb",
+        "genre": [
+          "Historical"
+        ],
+        "title": "The Ancient City",
+        "author": "Peter Connolly",
+        "amazon_url": "https://www.amazon.com/Ancient-City-Life-Classical-Athens/dp/0195215826",
+        "description": "A historical exploration of urban life and ancient civilizations."
+      },
+      {
+        "id": "efe56f76-3364-4bbf-9656-bfe789ccdd96",
+        "genre": [
+          "Business"
+        ],
+        "title": "Recapturing the Spirit of Enterprise",
+        "author": "George Gilder",
+        "amazon_url": "https://www.amazon.com/Recapturing-Spirit-Enterprise-George-Gilder/dp/1558152016",
+        "description": "A spirited defense of entrepreneurship and free-market innovation as the engines of economic progress."
+      },
+      {
+        "id": "7dc14862-97d5-4dac-b9ba-fd7a416c3df9",
+        "genre": [
+          "Business"
+        ],
+        "title": "The Tycoons",
+        "author": "Charles R. Morris",
+        "amazon_url": "https://www.amazon.com/Tycoons-Carnegie-Rockefeller-Invented-Supereconomy/dp/0805081348",
+        "description": "An insightful look at the lives and strategies of the great industrial builders of the 19th century."
+      },
+      {
+        "id": "998bba5d-6127-4835-bb00-c5942d510770",
+        "genre": [
+          "Nonfiction"
+        ],
+        "title": "The Courage to Be Disliked",
+        "author": "Ichiro Kishimi",
+        "amazon_url": "https://www.amazon.com/Courage-Be-Disliked-Phenomenon-Happiness-ebook/dp/B078MDSV8T",
+        "description": "A philosophical dialogue on embracing freedom and self-reliance."
+      },
+      {
+        "id": "5309551f-8fb4-49d0-8a21-15054a35c7bb",
+        "genre": [
+          "Politics"
+        ],
+        "title": "A Very Expensive Poison",
+        "author": "Luke Harding",
+        "amazon_url": "https://www.amazon.com/Very-Expensive-Poison-Assassination-Litvinenko/dp/1101973994",
+        "description": "A gripping account of political assassinations in the UK, blending investigative journalism with a thrilling narrative."
+      },
+      {
+        "id": "18144cab-e4af-4a29-ba17-855a41143105",
+        "genre": [
+          "Philosophy"
+        ],
+        "title": "A Guide to the Good Life",
+        "author": "William B. Irvine",
+        "amazon_url": "https://www.amazon.com/Guide-Good-Life-Ancient-Stoic/dp/0195374614",
+        "description": "An introduction to Stoic philosophy for modern living."
+      },
+      {
+        "id": "00139908-04bd-4c26-ae8e-ecbf4cbf4339",
+        "genre": [
+          "Nonfiction"
+        ],
+        "title": "Expert Political Judgement",
+        "author": "Philip E. Tetlock",
+        "amazon_url": "https://www.amazon.com/Expert-Political-Judgment-Tetlock-2006-08-20/dp/B01FKRPVZQ",
+        "description": "An analysis of forecasting and decision-making in politics that challenges conventional wisdom about expert predictions."
+      },
+      {
+        "id": "05227c5a-ab9d-4769-8380-44de3442f6af",
+        "genre": [
+          "Economics"
+        ],
+        "title": "More From Less",
+        "author": "Andrew McAfee",
+        "amazon_url": "https://www.amazon.com/More-Less-Surprising-Learned-Resources_and/dp/1982103574",
+        "description": "An analysis of how modern economies can achieve greater output with fewer resources, driving sustainable growth."
+      },
+      {
+        "id": "b72b2df4-6eaf-4cae-9242-6193e046ed85",
+        "genre": [
+          "Fiction"
+        ],
+        "title": "Born Standing Up: A Comic's Life",
+        "author": "Steve Martin",
+        "amazon_url": "https://www.amazon.com/Born-Standing-Up-Comics-Life/dp/1416553657",
+        "description": "A humorous memoir detailing the rise of a stand-up comedian."
+      },
+      {
+        "id": "18d5c2f6-bef8-4892-b4bd-ca878c4de776",
+        "genre": [
+          "Nonfiction",
+          "Business"
+        ],
+        "title": "The Hard Thing About Hard Things",
+        "author": "Ben Horowitz",
+        "amazon_url": "https://www.amazon.com/Hard-Thing-About-Things-Building/dp/0062273205",
+        "description": "Insights into startup struggles and leadership in the tech world."
+      },
+      {
+        "id": "7573aaf6-a916-4c27-b85e-246b130cf757",
+        "genre": [
+          "Science Fiction"
+        ],
+        "title": "Kill Decision",
+        "author": "Daniel Suarez",
+        "amazon_url": "https://www.amazon.com/Kill-Decision-Daniel-Suarez/dp/0451417704",
+        "description": "A techno-thriller that explores the potential future of autonomous warfare and unmanned combat systems."
+      },
+      {
+        "id": "55ca43a0-984d-4427-927a-200f2f9a3d0f",
+        "genre": [
+          "Biography"
+        ],
+        "title": "Believe in People",
+        "author": "Charles Koch",
+        "amazon_url": "https://www.amazon.com/Believe-People-Bottom-Up-Solutions-Top-Down/dp/1250200962",
+        "description": "An inspiring look at human potential and the power of optimism."
+      },
+      {
+        "id": "49b0fb57-a28a-4c23-b347-eef61c5eed39",
+        "genre": [
+          "Nonfiction"
+        ],
+        "title": "The Rise of Superman",
+        "author": "Steven Kotler",
+        "amazon_url": "https://www.amazon.com/Rise-Superman-Decoding-Ultimate-Performance-ebook/dp/B00BW54XVO",
+        "description": "An exploration of flow state and peak human performance that uncovers the secrets behind extraordinary achievements."
+      },
+      {
+        "id": "e87fc45a-6049-47ba-a291-57965332432d",
+        "genre": [
+          "Business"
+        ],
+        "title": "Secrets of Sand Hill Road",
+        "author": "Scott Kupor",
+        "amazon_url": "https://www.amazon.com/Secrets-Sand-Hill-Road-Venture/dp/059308358X",
+        "description": "An insider's guide to venture capital and startup funding."
+      },
+      {
+        "id": "4132339e-02fe-4334-933d-c1ef9867bd63",
+        "genre": [
+          "Nonfiction"
+        ],
+        "title": "Extreme Ownership",
+        "author": "Jocko Willink",
+        "amazon_url": "https://www.amazon.com/Extreme-Ownership-U-S-Navy-SEALs/dp/1250067057",
+        "description": "A leadership manual emphasizing personal accountability in high-stakes situations."
+      },
+      {
+        "id": "471ca2b4-b11a-4198-a760-2196da156f64",
+        "genre": [
+          "Nonfiction"
+        ],
+        "title": "Schulz and Peanuts",
+        "author": "David Michaelis",
+        "amazon_url": "https://www.amazon.com/Schulz-Peanuts-Biography-David-Michaelis/dp/0060937998",
+        "description": "An in-depth look at Charles Schulz’s creative process and the cultural impact of the Peanuts comic strip."
+      },
+      {
+        "id": "8edc4db9-e4af-4756-a0c2-1d71940dc4b3",
+        "genre": [
+          "Politics"
+        ],
+        "title": "All Out War",
+        "author": "Tim Shipman",
+        "amazon_url": "https://www.amazon.com/All-Out-War-Britains-Political/dp/0008215154",
+        "description": "An inside account of Britain’s tumultuous exit from the EU, revealing the profound political and economic stakes."
+      },
+      {
+        "id": "169962fd-ce2a-42cb-b1c5-299e545dc5ad",
+        "genre": [
+          "Business"
+        ],
+        "title": "The Spider Network",
+        "author": "David Enrich",
+        "amazon_url": "https://www.amazon.com/Spider-Network-Backstabbing-Greatest-Financial/dp/0062452983",
+        "description": "A thrilling saga of global financial market manipulation orchestrated by a secretive cabal of bankers."
+      },
+      {
+        "id": "abb46b21-3d3e-41d9-80ae-b10b41c5967c",
+        "genre": [
+          "Nonfiction"
+        ],
+        "title": "The Strange Death of Europe",
+        "author": "Douglas Murray",
+        "amazon_url": "https://www.amazon.com/Strange-Death-Europe-Immigration-Identity/dp/1472942248",
+        "description": "A provocative exploration of immigration and cultural change in Europe that challenges conventional narratives."
+      },
+      {
+        "id": "48e4bfbd-6da7-4b78-84a2-72b0ac168ec8",
+        "genre": [
+          "Nonfiction"
+        ],
+        "title": "Conspiracy",
+        "author": "Ryan Holiday",
+        "amazon_url": "https://www.amazon.com/Conspiracy-Peter-Gawker-Anatomy-Intrigue/dp/1788160835",
+        "description": "A deep dive into the hidden networks that shape cultural events and influence public discourse."
+      },
+      {
+        "id": "cf8b6a53-925c-4e92-aa51-a5a08b70017a",
+        "genre": [
+          "Biography"
+        ],
+        "title": "Hacks",
+        "author": "Donna Brazile",
+        "amazon_url": "https://www.amazon.com/Hacks-Inside-Break-ins-Breakdowns-Donald/dp/0316478512",
+        "description": "A raw and unflinching memoir recounting the hack attacks and internal crises that rocked the DNC in 2016."
+      },
+      {
+        "id": "8c4b4f03-6ffa-4ed2-a838-35dae447c2de",
+        "genre": [
+          "Biography"
+        ],
+        "title": "Living With a Seal",
+        "author": "Jesse Itzler",
+        "amazon_url": "https://www.amazon.com/Living-SEAL-Training-Toughest-Planet-ebook/dp/B00U6DNZB2",
+        "description": "A quirky account of a month spent training with a Navy SEAL."
+      },
+      {
+        "id": "8526055f-a6dc-40e2-b3ef-91dc4f020a91",
+        "genre": [
+          "Self-Help"
+        ],
+        "title": "12 Rules for Life",
+        "author": "Jordan B. Peterson",
+        "amazon_url": "https://www.amazon.com/12-Rules-Life-Antidote-Chaos/dp/0345816021",
+        "description": "Practical life advice and philosophical insights for personal growth."
+      }
+    ],
+    "_book_count": 57,
+    "_percentile": 100
   },
   {
     "id": "cc5187c3-9d93-4b02-91c1-555dce6f6e74",
     "full_name": "Marty Cagan",
-    "created_at": "2025-03-20T17:06:28.779+00:00",
-    "updated_at": "2025-03-20T17:06:28.779+00:00",
-    "url": "https://x.com/cagan",
     "type": "Engineer or Product Manager",
-    "description": "Marty Cagan is a blah blah blah who blah blah blah and is known for blah blah blah"
+    "description": "Marty Cagan is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "recommendations": [
+      {
+        "id": "18d5c2f6-bef8-4892-b4bd-ca878c4de776",
+        "genre": [
+          "Nonfiction",
+          "Business"
+        ],
+        "title": "The Hard Thing About Hard Things",
+        "author": "Ben Horowitz",
+        "amazon_url": "https://www.amazon.com/Hard-Thing-About-Things-Building/dp/0062273205",
+        "description": "Insights into startup struggles and leadership in the tech world."
+      }
+    ],
+    "_book_count": 1,
+    "_percentile": 1.75
   },
   {
     "id": "840424c3-515e-4042-b34d-7560b1027521",
     "full_name": "Michael Mauboussin",
-    "created_at": "2025-03-07T19:25:49.867+00:00",
-    "updated_at": "2025-03-07T19:25:49.867+00:00",
-    "url": "https://x.com/mjmauboussin",
     "type": "Economist",
-    "description": "Michael Mauboussin is a blah blah blah who blah blah blah and is known for blah blah blah"
+    "description": "Michael Mauboussin is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "recommendations": [
+      {
+        "id": "25923530-d84d-4028-a5ef-0b6e0fd70d40",
+        "genre": [
+          "Self-Help"
+        ],
+        "title": "Thinking in Bets",
+        "author": "Annie Duke",
+        "amazon_url": "https://www.amazon.com/Thinking-Bets-Making-Smarter-Decisions/dp/0735216355",
+        "description": "A guide to making smarter decisions under uncertainty and risk."
+      },
+      {
+        "id": "e87fc45a-6049-47ba-a291-57965332432d",
+        "genre": [
+          "Business"
+        ],
+        "title": "Secrets of Sand Hill Road",
+        "author": "Scott Kupor",
+        "amazon_url": "https://www.amazon.com/Secrets-Sand-Hill-Road-Venture/dp/059308358X",
+        "description": "An insider's guide to venture capital and startup funding."
+      },
+      {
+        "id": "4132339e-02fe-4334-933d-c1ef9867bd63",
+        "genre": [
+          "Nonfiction"
+        ],
+        "title": "Extreme Ownership",
+        "author": "Jocko Willink",
+        "amazon_url": "https://www.amazon.com/Extreme-Ownership-U-S-Navy-SEALs/dp/1250067057",
+        "description": "A leadership manual emphasizing personal accountability in high-stakes situations."
+      }
+    ],
+    "_book_count": 3,
+    "_percentile": 5.26
   },
   {
     "id": "f37e4174-e67d-479c-aa69-a6f556295a01",
     "full_name": "Natalie Portman",
-    "created_at": "2025-03-20T18:04:23.859+00:00",
-    "updated_at": "2025-03-20T18:04:23.859+00:00",
-    "url": "https://en.wikipedia.org/wiki/Natalie_Portman",
     "type": "Musician or Filmmaker",
-    "description": "Natalie Portman is a blah blah blah who blah blah blah and is known for blah blah blah"
+    "description": "Natalie Portman is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "recommendations": [
+      {
+        "id": "d89ef09e-cb4d-4f45-9c8c-e9b34e327759",
+        "genre": [
+          "Classic"
+        ],
+        "title": "Middlemarch",
+        "author": "George Eliot",
+        "amazon_url": "https://www.amazon.com/Middlemarch-Wordsworth-Classics-George-Eliot/dp/1853262374",
+        "description": "An intricate portrait of ambition, marriage, and societal change in a small English town."
+      }
+    ],
+    "_book_count": 1,
+    "_percentile": 1.75
   },
   {
     "id": "dcdb66bc-551a-4a44-a2ff-b0cf8750670a",
     "full_name": "Naval Ravikant",
-    "created_at": "2025-03-02T21:07:15.489+00:00",
-    "updated_at": "2025-03-02T21:07:15.489+00:00",
-    "url": "https://x.com/naval",
     "type": "Entrepreneur",
-    "description": "Naval Ravikant is a blah blah blah who blah blah blah and is known for blah blah blah"
+    "description": "Naval Ravikant is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "recommendations": [
+      {
+        "id": "135483b6-099c-4c85-a916-cc692681969d",
+        "genre": [
+          "Science Fiction"
+        ],
+        "title": "Snow Crash",
+        "author": "Neal Stephenson",
+        "amazon_url": "https://www.amazon.com/Snow-Crash-Neal-Stephenson/dp/0553380958",
+        "description": "A cyberpunk classic exploring virtual realities and dystopian futures."
+      }
+    ],
+    "_book_count": 1,
+    "_percentile": 1.75
   },
   {
     "id": "cd688549-6d27-4d87-b43b-ba09e1b6cc4f",
     "full_name": "Oprah Winfrey",
-    "created_at": "2025-03-13T02:26:18.483+00:00",
-    "updated_at": "2025-03-13T02:26:18.483+00:00",
-    "url": "https://x.com/Oprah",
     "type": "Journalist",
-    "description": "Oprah Winfrey is a blah blah blah who blah blah blah and is known for blah blah blah"
+    "description": "Oprah Winfrey is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "recommendations": [
+      {
+        "id": "76fe1a81-4aa3-4c23-8041-cf2e8dd6933b",
+        "genre": [
+          "Classic"
+        ],
+        "title": "Anna Karenina",
+        "author": "Leo Tolstoy",
+        "amazon_url": "https://www.amazon.com/Anna-Karenina-Leo-Tolstoy/dp/0143035002",
+        "description": "A profound exploration of love, jealousy, and societal pressures in 19th-century Russia."
+      }
+    ],
+    "_book_count": 1,
+    "_percentile": 1.75
   },
   {
     "id": "b999bd2e-c0b2-4b16-abb2-c657b4b4e975",
     "full_name": "Patrick Collison",
-    "created_at": "2025-02-15T20:51:48.821682+00:00",
-    "updated_at": "2025-02-15T20:51:48.821682+00:00",
-    "url": "https://x.com/patrickc",
     "type": "Entrepreneur",
-    "description": "Patrick Collison is a blah blah blah who blah blah blah and is known for blah blah blah"
+    "description": "Patrick Collison is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "recommendations": [
+      {
+        "id": "bb7bd264-6530-465f-9b29-9dc0b487c3e8",
+        "genre": [
+          "Fiction"
+        ],
+        "title": "The Magic Mountain",
+        "author": "Thomas Mann",
+        "amazon_url": "https://www.amazon.com/Magic-Mountain-Thomas-Mann/dp/0679772871",
+        "description": "A philosophical meditation on life, illness, and European culture before WWI."
+      },
+      {
+        "id": "76fe1a81-4aa3-4c23-8041-cf2e8dd6933b",
+        "genre": [
+          "Classic"
+        ],
+        "title": "Anna Karenina",
+        "author": "Leo Tolstoy",
+        "amazon_url": "https://www.amazon.com/Anna-Karenina-Leo-Tolstoy/dp/0143035002",
+        "description": "A profound exploration of love, jealousy, and societal pressures in 19th-century Russia."
+      },
+      {
+        "id": "ac172430-a2d5-4a08-b766-e79b0f7d9906",
+        "genre": [
+          "Fiction"
+        ],
+        "title": "Portrait of a Lady",
+        "author": "Henry James",
+        "amazon_url": "https://www.amazon.com/Portrait-Lady-Penguin-Classics/dp/014043223X",
+        "description": "Isabel Archer faces the trials of independence, betrayal, and self-discovery in a stifling society."
+      },
+      {
+        "id": "ff01b322-2048-40b5-88eb-43b9b87e7033",
+        "genre": [
+          "Nonfiction"
+        ],
+        "title": "The Rise and Fall of Modern Medicine",
+        "author": "James Le Fanu",
+        "amazon_url": "https://www.amazon.com/Rise-Fall-Modern-Medicine/dp/0786709677",
+        "description": "A captivating account of breakthroughs and setbacks that shaped modern medical science."
+      },
+      {
+        "id": "b08aa61b-40da-4876-9007-e2a1c83b1dc0",
+        "genre": [
+          "Historical"
+        ],
+        "title": "Jane Eyre",
+        "author": "Charlotte Brontë",
+        "amazon_url": "https://www.amazon.com/Jane-Penguin-Classics-Charlotte-Bront%C3%AB/dp/0141441143",
+        "description": "A timeless tale of love, hardship, and morality through the eyes of a determined orphan."
+      },
+      {
+        "id": "1ebc5bf6-1922-4897-87fe-80757b5e4443",
+        "genre": [
+          "Classic"
+        ],
+        "title": "Life and Fate",
+        "author": "Vasily Grossman",
+        "amazon_url": "https://www.amazon.com/Life-Fate-Review-Books-Classics/dp/1590172019",
+        "description": "A vivid depiction of life, war, and ideology during Stalin’s reign, exploring human resilience."
+      },
+      {
+        "id": "fea81f19-ad46-4500-ac81-f4d77e34a7b9",
+        "genre": [
+          "Fiction"
+        ],
+        "title": "To the Lighthouse",
+        "author": "Virginia Woolf",
+        "amazon_url": "https://www.amazon.com/Lighthouse-Virginia-Woolf/dp/B002ECEJ3G",
+        "description": "A poetic reflection on family, art, and the passage of time, blending inner thoughts and outer landscapes."
+      },
+      {
+        "id": "229d41a3-f641-4b8f-854d-a60e873fbe11",
+        "genre": [
+          "Fiction"
+        ],
+        "title": "Heart of Darkness",
+        "author": "Joseph Conrad",
+        "amazon_url": "https://www.amazon.com/Heart-Darkness-Joseph-Conrad/dp/1936594145",
+        "description": "A haunting journey into the heart of colonialism and the darkness within the human soul."
+      },
+      {
+        "id": "26a38dbb-9309-4291-87e7-824f0eb209c9",
+        "genre": [
+          "Classic"
+        ],
+        "title": "Bleak House",
+        "author": "Charles Dickens",
+        "amazon_url": "https://www.amazon.com/Bleak-House-Charles-Dickens/dp/0143037617",
+        "description": "A masterful critique of the British legal system through a rich tapestry of lives and mysteries."
+      },
+      {
+        "id": "d89ef09e-cb4d-4f45-9c8c-e9b34e327759",
+        "genre": [
+          "Classic"
+        ],
+        "title": "Middlemarch",
+        "author": "George Eliot",
+        "amazon_url": "https://www.amazon.com/Middlemarch-Wordsworth-Classics-George-Eliot/dp/1853262374",
+        "description": "An intricate portrait of ambition, marriage, and societal change in a small English town."
+      },
+      {
+        "id": "174a1cf7-3bcd-4057-ac7e-80404c363c48",
+        "genre": [
+          "Fiction"
+        ],
+        "title": "Madame Bovary",
+        "author": "Gustave Flaubert",
+        "amazon_url": "https://www.amazon.com/Madame-Penguin-Classics-Gustave-Flaubert/dp/0140449124",
+        "description": "The tragic story of a woman’s desires and disillusionment, exposing societal hypocrisy."
+      }
+    ],
+    "_book_count": 11,
+    "_percentile": 19.3
   },
   {
     "id": "7d70640c-825f-4a70-b983-cb56c5bb64f3",
     "full_name": "Paul Graham",
-    "created_at": "2025-02-18T19:34:12.584745+00:00",
-    "updated_at": "2025-02-18T19:34:12.584745+00:00",
-    "url": "https://x.com/paulg",
     "type": "Entrepreneur",
-    "description": "Paul Graham is a blah blah blah who blah blah blah and is known for blah blah blah"
+    "description": "Paul Graham is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "recommendations": [
+      {
+        "id": "62a6eee1-a079-427c-8d00-d91f4e7fc76c",
+        "genre": [
+          "Nonfiction"
+        ],
+        "title": "Apollo’s Arrow",
+        "author": "Nicholas A. Christakis",
+        "amazon_url": "https://www.amazon.com/Apollos-Arrow-Profound-Enduring-Coronavirus/dp/0316628212",
+        "description": "A timely analysis of the coronavirus’ impact on society that blends history, epidemiology, and social science."
+      },
+      {
+        "id": "fafb4fb2-8071-414f-b88a-54def50c37b0",
+        "genre": [
+          "Nonfiction"
+        ],
+        "title": "A Mathematician's Apology",
+        "author": "G. H. Hardy",
+        "amazon_url": "https://www.amazon.com/Mathematicians-Apology-G-H-Hardy/dp/1466402695",
+        "description": "A reflective essay on the beauty and purpose of mathematics by one of its greatest advocates."
+      },
+      {
+        "id": "65fbae96-3e76-405c-b82d-7115e0c21402",
+        "genre": [
+          "Science Fiction"
+        ],
+        "title": "Foundation",
+        "author": "Isaac Asimov",
+        "amazon_url": "https://www.amazon.com/Foundation-Isaac-Asimov/dp/0553293354?source=ps-sl-shoppingads-lpcontext&ref_=fplfs&psc=1&smid=ATVPDKIKX0DER",
+        "description": "A seminal science fiction saga about preserving knowledge in a crumbling galactic empire."
+      },
+      {
+        "id": "f48568b2-43bb-4101-b567-ffeb0bdb3875",
+        "genre": [
+          "Science"
+        ],
+        "title": "From Galileo to Newton",
+        "author": "A. Rupert Hall",
+        "amazon_url": "https://www.amazon.com/Galileo-Newton-Rupert-Hall/dp/0486242277",
+        "description": "A compelling narrative tracing the revolution in physics from Galileo’s discoveries to Newton’s theories."
+      },
+      {
+        "id": "f23ea638-4b76-4619-8347-598b9e2b73d6",
+        "genre": [
+          "Historical"
+        ],
+        "title": "Lives of the Artists",
+        "author": "Giorgio Vasari",
+        "amazon_url": "https://www.amazon.com/Lives-Artists-Oxford-Worlds-Classics/dp/0199537194",
+        "description": "A classic collection of biographies detailing the lives and works of Renaissance painters and sculptors."
+      },
+      {
+        "id": "e0a97b37-c3c4-4531-9c7f-55f68a5104d6",
+        "genre": [
+          "Classic"
+        ],
+        "title": "The Iliad",
+        "author": "Homer",
+        "amazon_url": "https://www.amazon.com/Iliad-Homer/dp/0140275363",
+        "description": "An epic poem recounting the heroics of Achilles and the tragedy of the Trojan War."
+      },
+      {
+        "id": "b07869a2-6d31-4d94-b577-f0ad68b1a4c3",
+        "genre": [
+          "Biography"
+        ],
+        "title": "The Harmless People",
+        "author": "Elizabeth Marshall Thomas",
+        "amazon_url": "https://www.amazon.com/Harmless-People-Elizabeth-Marshall-Thomas/dp/067972446X",
+        "description": "A gentle exploration of indigenous cultures and the enduring wisdom of traditional societies."
+      },
+      {
+        "id": "49dda154-8f1c-4035-b738-c3427cf12bd5",
+        "genre": [
+          "Biography"
+        ],
+        "title": "Barbarian Days",
+        "author": "William Finnegan",
+        "amazon_url": "https://www.amazon.com/Barbarian-Days-Surfing-William-Finnegan/dp/0143109391",
+        "description": "A memoir that captures the life of a traveler and surfer, filled with cultural insights and personal adventure."
+      },
+      {
+        "id": "3f0bc969-0c4d-4579-ad72-6b2be2202e5e",
+        "genre": [
+          "Science"
+        ],
+        "title": "The Extension of Man",
+        "author": "J. D. Bernal",
+        "amazon_url": "https://www.amazon.com/Extension-Man-History-Physics-Quantum/dp/0262523868",
+        "description": "A seminal work discussing how technology expands human capabilities."
+      },
+      {
+        "id": "0ff91984-393f-40e9-a536-e5928c5e7b9f",
+        "genre": [
+          "Nonfiction"
+        ],
+        "title": "Why the Allies Won",
+        "author": "Richard Overy",
+        "amazon_url": "https://www.amazon.com/Why-Allies-Won-Richard-Overy/dp/039331619X",
+        "description": "An analysis of the strategic and political factors that led to the Allied victory in World War II."
+      },
+      {
+        "id": "16e59cce-0bdb-474e-9c1a-c7028ee02a39",
+        "genre": [
+          "Biography"
+        ],
+        "title": "The Quest for El Cid",
+        "author": "Richard Fletcher",
+        "amazon_url": "https://www.amazon.com/Quest-El-Cid-Richard-Fletcher/dp/0195069552",
+        "description": "A historical exploration of the life and legend of the medieval Spanish hero El Cid."
+      },
+      {
+        "id": "5dd2bd34-7eed-4d60-a436-e128e80b8cae",
+        "genre": [
+          "Biography"
+        ],
+        "title": "A Sense of Where You Are",
+        "author": "John McPhee",
+        "amazon_url": "https://www.amazon.com/Sense-Where-You-Are-Princeton/dp/0374526893",
+        "description": "A reflective narrative capturing the essence of place and personal observation."
+      },
+      {
+        "id": "73737c3b-402a-4fa1-a69e-bb53f08881e9",
+        "genre": [
+          "Historical"
+        ],
+        "title": "The Fall of Constantinople 1453",
+        "author": "Steven Runciman",
+        "amazon_url": "https://www.amazon.com/Fall-Constantinople-1453-Canto/dp/0521398320",
+        "description": "A dramatic account of the siege and fall of Constantinople in 1453 that reshaped history."
+      },
+      {
+        "id": "fd93ca83-849e-4cb2-8f88-2434a37bd5f8",
+        "genre": [
+          "Business"
+        ],
+        "title": "The Launch Pad",
+        "author": "Randall Stross",
+        "amazon_url": "https://www.amazon.com/Launch-Pad-Inside-Combinator/dp/1591846587",
+        "description": "A behind-the-scenes look at startup culture and the early struggles of launching a company."
+      },
+      {
+        "id": "46dca70c-ccc2-41f0-bd27-8b5a3285c525",
+        "genre": [
+          "Nonfiction"
+        ],
+        "title": "Towns, Villages and Countryside of Celtic Europe",
+        "author": "Francoise Audouze",
+        "amazon_url": "https://www.amazon.com/Towns-Villages-Countryside-Celtic-Europe/dp/0253310822",
+        "description": "An exploration of the rural and cultural landscapes of Celtic Europe."
+      },
+      {
+        "id": "e00f4f49-51cb-425b-bc55-ba8eb56bdef9",
+        "genre": [
+          "Nonfiction"
+        ],
+        "title": "No Easy Day",
+        "author": "Mark Owen",
+        "amazon_url": "https://www.amazon.com/No-Easy-Day-Autobiography-Firsthand/dp/0525953728",
+        "description": "A firsthand account of the mission that led to the death of Osama bin Laden, from an insider’s perspective."
+      },
+      {
+        "id": "6150ba72-3f4a-4355-920a-75858d5e5398",
+        "genre": [
+          "Historical"
+        ],
+        "title": "A History of Medieval Europe",
+        "author": "R. H. C. Davis",
+        "amazon_url": "https://www.amazon.com/History-Medieval-Constantine-Longman-Paperback/dp/0582482089",
+        "description": "A comprehensive account of medieval Europe, updated with the latest research and diverse viewpoints."
+      },
+      {
+        "id": "4d5cc325-8f71-4bbc-9cda-b412f21c7f1e",
+        "genre": [
+          "Fiction"
+        ],
+        "title": "Very Good, Jeeves",
+        "author": "P. G. Wodehouse",
+        "amazon_url": "https://www.amazon.com/Very-Good-Jeeves-P-Wodehouse/dp/0393339793",
+        "description": "A classic comic novel chronicling the misadventures of Bertie Wooster and his resourceful valet Jeeves."
+      },
+      {
+        "id": "0ced0b09-3a84-44f8-8835-5887aea7d22a",
+        "genre": [
+          "Nonfiction"
+        ],
+        "title": "Making of Europe",
+        "author": "Robert Bartlett",
+        "amazon_url": "https://www.amazon.com/Making-Europe-Conquest-Colonization-Cultural/dp/0140154094",
+        "description": "An exploration of the forces that shaped the formation of modern Europe from its ancient roots."
+      },
+      {
+        "id": "d0cfd67a-01d1-48ba-8f4e-9a1580a55036",
+        "genre": [
+          "Business"
+        ],
+        "title": "The Startup Way",
+        "author": "Eric Ries",
+        "amazon_url": "https://www.amazon.com/Startup-Way-Companies-Entrepreneurial-Management/dp/1101903201",
+        "description": "A guide to scaling innovation in large organizations using startup principles and agile methods."
+      },
+      {
+        "id": "10b66c7b-0b1a-4d04-988b-7b2c5e164c16",
+        "genre": [
+          "Biography"
+        ],
+        "title": "The Autobiography of Charles Darwin",
+        "author": "Charles Darwin",
+        "amazon_url": "https://www.amazon.com/Autobiography-Charles-Darwin-1809-1882/dp/0393310698",
+        "description": "Charles Darwin’s personal reflections on his life and the groundbreaking discoveries that reshaped science."
+      },
+      {
+        "id": "e507a04b-829c-4e7a-a7b0-1c2812838d10",
+        "genre": [
+          "Fiction"
+        ],
+        "title": "The Complete Novels of Jane Austen",
+        "author": "Jane Austen",
+        "amazon_url": "https://www.amazon.com/Complete-Novels-Austen-Leather-bound-Classics/dp/1684129060",
+        "description": "A complete collection of Jane Austen's celebrated novels, showcasing her keen observations of society."
+      },
+      {
+        "id": "14ff15e4-52b0-4f59-be0d-0241d47e44ab",
+        "genre": [
+          "Economics"
+        ],
+        "title": "Selfish Reasons to Have More Kids",
+        "author": "Bryan Caplan",
+        "amazon_url": "https://www.amazon.com/Selfish-Reasons-Have-More-Kids/dp/0465028616",
+        "description": "An economic and personal argument for the benefits of having more children."
+      },
+      {
+        "id": "52e10d00-ed77-4cfb-987c-21224a933bbc",
+        "genre": [
+          "Nonfiction"
+        ],
+        "title": "With the Old Breed",
+        "author": "E. B. Sledge",
+        "amazon_url": "https://www.amazon.com/Old-Breed-At-Peleliu-Okinawa/dp/0891419195",
+        "description": "A harrowing memoir of combat in the Pacific during World War II, emphasizing sacrifice and resilience."
+      },
+      {
+        "id": "8cca0763-4a9c-41d4-8047-cbacfb15a556",
+        "genre": [
+          "Science"
+        ],
+        "title": "To Explain the World",
+        "author": "Steven Weinberg",
+        "amazon_url": "https://www.amazon.com/Explain-World-Discovery-Modern-Science/dp/0062346652",
+        "description": "An attempt to elucidate the fundamental principles underlying the physical world through clear scientific explanation."
+      },
+      {
+        "id": "28e0ab25-324c-4537-a785-a1f8acbeda71",
+        "genre": [
+          "Fiction"
+        ],
+        "title": "How to Be Topp",
+        "author": "Ronald Searle",
+        "amazon_url": "https://www.amazon.com/How-Be-Topp-Ronald-Searle/dp/1851459650",
+        "description": "A humorous exploration of what it means to be at the top, full of witty observations."
+      },
+      {
+        "id": "9e1e5eb1-77cf-46aa-9c2a-b1c15ba89261",
+        "genre": [
+          "Biography"
+        ],
+        "title": "Confessions",
+        "author": "Jean-Jacques Rousseau",
+        "amazon_url": "https://www.amazon.com/Confessions-Oxford-Classics-Jean-Jacques-Rousseau/dp/0192822756",
+        "description": "A candid self-portrait by Rousseau that reveals his inner life and personal struggles."
+      },
+      {
+        "id": "a90d10e4-674b-4d9c-8acb-9f8d538c6980",
+        "genre": [
+          "Nonfiction"
+        ],
+        "title": "Oranges",
+        "author": "John McPhee",
+        "amazon_url": "https://www.amazon.com/Oranges-John-McPhee/dp/0374512973",
+        "description": "An exploration of the cultural and economic significance of oranges in America."
+      },
+      {
+        "id": "ace98721-920c-411e-9232-382cc625bc71",
+        "genre": [
+          "Biography"
+        ],
+        "title": "Kelly",
+        "author": "Clarence L. Johnson",
+        "amazon_url": "https://www.amazon.com/Kelly-More-Than-Share-All/dp/0874744911",
+        "description": "A biography of the legendary aircraft designer whose innovations transformed aerospace engineering."
+      },
+      {
+        "id": "aab6d161-6527-456b-9dd0-2085a982e8dd",
+        "genre": [
+          "Biography"
+        ],
+        "title": "A Story Lately Told",
+        "author": "Anjelica Huston",
+        "amazon_url": "https://www.amazon.com/Story-Lately-Told-Coming-Ireland/dp/1451656300",
+        "description": "A personal narrative that weaves art, life, and history into a compelling memoir."
+      },
+      {
+        "id": "63668004-9c48-4378-9209-1c59afb07ab2",
+        "genre": [
+          "Business"
+        ],
+        "title": "More Money Than God",
+        "author": "Sebastian Mallaby",
+        "amazon_url": "https://www.amazon.com/More-Money-Than-God-Relations/dp/0143119419",
+        "description": "A thrilling history of hedge funds and the evolution of a new financial elite in modern capitalism."
+      }
+    ],
+    "_book_count": 31,
+    "_percentile": 54.39
   },
   {
     "id": "0ef50665-1a3e-485e-a2aa-7e1cf21de0ae",
     "full_name": "Peter Ackroyd",
-    "created_at": "2025-03-15T22:33:30.293+00:00",
-    "updated_at": "2025-03-15T22:33:30.293+00:00",
-    "url": "https://en.wikipedia.org/wiki/Peter_Ackroyd",
     "type": "Biographer",
-    "description": "Peter Ackroyd is a blah blah blah who blah blah blah and is known for blah blah blah"
+    "description": "Peter Ackroyd is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "recommendations": [
+      {
+        "id": "26a38dbb-9309-4291-87e7-824f0eb209c9",
+        "genre": [
+          "Classic"
+        ],
+        "title": "Bleak House",
+        "author": "Charles Dickens",
+        "amazon_url": "https://www.amazon.com/Bleak-House-Charles-Dickens/dp/0143037617",
+        "description": "A masterful critique of the British legal system through a rich tapestry of lives and mysteries."
+      }
+    ],
+    "_book_count": 1,
+    "_percentile": 1.75
   },
   {
     "id": "80ed8150-1404-4498-b7e4-485333ebd2f2",
     "full_name": "Peter Thiel",
-    "created_at": "2025-02-28T20:31:16.276+00:00",
-    "updated_at": "2025-02-28T20:31:16.276+00:00",
-    "url": "https://en.wikipedia.org/wiki/Peter_Thiel",
     "type": "Investor",
-    "description": "Peter Thiel is a blah blah blah who blah blah blah and is known for blah blah blah"
+    "description": "Peter Thiel is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "recommendations": [
+      {
+        "id": "18d5c2f6-bef8-4892-b4bd-ca878c4de776",
+        "genre": [
+          "Nonfiction",
+          "Business"
+        ],
+        "title": "The Hard Thing About Hard Things",
+        "author": "Ben Horowitz",
+        "amazon_url": "https://www.amazon.com/Hard-Thing-About-Things-Building/dp/0062273205",
+        "description": "Insights into startup struggles and leadership in the tech world."
+      }
+    ],
+    "_book_count": 1,
+    "_percentile": 1.75
   },
   {
     "id": "4f742ab3-d021-452c-8ad5-1d2dab59b1c4",
     "full_name": "Raoul Pal",
-    "created_at": "2025-03-07T19:17:22.861+00:00",
-    "updated_at": "2025-03-07T19:17:22.861+00:00",
-    "url": "https://x.com/RaoulGMI",
     "type": "Economist",
-    "description": "Raoul Pal is a blah blah blah who blah blah blah and is known for blah blah blah"
+    "description": "Raoul Pal is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "recommendations": [
+      {
+        "id": "18d5c2f6-bef8-4892-b4bd-ca878c4de776",
+        "genre": [
+          "Nonfiction",
+          "Business"
+        ],
+        "title": "The Hard Thing About Hard Things",
+        "author": "Ben Horowitz",
+        "amazon_url": "https://www.amazon.com/Hard-Thing-About-Things-Building/dp/0062273205",
+        "description": "Insights into startup struggles and leadership in the tech world."
+      },
+      {
+        "id": "48e4bfbd-6da7-4b78-84a2-72b0ac168ec8",
+        "genre": [
+          "Nonfiction"
+        ],
+        "title": "Conspiracy",
+        "author": "Ryan Holiday",
+        "amazon_url": "https://www.amazon.com/Conspiracy-Peter-Gawker-Anatomy-Intrigue/dp/1788160835",
+        "description": "A deep dive into the hidden networks that shape cultural events and influence public discourse."
+      }
+    ],
+    "_book_count": 2,
+    "_percentile": 3.51
   },
   {
     "id": "55d45cbf-a0c7-408e-acc0-9cd59b4baa2d",
     "full_name": "Ray Dalio",
-    "created_at": "2025-03-07T21:21:58.238+00:00",
-    "updated_at": "2025-03-07T21:21:58.238+00:00",
-    "url": "https://x.com/RayDalio",
     "type": "Investor",
-    "description": "Ray Dalio is a blah blah blah who blah blah blah and is known for blah blah blah"
+    "description": "Ray Dalio is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "recommendations": [
+      {
+        "id": "d459a6b8-2e46-41a7-a737-47f263d293f7",
+        "genre": [
+          "Self-Help",
+          "Nonfiction"
+        ],
+        "title": "Thinking, Fast and Slow",
+        "author": "Daniel Kahneman",
+        "amazon_url": "https://www.amazon.com/live/video/07f37281865849bb8650969e1931c367?ref_=dp_vse_rvc_8",
+        "description": "A deep dive into the two systems driving human thought and behavior."
+      }
+    ],
+    "_book_count": 1,
+    "_percentile": 1.75
   },
   {
     "id": "ab42f513-3327-4fd4-a098-e1e93fde3443",
     "full_name": "Reid Hoffman",
-    "created_at": "2025-03-07T19:09:18.733+00:00",
-    "updated_at": "2025-03-07T19:09:18.733+00:00",
-    "url": "https://x.com/reidhoffman",
     "type": "Entrepreneur",
-    "description": "Reid Hoffman is a blah blah blah who blah blah blah and is known for blah blah blah"
+    "description": "Reid Hoffman is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "recommendations": [
+      {
+        "id": "135483b6-099c-4c85-a916-cc692681969d",
+        "genre": [
+          "Science Fiction"
+        ],
+        "title": "Snow Crash",
+        "author": "Neal Stephenson",
+        "amazon_url": "https://www.amazon.com/Snow-Crash-Neal-Stephenson/dp/0553380958",
+        "description": "A cyberpunk classic exploring virtual realities and dystopian futures."
+      }
+    ],
+    "_book_count": 1,
+    "_percentile": 1.75
   },
   {
     "id": "1a8c205c-9ae6-44f6-b982-742bc201f3ac",
     "full_name": "Ron Conway",
-    "created_at": "2025-03-13T18:19:45.425+00:00",
-    "updated_at": "2025-03-13T18:19:45.425+00:00",
-    "url": "https://x.com/ronconway",
     "type": "Investor",
-    "description": "Ron Conway is a blah blah blah who blah blah blah and is known for blah blah blah"
+    "description": "Ron Conway is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "recommendations": [
+      {
+        "id": "d459a6b8-2e46-41a7-a737-47f263d293f7",
+        "genre": [
+          "Self-Help",
+          "Nonfiction"
+        ],
+        "title": "Thinking, Fast and Slow",
+        "author": "Daniel Kahneman",
+        "amazon_url": "https://www.amazon.com/live/video/07f37281865849bb8650969e1931c367?ref_=dp_vse_rvc_8",
+        "description": "A deep dive into the two systems driving human thought and behavior."
+      }
+    ],
+    "_book_count": 1,
+    "_percentile": 1.75
   },
   {
     "id": "62978431-6853-47c2-b4a4-0ad6cb646a7c",
     "full_name": "Ryan Holiday",
-    "created_at": "2025-03-19T14:33:23.406+00:00",
-    "updated_at": "2025-03-19T14:33:23.406+00:00",
-    "url": "https://x.com/RyanHoliday",
     "type": "Author",
-    "description": "Ryan Holiday is a blah blah blah who blah blah blah and is known for blah blah blah"
+    "description": "Ryan Holiday is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "recommendations": [
+      {
+        "id": "4a0bb40d-62b6-419a-a4e7-180edf8f54b1",
+        "genre": [
+          "Self-Help"
+        ],
+        "title": "How to Live",
+        "author": "Sarah Bakewell",
+        "amazon_url": "https://www.amazon.com/How-Live-Montaigne-Question-Attempts/dp/1590514831",
+        "description": "An engaging exploration of the art of living, drawing on the wisdom of philosophy and history."
+      }
+    ],
+    "_book_count": 1,
+    "_percentile": 1.75
   },
   {
     "id": "593cd166-5884-4dc5-94a0-1b1fbc71f8e5",
     "full_name": "Ryan Hoover",
-    "created_at": "2025-03-20T17:34:37.378+00:00",
-    "updated_at": "2025-03-20T17:34:37.378+00:00",
-    "url": "https://x.com/rrhoover",
     "type": "Entrepreneur",
-    "description": "Ryan Hoover is a blah blah blah who blah blah blah and is known for blah blah blah"
+    "description": "Ryan Hoover is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "recommendations": [
+      {
+        "id": "4a0bb40d-62b6-419a-a4e7-180edf8f54b1",
+        "genre": [
+          "Self-Help"
+        ],
+        "title": "How to Live",
+        "author": "Sarah Bakewell",
+        "amazon_url": "https://www.amazon.com/How-Live-Montaigne-Question-Attempts/dp/1590514831",
+        "description": "An engaging exploration of the art of living, drawing on the wisdom of philosophy and history."
+      }
+    ],
+    "_book_count": 1,
+    "_percentile": 1.75
   },
   {
     "id": "93b556b5-a799-4bf9-a895-06dcf51a538a",
     "full_name": "Sahil Lavingia",
-    "created_at": "2025-03-08T20:25:07.44+00:00",
-    "updated_at": "2025-03-08T20:25:07.44+00:00",
-    "url": "https://x.com/shl",
     "type": "Entrepreneur",
-    "description": "Sahil Lavingia is a blah blah blah who blah blah blah and is known for blah blah blah"
+    "description": "Sahil Lavingia is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "recommendations": [
+      {
+        "id": "65fbae96-3e76-405c-b82d-7115e0c21402",
+        "genre": [
+          "Science Fiction"
+        ],
+        "title": "Foundation",
+        "author": "Isaac Asimov",
+        "amazon_url": "https://www.amazon.com/Foundation-Isaac-Asimov/dp/0553293354?source=ps-sl-shoppingads-lpcontext&ref_=fplfs&psc=1&smid=ATVPDKIKX0DER",
+        "description": "A seminal science fiction saga about preserving knowledge in a crumbling galactic empire."
+      }
+    ],
+    "_book_count": 1,
+    "_percentile": 1.75
   },
   {
     "id": "197e13ce-b553-4654-a122-0983af28bb64",
     "full_name": "Sam Altman",
-    "created_at": "2025-03-01T20:49:00.187+00:00",
-    "updated_at": "2025-03-01T20:49:00.187+00:00",
-    "url": "https://x.com/sama",
     "type": "Entrepreneur",
-    "description": "Sam Altman is a blah blah blah who blah blah blah and is known for blah blah blah"
+    "description": "Sam Altman is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "recommendations": [
+      {
+        "id": "65fbae96-3e76-405c-b82d-7115e0c21402",
+        "genre": [
+          "Science Fiction"
+        ],
+        "title": "Foundation",
+        "author": "Isaac Asimov",
+        "amazon_url": "https://www.amazon.com/Foundation-Isaac-Asimov/dp/0553293354?source=ps-sl-shoppingads-lpcontext&ref_=fplfs&psc=1&smid=ATVPDKIKX0DER",
+        "description": "A seminal science fiction saga about preserving knowledge in a crumbling galactic empire."
+      },
+      {
+        "id": "d459a6b8-2e46-41a7-a737-47f263d293f7",
+        "genre": [
+          "Self-Help",
+          "Nonfiction"
+        ],
+        "title": "Thinking, Fast and Slow",
+        "author": "Daniel Kahneman",
+        "amazon_url": "https://www.amazon.com/live/video/07f37281865849bb8650969e1931c367?ref_=dp_vse_rvc_8",
+        "description": "A deep dive into the two systems driving human thought and behavior."
+      },
+      {
+        "id": "e87fc45a-6049-47ba-a291-57965332432d",
+        "genre": [
+          "Business"
+        ],
+        "title": "Secrets of Sand Hill Road",
+        "author": "Scott Kupor",
+        "amazon_url": "https://www.amazon.com/Secrets-Sand-Hill-Road-Venture/dp/059308358X",
+        "description": "An insider's guide to venture capital and startup funding."
+      }
+    ],
+    "_book_count": 3,
+    "_percentile": 5.26
   },
   {
     "id": "43d97b64-ac23-4072-b759-2beccd516dfa",
     "full_name": "Sara Blakely",
-    "created_at": "2025-03-08T20:20:11.254+00:00",
-    "updated_at": "2025-03-08T20:20:11.254+00:00",
-    "url": "https://x.com/sarablakely",
     "type": "Entrepreneur",
-    "description": "Sara Blakely is a blah blah blah who blah blah blah and is known for blah blah blah"
+    "description": "Sara Blakely is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "recommendations": [
+      {
+        "id": "8c4b4f03-6ffa-4ed2-a838-35dae447c2de",
+        "genre": [
+          "Biography"
+        ],
+        "title": "Living With a Seal",
+        "author": "Jesse Itzler",
+        "amazon_url": "https://www.amazon.com/Living-SEAL-Training-Toughest-Planet-ebook/dp/B00U6DNZB2",
+        "description": "A quirky account of a month spent training with a Navy SEAL."
+      }
+    ],
+    "_book_count": 1,
+    "_percentile": 1.75
   },
   {
     "id": "25a773c4-13fb-479b-83f4-0213b6c0ba82",
     "full_name": "Satya Nadella",
-    "created_at": "2025-02-28T00:31:38.905+00:00",
-    "updated_at": "2025-02-28T00:31:38.905+00:00",
-    "url": "https://en.wikipedia.org/wiki/Satya_Nadella",
     "type": "Executive",
-    "description": "Satya Nadella is a blah blah blah who blah blah blah and is known for blah blah blah"
+    "description": "Satya Nadella is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "recommendations": [
+      {
+        "id": "d459a6b8-2e46-41a7-a737-47f263d293f7",
+        "genre": [
+          "Self-Help",
+          "Nonfiction"
+        ],
+        "title": "Thinking, Fast and Slow",
+        "author": "Daniel Kahneman",
+        "amazon_url": "https://www.amazon.com/live/video/07f37281865849bb8650969e1931c367?ref_=dp_vse_rvc_8",
+        "description": "A deep dive into the two systems driving human thought and behavior."
+      },
+      {
+        "id": "18d5c2f6-bef8-4892-b4bd-ca878c4de776",
+        "genre": [
+          "Nonfiction",
+          "Business"
+        ],
+        "title": "The Hard Thing About Hard Things",
+        "author": "Ben Horowitz",
+        "amazon_url": "https://www.amazon.com/Hard-Thing-About-Things-Building/dp/0062273205",
+        "description": "Insights into startup struggles and leadership in the tech world."
+      }
+    ],
+    "_book_count": 2,
+    "_percentile": 3.51
   },
   {
     "id": "81eeb31e-5364-4fbd-b6f2-8752eae29356",
     "full_name": "Scarlett Johansson",
-    "created_at": "2025-03-17T21:20:34.295+00:00",
-    "updated_at": "2025-03-17T21:20:34.295+00:00",
-    "url": "https://en.wikipedia.org/wiki/Scarlett_Johansson",
     "type": "Musician or Filmmaker",
-    "description": "Scarlett Johansson is a blah blah blah who blah blah blah and is known for blah blah blah"
+    "description": "Scarlett Johansson is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "recommendations": [
+      {
+        "id": "d89ef09e-cb4d-4f45-9c8c-e9b34e327759",
+        "genre": [
+          "Classic"
+        ],
+        "title": "Middlemarch",
+        "author": "George Eliot",
+        "amazon_url": "https://www.amazon.com/Middlemarch-Wordsworth-Classics-George-Eliot/dp/1853262374",
+        "description": "An intricate portrait of ambition, marriage, and societal change in a small English town."
+      }
+    ],
+    "_book_count": 1,
+    "_percentile": 1.75
   },
   {
     "id": "2c18d3c4-9745-4c2e-9668-f6f92ab9005f",
     "full_name": "Seth Godin",
-    "created_at": "2025-03-18T02:51:38.772+00:00",
-    "updated_at": "2025-03-18T02:51:38.772+00:00",
-    "url": "https://en.wikipedia.org/wiki/Seth_Godin",
     "type": "Entrepreneur",
-    "description": "Seth Godin is a blah blah blah who blah blah blah and is known for blah blah blah"
+    "description": "Seth Godin is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "recommendations": [
+      {
+        "id": "25923530-d84d-4028-a5ef-0b6e0fd70d40",
+        "genre": [
+          "Self-Help"
+        ],
+        "title": "Thinking in Bets",
+        "author": "Annie Duke",
+        "amazon_url": "https://www.amazon.com/Thinking-Bets-Making-Smarter-Decisions/dp/0735216355",
+        "description": "A guide to making smarter decisions under uncertainty and risk."
+      }
+    ],
+    "_book_count": 1,
+    "_percentile": 1.75
   },
   {
     "id": "aaa928ba-7b30-4d20-b935-12a7f3786bbb",
     "full_name": "Shonda Rhimes",
-    "created_at": "2025-03-13T19:57:36.03+00:00",
-    "updated_at": "2025-03-13T19:57:36.03+00:00",
-    "url": "https://x.com/shondarhimes",
     "type": "Journalist",
-    "description": "Shonda Rhimes is a blah blah blah who blah blah blah and is known for blah blah blah"
+    "description": "Shonda Rhimes is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "recommendations": [
+      {
+        "id": "b08aa61b-40da-4876-9007-e2a1c83b1dc0",
+        "genre": [
+          "Historical"
+        ],
+        "title": "Jane Eyre",
+        "author": "Charlotte Brontë",
+        "amazon_url": "https://www.amazon.com/Jane-Penguin-Classics-Charlotte-Bront%C3%AB/dp/0141441143",
+        "description": "A timeless tale of love, hardship, and morality through the eyes of a determined orphan."
+      }
+    ],
+    "_book_count": 1,
+    "_percentile": 1.75
   },
   {
     "id": "70af5394-3955-4869-9ef6-2c8077d1ea27",
     "full_name": "Shreyas Narlaka",
-    "created_at": "2025-03-01T01:28:11.20375+00:00",
-    "updated_at": "2025-03-01T01:28:11.20375+00:00",
-    "url": "https://x.com/66_shrey",
     "type": "Entrepreneur",
-    "description": "Shreyas Narlaka is a blah blah blah who blah blah blah and is known for blah blah blah"
+    "description": "Shreyas Narlaka is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "recommendations": [
+      {
+        "id": "e7f3c17f-6217-4119-b6d1-dd58f7a98648",
+        "genre": [
+          "Business"
+        ],
+        "title": "Walt Disney: The Triumph of the American Imagination",
+        "author": "Neal Gabler",
+        "amazon_url": "https://www.amazon.com/Walt-Disney-Triumph-American-Imagination/dp/0739340298",
+        "description": "A definitive biography of Walt Disney that explores his creative vision and lasting impact on entertainment."
+      }
+    ],
+    "_book_count": 1,
+    "_percentile": 1.75
   },
   {
     "id": "d6467e99-35e3-486d-aff5-2e0cc2f47228",
     "full_name": "Steve Blank",
-    "created_at": "2025-03-18T17:10:09.561+00:00",
-    "updated_at": "2025-03-18T17:10:09.561+00:00",
-    "url": "https://en.wikipedia.org/wiki/Steve_Blank",
     "type": "Entrepreneur",
-    "description": "Steve Blank is a blah blah blah who blah blah blah and is known for blah blah blah"
+    "description": "Steve Blank is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "recommendations": [
+      {
+        "id": "18d5c2f6-bef8-4892-b4bd-ca878c4de776",
+        "genre": [
+          "Nonfiction",
+          "Business"
+        ],
+        "title": "The Hard Thing About Hard Things",
+        "author": "Ben Horowitz",
+        "amazon_url": "https://www.amazon.com/Hard-Thing-About-Things-Building/dp/0062273205",
+        "description": "Insights into startup struggles and leadership in the tech world."
+      }
+    ],
+    "_book_count": 1,
+    "_percentile": 1.75
   },
   {
     "id": "d9272357-10db-44ac-8ed2-6c84a2c4d8c7",
     "full_name": "Stewart Butterfield",
-    "created_at": "2025-03-07T22:04:06.03+00:00",
-    "updated_at": "2025-03-07T22:04:06.03+00:00",
-    "url": "https://x.com/stewart",
     "type": "Entrepreneur",
-    "description": "Stewart Butterfield is a blah blah blah who blah blah blah and is known for blah blah blah"
+    "description": "Stewart Butterfield is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "recommendations": [
+      {
+        "id": "998bba5d-6127-4835-bb00-c5942d510770",
+        "genre": [
+          "Nonfiction"
+        ],
+        "title": "The Courage to Be Disliked",
+        "author": "Ichiro Kishimi",
+        "amazon_url": "https://www.amazon.com/Courage-Be-Disliked-Phenomenon-Happiness-ebook/dp/B078MDSV8T",
+        "description": "A philosophical dialogue on embracing freedom and self-reliance."
+      }
+    ],
+    "_book_count": 1,
+    "_percentile": 1.75
   },
   {
     "id": "5ea43269-a2ed-4b73-8527-dff2aba45047",
     "full_name": "Tim Ferriss",
-    "created_at": "2025-03-12T23:49:03.819+00:00",
-    "updated_at": "2025-03-12T23:49:03.819+00:00",
-    "url": "https://x.com/tferriss",
     "type": "Entrepreneur",
-    "description": "Tim Ferriss is a blah blah blah who blah blah blah and is known for blah blah blah"
+    "description": "Tim Ferriss is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "recommendations": [
+      {
+        "id": "18144cab-e4af-4a29-ba17-855a41143105",
+        "genre": [
+          "Philosophy"
+        ],
+        "title": "A Guide to the Good Life",
+        "author": "William B. Irvine",
+        "amazon_url": "https://www.amazon.com/Guide-Good-Life-Ancient-Stoic/dp/0195374614",
+        "description": "An introduction to Stoic philosophy for modern living."
+      },
+      {
+        "id": "18d5c2f6-bef8-4892-b4bd-ca878c4de776",
+        "genre": [
+          "Nonfiction",
+          "Business"
+        ],
+        "title": "The Hard Thing About Hard Things",
+        "author": "Ben Horowitz",
+        "amazon_url": "https://www.amazon.com/Hard-Thing-About-Things-Building/dp/0062273205",
+        "description": "Insights into startup struggles and leadership in the tech world."
+      }
+    ],
+    "_book_count": 2,
+    "_percentile": 3.51
   },
   {
     "id": "dae85c72-6a38-494e-8c67-f9da5971b6e2",
     "full_name": "Tobi Lutke",
-    "created_at": "2025-03-06T18:03:58.915+00:00",
-    "updated_at": "2025-03-06T18:03:58.915+00:00",
-    "url": "https://x.com/tobi",
     "type": "Entrepreneur",
-    "description": "Tobi Lutke is a blah blah blah who blah blah blah and is known for blah blah blah"
+    "description": "Tobi Lutke is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "recommendations": [
+      {
+        "id": "135483b6-099c-4c85-a916-cc692681969d",
+        "genre": [
+          "Science Fiction"
+        ],
+        "title": "Snow Crash",
+        "author": "Neal Stephenson",
+        "amazon_url": "https://www.amazon.com/Snow-Crash-Neal-Stephenson/dp/0553380958",
+        "description": "A cyberpunk classic exploring virtual realities and dystopian futures."
+      },
+      {
+        "id": "998bba5d-6127-4835-bb00-c5942d510770",
+        "genre": [
+          "Nonfiction"
+        ],
+        "title": "The Courage to Be Disliked",
+        "author": "Ichiro Kishimi",
+        "amazon_url": "https://www.amazon.com/Courage-Be-Disliked-Phenomenon-Happiness-ebook/dp/B078MDSV8T",
+        "description": "A philosophical dialogue on embracing freedom and self-reliance."
+      },
+      {
+        "id": "18144cab-e4af-4a29-ba17-855a41143105",
+        "genre": [
+          "Philosophy"
+        ],
+        "title": "A Guide to the Good Life",
+        "author": "William B. Irvine",
+        "amazon_url": "https://www.amazon.com/Guide-Good-Life-Ancient-Stoic/dp/0195374614",
+        "description": "An introduction to Stoic philosophy for modern living."
+      }
+    ],
+    "_book_count": 3,
+    "_percentile": 5.26
   },
   {
     "id": "b3ea0954-cf99-4441-837d-15945b071c40",
     "full_name": "Tyler Cowen",
-    "created_at": "2025-03-13T17:19:48.728+00:00",
-    "updated_at": "2025-03-13T17:19:48.728+00:00",
-    "url": "https://en.wikipedia.org/wiki/Tyler_Cowen",
     "type": "Economist",
-    "description": "Tyler Cowen is a blah blah blah who blah blah blah and is known for blah blah blah"
+    "description": "Tyler Cowen is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "recommendations": [
+      {
+        "id": "49a48f0e-91b9-48e4-92a4-b68c875be423",
+        "genre": [
+          "Economics"
+        ],
+        "title": "Golden Gates",
+        "author": "Conor Dougherty",
+        "amazon_url": "https://www.amazon.com/Golden-Gates-Fighting-Housing-America/dp/0525560211",
+        "description": "A compelling exploration of urban development challenges and opportunities in modern American cities."
+      }
+    ],
+    "_book_count": 1,
+    "_percentile": 1.75
   },
   {
     "id": "80d8faa2-9e55-41f1-a12c-55e4b575fb28",
     "full_name": "Vinod Khosla",
-    "created_at": "2025-03-04T17:42:22.313+00:00",
-    "updated_at": "2025-03-04T17:42:22.313+00:00",
-    "url": "https://x.com/vkhosla",
     "type": "Investor",
-    "description": "Vinod Khosla is a blah blah blah who blah blah blah and is known for blah blah blah"
+    "description": "Vinod Khosla is a blah blah blah who blah blah blah and is known for blah blah blah",
+    "recommendations": [
+      {
+        "id": "00139908-04bd-4c26-ae8e-ecbf4cbf4339",
+        "genre": [
+          "Nonfiction"
+        ],
+        "title": "Expert Political Judgement",
+        "author": "Philip E. Tetlock",
+        "amazon_url": "https://www.amazon.com/Expert-Political-Judgment-Tetlock-2006-08-20/dp/B01FKRPVZQ",
+        "description": "An analysis of forecasting and decision-making in politics that challenges conventional wisdom about expert predictions."
+      }
+    ],
+    "_book_count": 1,
+    "_percentile": 1.75
   }
 ]

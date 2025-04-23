@@ -106,28 +106,26 @@ async function dumpData() {
         })),
       }));
 
-      // Write to public directory
       writeFileSync(
-        join(process.cwd(), "public", "data", "books.json"),
+        join(process.cwd(), "data", "books.json"),
         JSON.stringify(formattedBooks, null, 2)
       );
-      console.log(`✓ Wrote ${formattedBooks.length} books to public/data/books.json`);
+      console.log(`✓ Wrote ${formattedBooks.length} books to data/books.json`);
     }
 
-    // Fetch recommenders
+    // Fetch recommenders with their recommendations
     const { data: recommenders, error: recommendersError } = await supabase
-      .from("people")
-      .select("*")
+      .rpc("get_recommender_with_books")
       .order("full_name");
 
     if (recommendersError) {
       console.error("Error fetching recommenders:", recommendersError);
     } else if (recommenders) {
       writeFileSync(
-        join(process.cwd(), "public", "data", "recommenders.json"),
+        join(process.cwd(), "data", "recommenders.json"),
         JSON.stringify(recommenders, null, 2)
       );
-      console.log(`✓ Wrote ${recommenders.length} recommenders to public/data/recommenders.json`);
+      console.log(`✓ Wrote ${recommenders.length} recommenders to data/recommenders.json`);
     }
   } catch (error) {
     console.error("Error:", error);
