@@ -83,6 +83,9 @@ export interface FormattedBook {
     source: string;
     source_link: string | null;
   }[];
+  _recommendation_count: number;
+  _percentile: number;
+  related_books: RelatedBook[];
 }
 
 // Optimized types for runtime performance

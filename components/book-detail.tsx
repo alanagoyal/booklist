@@ -2,23 +2,13 @@ import {
   X,
   BookOpen,
   Tag,
-  LayoutList,
-  AlignJustify,
   ChevronLeft,
   User,
   Link,
 } from "lucide-react";
 import { EnhancedBook } from "@/types";
-import { useCallback, useEffect, useState } from "react";
-import { initLogger } from "braintrust";
+import { useCallback, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { supabase } from "@/utils/supabase/client";
-
-// Initialize Braintrust logger
-initLogger({
-  projectName: "booklist",
-  apiKey: process.env.BRAINTRUST_API_KEY,
-});
 
 type BookDetailProps = {
   book: EnhancedBook;
@@ -26,77 +16,15 @@ type BookDetailProps = {
   stackIndex?: number;
 };
 
-type RelatedBookResponse = {
-  book: {
-    id: string;
-    title: string;
-    author: string;
-    description: string | null;
-    amazon_url: string | null;
-  };
-};
 
 export default function BookDetail({
   book,
   onClose,
   stackIndex = 0,
 }: BookDetailProps) {
-  const [isLoading, setIsLoading] = useState(false);
-  const [showSummary, setShowSummary] = useState(false);
-  const [recommenderSummary, setRecommenderSummary] = useState<string>("");
-  const [isLoadingSummary, setIsLoadingSummary] = useState(false);
-  const [relatedBooks, setRelatedBooks] = useState<
-    Array<{
-      id: string;
-      title: string;
-      author: string;
-      description: string | null;
-      amazon_url: string | null;
-      _recommendationCount: number;
-    }>
-  >([]);
   const [showAllRecommenders, setShowAllRecommenders] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
-
-  // Explain recommenders
-  useEffect(() => {
-    async function fetchRecommenderSummary() {
-      if (showSummary && !recommenderSummary && book.recommendations) {
-        setIsLoadingSummary(true);
-        try {
-          const response = await fetch("/api/recommenders/explain", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              book: `${book.title} by ${book.author}`,
-              recommenders: book.recommendations
-                .filter((r) => r.recommender)
-                .map((r) => ({
-                  name: r.recommender?.full_name || "",
-                  type: r.recommender?.type || "",
-                })),
-            }),
-          });
-
-          if (!response.ok) {
-            throw new Error("Failed to fetch recommender summary");
-          }
-
-          const data = await response.json();
-          setRecommenderSummary(data.summary);
-        } catch (error) {
-          console.error("Error fetching recommender summary:", error);
-        } finally {
-          setIsLoadingSummary(false);
-        }
-      }
-    }
-
-    fetchRecommenderSummary();
-  }, [showSummary, book, recommenderSummary]);
 
   const handleBackdropClick = useCallback(
     (e: React.MouseEvent) => {
@@ -113,65 +41,6 @@ export default function BookDetail({
     router.push(`?${params.toString()}`, { scroll: false });
   };
 
-  // Fetch related books
-  useEffect(() => {
-    async function fetchRelatedBooks() {
-      setIsLoading(true);
-      const { data: relatedBooksData } = (await supabase
-        .from("recommendations")
-        .select(
-          `
-          book:books(
-            id,
-            title,
-            author,
-            description,
-            amazon_url
-          )
-        `
-        )
-        .in(
-          "person_id",
-          book.recommendations
-            ?.map((r) => r.recommender?.id)
-            .filter((id): id is string => id !== undefined) || []
-        )
-        .not("book_id", "eq", book.id)
-        .order("book_id", { ascending: false })
-        .limit(3)) as { data: RelatedBookResponse[] | null };
-
-      // Count occurrences of each book
-      const bookCounts = (relatedBooksData || []).reduce(
-        (acc, r) => {
-          const bookId = r.book.id;
-          acc[bookId] = (acc[bookId] || 0) + 1;
-          return acc;
-        },
-        {} as Record<string, number>
-      );
-
-      const uniqueBooks = (relatedBooksData || [])
-        .map((r) => ({
-          id: r.book.id,
-          title: r.book.title,
-          author: r.book.author,
-          description: r.book.description,
-          amazon_url: r.book.amazon_url,
-          _recommendationCount: bookCounts[r.book.id],
-        }))
-        .filter(
-          (book, index, self) =>
-            index === self.findIndex((b) => b.id === book.id)
-        )
-        .sort((a, b) => b._recommendationCount - a._recommendationCount)
-        .slice(0, 3);
-
-      setRelatedBooks(uniqueBooks);
-      setIsLoading(false);
-    }
-
-    fetchRelatedBooks();
-  }, [book]);
 
   return (
     <div
@@ -255,119 +124,80 @@ export default function BookDetail({
                     <h2 className="text-base text-text font-bold">
                       Recommenders
                     </h2>
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => setShowSummary(false)}
-                        className={`p-1.5 transition-colors duration-200 ${
-                          !showSummary
-                            ? "text-text bg-accent/50"
-                            : "text-text/70 md:hover:text-text"
-                        }`}
-                        title="List View"
-                      >
-                        <LayoutList className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => setShowSummary(true)}
-                        className={`p-1.5 transition-colors duration-200 ${
-                          showSummary
-                            ? "text-text bg-accent/50"
-                            : "text-text/70 md:hover:text-text"
-                        }`}
-                        title="Summary View"
-                      >
-                        <AlignJustify className="w-4 h-4" />
-                      </button>
-                    </div>
                   </div>
-
-                  {!showSummary ? (
-                    <>
-                      <div className="text-text space-y-4">
-                        {book.recommendations
-                          .slice(0, showAllRecommenders ? undefined : 3)
-                          .map((rec) => (
-                            <div
-                              key={rec.recommender?.id}
-                              className="flex items-start gap-3 bg-accent/50 p-2 cursor-pointer transition-colors duration-200 border-l-2 border-transparent md:hover:bg-accent md:hover:border-border"
-                              onClick={() =>
-                                handleEntityClick(rec.recommender?.id || "")
-                              }
-                            >
-                              <User className="w-5 h-5 mt-0.5 text-text/70 shrink-0" />
-                              <div className="space-y-1 min-w-0 flex-1">
-                                <div className="flex items-baseline gap-2">
-                                  <span className="text-text">
-                                    <button
-                                      onClick={() =>
-                                        handleEntityClick(
-                                          rec.recommender?.id || ""
-                                        )
-                                      }
-                                      className="text-text text-left font-base md:hover:underline transition-colors duration-200"
-                                    >
-                                      {rec.recommender?.full_name}
-                                    </button>
-                                    {rec.source && (
-                                      <span className="text-text/70">
-                                        {" "}
-                                        via{" "}
-                                        {rec.source_link ? (
-                                          <a
-                                            href={rec.source_link}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="md:hover:underline"
-                                          >
-                                            {rec.source}
-                                          </a>
-                                        ) : (
-                                          rec.source
-                                        )}
-                                      </span>
+                  <div className="text-text space-y-4">
+                    {book.recommendations
+                      .slice(0, showAllRecommenders ? undefined : 3)
+                      .map((rec) => (
+                        <div
+                          key={rec.recommender?.id}
+                          className="flex items-start gap-3 bg-accent/50 p-2 cursor-pointer transition-colors duration-200 border-l-2 border-transparent md:hover:bg-accent md:hover:border-border"
+                          onClick={() =>
+                            handleEntityClick(rec.recommender?.id || "")
+                          }
+                        >
+                          <User className="w-5 h-5 mt-0.5 text-text/70 shrink-0" />
+                          <div className="space-y-1 min-w-0 flex-1">
+                            <div className="flex items-baseline gap-2">
+                              <span className="text-text">
+                                <button
+                                  onClick={() =>
+                                    handleEntityClick(rec.recommender?.id || "")
+                                  }
+                                  className="text-text text-left font-base md:hover:underline transition-colors duration-200"
+                                >
+                                  {rec.recommender?.full_name}
+                                </button>
+                                {rec.source && (
+                                  <span className="text-text/70">
+                                    {" "}
+                                    via{" "}
+                                    {rec.source_link ? (
+                                      <a
+                                        href={rec.source_link}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="md:hover:underline"
+                                      >
+                                        {rec.source}
+                                      </a>
+                                    ) : (
+                                      rec.source
                                     )}
                                   </span>
-                                </div>
-                                <div className="text-sm text-text/70">
-                                  {rec.recommender?.type}
-                                </div>
-                              </div>
+                                )}
+                              </span>
                             </div>
-                          ))}
-                      </div>
-                      {book.recommendations.length > 3 && (
-                        <button
-                          onClick={() =>
-                            setShowAllRecommenders(!showAllRecommenders)
-                          }
-                          className="w-full p-2 text-text/70 transition-colors duration-200 md:hover:text-text md:hover:underline"
-                        >
-                          {showAllRecommenders
-                            ? "Show less"
-                            : `Show ${book.recommendations.length - 3} more`}
-                        </button>
-                      )}
-                    </>
-                  ) : (
-                    <div className="text-text whitespace-pre-line leading-relaxed">
-                      {isLoadingSummary ? (
-                        <p className="text-text/70">Generating summary...</p>
-                      ) : (
-                        recommenderSummary
-                      )}
-                    </div>
+                            <div className="text-sm text-text/70">
+                              {rec.recommender?.type}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                  {book.recommendations.length > 3 && (
+                    <button
+                      onClick={() =>
+                        setShowAllRecommenders(!showAllRecommenders)
+                      }
+                      className="w-full p-2 text-text/70 transition-colors duration-200 md:hover:text-text md:hover:underline"
+                    >
+                      {showAllRecommenders
+                        ? "Show less"
+                        : `Show ${book.recommendations.length - 3} more`}
+                    </button>
                   )}
                 </div>
               )}
 
               {/* Book suggestions */}
-              {relatedBooks.length > 0 && (
+              {book.related_books.length > 0 && (
                 <div className="space-y-2">
                   <h2 className="text-base text-text font-bold">
                     Similar Recommendations
                   </h2>
                   <div className="space-y-4">
-                    {relatedBooks.map((relatedBook) => (
+                    {book.related_books.map((relatedBook) => (
                       <div
                         key={relatedBook.id}
                         className="flex items-start gap-3 bg-accent/50 p-2 cursor-pointer transition-colors duration-200 border-l-2 border-transparent md:hover:bg-accent md:hover:border-border"

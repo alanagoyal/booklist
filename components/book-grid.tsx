@@ -126,19 +126,6 @@ export default function BookGrid({ data, onFilteredDataChange }: BookGridProps) 
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // Do all expensive computations once when data is received
-  const enhancedData: EnhancedBook[] = useMemo(() => {
-    const maxRecommendations = Math.max(
-      ...data.map((book) => book.recommendations.length)
-    );
-
-    return data.map((book) => ({
-      ...book,
-      _recommendation_count: book.recommendations.length,
-      _percentile: Math.round((book.recommendations.length / maxRecommendations) * 100)
-    }));
-  }, [data]);
-
   // Row click handler
   const handleRowClick = useCallback((book: EnhancedBook) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -181,10 +168,10 @@ export default function BookGrid({ data, onFilteredDataChange }: BookGridProps) 
 
   return (
     <DataGrid
-      data={enhancedData}
+      data={data}
       columns={columns}
       getRowClassName={(row: EnhancedBook) =>
-        `cursor-pointer transition-colors duration-200 ${getBackgroundColor(row._recommendation_count, Math.max(...enhancedData.map(b => b._recommendation_count)))}`
+        `cursor-pointer transition-colors duration-200 ${getBackgroundColor(row._recommendation_count, Math.max(...data.map(b => b._recommendation_count)))}`
       }
       onRowClick={handleRowClick}
       onFilteredDataChange={onFilteredDataChange}
