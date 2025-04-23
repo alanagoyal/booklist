@@ -609,17 +609,6 @@
     ],
     "related_recommenders": [
       {
-        "id": "b47bd147-f5ad-49d1-b24f-946f71c9841b",
-        "url": "https://x.com/joerogan",
-        "type": "Journalist",
-        "full_name": "Joe Rogan",
-        "shared_books": [
-          "Can't Hurt Me",
-          "12 Rules for Life"
-        ],
-        "shared_count": 2
-      },
-      {
         "id": "fd359f15-fcbd-4d84-a322-b626043bba75",
         "url": "https://en.wikipedia.org/wiki/Howard_Marks_(investor)",
         "type": "Investor",
@@ -630,6 +619,17 @@
           "12 Rules for Life"
         ],
         "shared_count": 3
+      },
+      {
+        "id": "b47bd147-f5ad-49d1-b24f-946f71c9841b",
+        "url": "https://x.com/joerogan",
+        "type": "Journalist",
+        "full_name": "Joe Rogan",
+        "shared_books": [
+          "Can't Hurt Me",
+          "12 Rules for Life"
+        ],
+        "shared_count": 2
       }
     ],
     "_book_count": 3,
@@ -1845,18 +1845,6 @@
     ],
     "related_recommenders": [
       {
-        "id": "30793e1f-9647-4e73-a0b0-201144d736a7",
-        "url": "https://x.com/ev",
-        "type": "Entrepreneur",
-        "full_name": "Ev Williams",
-        "shared_books": [
-          "Can't Hurt Me",
-          "A Guide to the Good Life",
-          "12 Rules for Life"
-        ],
-        "shared_count": 3
-      },
-      {
         "id": "840424c3-515e-4042-b34d-7560b1027521",
         "url": "https://x.com/mjmauboussin",
         "type": "Economist",
@@ -1868,6 +1856,18 @@
           "Extreme Ownership"
         ],
         "shared_count": 4
+      },
+      {
+        "id": "30793e1f-9647-4e73-a0b0-201144d736a7",
+        "url": "https://x.com/ev",
+        "type": "Entrepreneur",
+        "full_name": "Ev Williams",
+        "shared_books": [
+          "Can't Hurt Me",
+          "A Guide to the Good Life",
+          "12 Rules for Life"
+        ],
+        "shared_count": 3
       },
       {
         "id": "dae85c72-6a38-494e-8c67-f9da5971b6e2",
@@ -2200,7 +2200,7 @@
         "genre": [
           "Historical"
         ],
-        "title": "A History of Medieval Europe",
+        "title": "A History of Medieval Europe in Ancient Roman Times ",
         "author": "R. H. C. Davis",
         "source": "Hacker News",
         "amazon_url": "https://www.amazon.com/History-Medieval-Constantine-Longman-Paperback/dp/0582482089",
