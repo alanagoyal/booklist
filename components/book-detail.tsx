@@ -173,10 +173,6 @@ export default function BookDetail({
     fetchRelatedBooks();
   }, [book]);
 
-  if (isLoading) {
-    return null;
-  }
-
   return (
     <div
       className="fixed inset-0 z-20 bg-background/80"
