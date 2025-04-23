@@ -6,13 +6,13 @@ export const dynamic = "force-static";
 
 // Load data from public JSON files at build time
 async function getData(): Promise<[FormattedBook[], FormattedRecommender[]]> {
-  // In production, these files will be available at /data/
+  // Use absolute paths from the public directory
   const books: FormattedBook[] = await fetch(
-    new URL('../public/data/books.json', import.meta.url)
+    '/data/books.json'
   ).then(res => res.json());
   
   const recommenders: FormattedRecommender[] = await fetch(
-    new URL('../public/data/recommenders.json', import.meta.url)
+    '/data/recommenders.json'
   ).then(res => res.json());
 
   return [books, recommenders];
