@@ -167,6 +167,7 @@ function HeaderContent() {
                 onClick={(e) => {
                   e.preventDefault();
                   setIsMenuOpen(false);
+                  router.push("/insights");
                 }}
               >
                 <span
@@ -181,6 +182,7 @@ function HeaderContent() {
                 onClick={(e) => {
                   e.preventDefault();
                   setIsMenuOpen(false);
+                  router.push("/about");
                 }}
               >
                 <span
