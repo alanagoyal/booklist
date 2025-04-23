@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useCallback, useMemo } from "react";
+import { useCallback } from "react";
 import { DataGrid } from "@/components/grid";
 import { FormattedRecommender } from "@/types";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -8,6 +8,18 @@ import { useRouter, useSearchParams } from "next/navigation";
 interface RecommenderGridProps {
   data: FormattedRecommender[];
   onFilteredDataChange?: (count: number) => void;
+}
+
+// Truncate title to ensure "+ X more" is visible
+function truncateTitles(title: string, moreCount: number) {
+  const moreSuffix = moreCount > 0 ? ` + ${moreCount} more` : "";
+  const maxLength = 45; // Adjust based on your cell width
+  
+  if (title.length + moreSuffix.length <= maxLength) {
+    return title;
+  }
+  
+  return title.slice(0, maxLength - moreSuffix.length - 3) + "...";
 }
 
 function BookCell({ original }: { original: FormattedRecommender }) {
@@ -23,34 +35,25 @@ function BookCell({ original }: { original: FormattedRecommender }) {
     [searchParams, router]
   );
 
+  const firstBook = original.recommendations[0];
+  const bookString = original.recommendations.map((book) => book.title).join(", ");
+  const moreCount = original.recommendations.length > 1 ? original.recommendations.length - 1 : 0;
+
   return (
-    <div className="whitespace-pre-line line-clamp-2 text-text">
-      <span className="flex items-center gap-1">
-        <span className="break-words">
-          {original.recommendations.slice(0, 1).map((book) => (
-            <Fragment key={book.id}>
-              <span className="inline whitespace-nowrap">
-                <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    handleBookClick(book.id);
-                  }}
-                  className="text-text md:hover:text-text/70 md:hover:underline transition-colors duration-200"
-                >
-                  {book.title}
-                </button>
-              </span>
-            </Fragment>
-          ))}
-          {original.recommendations.length > 1 && (
-            <span className="text-text/70">
-              {" "}
-              + {original.recommendations.length - 1} more
-            </span>
-          )}
-        </span>
-      </span>
+    <div className="text-text">
+      {bookString && (
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleBookClick(firstBook.id);
+          }}
+          className="text-text md:hover:text-text/70 md:hover:underline transition-colors duration-200 text-left w-full whitespace-pre-line"
+        >
+          {truncateTitles(bookString, moreCount)}
+          {moreCount > 0 && <span className="text-text/70"> + {moreCount} more</span>}
+        </button>
+      )}
     </div>
   );
 }

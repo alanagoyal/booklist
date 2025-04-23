@@ -10,6 +10,18 @@ function TitleCell({ row: { original } }: { row: { original: FormattedBook } }) 
   return <span className="text-text whitespace-pre-line line-clamp-2">{original.title}</span>;
 }
 
+// Truncate text to ensure "+ X more" is visible
+function truncateRecommenders(text: string, moreCount: number) {
+  const moreSuffix = moreCount > 0 ? ` + ${moreCount} more` : "";
+  const maxLength = 35; // Adjust based on your cell width
+  
+  if (text.length + moreSuffix.length <= maxLength) {
+    return text;
+  }
+  
+  return text.slice(0, maxLength - moreSuffix.length - 3) + "...";
+}
+
 // Recommender cell
 function RecommenderCell({ original }: { original: FormattedBook }) {
   const router = useRouter();
@@ -21,37 +33,31 @@ function RecommenderCell({ original }: { original: FormattedBook }) {
     router.push(`?${params.toString()}`, { scroll: false });
   }, [searchParams, router]);
   
+  const firstRecommender = original.recommendations?.[0]?.recommender;
+  const recommenderString = original.recommendations?.map((recommender) => recommender.recommender?.full_name).join(", ");
+  const moreCount = (original.recommendations?.length ?? 0) > 1 ? (original.recommendations?.length ?? 0) - 1 : 0;
+  
   return (
-    <div className="whitespace-pre-line line-clamp-2 text-text">
-      <span
-        className="flex items-center gap-1"
-      >
-        <span className="break-words">
-          {original.recommendations?.slice(0, 1).map((rec) => (
-            <Fragment key={rec.recommender?.id}>
-              <span className="inline whitespace-nowrap">
-                <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    handleRecommenderClick(rec.recommender!.id);
-                  }}
-                  className="text-text md:hover:text-text/70 md:hover:underline transition-colors duration-200"
-                >
-                  {rec.recommender?.full_name}
-                </button>
-              </span>
-            </Fragment>
-          ))}
-          {(original.recommendations?.length ?? 0) > 1 && (
-            <span className="text-text/70">
-              {" "}+ {(original.recommendations?.length ?? 0) - 1} more
-            </span>
+    <div className="text-text">
+      <span className="flex items-start gap-1">
+        <span className="flex-1">
+          {firstRecommender && (
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                handleRecommenderClick(firstRecommender.id);
+              }}
+              className="text-text md:hover:text-text/70 md:hover:underline transition-colors duration-200 text-left w-full whitespace-pre-line"
+            >
+              {truncateRecommenders(recommenderString, moreCount)}
+              {moreCount > 0 && <span className="text-text/70"> + {moreCount} more</span>}
+            </button>
           )}
         </span>
         <button 
           title={`${original._percentile}${(original._percentile % 100 > 10 && original._percentile % 100 < 14) ? 'th' : original._percentile % 10 === 1 ? 'st' : original._percentile % 10 === 2 ? 'nd' : original._percentile % 10 === 3 ? 'rd' : 'th'} percentile of all recommendations`}
-          className="inline-flex items-center justify-center rounded-full text-text/70 md:hover:text-text transition-colors duration-200 cursor-help"
+          className="inline-flex items-center justify-center rounded-full text-text/70 md:hover:text-text transition-colors duration-200 cursor-help shrink-0"
           onClick={(e) => e.stopPropagation()}
         >
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
