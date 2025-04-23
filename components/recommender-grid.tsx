@@ -36,12 +36,11 @@ function BookCell({ original }: { original: FormattedRecommender }) {
   );
 
   const firstBook = original.recommendations[0];
-  const bookString = original.recommendations.map((book) => book.title).join(", ");
   const moreCount = original.recommendations.length > 1 ? original.recommendations.length - 1 : 0;
 
   return (
     <div className="text-text">
-      {bookString && (
+      {firstBook && (
         <button
           onClick={(e) => {
             e.preventDefault();
@@ -50,7 +49,7 @@ function BookCell({ original }: { original: FormattedRecommender }) {
           }}
           className="text-text md:hover:text-text/70 md:hover:underline transition-colors duration-200 text-left w-full whitespace-pre-line"
         >
-          {truncateTitles(bookString, moreCount)}
+          {truncateTitles(firstBook.title, moreCount)}
           {moreCount > 0 && <span className="text-text/70"> + {moreCount} more</span>}
         </button>
       )}

@@ -34,7 +34,6 @@ function RecommenderCell({ original }: { original: FormattedBook }) {
   }, [searchParams, router]);
   
   const firstRecommender = original.recommendations?.[0]?.recommender;
-  const recommenderString = original.recommendations?.map((recommender) => recommender.recommender?.full_name).join(", ");
   const moreCount = (original.recommendations?.length ?? 0) > 1 ? (original.recommendations?.length ?? 0) - 1 : 0;
   
   return (
@@ -50,7 +49,7 @@ function RecommenderCell({ original }: { original: FormattedBook }) {
               }}
               className="text-text md:hover:text-text/70 md:hover:underline transition-colors duration-200 text-left w-full whitespace-pre-line"
             >
-              {truncateRecommenders(recommenderString, moreCount)}
+              {truncateRecommenders(firstRecommender.full_name, moreCount)}
               {moreCount > 0 && <span className="text-text/70"> + {moreCount} more</span>}
             </button>
           )}
