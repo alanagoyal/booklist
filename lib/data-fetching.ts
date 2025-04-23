@@ -6,69 +6,78 @@ export async function getBooks(): Promise<FormattedBook[]> {
   // Create a server-side Supabase client
   const supabase = createClient();
 
-  const pageSize = 1000;
-  let allBooks: any[] = [];
-  let page = 0;
-  let hasMore = true;
-
   try {
-    // Fetch books in batches
-    while (hasMore) {
-      const { data: books, error } = await supabase.rpc(
-        "get_books_by_recommendation_count",
-        {
-          p_limit: pageSize,
-          p_offset: page * pageSize,
-        }
-      );
+    // 1. Get basic book data with counts
+    const { data: books, error: booksError } = await supabase.rpc(
+      "get_books_with_counts",
+      { p_limit: 1000, p_offset: 0 }
+    );
 
-      if (error) {
-        console.error("Error fetching books:", error);
-        return [];
-      }
-
-      if (books && books.length > 0) {
-        allBooks = [...allBooks, ...books];
-        page++;
-      } else {
-        hasMore = false;
-      }
+    if (booksError) {
+      console.error("Error fetching books:", booksError);
+      return [];
     }
+
+    // 2. Get recommendations for all books
+    const { data: recommendationsData, error: recommendationsError } = await supabase.rpc(
+      "get_book_recommendations",
+      { book_ids: books.map((b: { id: string }) => b.id) }
+    );
+
+    if (recommendationsError) {
+      console.error("Error fetching recommendations:", recommendationsError);
+      return [];
+    }
+
+    // 3. Get related books for all books
+    const { data: relatedBooksData, error: relatedError } = await supabase.rpc(
+      "get_related_books",
+      { 
+        book_ids: books.map((b: { id: string }) => b.id),
+        p_limit: 3
+      }
+    );
+
+    if (relatedError) {
+      console.error("Error fetching related books:", relatedError);
+      return [];
+    }
+
+    // Combine all the data
+    return books.map((book: any) => ({
+      id: book.id,
+      title: book.title,
+      author: book.author,
+      description: book.description,
+      genres: book.genre,
+      amazon_url: book.amazon_url,
+      recommendations: (recommendationsData?.[book.id] || []).map((rec: any) => ({
+        recommender: rec.recommender
+          ? {
+              id: rec.recommender.id || "",
+              full_name: rec.recommender.full_name || "",
+              url: rec.recommender.url,
+              type: rec.recommender.type || "",
+            }
+          : null,
+        source: rec.source,
+        source_link: rec.source_link,
+      })),
+      _recommendation_count: book._recommendation_count,
+      _percentile: book._percentile,
+      related_books: (relatedBooksData?.[book.id] || []).map((rb: any) => ({
+        id: rb.id,
+        title: rb.title,
+        author: rb.author,
+        description: rb.description,
+        amazon_url: rb.amazon_url,
+        _recommendationCount: rb._recommendationCount,
+      })) as RelatedBook[],
+    }));
   } catch (e) {
     console.error("Unexpected error fetching books:", e);
     return [];
   }
-
-  return allBooks.map((book: any) => ({
-    id: book.id,
-    title: book.title,
-    author: book.author,
-    description: book.description,
-    genres: book.genre,
-    amazon_url: book.amazon_url,
-    recommendations: book.recommendations.map((rec: any) => ({
-      recommender: rec.recommender
-        ? {
-            id: rec.recommender.id || "",
-            full_name: rec.recommender.full_name || "",
-            url: rec.recommender.url,
-            type: rec.recommender.type || "",
-          }
-        : null,
-      source: rec.source,
-      source_link: rec.source_link,
-    })),
-    _recommendation_count: book._recommendation_count,
-    _percentile: book._percentile,
-    related_books: (book.related_books || []).slice(0, 3).map((rb: any) => ({
-      id: rb.id,
-      title: rb.title,
-      author: rb.author,
-      description: rb.description,
-      amazon_url: rb.amazon_url,
-      _recommendationCount: rb._recommendationCount,
-    })) as RelatedBook[],
-  }));
 }
 
 // Fetch recommenders from Supabase
