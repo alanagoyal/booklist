@@ -2,16 +2,16 @@
 
 import { Fragment, useState, useCallback, useMemo } from "react";
 import { DataGrid } from "@/components/grid";
-import { FormattedBook, EnhancedBook } from "@/types";
+import { FormattedBook } from "@/types";
 import { useRouter, useSearchParams } from "next/navigation";
 
 // Title cell
-function TitleCell({ row: { original } }: { row: { original: EnhancedBook } }) {
+function TitleCell({ row: { original } }: { row: { original: FormattedBook } }) {
   return <span className="text-text whitespace-pre-line line-clamp-2">{original.title}</span>;
 }
 
 // Recommender cell
-function RecommenderCell({ original }: { original: EnhancedBook }) {
+function RecommenderCell({ original }: { original: FormattedBook }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   
@@ -64,7 +64,7 @@ function RecommenderCell({ original }: { original: EnhancedBook }) {
 }
 
 // Genre cell
-function GenreCell({ original }: { original: EnhancedBook }) {
+function GenreCell({ original }: { original: FormattedBook }) {
   return (
     <div className="whitespace-pre-line line-clamp-2 text-text">
       <span className="break-words">
@@ -126,21 +126,8 @@ export default function BookGrid({ data, onFilteredDataChange }: BookGridProps) 
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // Do all expensive computations once when data is received
-  const enhancedData: EnhancedBook[] = useMemo(() => {
-    const maxRecommendations = Math.max(
-      ...data.map((book) => book.recommendations.length)
-    );
-
-    return data.map((book) => ({
-      ...book,
-      _recommendation_count: book.recommendations.length,
-      _percentile: Math.round((book.recommendations.length / maxRecommendations) * 100)
-    }));
-  }, [data]);
-
   // Row click handler
-  const handleRowClick = useCallback((book: EnhancedBook) => {
+  const handleRowClick = useCallback((book: FormattedBook) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set('key', `${book.id || book.title}--${Date.now()}`);
     router.push(`?${params.toString()}`, { scroll: false });
@@ -151,20 +138,20 @@ export default function BookGrid({ data, onFilteredDataChange }: BookGridProps) 
     {
       field: "title" as keyof FormattedBook,
       header: "Title",
-      cell: (props: { row: { original: EnhancedBook } }) => <TitleCell {...props} />,
+      cell: (props: { row: { original: FormattedBook } }) => <TitleCell {...props} />,
     },
     { field: "author" as keyof FormattedBook, header: "Author" },
     {
       field: "recommenders" as keyof FormattedBook,
       header: "Recommenders",
-      cell: (props: { row: { original: EnhancedBook } }) => (
+      cell: (props: { row: { original: FormattedBook } }) => (
         <RecommenderCell original={props.row.original} />
       ),
     },
     {
       field: "book_description" as keyof FormattedBook,
       header: "Description",
-      cell: (props: { row: { original: EnhancedBook } }) => (
+      cell: (props: { row: { original: FormattedBook } }) => (
         <div className="whitespace-pre-line line-clamp-2 text-text selection:bg-main selection:text-mtext transition-all duration-200">
           {props.row.original.description}
         </div>
@@ -173,7 +160,7 @@ export default function BookGrid({ data, onFilteredDataChange }: BookGridProps) 
     {
       field: "genres" as keyof FormattedBook,
       header: "Genre",
-      cell: (props: { row: { original: EnhancedBook } }) => (
+      cell: (props: { row: { original: FormattedBook } }) => (
         <GenreCell original={props.row.original} />
       ),
     },
@@ -181,10 +168,10 @@ export default function BookGrid({ data, onFilteredDataChange }: BookGridProps) 
 
   return (
     <DataGrid
-      data={enhancedData}
+      data={data}
       columns={columns}
-      getRowClassName={(row: EnhancedBook) =>
-        `cursor-pointer transition-colors duration-200 ${getBackgroundColor(row._recommendation_count, Math.max(...enhancedData.map(b => b._recommendation_count)))}`
+      getRowClassName={(row: FormattedBook) =>
+        `cursor-pointer transition-colors duration-200 ${getBackgroundColor(row._recommendation_count, Math.max(...data.map(b => b._recommendation_count)))}`
       }
       onRowClick={handleRowClick}
       onFilteredDataChange={onFilteredDataChange}

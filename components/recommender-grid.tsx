@@ -2,25 +2,15 @@
 
 import { Fragment, useCallback, useMemo } from "react";
 import { DataGrid } from "@/components/grid";
-import { FormattedBook, FormattedRecommender } from "@/types";
+import { FormattedRecommender } from "@/types";
 import { useRouter, useSearchParams } from "next/navigation";
-
-type EnhancedRecommender = {
-  id: string;
-  full_name: string;
-  type: string;
-  description: string | null;
-  recommendations: FormattedBook[];
-  _book_count: number;
-  _percentile: number;
-};
 
 interface RecommenderGridProps {
   data: FormattedRecommender[];
   onFilteredDataChange?: (count: number) => void;
 }
 
-function BookCell({ original }: { original: EnhancedRecommender }) {
+function BookCell({ original }: { original: FormattedRecommender }) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -105,36 +95,9 @@ export default function RecommenderGrid({
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // Transform recommender data into grid format
-  const enhancedData: EnhancedRecommender[] = useMemo(() => {
-    return data
-      .map((recommender) => ({
-        id: recommender.id,
-        full_name: recommender.full_name,
-        type: recommender.type || "Unknown",
-        description: recommender.description || null,
-        recommendations: recommender.recommendations.map((book) => ({
-          ...book,
-          genres: book.genre || [], // Convert genre to genres
-          amazon_url: book.amazon_url || "", // Ensure amazon_url is always a string
-          recommendations: [], // Add empty recommendations array
-        })) as FormattedBook[],
-        _book_count: recommender.recommendations.length,
-        _percentile: 0,
-      }))
-      .map((rec, _, arr) => {
-        const maxBooks = Math.max(...arr.map((r) => r._book_count));
-        return {
-          ...rec,
-          _percentile: Math.round((rec._book_count / maxBooks) * 100),
-        };
-      })
-      .sort((a, b) => a.full_name.localeCompare(b.full_name));
-  }, [data]);
-
   // Row click handler
   const handleRowClick = useCallback(
-    (recommender: EnhancedRecommender) => {
+    (recommender: FormattedRecommender) => {
       const params = new URLSearchParams(searchParams.toString());
       params.set("key", `${recommender.id}--${Date.now()}`);
       router.push(`?${params.toString()}`, { scroll: false });
@@ -145,46 +108,46 @@ export default function RecommenderGrid({
   // Columns
   const columns = [
     {
-      field: "full_name" as keyof EnhancedRecommender,
+      field: "full_name" as keyof FormattedRecommender,
       header: "Name",
     },
     {
-      field: "recommendations" as keyof EnhancedRecommender,
+      field: "recommendations" as keyof FormattedRecommender,
       header: "Recommendations",
-      cell: (props: { row: { original: EnhancedRecommender } }) => (
+      cell: (props: { row: { original: FormattedRecommender } }) => (
         <BookCell original={props.row.original} />
       ),
     },
     {
-      field: "type" as keyof EnhancedRecommender,
+      field: "type" as keyof FormattedRecommender,
       header: "Type",
-      cell: (props: { row: { original: EnhancedRecommender } }) => (
+      cell: (props: { row: { original: FormattedRecommender } }) => (
         <div className="whitespace-pre-line line-clamp-2 text-text selection:bg-main selection:text-mtext transition-all duration-200">
           {props.row.original.type}
         </div>
       ),
     },
     {
-      field: "recommender_description" as keyof EnhancedRecommender,
+      field: "recommender_description" as keyof FormattedRecommender,
       header: "Description",
-      cell: (props: { row: { original: EnhancedRecommender } }) => (
+      cell: (props: { row: { original: FormattedRecommender } }) => (
         <div className="whitespace-pre-line line-clamp-2 text-text selection:bg-main selection:text-mtext transition-all duration-200">
           {props.row.original.description || ""}
         </div>
       ),
     },
     {
-      field: "_book_count" as keyof EnhancedRecommender,
+      field: "_book_count" as keyof FormattedRecommender,
       header: "Book Count",
     },
   ];
 
   return (
     <DataGrid
-      data={enhancedData}
+      data={data}
       columns={columns}
-      getRowClassName={(row: EnhancedRecommender) =>
-        `cursor-pointer transition-colors duration-200 ${getBackgroundColor(row._book_count, Math.max(...enhancedData.map((r) => r._book_count)))}`
+      getRowClassName={(row: FormattedRecommender) =>
+        `cursor-pointer transition-colors duration-200 ${getBackgroundColor(row._book_count, Math.max(...data.map((r) => r._book_count)))}`
       }
       onRowClick={handleRowClick}
       onFilteredDataChange={onFilteredDataChange}
