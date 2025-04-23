@@ -41,6 +41,7 @@ export default function BookDetail({
   onClose,
   stackIndex = 0,
 }: BookDetailProps) {
+  const [isLoading, setIsLoading] = useState(false);
   const [showSummary, setShowSummary] = useState(false);
   const [recommenderSummary, setRecommenderSummary] = useState<string>("");
   const [isLoadingSummary, setIsLoadingSummary] = useState(false);
@@ -115,6 +116,7 @@ export default function BookDetail({
   // Fetch related books
   useEffect(() => {
     async function fetchRelatedBooks() {
+      setIsLoading(true);
       const { data: relatedBooksData } = (await supabase
         .from("recommendations")
         .select(
@@ -165,10 +167,15 @@ export default function BookDetail({
         .slice(0, 3);
 
       setRelatedBooks(uniqueBooks);
+      setIsLoading(false);
     }
 
     fetchRelatedBooks();
   }, [book]);
+
+  if (isLoading) {
+    return null;
+  }
 
   return (
     <div
