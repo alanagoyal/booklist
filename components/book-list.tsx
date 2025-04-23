@@ -62,8 +62,10 @@ export function BookList({
           },
         ];
       });
+    } else {
+      // Clear history when key param is removed
+      setViewHistory([]);
     }
-    // Don't clear history when viewId is null - only handleClose should modify history
   }, [searchParams, initialRecommenders]);
 
   // Set mounted state to true after initial render

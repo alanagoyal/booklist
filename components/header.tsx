@@ -19,6 +19,13 @@ function HeaderContent() {
     params.set("view", "books");
     return `/?${params.toString()}`;
   })();
+  const handleMobileHomeClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    const params = new URLSearchParams(currentParams);
+    params.delete("key");
+    params.set("view", "books");
+    router.push(`/?${params.toString()}`, { scroll: false });
+  };
   const isHomePage = pathname === "/";
   const view = isHomePage
     ? (searchParams.get("view") as "books" | "people") || "books"
@@ -67,7 +74,14 @@ function HeaderContent() {
       <div className="flex gap-4 px-3">
         <Link
           href={homeHref}
-          className="font-bold text-2xl text-text transition-colors duration-200 pt-3"
+          className="hidden md:block font-bold text-2xl text-text transition-colors duration-200 pt-3"
+        >
+          BOOKLIST
+        </Link>
+        <Link
+          href={homeHref}
+          onClick={handleMobileHomeClick}
+          className="md:hidden font-bold text-2xl text-text transition-colors duration-200 pt-3"
         >
           BOOKLIST
         </Link>
