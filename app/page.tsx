@@ -1,36 +1,29 @@
 import { BookList } from "@/components/book-list";
 import type { FormattedBook, FormattedRecommender } from "@/types";
-import path from 'path';
-import fs from 'fs';
 
 // Force static generation
 export const dynamic = "force-static";
-// Disable revalidation
-export const revalidate = false;
 
-// Load data from JSON files at build time
+// Load data from public JSON files at build time
 async function getData(): Promise<[FormattedBook[], FormattedRecommender[]]> {
-  const dataDir = path.join(process.cwd(), 'data');
+  // In production, these files will be available at /data/
+  const books: FormattedBook[] = await fetch(
+    new URL('../public/data/books.json', import.meta.url)
+  ).then(res => res.json());
   
-  const books: FormattedBook[] = JSON.parse(
-    fs.readFileSync(path.join(dataDir, 'books.json'), 'utf-8')
-  );
-  
-  const recommenders: FormattedRecommender[] = JSON.parse(
-    fs.readFileSync(path.join(dataDir, 'recommenders.json'), 'utf-8')
-  );
+  const recommenders: FormattedRecommender[] = await fetch(
+    new URL('../public/data/recommenders.json', import.meta.url)
+  ).then(res => res.json());
 
   return [books, recommenders];
 }
 
 export default async function Home() {
-  // These will only run at build time with the configuration above
-  const [formattedBooks, formattedRecommenders] = await getData();
+  const [books, recommenders] = await getData();
 
   return (
-    <BookList
-      initialBooks={formattedBooks}
-      initialRecommenders={formattedRecommenders}
-    />
+    <main>
+      <BookList initialBooks={books} initialRecommenders={recommenders} />
+    </main>
   );
 }

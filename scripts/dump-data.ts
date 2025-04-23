@@ -106,11 +106,12 @@ async function dumpData() {
         })),
       }));
 
+      // Write to public directory
       writeFileSync(
-        join(process.cwd(), "data", "books.json"),
+        join(process.cwd(), "public", "data", "books.json"),
         JSON.stringify(formattedBooks, null, 2)
       );
-      console.log(`✓ Wrote ${formattedBooks.length} books to data/books.json`);
+      console.log(`✓ Wrote ${formattedBooks.length} books to public/data/books.json`);
     }
 
     // Fetch recommenders
@@ -123,10 +124,10 @@ async function dumpData() {
       console.error("Error fetching recommenders:", recommendersError);
     } else if (recommenders) {
       writeFileSync(
-        join(process.cwd(), "data", "recommenders.json"),
+        join(process.cwd(), "public", "data", "recommenders.json"),
         JSON.stringify(recommenders, null, 2)
       );
-      console.log(`✓ Wrote ${recommenders.length} recommenders to data/recommenders.json`);
+      console.log(`✓ Wrote ${recommenders.length} recommenders to public/data/recommenders.json`);
     }
   } catch (error) {
     console.error("Error:", error);

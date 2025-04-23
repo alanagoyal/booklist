@@ -1,0 +1,623 @@
+[
+  {
+    "id": "8c74e5de-813d-419a-854b-8171280de53b",
+    "full_name": "Adam Savage",
+    "created_at": "2025-03-13T19:47:36.936+00:00",
+    "updated_at": "2025-03-13T19:47:36.936+00:00",
+    "url": "https://x.com/donttrythis",
+    "type": "Entertainer",
+    "description": "Adam Savage is a blah blah blah who blah blah blah and is known for blah blah blah"
+  },
+  {
+    "id": "54e6aac3-d96f-4b5b-a1a1-9dae2cc735c3",
+    "full_name": "Alexis Ohanian",
+    "created_at": "2025-03-06T19:56:54.139+00:00",
+    "updated_at": "2025-03-06T19:56:54.139+00:00",
+    "url": "https://x.com/alexisohanian",
+    "type": "Entrepreneur",
+    "description": "Alexis Ohanian is a blah blah blah who blah blah blah and is known for blah blah blah"
+  },
+  {
+    "id": "ff9d3fbe-adb7-4ce5-8be9-cf16b374ae72",
+    "full_name": "Alfred Lin",
+    "created_at": "2025-03-08T21:19:38.239+00:00",
+    "updated_at": "2025-03-08T21:19:38.239+00:00",
+    "url": "https://x.com/alfred_lin",
+    "type": "Entrepreneur",
+    "description": "Alfred Lin is a blah blah blah who blah blah blah and is known for blah blah blah"
+  },
+  {
+    "id": "e11d24e2-00e1-4631-a136-0ab47869d931",
+    "full_name": "Andrew Chen",
+    "created_at": "2025-03-14T18:23:37.706+00:00",
+    "updated_at": "2025-03-14T18:23:37.706+00:00",
+    "url": "https://x.com/andrewchen",
+    "type": "Investor",
+    "description": "Andrew Chen is a blah blah blah who blah blah blah and is known for blah blah blah"
+  },
+  {
+    "id": "1f12b227-6e7c-4ed2-8fd1-1c1b74d72490",
+    "full_name": "Andrew Garfield",
+    "created_at": "2025-03-14T03:35:56.181+00:00",
+    "updated_at": "2025-03-14T03:35:56.181+00:00",
+    "url": "https://x.com/itsagarfield",
+    "type": "Entertainer",
+    "description": "Andrew Garfield is a blah blah blah who blah blah blah and is known for blah blah blah"
+  },
+  {
+    "id": "da4bf484-1d99-426a-850d-61ad455c02bd",
+    "full_name": "Andrew Wilkinson",
+    "created_at": "2025-03-07T20:14:13.261+00:00",
+    "updated_at": "2025-03-07T20:14:13.261+00:00",
+    "url": "https://x.com/awilkinson",
+    "type": "Entrepreneur",
+    "description": "Andrew Wilkinson is a blah blah blah who blah blah blah and is known for blah blah blah"
+  },
+  {
+    "id": "ef9e1a7d-737c-4b40-a587-85e0785aa741",
+    "full_name": "Ann Miura-Ko",
+    "created_at": "2025-03-10T18:12:23.161+00:00",
+    "updated_at": "2025-03-10T18:12:23.161+00:00",
+    "url": "https://x.com/annimaniac",
+    "type": "Investor",
+    "description": "Ann Miura-Ko is a blah blah blah who blah blah blah and is known for blah blah blah"
+  },
+  {
+    "id": "5d796270-7b67-4d25-849a-0f9246beb36f",
+    "full_name": "Anthony Bourdain",
+    "created_at": "2025-03-13T17:53:09.872+00:00",
+    "updated_at": "2025-03-13T17:53:09.872+00:00",
+    "url": "https://en.wikipedia.org/wiki/Anthony_Bourdain",
+    "type": "Chef or Food Writer",
+    "description": "Anthony Bourdain is a blah blah blah who blah blah blah and is known for blah blah blah"
+  },
+  {
+    "id": "7f134fec-0f7a-4a2c-a029-b9a44cf55962",
+    "full_name": "Auren Hoffman",
+    "created_at": "2025-03-09T17:46:00.031+00:00",
+    "updated_at": "2025-03-09T17:46:00.031+00:00",
+    "url": "https://x.com/auren",
+    "type": "Entrepreneur",
+    "description": "Auren Hoffman is a blah blah blah who blah blah blah and is known for blah blah blah"
+  },
+  {
+    "id": "2db22d1d-67c5-4d0d-9d91-32c0446b88aa",
+    "full_name": "Benedict Evans",
+    "created_at": "2025-03-09T22:17:58.733+00:00",
+    "updated_at": "2025-03-09T22:17:58.733+00:00",
+    "url": "https://x.com/benedictevans",
+    "type": "Technologist",
+    "description": "Benedict Evans is a blah blah blah who blah blah blah and is known for blah blah blah"
+  },
+  {
+    "id": "c1f6a9a1-4039-48b5-8b6b-51d11940174f",
+    "full_name": "Brad Feld",
+    "created_at": "2025-03-20T02:17:59.208+00:00",
+    "updated_at": "2025-03-20T02:17:59.208+00:00",
+    "url": "https://x.com/bfeld",
+    "type": "Investor",
+    "description": "Brad Feld is a blah blah blah who blah blah blah and is known for blah blah blah"
+  },
+  {
+    "id": "959d031c-5613-4013-bfe6-2565486f044a",
+    "full_name": "Brian Chesky",
+    "created_at": "2025-03-05T22:29:23.764+00:00",
+    "updated_at": "2025-03-05T22:29:23.764+00:00",
+    "url": "https://x.com/bchesky",
+    "type": "Entrepreneur",
+    "description": "Brian Chesky is a blah blah blah who blah blah blah and is known for blah blah blah"
+  },
+  {
+    "id": "2f02e30a-b47a-459e-a3d4-7cb4f1a1ee08",
+    "full_name": "Bruce Springsteen",
+    "created_at": "2025-03-20T20:49:43.191+00:00",
+    "updated_at": "2025-03-20T20:49:43.191+00:00",
+    "url": "https://x.com/springsteen",
+    "type": "Musician or Filmmaker",
+    "description": "Bruce Springsteen is a blah blah blah who blah blah blah and is known for blah blah blah"
+  },
+  {
+    "id": "fc5e1c0f-aac3-4a25-aa6f-dc528e19d5fa",
+    "full_name": "Chris Dixon",
+    "created_at": "2025-03-03T20:51:46.43+00:00",
+    "updated_at": "2025-03-03T20:51:46.43+00:00",
+    "url": "https://x.com/cdixon",
+    "type": "Investor",
+    "description": "Chris Dixon is a blah blah blah who blah blah blah and is known for blah blah blah"
+  },
+  {
+    "id": "306cf908-6d9f-4ff2-a037-2602108c6bd8",
+    "full_name": "Chris Messina",
+    "created_at": "2025-03-19T02:38:18.216+00:00",
+    "updated_at": "2025-03-19T02:38:18.216+00:00",
+    "url": "https://en.wikipedia.org/wiki/Chris_Messina",
+    "type": "Entrepreneur",
+    "description": "Chris Messina is a blah blah blah who blah blah blah and is known for blah blah blah"
+  },
+  {
+    "id": "d6912a12-a684-41fc-939f-65c9e6f7f488",
+    "full_name": "David Perell",
+    "created_at": "2025-03-10T17:09:27.303+00:00",
+    "updated_at": "2025-03-10T17:09:27.303+00:00",
+    "url": "https://x.com/david_perell",
+    "type": "Entrepreneur",
+    "description": "David Perell is a blah blah blah who blah blah blah and is known for blah blah blah"
+  },
+  {
+    "id": "fa35b2e7-5f37-4036-9de7-065f8dcbed1c",
+    "full_name": "Drew Houston",
+    "created_at": "2025-03-13T20:22:51.548+00:00",
+    "updated_at": "2025-03-13T20:22:51.548+00:00",
+    "url": "https://x.com/drewhouston",
+    "type": "Entrepreneur",
+    "description": "Drew Houston is a blah blah blah who blah blah blah and is known for blah blah blah"
+  },
+  {
+    "id": "7865327f-7316-46af-be7f-faf91696013c",
+    "full_name": "Dustin Moskovitz",
+    "created_at": "2025-03-13T16:31:04.178+00:00",
+    "updated_at": "2025-03-13T16:31:04.178+00:00",
+    "url": "https://en.wikipedia.org/wiki/Dustin_Moskovitz",
+    "type": "Entrepreneur",
+    "description": "Dustin Moskovitz is a blah blah blah who blah blah blah and is known for blah blah blah"
+  },
+  {
+    "id": "ab732c1f-3826-46bb-8312-d9ed95b9b9f3",
+    "full_name": "Ed Catmull",
+    "created_at": "2025-03-07T20:53:44.942+00:00",
+    "updated_at": "2025-03-07T20:53:44.942+00:00",
+    "url": "https://en.wikipedia.org/wiki/Edwin_Catmull",
+    "type": "Technologist",
+    "description": "Ed Catmull is a blah blah blah who blah blah blah and is known for blah blah blah"
+  },
+  {
+    "id": "64a6f793-a9ff-42f1-85d5-d1495161a40e",
+    "full_name": "Elad Gil",
+    "created_at": "2025-03-02T19:31:55.942+00:00",
+    "updated_at": "2025-03-02T19:31:55.942+00:00",
+    "url": "https://x.com/eladgil",
+    "type": "Entrepreneur",
+    "description": "Elad Gil is a blah blah blah who blah blah blah and is known for blah blah blah"
+  },
+  {
+    "id": "bcb21b05-bde5-42fd-917e-b87ce8bf6d4a",
+    "full_name": "Elon Musk",
+    "created_at": "2025-03-07T19:41:59.369+00:00",
+    "updated_at": "2025-03-07T19:41:59.369+00:00",
+    "url": "https://x.com/elonmusk",
+    "type": "Entrepreneur",
+    "description": "Elon Musk is a blah blah blah who blah blah blah and is known for blah blah blah"
+  },
+  {
+    "id": "362f2770-962b-457c-addb-bd60c3b42787",
+    "full_name": "Eric Schmidt",
+    "created_at": "2025-03-17T18:41:11.791+00:00",
+    "updated_at": "2025-03-17T18:41:11.791+00:00",
+    "url": "https://x.com/ericschmidt",
+    "type": "Entrepreneur",
+    "description": "Eric Schmidt is a blah blah blah who blah blah blah and is known for blah blah blah"
+  },
+  {
+    "id": "30793e1f-9647-4e73-a0b0-201144d736a7",
+    "full_name": "Ev Williams",
+    "created_at": "2025-03-12T17:15:47.98+00:00",
+    "updated_at": "2025-03-12T17:15:47.98+00:00",
+    "url": "https://x.com/ev",
+    "type": "Entrepreneur",
+    "description": "Ev Williams is a blah blah blah who blah blah blah and is known for blah blah blah"
+  },
+  {
+    "id": "f09eb6c4-f515-4805-9a54-644436b56665",
+    "full_name": "Fred Wilson",
+    "created_at": "2025-03-08T00:32:38.483+00:00",
+    "updated_at": "2025-03-08T00:32:38.483+00:00",
+    "url": "https://x.com/fredwilson",
+    "type": "Investor",
+    "description": "Fred Wilson is a blah blah blah who blah blah blah and is known for blah blah blah"
+  },
+  {
+    "id": "ba8b1d8e-3055-41fa-a0de-e68f7f2a03d3",
+    "full_name": "Garry Tan",
+    "created_at": "2025-02-28T01:15:10.571+00:00",
+    "updated_at": "2025-02-28T01:15:10.571+00:00",
+    "url": "https://x.com/garrytan",
+    "type": "Entrepreneur",
+    "description": "Garry Tan is a blah blah blah who blah blah blah and is known for blah blah blah"
+  },
+  {
+    "id": "fd359f15-fcbd-4d84-a322-b626043bba75",
+    "full_name": "Howard Marks",
+    "created_at": "2025-03-12T17:08:49.211+00:00",
+    "updated_at": "2025-03-12T17:08:49.211+00:00",
+    "url": "https://en.wikipedia.org/wiki/Howard_Marks_(investor)",
+    "type": "Investor",
+    "description": "Howard Marks is a blah blah blah who blah blah blah and is known for blah blah blah"
+  },
+  {
+    "id": "83842e58-6b23-4046-9901-07034c31b28c",
+    "full_name": "J.K. Rowling",
+    "created_at": "2025-03-17T18:01:36.328+00:00",
+    "updated_at": "2025-03-17T18:01:36.328+00:00",
+    "url": "https://en.wikipedia.org/wiki/J._K._Rowling",
+    "type": "Author",
+    "description": "J.K. Rowling is a blah blah blah who blah blah blah and is known for blah blah blah"
+  },
+  {
+    "id": "3cf23b17-e1e2-48b6-800e-2889593db96a",
+    "full_name": "Jack Altman",
+    "created_at": "2025-03-18T03:27:31.830467+00:00",
+    "updated_at": "2025-03-18T03:27:31.830467+00:00",
+    "url": "https://x.com/jaltma",
+    "type": "Entrepreneur",
+    "description": "Jack Altman is a blah blah blah who blah blah blah and is known for blah blah blah"
+  },
+  {
+    "id": "5c8107ba-a540-40ab-ab2e-ab7b905fc475",
+    "full_name": "Jack Dorsey",
+    "created_at": "2025-03-03T21:51:29.199+00:00",
+    "updated_at": "2025-03-03T21:51:29.199+00:00",
+    "url": "https://x.com/jack",
+    "type": "Entrepreneur",
+    "description": "Jack Dorsey is a blah blah blah who blah blah blah and is known for blah blah blah"
+  },
+  {
+    "id": "d0a77752-00b0-4c5c-8413-5a153635b741",
+    "full_name": "Jennifer Lawrence",
+    "created_at": "2025-03-17T21:10:54.856+00:00",
+    "updated_at": "2025-03-17T21:10:54.856+00:00",
+    "url": "https://en.wikipedia.org/wiki/Jennifer_Lawrence",
+    "type": "Entertainer",
+    "description": "Jennifer Lawrence is a blah blah blah who blah blah blah and is known for blah blah blah"
+  },
+  {
+    "id": "40c43eeb-e46d-4cf7-8a8f-477a9d7c9d59",
+    "full_name": "Jensen Huang",
+    "created_at": "2025-03-01T16:29:33.34+00:00",
+    "updated_at": "2025-03-01T16:29:33.34+00:00",
+    "url": "https://en.wikipedia.org/wiki/Jensen_Huang",
+    "type": "Technologist",
+    "description": "Jensen Huang is a blah blah blah who blah blah blah and is known for blah blah blah"
+  },
+  {
+    "id": "d304a5f5-edab-4931-a041-7605546b5d84",
+    "full_name": "Jim Collins",
+    "created_at": "2025-03-20T15:11:24.92+00:00",
+    "updated_at": "2025-03-20T15:11:24.92+00:00",
+    "url": "https://x.com/level5leaders",
+    "type": "Executive",
+    "description": "Jim Collins is a blah blah blah who blah blah blah and is known for blah blah blah"
+  },
+  {
+    "id": "b47bd147-f5ad-49d1-b24f-946f71c9841b",
+    "full_name": "Joe Rogan",
+    "created_at": "2025-03-08T18:41:16.153+00:00",
+    "updated_at": "2025-03-08T18:41:16.153+00:00",
+    "url": "https://x.com/joerogan",
+    "type": "Journalist",
+    "description": "Joe Rogan is a blah blah blah who blah blah blah and is known for blah blah blah"
+  },
+  {
+    "id": "2a6f9d43-a50f-46eb-97c8-f34be0d5f414",
+    "full_name": "Jordan Peterson",
+    "created_at": "2025-03-13T01:03:02.573+00:00",
+    "updated_at": "2025-03-13T01:03:02.573+00:00",
+    "url": "https://x.com/jordanbpeterson",
+    "type": "Historian or Philosopher",
+    "description": "Jordan Peterson is a blah blah blah who blah blah blah and is known for blah blah blah"
+  },
+  {
+    "id": "94fd096a-10b2-4580-a3a9-95180c140700",
+    "full_name": "Julie Zhuo",
+    "created_at": "2025-03-19T02:09:23.487+00:00",
+    "updated_at": "2025-03-19T02:09:23.487+00:00",
+    "url": "https://twitter.com/joulee?ref_src=twsrc%5Egoogle%7Ctwcamp%5Eserp%7Ctwgr%5Eauthor",
+    "type": "Engineer or Product Manager",
+    "description": "Julie Zhuo is a blah blah blah who blah blah blah and is known for blah blah blah"
+  },
+  {
+    "id": "aa1f2e94-bc0c-490f-a37f-2de6c135def4",
+    "full_name": "Karlie Kloss",
+    "created_at": "2025-03-14T03:19:33.17+00:00",
+    "updated_at": "2025-03-14T03:19:33.17+00:00",
+    "url": "https://x.com/karliekloss",
+    "type": "Entrepreneur",
+    "description": "Karlie Kloss is a blah blah blah who blah blah blah and is known for blah blah blah"
+  },
+  {
+    "id": "bd91df9a-316c-4714-b6dc-e78218a85a69",
+    "full_name": "Keith Rabois",
+    "created_at": "2025-03-03T21:25:33.713+00:00",
+    "updated_at": "2025-03-03T21:25:33.713+00:00",
+    "url": "https://x.com/rabois",
+    "type": "Investor",
+    "description": "Keith Rabois is a blah blah blah who blah blah blah and is known for blah blah blah"
+  },
+  {
+    "id": "cfee863c-c29b-4930-9b76-3bba84c73c45",
+    "full_name": "Larry Page",
+    "created_at": "2025-03-17T17:53:20.649+00:00",
+    "updated_at": "2025-03-17T17:53:20.649+00:00",
+    "url": "https://en.wikipedia.org/wiki/Larry_Page",
+    "type": "Entrepreneur",
+    "description": "Larry Page is a blah blah blah who blah blah blah and is known for blah blah blah"
+  },
+  {
+    "id": "c1ffc866-e5bb-48eb-967a-bfb6914e183c",
+    "full_name": "LeBron James",
+    "created_at": "2025-03-08T17:54:19.837+00:00",
+    "updated_at": "2025-03-08T17:54:19.837+00:00",
+    "url": "https://x.com/KingJames",
+    "type": "Entertainer",
+    "description": "LeBron James is a blah blah blah who blah blah blah and is known for blah blah blah"
+  },
+  {
+    "id": "1568e1de-342e-4c99-be85-229e54f2248f",
+    "full_name": "Marc Andreessen",
+    "created_at": "2025-02-15T21:15:47.206692+00:00",
+    "updated_at": "2025-02-15T21:15:47.206692+00:00",
+    "url": "https://x.com/pmarca",
+    "type": "Investor",
+    "description": "Marc Andreessen is a blah blah blah who blah blah blah and is known for blah blah blah"
+  },
+  {
+    "id": "cc5187c3-9d93-4b02-91c1-555dce6f6e74",
+    "full_name": "Marty Cagan",
+    "created_at": "2025-03-20T17:06:28.779+00:00",
+    "updated_at": "2025-03-20T17:06:28.779+00:00",
+    "url": "https://x.com/cagan",
+    "type": "Engineer or Product Manager",
+    "description": "Marty Cagan is a blah blah blah who blah blah blah and is known for blah blah blah"
+  },
+  {
+    "id": "840424c3-515e-4042-b34d-7560b1027521",
+    "full_name": "Michael Mauboussin",
+    "created_at": "2025-03-07T19:25:49.867+00:00",
+    "updated_at": "2025-03-07T19:25:49.867+00:00",
+    "url": "https://x.com/mjmauboussin",
+    "type": "Economist",
+    "description": "Michael Mauboussin is a blah blah blah who blah blah blah and is known for blah blah blah"
+  },
+  {
+    "id": "f37e4174-e67d-479c-aa69-a6f556295a01",
+    "full_name": "Natalie Portman",
+    "created_at": "2025-03-20T18:04:23.859+00:00",
+    "updated_at": "2025-03-20T18:04:23.859+00:00",
+    "url": "https://en.wikipedia.org/wiki/Natalie_Portman",
+    "type": "Musician or Filmmaker",
+    "description": "Natalie Portman is a blah blah blah who blah blah blah and is known for blah blah blah"
+  },
+  {
+    "id": "dcdb66bc-551a-4a44-a2ff-b0cf8750670a",
+    "full_name": "Naval Ravikant",
+    "created_at": "2025-03-02T21:07:15.489+00:00",
+    "updated_at": "2025-03-02T21:07:15.489+00:00",
+    "url": "https://x.com/naval",
+    "type": "Entrepreneur",
+    "description": "Naval Ravikant is a blah blah blah who blah blah blah and is known for blah blah blah"
+  },
+  {
+    "id": "cd688549-6d27-4d87-b43b-ba09e1b6cc4f",
+    "full_name": "Oprah Winfrey",
+    "created_at": "2025-03-13T02:26:18.483+00:00",
+    "updated_at": "2025-03-13T02:26:18.483+00:00",
+    "url": "https://x.com/Oprah",
+    "type": "Journalist",
+    "description": "Oprah Winfrey is a blah blah blah who blah blah blah and is known for blah blah blah"
+  },
+  {
+    "id": "b999bd2e-c0b2-4b16-abb2-c657b4b4e975",
+    "full_name": "Patrick Collison",
+    "created_at": "2025-02-15T20:51:48.821682+00:00",
+    "updated_at": "2025-02-15T20:51:48.821682+00:00",
+    "url": "https://x.com/patrickc",
+    "type": "Entrepreneur",
+    "description": "Patrick Collison is a blah blah blah who blah blah blah and is known for blah blah blah"
+  },
+  {
+    "id": "7d70640c-825f-4a70-b983-cb56c5bb64f3",
+    "full_name": "Paul Graham",
+    "created_at": "2025-02-18T19:34:12.584745+00:00",
+    "updated_at": "2025-02-18T19:34:12.584745+00:00",
+    "url": "https://x.com/paulg",
+    "type": "Entrepreneur",
+    "description": "Paul Graham is a blah blah blah who blah blah blah and is known for blah blah blah"
+  },
+  {
+    "id": "0ef50665-1a3e-485e-a2aa-7e1cf21de0ae",
+    "full_name": "Peter Ackroyd",
+    "created_at": "2025-03-15T22:33:30.293+00:00",
+    "updated_at": "2025-03-15T22:33:30.293+00:00",
+    "url": "https://en.wikipedia.org/wiki/Peter_Ackroyd",
+    "type": "Biographer",
+    "description": "Peter Ackroyd is a blah blah blah who blah blah blah and is known for blah blah blah"
+  },
+  {
+    "id": "80ed8150-1404-4498-b7e4-485333ebd2f2",
+    "full_name": "Peter Thiel",
+    "created_at": "2025-02-28T20:31:16.276+00:00",
+    "updated_at": "2025-02-28T20:31:16.276+00:00",
+    "url": "https://en.wikipedia.org/wiki/Peter_Thiel",
+    "type": "Investor",
+    "description": "Peter Thiel is a blah blah blah who blah blah blah and is known for blah blah blah"
+  },
+  {
+    "id": "4f742ab3-d021-452c-8ad5-1d2dab59b1c4",
+    "full_name": "Raoul Pal",
+    "created_at": "2025-03-07T19:17:22.861+00:00",
+    "updated_at": "2025-03-07T19:17:22.861+00:00",
+    "url": "https://x.com/RaoulGMI",
+    "type": "Economist",
+    "description": "Raoul Pal is a blah blah blah who blah blah blah and is known for blah blah blah"
+  },
+  {
+    "id": "55d45cbf-a0c7-408e-acc0-9cd59b4baa2d",
+    "full_name": "Ray Dalio",
+    "created_at": "2025-03-07T21:21:58.238+00:00",
+    "updated_at": "2025-03-07T21:21:58.238+00:00",
+    "url": "https://x.com/RayDalio",
+    "type": "Investor",
+    "description": "Ray Dalio is a blah blah blah who blah blah blah and is known for blah blah blah"
+  },
+  {
+    "id": "ab42f513-3327-4fd4-a098-e1e93fde3443",
+    "full_name": "Reid Hoffman",
+    "created_at": "2025-03-07T19:09:18.733+00:00",
+    "updated_at": "2025-03-07T19:09:18.733+00:00",
+    "url": "https://x.com/reidhoffman",
+    "type": "Entrepreneur",
+    "description": "Reid Hoffman is a blah blah blah who blah blah blah and is known for blah blah blah"
+  },
+  {
+    "id": "1a8c205c-9ae6-44f6-b982-742bc201f3ac",
+    "full_name": "Ron Conway",
+    "created_at": "2025-03-13T18:19:45.425+00:00",
+    "updated_at": "2025-03-13T18:19:45.425+00:00",
+    "url": "https://x.com/ronconway",
+    "type": "Investor",
+    "description": "Ron Conway is a blah blah blah who blah blah blah and is known for blah blah blah"
+  },
+  {
+    "id": "62978431-6853-47c2-b4a4-0ad6cb646a7c",
+    "full_name": "Ryan Holiday",
+    "created_at": "2025-03-19T14:33:23.406+00:00",
+    "updated_at": "2025-03-19T14:33:23.406+00:00",
+    "url": "https://x.com/RyanHoliday",
+    "type": "Author",
+    "description": "Ryan Holiday is a blah blah blah who blah blah blah and is known for blah blah blah"
+  },
+  {
+    "id": "593cd166-5884-4dc5-94a0-1b1fbc71f8e5",
+    "full_name": "Ryan Hoover",
+    "created_at": "2025-03-20T17:34:37.378+00:00",
+    "updated_at": "2025-03-20T17:34:37.378+00:00",
+    "url": "https://x.com/rrhoover",
+    "type": "Entrepreneur",
+    "description": "Ryan Hoover is a blah blah blah who blah blah blah and is known for blah blah blah"
+  },
+  {
+    "id": "93b556b5-a799-4bf9-a895-06dcf51a538a",
+    "full_name": "Sahil Lavingia",
+    "created_at": "2025-03-08T20:25:07.44+00:00",
+    "updated_at": "2025-03-08T20:25:07.44+00:00",
+    "url": "https://x.com/shl",
+    "type": "Entrepreneur",
+    "description": "Sahil Lavingia is a blah blah blah who blah blah blah and is known for blah blah blah"
+  },
+  {
+    "id": "197e13ce-b553-4654-a122-0983af28bb64",
+    "full_name": "Sam Altman",
+    "created_at": "2025-03-01T20:49:00.187+00:00",
+    "updated_at": "2025-03-01T20:49:00.187+00:00",
+    "url": "https://x.com/sama",
+    "type": "Entrepreneur",
+    "description": "Sam Altman is a blah blah blah who blah blah blah and is known for blah blah blah"
+  },
+  {
+    "id": "43d97b64-ac23-4072-b759-2beccd516dfa",
+    "full_name": "Sara Blakely",
+    "created_at": "2025-03-08T20:20:11.254+00:00",
+    "updated_at": "2025-03-08T20:20:11.254+00:00",
+    "url": "https://x.com/sarablakely",
+    "type": "Entrepreneur",
+    "description": "Sara Blakely is a blah blah blah who blah blah blah and is known for blah blah blah"
+  },
+  {
+    "id": "25a773c4-13fb-479b-83f4-0213b6c0ba82",
+    "full_name": "Satya Nadella",
+    "created_at": "2025-02-28T00:31:38.905+00:00",
+    "updated_at": "2025-02-28T00:31:38.905+00:00",
+    "url": "https://en.wikipedia.org/wiki/Satya_Nadella",
+    "type": "Executive",
+    "description": "Satya Nadella is a blah blah blah who blah blah blah and is known for blah blah blah"
+  },
+  {
+    "id": "81eeb31e-5364-4fbd-b6f2-8752eae29356",
+    "full_name": "Scarlett Johansson",
+    "created_at": "2025-03-17T21:20:34.295+00:00",
+    "updated_at": "2025-03-17T21:20:34.295+00:00",
+    "url": "https://en.wikipedia.org/wiki/Scarlett_Johansson",
+    "type": "Musician or Filmmaker",
+    "description": "Scarlett Johansson is a blah blah blah who blah blah blah and is known for blah blah blah"
+  },
+  {
+    "id": "2c18d3c4-9745-4c2e-9668-f6f92ab9005f",
+    "full_name": "Seth Godin",
+    "created_at": "2025-03-18T02:51:38.772+00:00",
+    "updated_at": "2025-03-18T02:51:38.772+00:00",
+    "url": "https://en.wikipedia.org/wiki/Seth_Godin",
+    "type": "Entrepreneur",
+    "description": "Seth Godin is a blah blah blah who blah blah blah and is known for blah blah blah"
+  },
+  {
+    "id": "aaa928ba-7b30-4d20-b935-12a7f3786bbb",
+    "full_name": "Shonda Rhimes",
+    "created_at": "2025-03-13T19:57:36.03+00:00",
+    "updated_at": "2025-03-13T19:57:36.03+00:00",
+    "url": "https://x.com/shondarhimes",
+    "type": "Journalist",
+    "description": "Shonda Rhimes is a blah blah blah who blah blah blah and is known for blah blah blah"
+  },
+  {
+    "id": "70af5394-3955-4869-9ef6-2c8077d1ea27",
+    "full_name": "Shreyas Narlaka",
+    "created_at": "2025-03-01T01:28:11.20375+00:00",
+    "updated_at": "2025-03-01T01:28:11.20375+00:00",
+    "url": "https://x.com/66_shrey",
+    "type": "Entrepreneur",
+    "description": "Shreyas Narlaka is a blah blah blah who blah blah blah and is known for blah blah blah"
+  },
+  {
+    "id": "d6467e99-35e3-486d-aff5-2e0cc2f47228",
+    "full_name": "Steve Blank",
+    "created_at": "2025-03-18T17:10:09.561+00:00",
+    "updated_at": "2025-03-18T17:10:09.561+00:00",
+    "url": "https://en.wikipedia.org/wiki/Steve_Blank",
+    "type": "Entrepreneur",
+    "description": "Steve Blank is a blah blah blah who blah blah blah and is known for blah blah blah"
+  },
+  {
+    "id": "d9272357-10db-44ac-8ed2-6c84a2c4d8c7",
+    "full_name": "Stewart Butterfield",
+    "created_at": "2025-03-07T22:04:06.03+00:00",
+    "updated_at": "2025-03-07T22:04:06.03+00:00",
+    "url": "https://x.com/stewart",
+    "type": "Entrepreneur",
+    "description": "Stewart Butterfield is a blah blah blah who blah blah blah and is known for blah blah blah"
+  },
+  {
+    "id": "5ea43269-a2ed-4b73-8527-dff2aba45047",
+    "full_name": "Tim Ferriss",
+    "created_at": "2025-03-12T23:49:03.819+00:00",
+    "updated_at": "2025-03-12T23:49:03.819+00:00",
+    "url": "https://x.com/tferriss",
+    "type": "Entrepreneur",
+    "description": "Tim Ferriss is a blah blah blah who blah blah blah and is known for blah blah blah"
+  },
+  {
+    "id": "dae85c72-6a38-494e-8c67-f9da5971b6e2",
+    "full_name": "Tobi Lutke",
+    "created_at": "2025-03-06T18:03:58.915+00:00",
+    "updated_at": "2025-03-06T18:03:58.915+00:00",
+    "url": "https://x.com/tobi",
+    "type": "Entrepreneur",
+    "description": "Tobi Lutke is a blah blah blah who blah blah blah and is known for blah blah blah"
+  },
+  {
+    "id": "b3ea0954-cf99-4441-837d-15945b071c40",
+    "full_name": "Tyler Cowen",
+    "created_at": "2025-03-13T17:19:48.728+00:00",
+    "updated_at": "2025-03-13T17:19:48.728+00:00",
+    "url": "https://en.wikipedia.org/wiki/Tyler_Cowen",
+    "type": "Economist",
+    "description": "Tyler Cowen is a blah blah blah who blah blah blah and is known for blah blah blah"
+  },
+  {
+    "id": "80d8faa2-9e55-41f1-a12c-55e4b575fb28",
+    "full_name": "Vinod Khosla",
+    "created_at": "2025-03-04T17:42:22.313+00:00",
+    "updated_at": "2025-03-04T17:42:22.313+00:00",
+    "url": "https://x.com/vkhosla",
+    "type": "Investor",
+    "description": "Vinod Khosla is a blah blah blah who blah blah blah and is known for blah blah blah"
+  }
+]
