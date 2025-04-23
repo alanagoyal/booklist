@@ -62,23 +62,23 @@ export default function RecommenderDetail({
             <div className="space-y-2 pb-8">
               <div className="space-y-2">
                 <h1 className="text-2xl font-base text-text">
-                  {recommender.full_name}
+                  {recommender?.full_name}
                 </h1>
                 <p className="text-text/70 text-lg">
-                  {recommender.recommendations.length} recommendation
-                  {recommender.recommendations.length === 1 ? "" : "s"}
+                  {recommender?.recommendations?.length || 0} recommendation
+                  {(recommender?.recommendations?.length || 0) === 1 ? "" : "s"}
                 </p>
               </div>
 
               {/* Recommender metadata */}
               <div className="flex justify-between items-center pt-4">
-                {recommender.type && (
+                {recommender?.type && (
                   <div className="flex items-center gap-2 text-text">
                     <Tag className="w-4 h-4 text-text/70" />
                     <span>{recommender.type}</span>
                   </div>
                 )}
-                {recommender.url && (
+                {recommender?.url && (
                   <div className="flex items-center gap-2">
                     <Link className="w-4 h-4 text-text/70" />
                     <a
@@ -98,7 +98,7 @@ export default function RecommenderDetail({
           <div className="px-12 pb-16">
             <div className="space-y-8">
               {/* Recommender description */}
-              {recommender.description && (
+              {recommender?.description && (
                 <div className="space-y-2">
                   <h2 className="text-base text-text font-bold">About</h2>
                   <p className="text-text whitespace-pre-line leading-relaxed">
@@ -111,8 +111,8 @@ export default function RecommenderDetail({
                   Recommendations
                 </h2>
                 <div className="text-text space-y-4">
-                  {recommender.recommendations
-                    .slice(0, showAllRecommendations ? undefined : 3)
+                  {recommender?.recommendations
+                    ?.slice(0, showAllRecommendations ? undefined : 3)
                     .map((book) => (
                       <div
                         key={book.id}
@@ -158,7 +158,7 @@ export default function RecommenderDetail({
                       </div>
                     ))}
                 </div>
-                {recommender.recommendations.length > 3 && (
+                {recommender?.recommendations?.length > 3 && (
                   <button
                     onClick={() =>
                       setShowAllRecommendations(!showAllRecommendations)
@@ -167,13 +167,13 @@ export default function RecommenderDetail({
                   >
                     {showAllRecommendations
                       ? "Show less"
-                      : `Show ${recommender.recommendations.length - 3} more`}
+                      : `Show ${(recommender?.recommendations?.length || 0) - 3} more`}
                   </button>
                 )}
               </div>
 
               {/* Related recommenders */}
-              {recommender.related_recommenders.length > 0 && (
+              {recommender?.related_recommenders?.length > 0 && (
                 <div className="space-y-2">
                   <h2 className="text-base text-text font-bold">
                     Similar Recommenders

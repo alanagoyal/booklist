@@ -2,6 +2,7 @@ import { createClient } from "@/utils/supabase/server";
 import { writeFileSync } from "fs";
 import { join } from "path";
 import { config } from "dotenv";
+import { FormattedBook, FormattedRecommender } from "@/types";
 
 // Load environment variables from .env.local
 config({ path: join(process.cwd(), ".env.local") });
@@ -59,7 +60,7 @@ async function dumpData() {
       }
 
       // Combine all data
-      const formattedBooks = allBooks.map(book => ({
+      const formattedBooks: FormattedBook[] = allBooks.map(book => ({
         id: book.id,
         title: book.title,
         author: book.author,
@@ -121,11 +122,24 @@ async function dumpData() {
     if (recommendersError) {
       console.error("Error fetching recommenders:", recommendersError);
     } else if (recommenders) {
+      // Format the recommenders data
+      const formattedRecommenders: FormattedRecommender[] = recommenders.map((recommender: any) => ({
+        id: recommender.id,
+        full_name: recommender.full_name,
+        type: recommender.type || "",
+        url: recommender.url || "",
+        description: recommender.description || "",
+        recommendations: recommender.recommendations || [],
+        related_recommenders: recommender.related_recommenders || [],
+        _book_count: recommender._book_count,
+        _percentile: recommender._percentile,
+      }));
+
       writeFileSync(
         join(process.cwd(), "data", "recommenders.json"),
-        JSON.stringify(recommenders, null, 2)
+        JSON.stringify(formattedRecommenders, null, 2)
       );
-      console.log(`✓ Wrote ${recommenders.length} recommenders to data/recommenders.json`);
+      console.log(`✓ Wrote ${formattedRecommenders.length} recommenders to data/recommenders.json`);
     }
   } catch (error) {
     console.error("Error:", error);

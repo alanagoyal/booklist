@@ -1,71 +1,93 @@
 import { Database } from './supabase';
 
-// Core database types from Supabase
+// Generated database types
 export type DbBook = Database['public']['Tables']['books']['Row'];
 export type DbPerson = Database['public']['Tables']['people']['Row'];
 export type DbRecommendation = Database['public']['Tables']['recommendations']['Row'];
 export type DbPendingContribution = Database['public']['Tables']['pending_contributions']['Row'];
 
-// Extended database types
-export interface DbBookWithRecommendations extends Omit<DbBook, 'author_embedding' | 'title_embedding' | 'description_embedding'> {
-  recommendations?: {
-    recommender: {
-      id: string;
-      full_name: string;
-      url: string | null;
-      type: string;
-    } | null;
-    source: string;
-    source_link: string | null;
-  }[];
-}
-
-// Core domain model extending from database types
-export interface Book extends Omit<DbBookWithRecommendations, 'author_embedding' | 'title_embedding' | 'description_embedding'> {
-  source?: string;
-  source_link?: string;
-}
-
-// Simplified book type returned by get_books_by_recommender RPC
-export interface RecommenderBook {
+// Database types
+export interface DbBookWithRecommendations {
   id: string;
   title: string;
   author: string;
-  description?: string;
-  genre: string[];
-  amazon_url?: string;
+  description: string | null;
+  genre: string[] | null;
+  amazon_url: string | null;
+  author_embedding: number[];
+  title_embedding: number[];
+  description_embedding: number[];
+}
+
+// Core domain model types
+export interface Book {
+  id: string;
+  title: string;
+  author: string;
+  description: string | null;
+  genre: string[] | null;
+  amazon_url: string | null;
+  recommendations: BookRecommendation[];
+  related_books: RelatedBook[];
+  _recommendation_count: number;
+  _percentile: number;
+}
+
+export interface BookRecommendation {
+  recommender: {
+    id: string;
+    full_name: string;
+    url: string | null;
+    type: string | null;
+  } | null;
   source: string;
   source_link: string;
 }
 
-export interface Recommender extends Omit<DbPerson, 'created_at' | 'updated_at'> {
-  recommendations?: RecommenderBook[];
-  description?: string | null;
-}
-
-// Type for combined recommender data from get_recommender_details RPC
-export interface FormattedRecommender extends Recommender {
-  recommendations: RecommenderBook[];
-  related_recommenders: {
-    id: string;
-    full_name: string;
-    url: string | null;
-    type: string;
-    shared_books: string;
-    shared_count: number;
-  }[];
-}
-
-// UI presentation types
 export interface RelatedBook {
   id: string;
   title: string;
   author: string;
-  description: string;
+  description: string | null;
   amazon_url: string | null;
   _recommendationCount: number;
 }
 
+export interface RecommenderBook {
+  id: string;
+  title: string;
+  author: string;
+  description: string | null;
+  genre: string[] | null;
+  amazon_url: string | null;
+  source: string | null;
+  source_link: string | null;
+}
+
+export interface RelatedRecommender {
+  id: string;
+  full_name: string;
+  url: string | null;
+  type: string;
+  shared_books: string[];
+  shared_count: number;
+}
+
+export interface Recommender {
+  id: string;
+  full_name: string;
+  type: string | null;
+  url: string | null;
+  description: string | null;
+  recommendations: RecommenderBook[];
+  related_recommenders: RelatedRecommender[];
+  _book_count: number;
+  _percentile: number;
+}
+
+export interface FormattedRecommender extends Recommender {}
+
+// UI presentation types
 export interface FormattedBook {
   id: string;
   title: string;
