@@ -113,12 +113,18 @@ export default function RecommenderGrid({
         full_name: recommender.full_name,
         type: recommender.type || "Unknown",
         description: recommender.description || null,
-        recommendations: recommender.recommendations.map((book) => ({
-          ...book,
-          genres: book.genre || [], // Convert genre to genres
-          amazon_url: book.amazon_url || "", // Ensure amazon_url is always a string
-          recommendations: [], // Add empty recommendations array
-        })) as FormattedBook[],
+        recommendations: recommender.recommendations.map((book: any) => ({
+          id: book.id,
+          title: book.title,
+          author: book.author,
+          description: book.description || "",
+          genres: book.genre || [],
+          amazon_url: book.amazon_url || "",
+          recommendations: [],
+          _recommendation_count: 0,
+          _percentile: 0,
+          related_books: []
+        })),
         _book_count: recommender.recommendations.length,
         _percentile: 0,
       }))
