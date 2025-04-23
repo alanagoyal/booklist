@@ -6,12 +6,12 @@ import {
   User,
   Link,
 } from "lucide-react";
-import { EnhancedBook } from "@/types";
+import { FormattedBook } from "@/types";
 import { useCallback, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 type BookDetailProps = {
-  book: EnhancedBook;
+  book: FormattedBook;
   onClose?: () => void;
   stackIndex?: number;
 };

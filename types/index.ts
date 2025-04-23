@@ -1,49 +1,4 @@
-import { Database } from './supabase';
-
-// Generated database types
-export type DbBook = Database['public']['Tables']['books']['Row'];
-export type DbPerson = Database['public']['Tables']['people']['Row'];
-export type DbRecommendation = Database['public']['Tables']['recommendations']['Row'];
-export type DbPendingContribution = Database['public']['Tables']['pending_contributions']['Row'];
-
-// Database types
-export interface DbBookWithRecommendations {
-  id: string;
-  title: string;
-  author: string;
-  description: string | null;
-  genre: string[] | null;
-  amazon_url: string | null;
-  author_embedding: number[];
-  title_embedding: number[];
-  description_embedding: number[];
-}
-
-// Core domain model types
-export interface Book {
-  id: string;
-  title: string;
-  author: string;
-  description: string | null;
-  genre: string[] | null;
-  amazon_url: string | null;
-  recommendations: BookRecommendation[];
-  related_books: RelatedBook[];
-  _recommendation_count: number;
-  _percentile: number;
-}
-
-export interface BookRecommendation {
-  recommender: {
-    id: string;
-    full_name: string;
-    url: string | null;
-    type: string | null;
-  } | null;
-  source: string;
-  source_link: string;
-}
-
+// Related book type for book detail page
 export interface RelatedBook {
   id: string;
   title: string;
@@ -53,17 +8,7 @@ export interface RelatedBook {
   _recommendationCount: number;
 }
 
-export interface RecommenderBook {
-  id: string;
-  title: string;
-  author: string;
-  description: string | null;
-  genre: string[] | null;
-  amazon_url: string | null;
-  source: string | null;
-  source_link: string | null;
-}
-
+// Related recommender type for recommender detail page
 export interface RelatedRecommender {
   id: string;
   full_name: string;
@@ -73,21 +18,29 @@ export interface RelatedRecommender {
   shared_count: number;
 }
 
-export interface Recommender {
+// Main extended recommender type
+export interface FormattedRecommender {
   id: string;
   full_name: string;
   type: string | null;
   url: string | null;
   description: string | null;
-  recommendations: RecommenderBook[];
+  recommendations: {
+    id: string;
+    title: string;
+    author: string;
+    description: string | null;
+    genre: string[] | null;
+    amazon_url: string | null;
+    source: string | null;
+    source_link: string | null;
+  }[];
   related_recommenders: RelatedRecommender[];
   _book_count: number;
   _percentile: number;
 }
 
-export interface FormattedRecommender extends Recommender {}
-
-// UI presentation types
+// Main extended book type
 export interface FormattedBook {
   id: string;
   title: string;
@@ -109,18 +62,3 @@ export interface FormattedBook {
   _percentile: number;
   related_books: RelatedBook[];
 }
-
-// Optimized types for runtime performance
-export type RecommenderReference = {
-  id: string;
-  full_name: string;
-  recommendation_count: number;
-};
-
-export type EnhancedBook = FormattedBook & {
-  _recommendation_count: number;
-  _percentile: number;  
-};
-
-// Re-export DatabaseBook type for backward compatibility
-export type DatabaseBook = DbBookWithRecommendations;
