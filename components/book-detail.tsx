@@ -142,7 +142,7 @@ export default function BookDetail({
                                 {rec.source && (
                                   <span className="text-text/70">
                                     {" "}
-                                    via{" "}
+                                    (via{" "}
                                     {rec.source_link ? (
                                       <a
                                         href={rec.source_link}
@@ -150,11 +150,11 @@ export default function BookDetail({
                                         rel="noopener noreferrer"
                                         className="md:hover:underline"
                                       >
-                                        {rec.source}
+                                      {rec.source}
                                       </a>
                                     ) : (
                                       rec.source
-                                    )}
+                                    )})
                                   </span>
                                 )}
                               </span>
