@@ -140,11 +140,26 @@ async function dumpData() {
         mkdirSync(dataDir, { recursive: true });
       }
 
+      // Split books into 6 chunks and write them
+      const chunkSize = Math.ceil(formattedBooks.length / 6);
+      for (let i = 0; i < 6; i++) {
+        const start = i * chunkSize;
+        const end = Math.min(start + chunkSize, formattedBooks.length);
+        const chunk = formattedBooks.slice(start, end);
+        
+        writeFileSync(
+          join(process.cwd(), "public", "data", `books-${i + 1}.json`),
+          JSON.stringify(chunk, null, 2)
+        );
+        console.log(`✓ Wrote chunk ${i + 1} with ${chunk.length} books to public/data/books-${i + 1}.json`);
+      }
+
+      // Write total count for client-side pagination
       writeFileSync(
-        join(process.cwd(), "public", "data", "books.json"),
-        JSON.stringify(formattedBooks, null, 2)
+        join(process.cwd(), "public", "data", "books-meta.json"),
+        JSON.stringify({ totalBooks: formattedBooks.length, chunks: 6 })
       );
-      console.log(`✓ Wrote ${formattedBooks.length} books to public/data/books.json`);
+      console.log(`✓ Wrote metadata to public/data/books-meta.json`);
     }
 
     // Fetch recommenders with their recommendations
