@@ -151,7 +151,10 @@ function HeaderContent() {
                 onClick={(e) => {
                   e.preventDefault();
                   setIsMenuOpen(false);
-                  router.push(getViewHref("books"));
+                  const params = new URLSearchParams(currentParams);
+                  params.delete("key");
+                  params.set("view", "books");
+                  router.push(`/?${params.toString()}`, { scroll: false });
                 }}
               >
                 <span
@@ -166,7 +169,10 @@ function HeaderContent() {
                 onClick={(e) => {
                   e.preventDefault();
                   setIsMenuOpen(false);
-                  router.push(getViewHref("people"));
+                  const params = new URLSearchParams(currentParams);
+                  params.delete("key");
+                  params.set("view", "people");
+                  router.push(`/?${params.toString()}`, { scroll: false });
                 }}
               >
                 <span
