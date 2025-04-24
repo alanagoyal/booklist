@@ -176,7 +176,7 @@ export default function RecommenderDetail({
               {recommender?.related_recommenders?.length > 0 && (
                 <div className="space-y-2">
                   <h2 className="text-base text-text font-bold">
-                    People With Similar Recommendations
+                    Similar People (based on recommendations)
                   </h2>
                   <div className="space-y-4">
                     {recommender.related_recommenders.map((related) => (
@@ -217,7 +217,7 @@ export default function RecommenderDetail({
               {recommender?.similar_recommenders?.length > 0 && (
                 <div className="space-y-2">
                   <h2 className="text-base text-text font-bold">
-                    Similar People
+                    Similar People (based on semantic similarity)
                   </h2>
                   <div className="space-y-4">
                     {recommender?.similar_recommenders?.map(

@@ -1,11 +1,4 @@
-import {
-  X,
-  BookOpen,
-  Tag,
-  ChevronLeft,
-  User,
-  Link,
-} from "lucide-react";
+import { X, BookOpen, Tag, ChevronLeft, User, Link } from "lucide-react";
 import { FormattedBook } from "@/types";
 import { useCallback, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -15,7 +8,6 @@ type BookDetailProps = {
   onClose?: () => void;
   stackIndex?: number;
 };
-
 
 export default function BookDetail({
   book,
@@ -40,7 +32,6 @@ export default function BookDetail({
     params.set("key", `${id}--${Date.now()}`);
     router.push(`?${params.toString()}`, { scroll: false });
   };
-
 
   return (
     <div
@@ -113,7 +104,7 @@ export default function BookDetail({
                   <h2 className="text-base text-text font-bold">About</h2>
                   <p className="text-text whitespace-pre-line leading-relaxed">
                     {book.description}
-                  </p> 
+                  </p>
                 </div>
               )}
 
@@ -194,7 +185,7 @@ export default function BookDetail({
               {book.related_books.length > 0 && (
                 <div className="space-y-2">
                   <h2 className="text-base text-text font-bold">
-                    Books With Similar Recommenders
+                    Similar Books (based on recommenders)
                   </h2>
                   <div className="space-y-4">
                     {book.related_books.map((relatedBook) => (
@@ -221,8 +212,8 @@ export default function BookDetail({
                             </span>
                           </div>
                           <div className="text-sm text-text/70">
-                            {relatedBook._recommendationCount} recommendation
-                            {relatedBook._recommendationCount !== 1 && "s"}
+                            {relatedBook._sharedRecommenders} shared recommender
+                            {relatedBook._sharedRecommenders !== 1 && "s"}
                           </div>
                         </div>
                       </div>
@@ -235,7 +226,7 @@ export default function BookDetail({
               {book.similar_books.length > 0 && (
                 <div className="space-y-2">
                   <h2 className="text-base text-text font-bold">
-                    Books With Similar Themes
+                    Similar Books (based on semantic similarity)
                   </h2>
                   <div className="space-y-4">
                     {book.similar_books.map((similarBook) => (

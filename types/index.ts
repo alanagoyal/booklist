@@ -6,6 +6,7 @@ export interface RelatedBook {
   description: string | null;
   amazon_url: string | null;
   _recommendationCount: number;
+  _sharedRecommenders: number;
 }
 
 // Related recommender type for recommender detail page

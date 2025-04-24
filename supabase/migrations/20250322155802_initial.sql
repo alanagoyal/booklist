@@ -258,42 +258,35 @@ BEGIN
             'author', author,
             'description', description,
             'amazon_url', amazon_url,
-            '_recommendationCount', recommendation_count
+            '_recommendationCount', recommendation_count,
+            '_sharedRecommenders', shared_recommenders
           )
         ) as related_books
       FROM (
         SELECT 
           br.book_id,
-          rb.id,
-          rb.title,
-          rb.author,
-          rb.description,
-          rb.amazon_url,
-          rb.recommendation_count,
+          b.id,
+          b.title,
+          b.author,
+          b.description,
+          b.amazon_url,
+          COUNT(DISTINCT r.person_id)::int as recommendation_count,
+          br.shared_recommenders,
           row_number() OVER (PARTITION BY br.book_id ORDER BY br.shared_recommenders DESC) as rn
         FROM (
           SELECT 
             r1.book_id,
             r2.book_id as related_id,
-            COUNT(DISTINCT r2.person_id) as shared_recommenders
+            COUNT(DISTINCT r1.person_id) as shared_recommenders
           FROM recommendations r1
           JOIN recommendations r2 ON r1.person_id = r2.person_id
           WHERE r1.book_id = ANY(book_ids)
           AND r1.book_id != r2.book_id
           GROUP BY r1.book_id, r2.book_id
         ) br
-        JOIN (
-          SELECT 
-            b.id,
-            b.title,
-            b.author,
-            b.description,
-            b.amazon_url,
-            COUNT(DISTINCT r.person_id)::int as recommendation_count
-          FROM books b
-          LEFT JOIN recommendations r ON b.id = r.book_id
-          GROUP BY b.id
-        ) rb ON br.related_id = rb.id
+        JOIN books b ON b.id = br.related_id
+        LEFT JOIN recommendations r ON b.id = r.book_id
+        GROUP BY br.book_id, b.id, b.title, b.author, b.description, b.amazon_url, br.shared_recommenders
       ) ranked
       WHERE rn <= p_limit
       GROUP BY book_id

@@ -105,6 +105,7 @@ async function dumpData() {
           description: string | null;
           amazon_url: string | null;
           _recommendationCount: number;
+          _sharedRecommenders: number;
         }): RelatedBook => ({
           id: rb.id,
           title: rb.title,
@@ -112,6 +113,7 @@ async function dumpData() {
           description: rb.description,
           amazon_url: rb.amazon_url,
           _recommendationCount: rb._recommendationCount,
+          _sharedRecommenders: rb._sharedRecommenders
         })),
         similar_books: (book.similar_books || []).map((sb: {
           id: string;
