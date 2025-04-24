@@ -2,7 +2,15 @@ import { createClient } from "@/utils/supabase/server";
 import { writeFileSync } from "fs";
 import { join } from "path";
 import { config } from "dotenv";
-import { FormattedBook, FormattedRecommender } from "@/types";
+import { 
+  FormattedBook, 
+  FormattedRecommender, 
+  RelatedRecommender, 
+  SimilarRecommender,
+  RecommenderRecommendation,
+  RelatedBook,
+  SimilarBook
+} from "@/types";
 
 // Load environment variables from .env.local
 config({ path: join(process.cwd(), ".env.local") });
@@ -14,7 +22,7 @@ async function dumpData() {
   try {
     // Fetch books with pagination
     const pageSize = 1000;
-    let allBooks = [];
+    let allBooks: any[] = [];
     let page = 0;
     let hasMore = true;
 
@@ -59,20 +67,6 @@ async function dumpData() {
         console.error("Error fetching related books:", relatedError);
       }
 
-      // Get similar books for all books
-      const similarBooksPromises = allBooks.map(book => 
-        supabase.rpc("get_similar_books_to_book_by_description", { book_id_arg: book.id })
-      );
-      const similarBooksResults = await Promise.all(similarBooksPromises);
-      const similarBooksData = similarBooksResults.reduce<Record<string, any>>((acc, result, index) => {
-        if (result.error) {
-          console.error("Error fetching similar books:", result.error);
-          return acc;
-        }
-        acc[allBooks[index].id] = result.data || [];
-        return acc;
-      }, {});
-
       // Combine all data
       const formattedBooks: FormattedBook[] = allBooks.map(book => ({
         id: book.id,
@@ -85,22 +79,22 @@ async function dumpData() {
           recommender?: {
             id: string;
             full_name: string;
-            url: string;
+            url: string | null;
             type: string;
           };
-          source: string;
-          source_link: string;
-        }) => ({
+          source: string | null;
+          source_link: string | null;
+        }): RecommenderRecommendation => ({
           recommender: rec.recommender
             ? {
-                id: rec.recommender.id || "",
-                full_name: rec.recommender.full_name || "",
-                url: rec.recommender.url || "",
-                type: rec.recommender.type || "",
+                id: rec.recommender.id,
+                full_name: rec.recommender.full_name,
+                url: rec.recommender.url,
+                type: rec.recommender.type,
               }
             : null,
-          source: rec.source || "",
-          source_link: rec.source_link || "",
+          source: rec.source,
+          source_link: rec.source_link,
         })),
         _recommendation_count: book._recommendation_count,
         _percentile: book._percentile,
@@ -108,18 +102,18 @@ async function dumpData() {
           id: string;
           title: string;
           author: string;
-          description?: string;
-          amazon_url?: string;
+          description: string | null;
+          amazon_url: string | null;
           _recommendationCount: number;
-        }) => ({
+        }): RelatedBook => ({
           id: rb.id,
           title: rb.title,
           author: rb.author,
-          description: rb.description || "",
-          amazon_url: rb.amazon_url || "",
+          description: rb.description,
+          amazon_url: rb.amazon_url,
           _recommendationCount: rb._recommendationCount,
         })),
-        similar_books: (similarBooksData?.[book.id] || []).map((sb: {
+        similar_books: (book.similar_books || []).map((sb: {
           id: string;
           title: string;
           author: string;
@@ -127,7 +121,7 @@ async function dumpData() {
           description: string;
           amazon_url: string;
           similarity: number;
-        }) => ({
+        }): SimilarBook => ({
           id: sb.id,
           title: sb.title,
           author: sb.author,
@@ -153,30 +147,6 @@ async function dumpData() {
     if (recommendersError) {
       console.error("Error fetching recommenders:", recommendersError);
     } else if (recommenders) {
-      // Get similar recommenders for each recommender
-      const similarRecommendersPromises = recommenders.map((recommender: {
-        id: string;
-        full_name: string;
-        type: string | null;
-        url: string | null;
-        description: string | null;
-        recommendations: any[];
-        related_recommenders: any[];
-        _book_count: number;
-        _percentile: number;
-      }) => 
-        supabase.rpc("get_similar_people_by_description_embedding", { person_id_arg: recommender.id })
-      );
-      const similarRecommendersResults = await Promise.all(similarRecommendersPromises);
-      const similarRecommendersData = similarRecommendersResults.reduce<Record<string, any>>((acc, result, index) => {
-        if (result.error) {
-          console.error("Error fetching similar recommenders:", result.error);
-          return acc;
-        }
-        acc[recommenders[index].id] = result.data || [];
-        return acc;
-      }, {});
-
       // Format the recommenders data
       const formattedRecommenders: FormattedRecommender[] = recommenders.map((recommender: {
         id: string;
@@ -185,18 +155,19 @@ async function dumpData() {
         url: string | null;
         description: string | null;
         recommendations: any[];
-        related_recommenders: any[];
+        related_recommenders: RelatedRecommender[];
+        similar_people: SimilarRecommender[];
         _book_count: number;
         _percentile: number;
       }) => ({
         id: recommender.id,
         full_name: recommender.full_name,
-        type: recommender.type || "",
-        url: recommender.url || "",
-        description: recommender.description || "",
+        type: recommender.type,
+        url: recommender.url,
+        description: recommender.description,
         recommendations: recommender.recommendations || [],
         related_recommenders: recommender.related_recommenders || [],
-        similar_recommenders: similarRecommendersData[recommender.id] || [],
+        similar_recommenders: recommender.similar_people || [],
         _book_count: recommender._book_count,
         _percentile: recommender._percentile,
       }));

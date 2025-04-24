@@ -145,6 +145,7 @@ END;
 $function$;
 
 -- Basic book data with counts and percentiles
+drop function if exists get_books_with_counts(integer, integer);
 CREATE OR REPLACE FUNCTION get_books_with_counts(
   p_limit int default 1000,
   p_offset int default 0
@@ -156,6 +157,7 @@ RETURNS TABLE (
   description text,
   genre text[],
   amazon_url text,
+  similar_books jsonb,
   _recommendation_count int,
   _percentile float
 )
@@ -172,10 +174,11 @@ BEGIN
       books.description,
       books.genre,
       books.amazon_url,
+      books.similar_books,
       COUNT(DISTINCT r.person_id)::int as recommendation_count
     FROM books
     LEFT JOIN recommendations r ON books.id = r.book_id
-    GROUP BY books.id, books.title, books.author, books.description, books.genre, books.amazon_url
+    GROUP BY books.id, books.title, books.author, books.description, books.genre, books.amazon_url, books.similar_books
   )
   SELECT 
     bc.id,
@@ -184,6 +187,7 @@ BEGIN
     bc.description,
     bc.genre,
     bc.amazon_url,
+    bc.similar_books,
     bc.recommendation_count,
     NTILE(100) OVER (ORDER BY bc.recommendation_count)::float as percentile
   FROM book_counts bc
@@ -352,7 +356,8 @@ begin
 end;
 $$;
 
--- Get related recommenders for each recommender
+-- Get all recommender data
+drop function if exists get_recommender_with_books();
 create or replace function get_recommender_with_books()
 returns table (
   id uuid,
@@ -362,6 +367,7 @@ returns table (
   description text,
   recommendations jsonb,
   related_recommenders jsonb,
+  similar_people jsonb,
   _book_count bigint,
   _percentile numeric
 )
@@ -393,6 +399,7 @@ begin
         p.type,
         p.url,
         p.description,
+        p.similar_people,
         jsonb_agg(
           jsonb_build_object(
             'id', b.id,
@@ -411,7 +418,7 @@ begin
       from people p
       left join recommendations r on r.person_id = p.id
       left join books b on b.id = r.book_id
-      group by p.id, p.full_name, p.type, p.url, p.description
+      group by p.id, p.full_name, p.type, p.url, p.description, p.similar_people
     ),
     related as (
       select * from get_related_recommenders(recommender_ids)
@@ -424,6 +431,7 @@ begin
       rb.description,
       rb.recommendations,
       coalesce(r.related_recommenders, '[]'::jsonb) as related_recommenders,
+      rb.similar_people,
       rb.book_count as _book_count,
       rb.percentile as _percentile
     from recommender_base rb
