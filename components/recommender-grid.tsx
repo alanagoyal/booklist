@@ -70,7 +70,7 @@ function RecommendationCell({ original }: { original: FormattedRecommender }) {
           }}
           className="text-text md:hover:text-text/70 md:hover:underline transition-colors duration-200 text-left w-full whitespace-pre-line"
         >
-          {truncateText(firstBook.title, 40, moreCount)}
+          {truncateText(firstBook.title, 38, moreCount)}
           {moreCount > 0 && <span className="text-text/70"> + {moreCount} more</span>}
         </button>
       )}
