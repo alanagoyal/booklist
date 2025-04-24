@@ -258,8 +258,8 @@ BEGIN
             'author', author,
             'description', description,
             'amazon_url', amazon_url,
-            '_recommendationCount', recommendation_count,
-            '_sharedRecommenders', shared_recommenders
+            '_recommendation_count', recommendation_count,
+            '_shared_count', shared_recommenders
           )
         ) as related_books
       FROM (
@@ -339,7 +339,7 @@ begin
           'url', p.url,
           'type', p.type,
           'shared_books', tr.shared_books,
-          'shared_count', tr.shared_count
+          '_shared_count', tr.shared_count
         )
       ) as related_recommenders
     from top_related tr
