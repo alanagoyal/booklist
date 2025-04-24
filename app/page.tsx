@@ -1,5 +1,6 @@
 import { BookList } from "@/components/book-list";
 import type { FormattedBook, FormattedRecommender } from "@/types";
+import { Suspense } from "react";
 
 async function getData() {
   const [books, recommenders] = await Promise.all([
@@ -17,9 +18,11 @@ export default async function Home() {
   const { books, recommenders } = await getData();
 
   return (
-    <BookList
-      initialBooks={books}
-      initialRecommenders={recommenders}
-    />
+    <Suspense>
+      <BookList
+        initialBooks={books}
+        initialRecommenders={recommenders}
+      />
+    </Suspense>
   );
 }
