@@ -5,8 +5,8 @@ export interface RelatedBook {
   author: string;
   description: string | null;
   amazon_url: string | null;
-  _recommendationCount: number;
-  _sharedRecommenders: number;
+  _recommendation_count: number;
+  _shared_count: number;
 }
 
 // Related recommender type for recommender detail page
@@ -16,7 +16,7 @@ export interface RelatedRecommender {
   url: string | null;
   type: string;
   shared_books: string[];
-  shared_count: number;
+  _shared_count: number;
 }
 
 // Similar recommender type

@@ -1,5 +1,5 @@
 import { createClient } from "@/utils/supabase/server";
-import { writeFileSync } from "fs";
+import { writeFileSync, mkdirSync, existsSync } from "fs";
 import { join } from "path";
 import { config } from "dotenv";
 import { 
@@ -104,16 +104,16 @@ async function dumpData() {
           author: string;
           description: string | null;
           amazon_url: string | null;
-          _recommendationCount: number;
-          _sharedRecommenders: number;
+          _recommendation_count: number;
+          _shared_count: number;
         }): RelatedBook => ({
           id: rb.id,
           title: rb.title,
           author: rb.author,
           description: rb.description,
           amazon_url: rb.amazon_url,
-          _recommendationCount: rb._recommendationCount,
-          _sharedRecommenders: rb._sharedRecommenders
+          _recommendation_count: rb._recommendation_count,
+          _shared_count: rb._shared_count
         })),
         similar_books: (book.similar_books || []).map((sb: {
           id: string;
@@ -133,6 +133,12 @@ async function dumpData() {
           similarity: sb.similarity,
         })),
       }));
+
+      // Ensure the data directory exists
+      const dataDir = join(process.cwd(), "public", "data");
+      if (!existsSync(dataDir)) {
+        mkdirSync(dataDir, { recursive: true });
+      }
 
       writeFileSync(
         join(process.cwd(), "public", "data", "books.json"),
@@ -173,6 +179,12 @@ async function dumpData() {
         _book_count: recommender._book_count,
         _percentile: recommender._percentile,
       }));
+
+      // Ensure the data directory exists (for recommenders.json)
+      const dataDir = join(process.cwd(), "public", "data");
+      if (!existsSync(dataDir)) {
+        mkdirSync(dataDir, { recursive: true });
+      }
 
       writeFileSync(
         join(process.cwd(), "public", "data", "recommenders.json"),

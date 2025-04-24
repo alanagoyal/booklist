@@ -203,8 +203,8 @@ export default function RecommenderDetail({
                             </span>
                           </div>
                           <div className="text-sm text-text/70">
-                            {related.shared_count} shared recommendation
-                            {related.shared_count === 1 ? "" : "s"}
+                            {related._shared_count} shared recommendation
+                            {related._shared_count === 1 ? "" : "s"}
                           </div>
                         </div>
                       </div>

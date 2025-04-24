@@ -212,8 +212,8 @@ export default function BookDetail({
                             </span>
                           </div>
                           <div className="text-sm text-text/70">
-                            {relatedBook._sharedRecommenders} shared recommender
-                            {relatedBook._sharedRecommenders !== 1 && "s"}
+                            {relatedBook._shared_count} shared recommender
+                            {relatedBook._shared_count !== 1 && "s"}
                           </div>
                         </div>
                       </div>
