@@ -16,7 +16,6 @@ export function BookList({
   initialBooks: FormattedBook[];
   initialRecommenders: FormattedRecommender[];
 }) {
-  const [mounted, setMounted] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
   const viewMode = (searchParams.get("view") as "books" | "people") || "books";
@@ -68,11 +67,6 @@ export function BookList({
     }
   }, [searchParams, initialRecommenders]);
 
-  // Set mounted state to true after initial render
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
   // Handle closing the detail view
   const handleClose = useCallback(() => {
     if (viewHistory.length <= 1) {
@@ -109,8 +103,6 @@ export function BookList({
 
   // Calculate visible tabs and their positions
   const tabPositions = useMemo(() => {
-    if (!mounted) return [];
-
     // Skip the most recent view (it's displayed as the main content)
     const tabsToPosition = viewHistory.slice(0, -1);
     if (tabsToPosition.length === 0) return [];
@@ -146,11 +138,7 @@ export function BookList({
         zIndex: 50 + index, // Ensure proper stacking
       };
     });
-  }, [viewHistory, mounted]);
-
-  if (!mounted) {
-    return null;
-  }
+  }, [viewHistory]);
 
   return (
     <div ref={containerRef} className="h-full flex flex-col relative">

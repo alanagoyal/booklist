@@ -48,7 +48,6 @@ export function DataGrid<T extends Record<string, any>>({
   const searchParams = useSearchParams();
 
   // State
-  const [mounted, setMounted] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [isDropdownClosing, setIsDropdownClosing] = useState(false);
 
@@ -228,8 +227,6 @@ export function DataGrid<T extends Record<string, any>>({
 
   // Update URL when sort/filter changes
   useEffect(() => {
-    if (!mounted) return;
-
     const currentParams = new URLSearchParams(searchParams.toString());
     const newParams = new URLSearchParams(currentParams.toString());
 
@@ -254,11 +251,8 @@ export function DataGrid<T extends Record<string, any>>({
     if (newParams.toString() !== currentParams.toString()) {
       router.push(newPath, { scroll: false });
     }
-  }, [filters, mounted, router, searchParams]);
+  }, [filters, router, searchParams]);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   // Event handlers
   const handleRowClick = useCallback(
@@ -595,15 +589,6 @@ export function DataGrid<T extends Record<string, any>>({
     getScrollElement: () => parentRef.current,
     estimateSize: () => 56, // Adjust based on your actual row height
   });
-
-  // Don't render content until mounted to prevent hydration mismatch
-  if (!mounted) {
-    return (
-      <div className="h-full flex items-center justify-center">
-        <div className="animate-pulse text-text/70">Loading...</div>
-      </div>
-    );
-  }
 
   return (
     <div
