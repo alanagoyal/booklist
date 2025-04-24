@@ -96,7 +96,7 @@ export default function RecommenderDetail({
           </div>
 
           <div className="px-12 pb-16">
-            <div className="space-y-8">
+            <div className="space-y-4">
               {/* Recommender description */}
               {recommender?.description && (
                 <div className="space-y-2">
@@ -172,61 +172,53 @@ export default function RecommenderDetail({
                 )}
               </div>
 
-              {/* Related recommenders */}
-              {recommender?.related_recommenders?.length > 0 && (
+              {/* Similar recommenders (combined) */}
+              {(recommender?.related_recommenders?.length > 0 || recommender?.similar_recommenders?.length > 0) && (
                 <div className="space-y-2">
                   <h2 className="text-base text-text font-bold">
-                    Similar People (based on recommendations)
+                    Similar People
                   </h2>
                   <div className="space-y-4">
-                    {recommender.related_recommenders.map((related) => (
-                      <div
-                        key={related.id}
-                        className="flex items-start gap-3 bg-accent/50 p-2 cursor-pointer transition-colors duration-200 border-l-2 border-transparent md:hover:bg-accent md:hover:border-border"
-                        onClick={() => {
-                          handleEntityClick(related.id);
-                        }}
-                      >
-                        <User className="w-5 h-5 mt-0.5 text-text/70 shrink-0" />
-                        <div className="space-y-1 min-w-0 flex-1">
-                          <div className="flex items-baseline gap-2">
-                            <span className="text-text">
-                              <button
-                                onClick={(e) => {
-                                  handleEntityClick(related.id);
-                                }}
-                                className="text-text text-left font-base md:hover:underline transition-colors duration-200"
-                              >
-                                {related.full_name}
-                              </button>{" "}
-                              ({related.type})
-                            </span>
-                          </div>
-                          <div className="text-sm text-text/70">
-                            {related._shared_count} shared recommendation
-                            {related._shared_count === 1 ? "" : "s"}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Similar books */}
-              {recommender?.similar_recommenders?.length > 0 && (
-                <div className="space-y-2">
-                  <h2 className="text-base text-text font-bold">
-                    Similar People (based on semantic similarity)
-                  </h2>
-                  <div className="space-y-4">
-                    {recommender?.similar_recommenders?.map(
-                      (similarRecommender) => (
+                    {Object.values(
+                      [...(recommender?.similar_recommenders || []).map(r => ({
+                        id: r.person_id,
+                        full_name: r.full_name,
+                        type: r.type,
+                        similarity: r.similarity
+                      })), 
+                      ...(recommender?.related_recommenders || [])].reduce<Record<string, {
+                        id: string;
+                        full_name: string;
+                        type: string;
+                        similarity?: number;
+                        _shared_count?: number;
+                      }>>((acc, curr) => {
+                        if (curr.id in acc) {
+                          acc[curr.id] = {
+                            ...acc[curr.id],
+                            ...curr,
+                            similarity: 'similarity' in curr ? curr.similarity : acc[curr.id].similarity,
+                            _shared_count: '_shared_count' in curr ? curr._shared_count : acc[curr.id]._shared_count
+                          };
+                        } else {
+                          acc[curr.id] = {
+                            id: curr.id,
+                            full_name: curr.full_name,
+                            type: curr.type,
+                            ...('similarity' in curr ? { similarity: curr.similarity } : {}),
+                            ...('_shared_count' in curr ? { _shared_count: curr._shared_count } : {})
+                          };
+                        }
+                        return acc;
+                      }, {})
+                    )
+                      .sort((a, b) => a.full_name.localeCompare(b.full_name))
+                      .map((person) => (
                         <div
-                          key={similarRecommender.person_id}
+                          key={person.id}
                           className="flex items-start gap-3 bg-accent/50 p-2 cursor-pointer transition-colors duration-200 border-l-2 border-transparent md:hover:bg-accent md:hover:border-border"
                           onClick={() => {
-                            handleEntityClick(similarRecommender.person_id);
+                            handleEntityClick(person.id);
                           }}
                         >
                           <User className="w-5 h-5 mt-0.5 text-text/70 shrink-0" />
@@ -235,25 +227,26 @@ export default function RecommenderDetail({
                               <span className="text-text">
                                 <button
                                   onClick={() => {
-                                    handleEntityClick(
-                                      similarRecommender.person_id
-                                    );
+                                    handleEntityClick(person.id);
                                   }}
                                   className="text-text text-left font-base md:hover:underline transition-colors duration-200"
                                 >
-                                  {similarRecommender.full_name}
+                                  {person.full_name}
                                 </button>{" "}
-                                ({similarRecommender.type})
+                                ({person.type})
                               </span>
                             </div>
-                            <div className="text-sm text-text/70">
-                              {similarRecommender.similarity.toFixed(2)}{" "}
-                              similarity
+                            <div className="text-sm text-text/70 space-y-0.5">
+                              {person._shared_count !== undefined && (
+                                <div>{person._shared_count} shared recommendation{person._shared_count === 1 ? "" : "s"}</div>
+                              )}
+                              {person.similarity !== undefined && (
+                                <div>{person.similarity.toFixed(2)} similarity</div>
+                              )}
                             </div>
                           </div>
                         </div>
-                      )
-                    )}
+                      ))}
                   </div>
                 </div>
               )}
