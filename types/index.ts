@@ -62,6 +62,29 @@ export interface RecommenderRecommendation {
   source_link: string | null;
 }
 
+// Essential book type (without extended data)
+export interface EssentialBook {
+  id: string;
+  title: string;
+  author: string;
+  description: string;
+  genres: string | string[];
+  amazon_url: string;
+  recommendations: RecommenderRecommendation[];
+  _recommendation_count: number;
+  _percentile: number;
+}
+
+// Extended book data type
+export interface ExtendedBook {
+  id: string;
+  related_books: RelatedBook[];
+  similar_books: SimilarBook[];
+}
+
+// Main extended book type
+export interface FormattedBook extends EssentialBook, ExtendedBook {}
+
 // Main extended recommender type
 export interface FormattedRecommender {
   id: string;
@@ -74,19 +97,4 @@ export interface FormattedRecommender {
   similar_recommenders: SimilarRecommender[];
   _book_count: number;
   _percentile: number;
-}
-
-// Main extended book type
-export interface FormattedBook {
-  id: string;
-  title: string;
-  author: string;
-  description: string;
-  genres: string | string[];
-  amazon_url: string;
-  recommendations: RecommenderRecommendation[];
-  _recommendation_count: number;
-  _percentile: number;
-  related_books: RelatedBook[];
-  similar_books: SimilarBook[];
 }

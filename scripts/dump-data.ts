@@ -9,7 +9,9 @@ import {
   SimilarRecommender,
   RecommenderRecommendation,
   RelatedBook,
-  SimilarBook
+  SimilarBook,
+  EssentialBook,
+  ExtendedBook
 } from "@/types";
 
 // Load environment variables from .env.local
@@ -134,30 +136,49 @@ async function dumpData() {
         })),
       }));
 
+      // Split books into essential and extended data
+      const essentialBooks: EssentialBook[] = formattedBooks.map(book => ({
+        id: book.id,
+        title: book.title,
+        author: book.author,
+        description: book.description,
+        genres: book.genres,
+        amazon_url: book.amazon_url,
+        recommendations: book.recommendations,
+        _recommendation_count: book._recommendation_count,
+        _percentile: book._percentile
+      }));
+
+      const extendedBooks: ExtendedBook[] = formattedBooks.map(book => ({
+        id: book.id,
+        related_books: book.related_books,
+        similar_books: book.similar_books
+      }));
+
       // Ensure the data directory exists
       const dataDir = join(process.cwd(), "public", "data");
       if (!existsSync(dataDir)) {
         mkdirSync(dataDir, { recursive: true });
       }
 
-      // Split books into 6 chunks and write them
-      const chunkSize = Math.ceil(formattedBooks.length / 6);
-      for (let i = 0; i < 6; i++) {
-        const start = i * chunkSize;
-        const end = Math.min(start + chunkSize, formattedBooks.length);
-        const chunk = formattedBooks.slice(start, end);
-        
-        writeFileSync(
-          join(process.cwd(), "public", "data", `books-${i + 1}.json`),
-          JSON.stringify(chunk, null, 2)
-        );
-        console.log(`✓ Wrote chunk ${i + 1} with ${chunk.length} books to public/data/books-${i + 1}.json`);
-      }
+      // Write essential data first
+      writeFileSync(
+        join(process.cwd(), "public", "data", "books-essential.json"),
+        JSON.stringify(essentialBooks, null, 2)
+      );
+      console.log(`✓ Wrote essential data for ${essentialBooks.length} books`);
 
-      // Write total count for client-side pagination
+      // Write extended data
+      writeFileSync(
+        join(process.cwd(), "public", "data", "books-extended.json"),
+        JSON.stringify(extendedBooks, null, 2)
+      );
+      console.log(`✓ Wrote extended data for ${extendedBooks.length} books`);
+
+      // Write metadata
       writeFileSync(
         join(process.cwd(), "public", "data", "books-meta.json"),
-        JSON.stringify({ totalBooks: formattedBooks.length, chunks: 6 })
+        JSON.stringify({ totalBooks: formattedBooks.length })
       );
       console.log(`✓ Wrote metadata to public/data/books-meta.json`);
     }
