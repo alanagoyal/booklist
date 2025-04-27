@@ -8,6 +8,30 @@ import BookDetail from "@/components/book-detail";
 import RecommenderDetail from "@/components/recommender-detail";
 import BookGrid from "./book-grid";
 import RecommenderGrid from "./recommender-grid";
+import { X } from "lucide-react";
+
+// Debounce function
+function debounce(fn: (...args: any[]) => void, ms: number) {
+  let timer: NodeJS.Timeout | null = null;
+
+  const debouncedFn = (...args: any[]) => {
+    if (timer) {
+      clearTimeout(timer);
+    }
+    timer = setTimeout(() => {
+      timer = null;
+      fn(...args);
+    }, ms);
+  };
+
+  debouncedFn.cancel = () => {
+    if (timer) {
+      clearTimeout(timer);
+    }
+  };
+
+  return debouncedFn;
+}
 
 export function BookList({
   initialBooks,
@@ -25,6 +49,10 @@ export function BookList({
   >([]);
   const containerRef = useRef<HTMLDivElement>(null);
   const [isMobile, setIsMobile] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredData, setFilteredData] = useState<typeof initialBooks | typeof initialRecommenders>(
+    viewMode === "books" ? initialBooks : initialRecommenders
+  );
 
   // Check if mobile on mount and when window resizes
   useEffect(() => {
@@ -92,6 +120,72 @@ export function BookList({
     setFilteredCount(count);
   }, []);
 
+  const handleSearch = useCallback(async (query: string) => {
+    if (!query.trim()) {
+      // If query is empty, show all results
+      setFilteredData(viewMode === "books" ? initialBooks : initialRecommenders);
+      setFilteredCount(viewMode === "books" ? initialBooks.length : initialRecommenders.length);
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/search', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query, viewMode }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Search failed');
+      }
+
+      const results = await response.json();
+      
+      // Results will contain IDs of matched items
+      const matchedIds = new Set(results.map((item: any) => item.id));
+      
+      // Filter the initial data based on matched IDs
+      const newFilteredData = viewMode === "books" 
+        ? initialBooks.filter(book => matchedIds.has(book.id))
+        : initialRecommenders.filter(recommender => matchedIds.has(recommender.id));
+      
+      setFilteredData(newFilteredData);
+      setFilteredCount(newFilteredData.length);
+    } catch (error) {
+      console.error('Search error:', error);
+      // On error, show all results
+      setFilteredData(viewMode === "books" ? initialBooks : initialRecommenders);
+      setFilteredCount(viewMode === "books" ? initialBooks.length : initialRecommenders.length);
+    }
+  }, [viewMode, initialBooks, initialRecommenders]);
+
+  // Debounce search to avoid too many API calls
+  const debouncedSearch = useCallback(
+    debounce((query: string) => {
+      handleSearch(query);
+    }, 300),
+    [handleSearch]
+  );
+
+  // Handle input change
+  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchQuery(value);
+    debouncedSearch(value);
+  }, [debouncedSearch]);
+
+  useEffect(() => {
+    return () => {
+      debouncedSearch.cancel();
+    };
+  }, [debouncedSearch]);
+
+  // Reset filtered data when viewMode changes
+  useEffect(() => {
+    setFilteredData(viewMode === "books" ? initialBooks : initialRecommenders);
+    setFilteredCount(viewMode === "books" ? initialBooks.length : initialRecommenders.length);
+  }, [viewMode, initialBooks, initialRecommenders]);
+
   // Tab layout configuration - centralized in one place
   const tabConfig = {
     height: 100, // Height allocated per tab
@@ -142,15 +236,35 @@ export function BookList({
 
   return (
     <div ref={containerRef} className="h-full flex flex-col relative">
+      <div className="relative">
+        <input
+          type="text"
+          placeholder="Search..."
+          className="w-full p-2 focus:outline-none bg-background text-text border-b border-border"
+          value={searchQuery}
+          onChange={handleInputChange}
+        />
+        {searchQuery && (
+          <button
+            onClick={() => {
+              setSearchQuery("");
+              debouncedSearch("");
+            }}
+            className="absolute right-2 top-1/2 -translate-y-1/2 text-text/70 transition-colors duration-200 p-1 md:hover:text-text"
+          >
+            <X className="w-3 h-3" />
+          </button>
+        )}
+      </div>
       <div className="flex-1 overflow-hidden">
         {viewMode === "books" ? (
           <BookGrid
-            data={initialBooks}
+            data={filteredData as typeof initialBooks}
             onFilteredDataChange={handleFilteredDataChange}
           />
         ) : (
           <RecommenderGrid
-            data={initialRecommenders}
+            data={filteredData as typeof initialRecommenders}
             onFilteredDataChange={handleFilteredDataChange}
           />
         )}
