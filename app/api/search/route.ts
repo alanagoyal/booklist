@@ -24,7 +24,7 @@ async function hybridSearchWithFallback(
   query: string, 
   embedding: number[], 
   viewMode: 'books' | 'people' = 'books',
-  thresholds = [0.8, 0.75, 0.7]
+  thresholds = [0.85, 0.8, 0.78] // tighter thresholds only
 ) {
   const rpcName = viewMode === 'people' ? 'hybrid_search_people' : 'hybrid_search_books';
   
