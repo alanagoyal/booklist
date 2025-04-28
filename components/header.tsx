@@ -107,7 +107,7 @@ function HeaderContent() {
             People
           </Link>
           <Link
-            href="/insights"
+            href={`/insights?${searchParams.toString()}`}
             className={`h-full flex items-center px-1 transition-colors duration-200 border-b-2 ${
               pathname === "/insights"
                 ? "text-text border-text"
@@ -117,7 +117,7 @@ function HeaderContent() {
             Insights
           </Link>
           <Link
-            href="/about"
+            href={`/about?${searchParams.toString()}`}
             className={`h-full flex items-center px-1 transition-colors duration-200 border-b-2 ${
               pathname === "/about"
                 ? "text-text border-text"
@@ -187,7 +187,7 @@ function HeaderContent() {
                 onClick={(e) => {
                   e.preventDefault();
                   setIsMenuOpen(false);
-                  router.push("/insights");
+                  router.push(`/insights?${currentParams}`);
                 }}
               >
                 <span
@@ -202,7 +202,7 @@ function HeaderContent() {
                 onClick={(e) => {
                   e.preventDefault();
                   setIsMenuOpen(false);
-                  router.push("/about");
+                  router.push(`/about?${currentParams}`);
                 }}
               >
                 <span
