@@ -54,7 +54,11 @@ export function DataGrid<T extends Record<string, any>>({
     return searchParams?.get(`${searchParams.get("view")}_search`) || "";
   });
   const [isSearching, setIsSearching] = useState(false);
-  const [searchResults, setSearchResults] = useState<Set<string>>(new Set());
+  const [searchResults, setSearchResults] = useState<Set<string>>(() => {
+    // Initialize from URL if available
+    const cached = searchParams?.get(`${searchParams.get("view")}_search_results`);
+    return cached ? new Set(cached.split(',')) : new Set();
+  });
 
   // Get current view and sort configs directly from URL
   const currentView =
@@ -125,6 +129,33 @@ export function DataGrid<T extends Record<string, any>>({
 
     return debouncedFn;
   }
+
+  // Create a stable debounce function that persists across renders
+  const debounceFn = useMemo(
+    () =>
+      debounce((query: string) => {
+        console.log('Debounce fn executing with:', query);
+        handleSearch(query);
+      }, 500),
+    []
+  );
+
+  // Wrap in useCallback to maintain reference stability
+  const debouncedSearch = useCallback(
+    (query: string) => {
+      console.log('Queuing debounced search for:', query);
+      debounceFn(query);
+    },
+    [debounceFn]
+  );
+
+  // Cleanup debounce on unmount
+  useEffect(() => {
+    return () => {
+      console.log('Cleaning up debounce');
+      debounceFn.cancel();
+    };
+  }, [debounceFn]);
 
   // Memoize filtered data separately from sorting for better performance
   const filteredData = useMemo(() => {
@@ -200,13 +231,16 @@ export function DataGrid<T extends Record<string, any>>({
   // Handle semantic search
   const handleSearch = useCallback(
     async (query: string) => {
+      console.log('handleSearch called with:', query);
       if (!query.trim()) {
+        console.log('Empty query, clearing results');
         setSearchResults(new Set());
         return;
       }
 
       setIsSearching(true);
       try {
+        console.log('Fetching search results for:', query);
         const response = await fetch("/api/search", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -216,33 +250,16 @@ export function DataGrid<T extends Record<string, any>>({
         if (!response.ok) throw new Error("Search failed");
 
         const results = await response.json();
+        console.log('Search results:', results.length, 'items');
         setSearchResults(new Set(results.map((item: any) => item.id)));
       } catch (error) {
         console.error("Search error:", error);
-        // On error, clear search results
         setSearchResults(new Set());
       } finally {
         setIsSearching(false);
       }
     },
     [currentView]
-  );
-
-  const debouncedSearch = useCallback(
-    debounce((query: string) => {
-      // Update URL
-      const params = new URLSearchParams(searchParams.toString());
-      if (query) {
-        params.set(`${currentView}_search`, query);
-      } else {
-        params.delete(`${currentView}_search`);
-      }
-      router.push(`?${params.toString()}`, { scroll: false });
-
-      // Perform search
-      handleSearch(query);
-    }, 300),
-    [handleSearch, currentView, router, searchParams]
   );
 
   // Update filtered count whenever filteredData changes
@@ -252,23 +269,80 @@ export function DataGrid<T extends Record<string, any>>({
     }
   }, [filteredData, onFilteredDataChange]);
 
-  // Cleanup debounced search on unmount
+  // Notify parent of filtered data changes
   useEffect(() => {
-    return () => {
-      debouncedSearch.cancel();
-    };
-  }, [debouncedSearch]);
+    if (onFilteredDataChange) {
+      onFilteredDataChange(filteredData.length);
+      bookCountManager.updateCount();
+    }
+  }, [filteredData.length, onFilteredDataChange]);
 
-  // Initialize search from URL and handle view changes
+  // Update URL when search query changes
+  useEffect(() => {
+    if (searchQuery === searchParams?.get(`${currentView}_search`)) {
+      return; // Don't update if URL already matches
+    }
+    
+    const params = new URLSearchParams(searchParams.toString());
+    if (searchQuery) {
+      params.set(`${currentView}_search`, searchQuery);
+    } else {
+      params.delete(`${currentView}_search`);
+    }
+    
+    // Use replace instead of push to avoid losing input focus
+    router.replace(`?${params.toString()}`, { scroll: false });
+  }, [searchQuery, currentView, router, searchParams]);
+
+  // Update URL when search results change
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (searchResults.size > 0) {
+      params.set(`${currentView}_search_results`, Array.from(searchResults).join(','));
+    } else {
+      params.delete(`${currentView}_search_results`);
+    }
+    router.replace(`?${params.toString()}`, { scroll: false });
+  }, [searchResults, currentView, router, searchParams]);
+
+  // Initialize state from URL params
   useEffect(() => {
     const searchParam = searchParams?.get(`${currentView}_search`);
-    if (searchParam && searchParam !== searchQuery) {
+    const cachedResults = searchParams?.get(`${currentView}_search_results`);
+    console.log('Initializing from URL, search param:', searchParam, 'cached results:', cachedResults);
+    
+    if (searchParam) {
       setSearchQuery(searchParam);
-      handleSearch(searchParam);
-    } else if (!searchParam) {
-      // Clear search if no search param
-      setSearchQuery("");
-      setSearchResults(new Set());
+      // If we have cached results, use them immediately
+      if (cachedResults) {
+        setSearchResults(new Set(cachedResults.split(',')));
+      }
+      // Only fetch if we don't have cached results
+      if (!cachedResults) {
+        console.log('No cached results, fetching search');
+        handleSearch(searchParam);
+      }
+    }
+  }, []); // Run only on mount
+
+  // Handle view changes and URL param updates
+  useEffect(() => {
+    const searchParam = searchParams?.get(`${currentView}_search`);
+    const cachedResults = searchParams?.get(`${currentView}_search_results`);
+    console.log('View/URL changed, new search param:', searchParam, 'cached results:', cachedResults);
+
+    if (searchParam !== searchQuery) {
+      console.log('Search param changed, updating to:', searchParam);
+      setSearchQuery(searchParam || '');
+      if (searchParam && cachedResults) {
+        // Use cached results if available
+        setSearchResults(new Set(cachedResults.split(',')));
+      } else if (searchParam) {
+        // Only fetch if we have a query but no cached results
+        handleSearch(searchParam);
+      } else {
+        setSearchResults(new Set());
+      }
     }
   }, [currentView, searchParams]);
 
@@ -315,14 +389,6 @@ export function DataGrid<T extends Record<string, any>>({
         : sortDirection;
     });
   }, [filteredData, sortConfig]);
-
-  // Notify parent of filtered data changes
-  useEffect(() => {
-    if (onFilteredDataChange) {
-      onFilteredDataChange(filteredAndSortedData.length);
-      bookCountManager.updateCount();
-    }
-  }, [filteredAndSortedData.length, onFilteredDataChange]);
 
   // Update state when URL params change
   useEffect(() => {
@@ -572,11 +638,7 @@ export function DataGrid<T extends Record<string, any>>({
                     handleFilterChange(String(column.field), e.target.value)
                   }
                   onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      setOpenDropdown(null);
-                    }
+                    console.log('Key down:', e.key);
                   }}
                   onClick={(e) => e.stopPropagation()}
                 />
@@ -721,10 +783,20 @@ export function DataGrid<T extends Record<string, any>>({
               className="w-full p-2 focus:outline-none bg-background text-text border-b border-border font-base selection:bg-main selection:text-mtext"
               value={searchQuery}
               onChange={(e) => {
-                setSearchQuery(e.target.value);
-                debouncedSearch(e.target.value);
+                const value = e.target.value;
+                console.log('Input change, setting query to:', value);
+                // Set query state immediately
+                setSearchQuery(value);
+                // Queue debounced search
+                debouncedSearch(value);
+              }}
+              onKeyDown={(e) => {
+                console.log('Key down:', e.key);
               }}
               disabled={isSearching}
+              autoComplete="off"
+              autoCorrect="off"
+              spellCheck="false"
             />
             {searchQuery && (
               <button
