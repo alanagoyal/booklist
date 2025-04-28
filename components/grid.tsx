@@ -50,6 +50,11 @@ export function DataGrid<T extends Record<string, any>>({
   // State
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [isDropdownClosing, setIsDropdownClosing] = useState(false);
+  const [searchQuery, setSearchQuery] = useState(() => {
+    return searchParams?.get(`${searchParams.get("view")}_search`) || "";
+  });
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchResults, setSearchResults] = useState<Set<string>>(new Set());
 
   // Get current view and sort configs directly from URL
   const currentView =
@@ -74,7 +79,8 @@ export function DataGrid<T extends Record<string, any>>({
         !key.includes("sort") &&
         !key.includes("dir") &&
         key !== "key" &&
-        key !== "view"
+        key !== "view" &&
+        !key.includes("search")
       ) {
         filterParams[key] = value;
       }
@@ -97,64 +103,174 @@ export function DataGrid<T extends Record<string, any>>({
       .map(([field]) => field);
   }, [filters]);
 
+  // Debounce function
+  function debounce(fn: (...args: any[]) => void, ms: number) {
+    let timer: NodeJS.Timeout | null = null;
+
+    const debouncedFn = (...args: any[]) => {
+      if (timer) {
+        clearTimeout(timer);
+      }
+      timer = setTimeout(() => {
+        timer = null;
+        fn(...args);
+      }, ms);
+    };
+
+    debouncedFn.cancel = () => {
+      if (timer) {
+        clearTimeout(timer);
+      }
+    };
+
+    return debouncedFn;
+  }
+
   // Memoize filtered data separately from sorting for better performance
   const filteredData = useMemo(() => {
-    if (!Object.values(filters).some(Boolean)) return data;
+    // Start with the base data
+    let filtered = data;
 
-    const lowercaseFilters = Object.fromEntries(
-      Object.entries(filters).map(([key, value]) => [key, value?.toLowerCase()])
-    );
+    // Apply semantic search if we have results
+    if (searchResults.size > 0) {
+      filtered = filtered.filter(item => searchResults.has((item as any).id));
+    }
 
-    // Get list of valid filter fields from columns
-    const validFilterFields = columns.map((col) => String(col.field));
+    // Then apply column filters
+    if (Object.values(filters).some(Boolean)) {
+      const lowercaseFilters = Object.fromEntries(
+        Object.entries(filters).map(([key, value]) => [key, value?.toLowerCase()])
+      );
 
-    return data.filter((item) => {
-      return Object.entries(lowercaseFilters).every(([field, filterValue]) => {
-        if (!filterValue) return true;
+      // Get list of valid filter fields from columns
+      const validFilterFields = columns.map((col) => String(col.field));
 
-        // Skip filters that don't correspond to any column
-        if (!validFilterFields.includes(field)) return true;
+      filtered = filtered.filter((item) => {
+        return Object.entries(lowercaseFilters).every(([field, filterValue]) => {
+          if (!filterValue) return true;
 
-        // Special handling for description fields
-        if (field === "book_description") {
-          return String(item.description || "")
-            .toLowerCase()
-            .includes(filterValue);
-        }
+          // Skip filters that don't correspond to any column
+          if (!validFilterFields.includes(field)) return true;
 
-        if (field === "recommender_description") {
-          return String(item.description || "")
-            .toLowerCase()
-            .includes(filterValue);
-        }
+          // Special handling for description fields
+          if (field === "book_description") {
+            return String(item.description || "")
+              .toLowerCase()
+              .includes(filterValue);
+          }
 
-        // Filter by recommender full name
-        if (field === "recommenders") {
-          const recommendations = (item as any).recommendations || [];
-          const recommenderNames = recommendations
-            .filter((rec: any) => rec.recommender)
-            .map((rec: any) => rec.recommender.full_name.toLowerCase());
-          return recommenderNames.some((name: string) =>
-            name.includes(filterValue)
-          );
-        }
+          if (field === "recommender_description") {
+            return String(item.description || "")
+              .toLowerCase()
+              .includes(filterValue);
+          }
 
-        // Filter by recommendation title
-        if (field === "recommendations") {
-          const recommendations = (item as any).recommendations || [];
-          const recommendationTitles = recommendations.map((rec: any) =>
-            rec.title.toLowerCase()
-          );
-          return recommendationTitles.some((title: string) =>
-            title.includes(filterValue)
-          );
-        }
+          // Filter by recommender full name
+          if (field === "recommenders") {
+            const recommendations = (item as any).recommendations || [];
+            const recommenderNames = recommendations
+              .filter((rec: any) => rec.recommender)
+              .map((rec: any) => rec.recommender.full_name.toLowerCase());
+            return recommenderNames.some((name: string) =>
+              name.includes(filterValue)
+            );
+          }
 
-        const value = String(item[field as keyof T] || "").toLowerCase();
-        return value.includes(filterValue);
+          // Filter by recommendation title
+          if (field === "recommendations") {
+            const recommendations = (item as any).recommendations || [];
+            const recommendationTitles = recommendations.map((rec: any) =>
+              rec.title.toLowerCase()
+            );
+            return recommendationTitles.some((title: string) =>
+              title.includes(filterValue)
+            );
+          }
+
+          // Default case: simple string includes check
+          const itemValue = String(item[field as keyof T] || "").toLowerCase();
+          return itemValue.includes(filterValue);
+        });
       });
-    });
-  }, [data, filters, columns]);
+    }
+
+    return filtered;
+  }, [data, filters, columns, searchResults]);
+
+  // Handle semantic search
+  const handleSearch = useCallback(
+    async (query: string) => {
+      if (!query.trim()) {
+        setSearchResults(new Set());
+        return;
+      }
+
+      setIsSearching(true);
+      try {
+        const response = await fetch("/api/search", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ query, viewMode: currentView }),
+        });
+
+        if (!response.ok) throw new Error("Search failed");
+
+        const results = await response.json();
+        setSearchResults(new Set(results.map((item: any) => item.id)));
+      } catch (error) {
+        console.error("Search error:", error);
+        // On error, clear search results
+        setSearchResults(new Set());
+      } finally {
+        setIsSearching(false);
+      }
+    },
+    [currentView]
+  );
+
+  const debouncedSearch = useCallback(
+    debounce((query: string) => {
+      // Update URL
+      const params = new URLSearchParams(searchParams.toString());
+      if (query) {
+        params.set(`${currentView}_search`, query);
+      } else {
+        params.delete(`${currentView}_search`);
+      }
+      router.push(`?${params.toString()}`, { scroll: false });
+
+      // Perform search
+      handleSearch(query);
+    }, 300),
+    [handleSearch, currentView, router, searchParams]
+  );
+
+  // Update filtered count whenever filteredData changes
+  useEffect(() => {
+    if (onFilteredDataChange) {
+      onFilteredDataChange(filteredData.length);
+    }
+  }, [filteredData, onFilteredDataChange]);
+
+  // Cleanup debounced search on unmount
+  useEffect(() => {
+    return () => {
+      debouncedSearch.cancel();
+    };
+  }, [debouncedSearch]);
+
+  // Initialize search from URL and handle view changes
+  useEffect(() => {
+    const searchParam = searchParams?.get(`${currentView}_search`);
+    if (searchParam && searchParam !== searchQuery) {
+      setSearchQuery(searchParam);
+      handleSearch(searchParam);
+    } else if (!searchParam) {
+      // Clear search if no search param
+      setSearchQuery("");
+      setSearchResults(new Set());
+    }
+  }, [currentView, searchParams]);
 
   // Memoize sorted data separately
   const filteredAndSortedData = useMemo(() => {
@@ -217,7 +333,8 @@ export function DataGrid<T extends Record<string, any>>({
         !key.includes("sort") &&
         !key.includes("dir") &&
         key !== "key" &&
-        key !== "view"
+        key !== "view" &&
+        !key.includes("search")
       ) {
         filterParams[key] = value;
       }
@@ -252,7 +369,6 @@ export function DataGrid<T extends Record<string, any>>({
       router.push(newPath, { scroll: false });
     }
   }, [filters, router, searchParams]);
-
 
   // Event handlers
   const handleRowClick = useCallback(
@@ -597,6 +713,38 @@ export function DataGrid<T extends Record<string, any>>({
     >
       <div className="inline-block min-w-full">
         <div className="sticky top-0 z-10 bg-background">
+          {/* Search input */}
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Search..."
+              className="w-full p-2 focus:outline-none bg-background text-text border-b border-border font-base selection:bg-main selection:text-mtext"
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                debouncedSearch(e.target.value);
+              }}
+              disabled={isSearching}
+            />
+            {searchQuery && (
+              <button
+                onClick={() => {
+                  setSearchQuery("");
+                  debouncedSearch("");
+                }}
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-text/70 transition-colors duration-200 p-1 md:hover:text-text"
+                disabled={isSearching}
+              >
+                <X className="w-3 h-3" />
+              </button>
+            )}
+            {isSearching && (
+              <div className="absolute right-8 top-1/2 -translate-y-1/2">
+                <div className="w-3 h-3 border-2 border-text/70 rounded-full animate-spin border-t-transparent" />
+              </div>
+            )}
+          </div>
+          {/* Column headers */}
           <div
             className="grid"
             style={{
