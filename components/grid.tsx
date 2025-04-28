@@ -50,14 +50,16 @@ export function DataGrid<T extends Record<string, any>>({
   // State
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [isDropdownClosing, setIsDropdownClosing] = useState(false);
-  const [searchQuery, setSearchQuery] = useState(() => {
-    return searchParams?.get(`${searchParams.get("view")}_search`) || "";
-  });
-  const [isSearching, setIsSearching] = useState(false);
-  const [searchResults, setSearchResults] = useState<Set<string>>(() => {
-    // Initialize from URL if available
-    const cached = searchParams?.get(`${searchParams.get("view")}_search_results`);
-    return cached ? new Set(cached.split(',')) : new Set();
+  const [searchState, setSearchState] = useState(() => {
+    const view = searchParams?.get("view") || "books";
+    const query = searchParams?.get(`${view}_search`) || "";
+    const cachedResults = searchParams?.get(`${view}_search_results`);
+    return {
+      query,
+      inputValue: query,
+      results: cachedResults ? new Set(cachedResults.split(',')) : new Set<string>(),
+      isSearching: false
+    };
   });
 
   // Get current view and sort configs directly from URL
@@ -107,69 +109,21 @@ export function DataGrid<T extends Record<string, any>>({
       .map(([field]) => field);
   }, [filters]);
 
-  // Debounce function
-  function debounce(fn: (...args: any[]) => void, ms: number) {
-    let timer: NodeJS.Timeout | null = null;
-
-    const debouncedFn = (...args: any[]) => {
-      if (timer) {
-        clearTimeout(timer);
-      }
-      timer = setTimeout(() => {
-        timer = null;
-        fn(...args);
-      }, ms);
-    };
-
-    debouncedFn.cancel = () => {
-      if (timer) {
-        clearTimeout(timer);
-      }
-    };
-
-    return debouncedFn;
-  }
-
-  // Create a stable debounce function that persists across renders
-  const debounceFn = useMemo(
-    () =>
-      debounce((query: string) => {
-        console.log('Debounce fn executing with:', query);
-        handleSearch(query);
-      }, 500),
-    []
-  );
-
-  // Wrap in useCallback to maintain reference stability
-  const debouncedSearch = useCallback(
-    (query: string) => {
-      console.log('Queuing debounced search for:', query);
-      debounceFn(query);
-    },
-    [debounceFn]
-  );
-
-  // Cleanup debounce on unmount
-  useEffect(() => {
-    return () => {
-      console.log('Cleaning up debounce');
-      debounceFn.cancel();
-    };
-  }, [debounceFn]);
-
   // Memoize filtered data separately from sorting for better performance
   const filteredData = useMemo(() => {
     // Start with the base data
     let filtered = data;
 
     // Handle semantic search
-    if (searchQuery) {
-      // If we have a query but no results, show nothing
-      if (searchResults.size === 0) {
-        return [];
+    if (searchState.query) {
+      // Keep showing old results while searching
+      if (searchState.results.size === 0 && searchState.isSearching) {
+        return filtered;
       }
-      // Otherwise filter by search results
-      filtered = filtered.filter(item => searchResults.has((item as any).id));
+      // Only filter by results if we have them
+      if (searchState.results.size > 0) {
+        filtered = filtered.filter(item => searchState.results.has((item as any).id));
+      }
     }
 
     // Then apply column filters
@@ -231,41 +185,92 @@ export function DataGrid<T extends Record<string, any>>({
     }
 
     return filtered;
-  }, [data, filters, columns, searchResults, searchQuery]);
+  }, [data, filters, columns, searchState.query, searchState.results, searchState.isSearching]);
 
-  // Handle semantic search
-  const handleSearch = useCallback(
-    async (query: string) => {
-      console.log('handleSearch called with:', query);
-      if (!query.trim()) {
-        console.log('Empty query, clearing results');
-        setSearchResults(new Set());
-        return;
+  // Handle search
+  const handleSearch = useCallback(async (query: string) => {
+    if (!query) {
+      console.log('Empty query, clearing results');
+      setSearchState(prev => ({
+        ...prev,
+        query: '',
+        inputValue: '',
+        results: new Set(),
+        isSearching: false
+      }));
+      return;
+    }
+
+    console.log('Fetching search results for:', query);
+    setSearchState(prev => ({ ...prev, isSearching: true }));
+
+    try {
+      const response = await fetch("/api/search", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          query,
+          viewMode: searchParams.get("view") || "books"
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`Search failed: ${response.status}`);
       }
 
-      setIsSearching(true);
-      try {
-        console.log('Fetching search results for:', query);
-        const response = await fetch("/api/search", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ query, viewMode: currentView }),
-        });
+      const results = await response.json();
+      console.log('Search results:', results.length, 'items');
+      
+      setSearchState(prev => ({
+        ...prev,
+        query,
+        results: new Set(results.map((item: any) => item.id)),
+        isSearching: false
+      }));
+    } catch (error) {
+      console.error('Search error:', error);
+      setSearchState(prev => ({ 
+        ...prev, 
+        isSearching: false,
+        // Keep the query but clear results on error
+        results: new Set()
+      }));
+    }
+  }, [searchParams]);
 
-        if (!response.ok) throw new Error("Search failed");
+  // Update URL when search state changes
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams.toString());
+    const currentView = searchParams.get("view") || "books";
 
-        const results = await response.json();
-        console.log('Search results:', results.length, 'items');
-        setSearchResults(new Set(results.map((item: any) => item.id)));
-      } catch (error) {
-        console.error("Search error:", error);
-        setSearchResults(new Set());
-      } finally {
-        setIsSearching(false);
+    if (searchState.query) {
+      params.set(`${currentView}_search`, searchState.query);
+      if (searchState.results.size > 0) {
+        params.set(`${currentView}_search_results`, Array.from(searchState.results).join(','));
       }
-    },
-    [currentView]
-  );
+    } else {
+      params.delete(`${currentView}_search`);
+      params.delete(`${currentView}_search_results`);
+    }
+
+    router.replace(`?${params.toString()}`, { scroll: false });
+  }, [searchState.query, searchState.results, router, searchParams]);
+
+  // Sync with URL changes
+  useEffect(() => {
+    const currentView = searchParams.get("view") || "books";
+    const urlQuery = searchParams?.get(`${currentView}_search`) || "";
+    const cachedResults = searchParams?.get(`${currentView}_search_results`);
+
+    if (urlQuery !== searchState.query) {
+      setSearchState(prev => ({
+        ...prev,
+        query: urlQuery,
+        inputValue: urlQuery,
+        results: cachedResults ? new Set(cachedResults.split(',')) : prev.results
+      }));
+    }
+  }, [searchParams]);
 
   // Update filtered count whenever filteredData changes
   useEffect(() => {
@@ -281,75 +286,6 @@ export function DataGrid<T extends Record<string, any>>({
       bookCountManager.updateCount();
     }
   }, [filteredData.length, onFilteredDataChange]);
-
-  // Update URL when search query changes
-  useEffect(() => {
-    if (searchQuery === searchParams?.get(`${currentView}_search`)) {
-      return; // Don't update if URL already matches
-    }
-    
-    const params = new URLSearchParams(searchParams.toString());
-    if (searchQuery) {
-      params.set(`${currentView}_search`, searchQuery);
-    } else {
-      params.delete(`${currentView}_search`);
-    }
-    
-    // Use replace instead of push to avoid losing input focus
-    router.replace(`?${params.toString()}`, { scroll: false });
-  }, [searchQuery, currentView, router, searchParams]);
-
-  // Update URL when search results change
-  useEffect(() => {
-    const params = new URLSearchParams(searchParams.toString());
-    if (searchResults.size > 0) {
-      params.set(`${currentView}_search_results`, Array.from(searchResults).join(','));
-    } else {
-      params.delete(`${currentView}_search_results`);
-    }
-    router.replace(`?${params.toString()}`, { scroll: false });
-  }, [searchResults, currentView, router, searchParams]);
-
-  // Initialize state from URL params
-  useEffect(() => {
-    const searchParam = searchParams?.get(`${currentView}_search`);
-    const cachedResults = searchParams?.get(`${currentView}_search_results`);
-    console.log('Initializing from URL, search param:', searchParam, 'cached results:', cachedResults);
-    
-    if (searchParam) {
-      setSearchQuery(searchParam);
-      // If we have cached results, use them immediately
-      if (cachedResults) {
-        setSearchResults(new Set(cachedResults.split(',')));
-      }
-      // Only fetch if we don't have cached results
-      if (!cachedResults) {
-        console.log('No cached results, fetching search');
-        handleSearch(searchParam);
-      }
-    }
-  }, []); // Run only on mount
-
-  // Handle view changes and URL param updates
-  useEffect(() => {
-    const searchParam = searchParams?.get(`${currentView}_search`);
-    const cachedResults = searchParams?.get(`${currentView}_search_results`);
-    console.log('View/URL changed, new search param:', searchParam, 'cached results:', cachedResults);
-
-    if (searchParam !== searchQuery) {
-      console.log('Search param changed, updating to:', searchParam);
-      setSearchQuery(searchParam || '');
-      if (searchParam && cachedResults) {
-        // Use cached results if available
-        setSearchResults(new Set(cachedResults.split(',')));
-      } else if (searchParam) {
-        // Only fetch if we have a query but no cached results
-        handleSearch(searchParam);
-      } else {
-        setSearchResults(new Set());
-      }
-    }
-  }, [currentView, searchParams]);
 
   // Memoize sorted data separately
   const filteredAndSortedData = useMemo(() => {
@@ -437,7 +373,7 @@ export function DataGrid<T extends Record<string, any>>({
 
     // Only update URL if params have changed
     if (newParams.toString() !== currentParams.toString()) {
-      router.push(newPath, { scroll: false });
+      router.replace(newPath, { scroll: false });
     }
   }, [filters, router, searchParams]);
 
@@ -496,7 +432,7 @@ export function DataGrid<T extends Record<string, any>>({
         }
       }
 
-      router.push(`/?${params.toString()}`, { scroll: false });
+      router.replace(`?${params.toString()}`, { scroll: false });
       setOpenDropdown(null);
     },
     [router, searchParams]
@@ -786,33 +722,33 @@ export function DataGrid<T extends Record<string, any>>({
               type="text"
               placeholder="Search..."
               className="w-full p-2 focus:outline-none bg-background text-text border-b border-border font-base selection:bg-main selection:text-mtext"
-              value={searchQuery}
+              value={searchState.inputValue}
               onChange={(e) => {
-                const value = e.target.value;
-                console.log('Input change, setting query to:', value);
-                setSearchQuery(value);
-                debouncedSearch(value);
+                setSearchState(prev => ({
+                  ...prev,
+                  inputValue: e.target.value
+                }));
               }}
               onKeyDown={(e) => {
-                console.log('Key down:', e.key);
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSearch(searchState.inputValue);
+                }
               }}
-              disabled={isSearching}
+              disabled={searchState.isSearching}
               autoComplete="off"
               autoCorrect="off"
               spellCheck="false"
             />
             {/* Show either clear button or loading spinner */}
             <div className="absolute right-2 top-1/2 -translate-y-1/2">
-              {isSearching ? (
+              {searchState.isSearching ? (
                 <div className="w-3 h-3 border-2 border-text/70 rounded-full animate-spin border-t-transparent" />
-              ) : searchQuery ? (
+              ) : searchState.inputValue ? (
                 <button
-                  onClick={() => {
-                    setSearchQuery("");
-                    debouncedSearch("");
-                  }}
+                  onClick={() => handleSearch("")}
                   className="text-text/70 transition-colors duration-200 p-1 md:hover:text-text"
-                  disabled={isSearching}
+                  disabled={searchState.isSearching}
                 >
                   <X className="w-3 h-3" />
                 </button>
