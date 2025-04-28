@@ -57,19 +57,21 @@ export function DataGrid<T extends Record<string, any>>({
     return {
       query,
       inputValue: query,
-      results: cachedResults ? new Set(cachedResults.split(',')) : new Set<string>(),
-      isSearching: false
+      results: cachedResults
+        ? new Set(cachedResults.split(","))
+        : new Set<string>(),
+      isSearching: false,
     };
   });
 
   // Get current view and sort configs directly from URL
-  const currentView =
+  const viewMode =
     (searchParams.get("view") as "books" | "recommenders") || "books";
-  const directionParam = searchParams?.get(`${currentView}_dir`);
+  const directionParam = searchParams?.get(`${viewMode}_dir`);
   const sortConfig = {
     field:
-      searchParams?.get(`${currentView}_sort`) ||
-      (currentView === "books" ? "recommenders" : "recommendations"),
+      searchParams?.get(`${viewMode}_sort`) ||
+      (viewMode === "books" ? "recommenders" : "recommendations"),
     direction:
       directionParam === "asc" || directionParam === "desc"
         ? directionParam
@@ -117,140 +119,164 @@ export function DataGrid<T extends Record<string, any>>({
     // Handle semantic search
     if (searchState.query) {
       // Keep showing old results while searching
-      if (searchState.results.size === 0 && searchState.isSearching) {
+      if (searchState.isSearching) {
         return filtered;
       }
-      // Only filter by results if we have them
-      if (searchState.results.size > 0) {
-        filtered = filtered.filter(item => searchState.results.has((item as any).id));
+      // Return empty array if we have no results and search is complete
+      if (searchState.results.size === 0) {
+        return [];
       }
+      // Only filter by results if we have them
+      filtered = filtered.filter((item) =>
+        searchState.results.has((item as any).id)
+      );
     }
 
     // Then apply column filters
     if (Object.values(filters).some(Boolean)) {
       const lowercaseFilters = Object.fromEntries(
-        Object.entries(filters).map(([key, value]) => [key, value?.toLowerCase()])
+        Object.entries(filters).map(([key, value]) => [
+          key,
+          value?.toLowerCase(),
+        ])
       );
 
       // Get list of valid filter fields from columns
       const validFilterFields = columns.map((col) => String(col.field));
 
       filtered = filtered.filter((item) => {
-        return Object.entries(lowercaseFilters).every(([field, filterValue]) => {
-          if (!filterValue) return true;
+        return Object.entries(lowercaseFilters).every(
+          ([field, filterValue]) => {
+            if (!filterValue) return true;
 
-          // Skip filters that don't correspond to any column
-          if (!validFilterFields.includes(field)) return true;
+            // Skip filters that don't correspond to any column
+            if (!validFilterFields.includes(field)) return true;
 
-          // Special handling for description fields
-          if (field === "book_description") {
-            return String(item.description || "")
-              .toLowerCase()
-              .includes(filterValue);
+            // Special handling for description fields
+            if (field === "book_description") {
+              return String(item.description || "")
+                .toLowerCase()
+                .includes(filterValue);
+            }
+
+            if (field === "recommender_description") {
+              return String(item.description || "")
+                .toLowerCase()
+                .includes(filterValue);
+            }
+
+            // Filter by recommender full name
+            if (field === "recommenders") {
+              const recommendations = (item as any).recommendations || [];
+              const recommenderNames = recommendations
+                .filter((rec: any) => rec.recommender)
+                .map((rec: any) => rec.recommender.full_name.toLowerCase());
+              return recommenderNames.some((name: string) =>
+                name.includes(filterValue)
+              );
+            }
+
+            // Filter by recommendation title
+            if (field === "recommendations") {
+              const recommendations = (item as any).recommendations || [];
+              const recommendationTitles = recommendations.map((rec: any) =>
+                rec.title.toLowerCase()
+              );
+              return recommendationTitles.some((title: string) =>
+                title.includes(filterValue)
+              );
+            }
+
+            // Default case: simple string includes check
+            const itemValue = String(
+              item[field as keyof T] || ""
+            ).toLowerCase();
+            return itemValue.includes(filterValue);
           }
-
-          if (field === "recommender_description") {
-            return String(item.description || "")
-              .toLowerCase()
-              .includes(filterValue);
-          }
-
-          // Filter by recommender full name
-          if (field === "recommenders") {
-            const recommendations = (item as any).recommendations || [];
-            const recommenderNames = recommendations
-              .filter((rec: any) => rec.recommender)
-              .map((rec: any) => rec.recommender.full_name.toLowerCase());
-            return recommenderNames.some((name: string) =>
-              name.includes(filterValue)
-            );
-          }
-
-          // Filter by recommendation title
-          if (field === "recommendations") {
-            const recommendations = (item as any).recommendations || [];
-            const recommendationTitles = recommendations.map((rec: any) =>
-              rec.title.toLowerCase()
-            );
-            return recommendationTitles.some((title: string) =>
-              title.includes(filterValue)
-            );
-          }
-
-          // Default case: simple string includes check
-          const itemValue = String(item[field as keyof T] || "").toLowerCase();
-          return itemValue.includes(filterValue);
-        });
+        );
       });
     }
 
     return filtered;
-  }, [data, filters, columns, searchState.query, searchState.results, searchState.isSearching]);
+  }, [
+    data,
+    filters,
+    columns,
+    searchState.query,
+    searchState.results,
+    searchState.isSearching,
+  ]);
 
   // Handle search
-  const handleSearch = useCallback(async (query: string) => {
-    if (!query) {
-      console.log('Empty query, clearing results');
-      setSearchState(prev => ({
-        ...prev,
-        query: '',
-        inputValue: '',
-        results: new Set(),
-        isSearching: false
-      }));
-      return;
-    }
-
-    console.log('Fetching search results for:', query);
-    setSearchState(prev => ({ ...prev, isSearching: true }));
-
-    try {
-      const response = await fetch("/api/search", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          query,
-          viewMode: searchParams.get("view") || "books"
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error(`Search failed: ${response.status}`);
+  const handleSearch = useCallback(
+    async (query: string) => {
+      if (!query) {
+        console.log("Empty query, clearing results");
+        setSearchState((prev) => ({
+          ...prev,
+          query: "",
+          inputValue: "",
+          results: new Set(),
+          isSearching: false,
+        }));
+        return;
       }
 
-      const results = await response.json();
-      console.log('Search results:', results.length, 'items');
-      
-      setSearchState(prev => ({
-        ...prev,
-        query,
-        results: new Set(results.map((item: any) => item.id)),
-        isSearching: false
-      }));
-    } catch (error) {
-      console.error('Search error:', error);
-      setSearchState(prev => ({ 
-        ...prev, 
-        isSearching: false,
-        // Keep the query but clear results on error
-        results: new Set()
-      }));
-    }
-  }, [searchParams]);
+      console.log("Fetching search results for:", query);
+      setSearchState((prev) => ({ ...prev, isSearching: true }));
+
+      try {
+        const response = await fetch("/api/search", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            query,
+            viewMode: searchParams.get("view") || "books",
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error(`Search failed: ${response.status}`);
+        }
+
+        const results = await response.json();
+        console.log("Search results:", results.length, "items");
+
+        setSearchState((prev) => ({
+          ...prev,
+          query,
+          results: new Set(results.map((item: any) => item.id)),
+          isSearching: false,
+        }));
+      } catch (error) {
+        console.error("Search error:", error);
+        setSearchState((prev) => ({
+          ...prev,
+          isSearching: false,
+          // Keep the query but clear results on error
+          results: new Set(),
+        }));
+      }
+    },
+    [searchParams]
+  );
 
   // Update URL when search state changes
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());
-    const currentView = searchParams.get("view") || "books";
+    const viewMode = searchParams.get("view") || "books";
 
     if (searchState.query) {
-      params.set(`${currentView}_search`, searchState.query);
+      params.set(`${viewMode}_search`, searchState.query);
       if (searchState.results.size > 0) {
-        params.set(`${currentView}_search_results`, Array.from(searchState.results).join(','));
+        params.set(
+          `${viewMode}_search_results`,
+          Array.from(searchState.results).join(",")
+        );
       }
     } else {
-      params.delete(`${currentView}_search`);
-      params.delete(`${currentView}_search_results`);
+      params.delete(`${viewMode}_search`);
+      params.delete(`${viewMode}_search_results`);
     }
 
     router.replace(`?${params.toString()}`, { scroll: false });
@@ -258,16 +284,18 @@ export function DataGrid<T extends Record<string, any>>({
 
   // Sync with URL changes
   useEffect(() => {
-    const currentView = searchParams.get("view") || "books";
-    const urlQuery = searchParams?.get(`${currentView}_search`) || "";
-    const cachedResults = searchParams?.get(`${currentView}_search_results`);
+    const viewMode = searchParams.get("view") || "books";
+    const urlQuery = searchParams?.get(`${viewMode}_search`) || "";
+    const cachedResults = searchParams?.get(`${viewMode}_search_results`);
 
     if (urlQuery !== searchState.query) {
-      setSearchState(prev => ({
+      setSearchState((prev) => ({
         ...prev,
         query: urlQuery,
         inputValue: urlQuery,
-        results: cachedResults ? new Set(cachedResults.split(',')) : prev.results
+        results: cachedResults
+          ? new Set(cachedResults.split(","))
+          : prev.results,
       }));
     }
   }, [searchParams]);
@@ -579,7 +607,7 @@ export function DataGrid<T extends Record<string, any>>({
                     handleFilterChange(String(column.field), e.target.value)
                   }
                   onKeyDown={(e) => {
-                    console.log('Key down:', e.key);
+                    console.log("Key down:", e.key);
                   }}
                   onClick={(e) => e.stopPropagation()}
                 />
@@ -710,97 +738,103 @@ export function DataGrid<T extends Record<string, any>>({
   });
 
   return (
-    <div
-      ref={parentRef}
-      className="h-full overflow-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent"
-    >
-      <div className="inline-block min-w-full">
-        <div className="sticky top-0 z-10 bg-background">
-          {/* Search input */}
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="Search..."
-              className="w-full p-2 focus:outline-none bg-background text-text border-b border-border font-base selection:bg-main selection:text-mtext"
-              value={searchState.inputValue}
-              onChange={(e) => {
-                setSearchState(prev => ({
-                  ...prev,
-                  inputValue: e.target.value
-                }));
-              }}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault();
-                  handleSearch(searchState.inputValue);
-                }
-              }}
-              disabled={searchState.isSearching}
-              autoComplete="off"
-              autoCorrect="off"
-              spellCheck="false"
-            />
-            {/* Show either clear button or loading spinner */}
-            <div className="absolute right-2 top-1/2 -translate-y-1/2">
-              {searchState.isSearching ? (
-                <div className="w-3 h-3 border-2 border-text/70 rounded-full animate-spin border-t-transparent" />
-              ) : searchState.inputValue ? (
-                <button
-                  onClick={() => handleSearch("")}
-                  className="text-text/70 transition-colors duration-200 p-1 md:hover:text-text"
-                  disabled={searchState.isSearching}
-                >
-                  <X className="w-3 h-3" />
-                </button>
-              ) : null}
-            </div>
-          </div>
-          {/* Column headers */}
-          <div
-            className="grid"
-            style={{
-              gridTemplateColumns: `repeat(${columns.length}, minmax(200px, 1fr))`,
+    <div className="h-full flex flex-col">
+      {/* Search input - fixed at top */}
+      <div className="bg-background">
+        <div className="flex items-center">
+          <input
+            type="text"
+            placeholder={viewMode === 'books' ? "Find the perfect book..." : "Find the perfect person..."}
+            className="flex-1 h-10 p-2 focus:outline-none bg-background text-text border-b border-border font-base selection:bg-main selection:text-mtext"
+            value={searchState.inputValue}
+            onChange={(e) => {
+              setSearchState((prev) => ({
+                ...prev,
+                inputValue: e.target.value,
+              }));
             }}
-          >
-            {columns.map(renderHeader)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                handleSearch(searchState.inputValue);
+              }
+            }}
+            disabled={searchState.isSearching}
+            autoComplete="off"
+            autoCorrect="off"
+            spellCheck="false"
+          />
+          {/* Clear button or loading spinner */}
+          <div className="flex items-center h-10 px-3 border-b border-border">
+            {searchState.isSearching ? (
+              <div className="w-3 h-3 border-2 border-text/70 rounded-full animate-spin border-t-transparent" />
+            ) : searchState.inputValue ? (
+              <button
+                onClick={() => handleSearch("")}
+                className="text-text/70 transition-colors duration-200 md:hover:text-text"
+                disabled={searchState.isSearching}
+              >
+                <X className="w-3 h-3" />
+              </button>
+            ) : null}
           </div>
         </div>
+      </div>
 
-        {filteredAndSortedData.length === 0 ? (
-          <div className="fixed left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 text-center px-4">
-            <div className="text-text/70">No results match this search</div>
+      {/* Scrollable grid content */}
+      <div
+        ref={parentRef}
+        className="flex-1 overflow-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent"
+      >
+        <div className="inline-block min-w-full">
+          <div className="sticky top-0 z-10 bg-background">
+            {/* Column headers */}
+            <div
+              className="grid"
+              style={{
+                gridTemplateColumns: `repeat(${columns.length}, minmax(200px, 1fr))`,
+              }}
+            >
+              {columns.map(renderHeader)}
+            </div>
           </div>
-        ) : (
-          <div
-            className="relative"
-            style={{
-              height: `${rowVirtualizer.getTotalSize()}px`,
-            }}
-          >
-            {rowVirtualizer.getVirtualItems().map((virtualRow) => {
-              const row = filteredAndSortedData[virtualRow.index];
-              return (
-                <div
-                  key={virtualRow.index}
-                  className={`grid transition-colors duration-200 ${
-                    getRowClassName?.(row) || ""
-                  }`}
-                  style={{
-                    gridTemplateColumns: `repeat(${columns.length}, minmax(200px, 1fr))`,
-                    position: "absolute",
-                    top: `${virtualRow.start}px`,
-                    left: 0,
-                    width: "100%",
-                    height: `${virtualRow.size}px`,
-                  }}
-                  onClick={(e) => handleRowClick(e, row)}
-                >
-                  {columns.map((column) => renderCell({ column, row }))}
-                </div>
-              );
-            })}
-          </div>
-        )}
+
+          {filteredAndSortedData.length === 0 ? (
+            <div className="fixed left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 text-center px-4">
+              <div className="text-text/70">No results match this search</div>
+            </div>
+          ) : (
+            <div
+              className="relative"
+              style={{
+                height: `${rowVirtualizer.getTotalSize()}px`,
+              }}
+            >
+              {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+                const row = filteredAndSortedData[virtualRow.index];
+                return (
+                  <div
+                    key={virtualRow.index}
+                    className={`grid transition-colors duration-200 ${
+                      getRowClassName?.(row) || ""
+                    }`}
+                    style={{
+                      gridTemplateColumns: `repeat(${columns.length}, minmax(200px, 1fr))`,
+                      position: "absolute",
+                      top: `${virtualRow.start}px`,
+                      left: 0,
+                      width: "100%",
+                      height: `${virtualRow.size}px`,
+                    }}
+                    onClick={(e) => handleRowClick(e, row)}
+                  >
+                    {columns.map((column) => renderCell({ column, row }))}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
