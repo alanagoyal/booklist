@@ -162,8 +162,13 @@ export function DataGrid<T extends Record<string, any>>({
     // Start with the base data
     let filtered = data;
 
-    // Apply semantic search if we have results
-    if (searchResults.size > 0) {
+    // Handle semantic search
+    if (searchQuery) {
+      // If we have a query but no results, show nothing
+      if (searchResults.size === 0) {
+        return [];
+      }
+      // Otherwise filter by search results
       filtered = filtered.filter(item => searchResults.has((item as any).id));
     }
 
@@ -226,7 +231,7 @@ export function DataGrid<T extends Record<string, any>>({
     }
 
     return filtered;
-  }, [data, filters, columns, searchResults]);
+  }, [data, filters, columns, searchResults, searchQuery]);
 
   // Handle semantic search
   const handleSearch = useCallback(
