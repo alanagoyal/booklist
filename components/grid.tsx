@@ -785,9 +785,7 @@ export function DataGrid<T extends Record<string, any>>({
               onChange={(e) => {
                 const value = e.target.value;
                 console.log('Input change, setting query to:', value);
-                // Set query state immediately
                 setSearchQuery(value);
-                // Queue debounced search
                 debouncedSearch(value);
               }}
               onKeyDown={(e) => {
@@ -798,23 +796,23 @@ export function DataGrid<T extends Record<string, any>>({
               autoCorrect="off"
               spellCheck="false"
             />
-            {searchQuery && (
-              <button
-                onClick={() => {
-                  setSearchQuery("");
-                  debouncedSearch("");
-                }}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-text/70 transition-colors duration-200 p-1 md:hover:text-text"
-                disabled={isSearching}
-              >
-                <X className="w-3 h-3" />
-              </button>
-            )}
-            {isSearching && (
-              <div className="absolute right-8 top-1/2 -translate-y-1/2">
+            {/* Show either clear button or loading spinner */}
+            <div className="absolute right-2 top-1/2 -translate-y-1/2">
+              {isSearching ? (
                 <div className="w-3 h-3 border-2 border-text/70 rounded-full animate-spin border-t-transparent" />
-              </div>
-            )}
+              ) : searchQuery ? (
+                <button
+                  onClick={() => {
+                    setSearchQuery("");
+                    debouncedSearch("");
+                  }}
+                  className="text-text/70 transition-colors duration-200 p-1 md:hover:text-text"
+                  disabled={isSearching}
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              ) : null}
+            </div>
           </div>
           {/* Column headers */}
           <div
