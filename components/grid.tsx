@@ -211,7 +211,6 @@ export function DataGrid<T extends Record<string, any>>({
   const handleSearch = useCallback(
     async (query: string) => {
       if (!query) {
-        console.log("Empty query, clearing results");
         setSearchState((prev) => ({
           ...prev,
           query: "",
@@ -222,7 +221,6 @@ export function DataGrid<T extends Record<string, any>>({
         return;
       }
 
-      console.log("Fetching search results for:", query);
       setSearchState((prev) => ({ ...prev, isSearching: true }));
 
       try {
@@ -240,8 +238,6 @@ export function DataGrid<T extends Record<string, any>>({
         }
 
         const results = await response.json();
-        console.log("Search results:", results.length, "items");
-
         setSearchState((prev) => ({
           ...prev,
           query,
@@ -606,9 +602,6 @@ export function DataGrid<T extends Record<string, any>>({
                   onChange={(e) =>
                     handleFilterChange(String(column.field), e.target.value)
                   }
-                  onKeyDown={(e) => {
-                    console.log("Key down:", e.key);
-                  }}
                   onClick={(e) => e.stopPropagation()}
                 />
                 {filters[String(column.field)] && (
@@ -704,32 +697,6 @@ export function DataGrid<T extends Record<string, any>>({
     []
   );
 
-  // Rows
-  const renderRow = useCallback(
-    (row: T, virtualRow: any) => {
-      return (
-        <div
-          key={virtualRow.index}
-          className={`grid transition-colors duration-200 ${
-            getRowClassName?.(row) || ""
-          }`}
-          style={{
-            gridTemplateColumns: `repeat(${columns.length}, minmax(200px, 1fr))`,
-            position: "absolute",
-            top: `${virtualRow.start}px`,
-            left: 0,
-            width: "100%",
-            height: `${virtualRow.size}px`,
-          }}
-          onClick={(e) => handleRowClick(e, row)}
-        >
-          {columns.map((column) => renderCell({ column, row }))}
-        </div>
-      );
-    },
-    [columns, getRowClassName, handleRowClick, renderCell]
-  );
-
   // Row virtualizer
   const rowVirtualizer = useVirtualizer({
     count: filteredAndSortedData.length,
@@ -744,7 +711,7 @@ export function DataGrid<T extends Record<string, any>>({
         <div className="flex items-center">
           <input
             type="text"
-            placeholder={viewMode === 'books' ? "Find the perfect book..." : "Find the perfect person..."}
+            placeholder={viewMode === 'books' ? "Find the perfect book..." : "Search by person"}
             className="flex-1 h-10 p-2 focus:outline-none bg-background text-text border-b border-border font-base selection:bg-main selection:text-mtext"
             value={searchState.inputValue}
             onChange={(e) => {
