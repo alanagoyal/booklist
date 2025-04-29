@@ -19,6 +19,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { bookCountManager } from "./book-counter";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import debounce from "lodash/debounce";
+import { generateEmbedding } from "@/utils/embeddings";
 
 type SortDirection = "asc" | "desc";
 
@@ -222,11 +223,15 @@ export function DataGrid<T extends Record<string, any>>({
       }
 
       try {
+        // Generate embedding on the client side
+        const embedding = await generateEmbedding(query);
+
         const response = await fetch("/api/search", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             query,
+            embedding,
             viewMode: searchParams.get("view") || "books",
           }),
         });

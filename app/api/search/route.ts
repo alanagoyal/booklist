@@ -1,25 +1,10 @@
 import { createClient } from '@/utils/supabase/server';
 import { NextRequest, NextResponse } from 'next/server';
-import OpenAI from 'openai';
 
-// initialize openai client
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
+// Initialize Supabase client
 const supabase = createClient();
 
-// helper function to embed query
-async function getQueryEmbedding(query: string) {
-  const response = await openai.embeddings.create({
-    model: 'text-embedding-ada-002',
-    input: query,
-  });
-
-  return response.data[0].embedding;
-}
-
-// smart fallback search with adjustable thresholds
+// Smart fallback search with adjustable thresholds
 async function hybridSearchWithFallback(
   query: string, 
   embedding: number[], 
@@ -57,24 +42,21 @@ async function hybridSearchWithFallback(
 export async function POST(req: NextRequest) {
   try {
     console.log('Search API called');
-    const { query, viewMode } = await req.json();
-    console.log('Request params:', { query, viewMode });
+    const { query, embedding, viewMode } = await req.json();
+    console.log('Request params:', { query, viewMode, embeddingReceived: !!embedding });
 
     if (!query || typeof query !== 'string') {
       console.log('Invalid query:', query);
       return NextResponse.json({ error: 'Missing or invalid query' }, { status: 400 });
     }
 
-    // 1. embed the query text
-    console.log('Getting query embedding...');
-    let embedding;
-    try {
-      embedding = await getQueryEmbedding(query);
-      console.log('Got embedding of length:', embedding.length);
-    } catch (err) {
-      console.error('OpenAI embedding error:', err);
-      return NextResponse.json({ error: 'Failed to generate embedding' }, { status: 500 });
+    if (!embedding || !Array.isArray(embedding)) {
+      console.log('Invalid embedding:', embedding);
+      return NextResponse.json({ error: 'Missing or invalid embedding' }, { status: 400 });
     }
+
+    // 1. Use the client-provided embedding directly
+    console.log('Using client-provided embedding of length:', embedding.length);
 
     // 2. call the hybrid search with fallback
     console.log('Starting hybrid search with fallback...');
