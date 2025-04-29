@@ -49,6 +49,12 @@ export function DataGrid<T extends Record<string, any>>({
   const router = useRouter();
   const searchParams = useSearchParams();
 
+  // Animation timing constants (in milliseconds)
+  const TYPING_SPEED = 30;      // Time between typing each character
+  const ERASING_SPEED = 15;     // Time between erasing each character
+  const PAUSE_AFTER_TYPING = 1000;  // How long to show the completed text
+  const PAUSE_BEFORE_NEXT = 250;    // Pause before starting the next placeholder
+
   // State
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [isDropdownClosing, setIsDropdownClosing] = useState(false);
@@ -453,14 +459,14 @@ export function DataGrid<T extends Record<string, any>>({
         // Continue typing the current placeholder
         const typingTimeout = setTimeout(() => {
           setTypedPlaceholder(currentFullPlaceholder.substring(0, typedPlaceholder.length + 1));
-        }, 50); // Adjust typing speed (lower = faster)
+        }, TYPING_SPEED);
         
         return () => clearTimeout(typingTimeout);
       } else {
         // Finished typing, pause before erasing
         const pauseTimeout = setTimeout(() => {
           setIsTyping(false);
-        }, 2000); // Pause for 2 seconds when fully typed
+        }, PAUSE_AFTER_TYPING);
         
         return () => clearTimeout(pauseTimeout);
       }
@@ -470,7 +476,7 @@ export function DataGrid<T extends Record<string, any>>({
         // Continue erasing the current placeholder
         const erasingTimeout = setTimeout(() => {
           setTypedPlaceholder(typedPlaceholder.substring(0, typedPlaceholder.length - 1));
-        }, 30); // Erasing is a bit faster than typing
+        }, ERASING_SPEED);
         
         return () => clearTimeout(erasingTimeout);
       } else {
@@ -478,12 +484,12 @@ export function DataGrid<T extends Record<string, any>>({
         const nextPlaceholderTimeout = setTimeout(() => {
           setPlaceholderIndex((prevIndex) => (prevIndex + 1) % currentPlaceholders.length);
           setIsTyping(true);
-        }, 500); // Short pause before starting the next placeholder
+        }, PAUSE_BEFORE_NEXT);
         
         return () => clearTimeout(nextPlaceholderTimeout);
       }
     }
-  }, [viewMode, searchState.inputValue, placeholderIndex, typedPlaceholder, isTyping, booksPlaceholders, peoplePlaceholders]);
+  }, [viewMode, searchState.inputValue, placeholderIndex, typedPlaceholder, isTyping, booksPlaceholders, peoplePlaceholders, TYPING_SPEED, ERASING_SPEED, PAUSE_AFTER_TYPING, PAUSE_BEFORE_NEXT]);
 
   // Event handlers
   const handleRowClick = useCallback(
