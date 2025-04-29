@@ -98,12 +98,3 @@ export interface FormattedRecommender {
   _book_count: number;
   _percentile: number;
 }
-
-export interface PersonSearchResult {
-  id: string; // uuid is represented as string in TS
-  full_name: string | null;
-  type: string | null;
-  description: string | null;
-  url: string | null;
-  similarity_score: number; // float is represented as number
-}
