@@ -18,6 +18,7 @@ import {
 import { useRouter, useSearchParams } from "next/navigation";
 import { bookCountManager } from "./book-counter";
 import { useVirtualizer } from "@tanstack/react-virtual";
+import debounce from "lodash/debounce";
 
 type SortDirection = "asc" | "desc";
 
@@ -207,21 +208,18 @@ export function DataGrid<T extends Record<string, any>>({
     searchState.isSearching,
   ]);
 
-  // Handle search
-  const handleSearch = useCallback(
-    async (query: string) => {
+  // Create debounced search function
+  const debouncedSearch = useRef(
+    debounce(async (query: string) => {
       if (!query) {
         setSearchState((prev) => ({
           ...prev,
           query: "",
-          inputValue: "",
           results: new Set(),
           isSearching: false,
         }));
         return;
       }
-
-      setSearchState((prev) => ({ ...prev, isSearching: true }));
 
       try {
         const response = await fetch("/api/search", {
@@ -240,7 +238,7 @@ export function DataGrid<T extends Record<string, any>>({
         const results = await response.json();
         setSearchState((prev) => ({
           ...prev,
-          query,
+          query, // Update the actual query that was searched
           results: new Set(results.map((item: any) => item.id)),
           isSearching: false,
         }));
@@ -253,8 +251,23 @@ export function DataGrid<T extends Record<string, any>>({
           results: new Set(),
         }));
       }
+    }, 500) // 500ms debounce delay
+  ).current;
+
+  // Handle search input changes
+  const handleSearch = useCallback(
+    (inputValue: string) => {
+      // Update input value immediately
+      setSearchState((prev) => ({
+        ...prev,
+        inputValue,
+        isSearching: !!inputValue, // Start loading if there's input
+      }));
+
+      // Trigger debounced search
+      debouncedSearch(inputValue);
     },
-    [searchParams]
+    [debouncedSearch]
   );
 
   // Update URL when search state changes
@@ -715,18 +728,16 @@ export function DataGrid<T extends Record<string, any>>({
             className="flex-1 h-10 p-2 focus:outline-none bg-background text-text border-b border-border font-base selection:bg-main selection:text-mtext"
             value={searchState.inputValue}
             onChange={(e) => {
-              setSearchState((prev) => ({
-                ...prev,
-                inputValue: e.target.value,
-              }));
+              handleSearch(e.target.value);
             }}
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();
-                handleSearch(searchState.inputValue);
+                // Force immediate search on Enter
+                debouncedSearch.flush();
               }
             }}
-            disabled={searchState.isSearching}
+            disabled={false} // Never disable input to keep it responsive
             autoComplete="off"
             autoCorrect="off"
             spellCheck="false"
