@@ -14,6 +14,7 @@ import {
   X,
   ArrowUp,
   ArrowDown,
+  Search,
 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { bookCountManager } from "./book-counter";
@@ -55,12 +56,16 @@ export function DataGrid<T extends Record<string, any>>({
   const PAUSE_AFTER_TYPING = 1000;  // How long to show the completed text
   const PAUSE_BEFORE_NEXT = 250;    // Pause before starting the next placeholder
 
+  // Screen size breakpoint for truncating placeholders
+  const MOBILE_BREAKPOINT = 768; // md breakpoint in Tailwind
+
   // State
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [isDropdownClosing, setIsDropdownClosing] = useState(false);
   const [placeholderIndex, setPlaceholderIndex] = useState(0);
   const [typedPlaceholder, setTypedPlaceholder] = useState('');
   const [isTyping, setIsTyping] = useState(true);
+  const [isMobileView, setIsMobileView] = useState(false);
   const [searchState, setSearchState] = useState(() => {
     const view = searchParams?.get("view") || "books";
     const query = searchParams?.get(`${view}_search`) || "";
@@ -228,13 +233,46 @@ export function DataGrid<T extends Record<string, any>>({
   ]
 
   const peoplePlaceholders = [
-    "\"a historical figure who changed the world\"",
-    "\"a contemporary influencer with a unique perspective\"",
+    "\"an impactful musician or entertainer\"",
+    "\"a contemporary influencer with a controversial perspective\"",
     "\"a scientist who pioneered a new field\"",
     "\"a political figure who shaped modern history\"",
-    "\"a philosopher who challenged conventional wisdom\""
+    "\"an entrepreneur who disrupted an industry\""
   ]
   
+  // Shorter placeholders for mobile
+  const booksPlaceholdersMobile = [
+    "\"optimistic sci-fi novel\"",
+    "\"intense historical fiction\"",
+    "\"industrial revolution for dummies\"",
+    "\"gripping crime novel\"",
+    "\"history of the internet\""
+  ]
+
+  const peoplePlaceholdersMobile = [
+    "\"impactful entertainer\"",
+    "\"controversial influencer\"",
+    "\"pioneering scientist\"",
+    "\"political figure\"",
+    "\"disruptive entrepreneur\""
+  ]
+  
+  // Check screen size on mount and resize
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsMobileView(window.innerWidth < MOBILE_BREAKPOINT);
+    };
+    
+    // Initial check
+    checkScreenSize();
+    
+    // Add resize listener
+    window.addEventListener('resize', checkScreenSize);
+    
+    // Cleanup
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, [MOBILE_BREAKPOINT]);
+
   // Create debounced search function
   const debouncedSearch = useRef(
     debounce(async (query: string) => {
@@ -450,7 +488,10 @@ export function DataGrid<T extends Record<string, any>>({
     // Only animate when there's no search query
     if (searchState.inputValue) return;
     
-    const currentPlaceholders = viewMode === 'books' ? booksPlaceholders : peoplePlaceholders;
+    const currentPlaceholders = viewMode === 'books' 
+      ? (isMobileView ? booksPlaceholdersMobile : booksPlaceholders)
+      : (isMobileView ? peoplePlaceholdersMobile : peoplePlaceholders);
+    
     const currentFullPlaceholder = currentPlaceholders[placeholderIndex];
     
     if (isTyping) {
@@ -489,7 +530,7 @@ export function DataGrid<T extends Record<string, any>>({
         return () => clearTimeout(nextPlaceholderTimeout);
       }
     }
-  }, [viewMode, searchState.inputValue, placeholderIndex, typedPlaceholder, isTyping, booksPlaceholders, peoplePlaceholders, TYPING_SPEED, ERASING_SPEED, PAUSE_AFTER_TYPING, PAUSE_BEFORE_NEXT]);
+  }, [viewMode, searchState.inputValue, placeholderIndex, typedPlaceholder, isTyping, booksPlaceholders, peoplePlaceholders, TYPING_SPEED, ERASING_SPEED, PAUSE_AFTER_TYPING, PAUSE_BEFORE_NEXT, isMobileView, booksPlaceholdersMobile, peoplePlaceholdersMobile]);
 
   // Event handlers
   const handleRowClick = useCallback(
@@ -799,6 +840,9 @@ export function DataGrid<T extends Record<string, any>>({
       {/* Search input - fixed at top */}
       <div className="bg-background">
         <div className="flex items-center">
+          <div className="flex items-center h-10 px-2 border-b border-border">
+            <Search className="w-4 h-4 text-text/70" />
+          </div>
           <input
             type="text"
             placeholder={typedPlaceholder}
