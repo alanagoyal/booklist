@@ -52,6 +52,9 @@ export function DataGrid<T extends Record<string, any>>({
   // State
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [isDropdownClosing, setIsDropdownClosing] = useState(false);
+  const [placeholderIndex, setPlaceholderIndex] = useState(0);
+  const [typedPlaceholder, setTypedPlaceholder] = useState('');
+  const [isTyping, setIsTyping] = useState(true);
   const [searchState, setSearchState] = useState(() => {
     const view = searchParams?.get("view") || "books";
     const query = searchParams?.get(`${view}_search`) || "";
@@ -209,6 +212,23 @@ export function DataGrid<T extends Record<string, any>>({
     searchState.isSearching,
   ]);
 
+  // Placeholders
+  const booksPlaceholders = [
+    "\"optimistic science fiction book that's character driven\"",
+    "\"historical fiction with an intense plot\"",
+    "\"something to teach me about the industrial revolution\"",
+    "\"a crime novel about a corrupt politician\"",
+    "\"a book about the history of the internet\""
+  ]
+
+  const peoplePlaceholders = [
+    "\"a historical figure who changed the world\"",
+    "\"a contemporary influencer with a unique perspective\"",
+    "\"a scientist who pioneered a new field\"",
+    "\"a political figure who shaped modern history\"",
+    "\"a philosopher who challenged conventional wisdom\""
+  ]
+  
   // Create debounced search function
   const debouncedSearch = useRef(
     debounce(async (query: string) => {
@@ -418,6 +438,52 @@ export function DataGrid<T extends Record<string, any>>({
       router.replace(newPath, { scroll: false });
     }
   }, [filters, router, searchParams]);
+
+  // Animate placeholder text with typewriter effect
+  useEffect(() => {
+    // Only animate when there's no search query
+    if (searchState.inputValue) return;
+    
+    const currentPlaceholders = viewMode === 'books' ? booksPlaceholders : peoplePlaceholders;
+    const currentFullPlaceholder = currentPlaceholders[placeholderIndex];
+    
+    if (isTyping) {
+      // Typing phase
+      if (typedPlaceholder.length < currentFullPlaceholder.length) {
+        // Continue typing the current placeholder
+        const typingTimeout = setTimeout(() => {
+          setTypedPlaceholder(currentFullPlaceholder.substring(0, typedPlaceholder.length + 1));
+        }, 50); // Adjust typing speed (lower = faster)
+        
+        return () => clearTimeout(typingTimeout);
+      } else {
+        // Finished typing, pause before erasing
+        const pauseTimeout = setTimeout(() => {
+          setIsTyping(false);
+        }, 2000); // Pause for 2 seconds when fully typed
+        
+        return () => clearTimeout(pauseTimeout);
+      }
+    } else {
+      // Erasing phase
+      if (typedPlaceholder.length > 0) {
+        // Continue erasing the current placeholder
+        const erasingTimeout = setTimeout(() => {
+          setTypedPlaceholder(typedPlaceholder.substring(0, typedPlaceholder.length - 1));
+        }, 30); // Erasing is a bit faster than typing
+        
+        return () => clearTimeout(erasingTimeout);
+      } else {
+        // Finished erasing, move to next placeholder
+        const nextPlaceholderTimeout = setTimeout(() => {
+          setPlaceholderIndex((prevIndex) => (prevIndex + 1) % currentPlaceholders.length);
+          setIsTyping(true);
+        }, 500); // Short pause before starting the next placeholder
+        
+        return () => clearTimeout(nextPlaceholderTimeout);
+      }
+    }
+  }, [viewMode, searchState.inputValue, placeholderIndex, typedPlaceholder, isTyping, booksPlaceholders, peoplePlaceholders]);
 
   // Event handlers
   const handleRowClick = useCallback(
@@ -729,7 +795,7 @@ export function DataGrid<T extends Record<string, any>>({
         <div className="flex items-center">
           <input
             type="text"
-            placeholder={viewMode === 'books' ? "Find the perfect book..." : "Search by person"}
+            placeholder={typedPlaceholder}
             className="flex-1 h-10 p-2 focus:outline-none bg-background text-text border-b border-border font-base selection:bg-main selection:text-mtext"
             value={searchState.inputValue}
             onChange={(e) => {
