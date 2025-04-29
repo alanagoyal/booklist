@@ -225,19 +225,19 @@ export function DataGrid<T extends Record<string, any>>({
 
   // Placeholders
   const booksPlaceholders = [
-    "\"optimistic science fiction book that's character driven\"",
-    "\"historical fiction with an intense plot\"",
-    "\"something to teach me about the industrial revolution\"",
-    "\"a crime novel about a corrupt politician\"",
+    "\"a character-driven, optimistic science fiction book\"",
+    "\"a historical fiction with an intense plot\"",
+    "\"a book to teach me about the industrial revolution\"",
+    "\"a crime novel with some political corruption\"",
     "\"a book about the history of the internet\""
   ]
 
   const peoplePlaceholders = [
     "\"an impactful musician or entertainer\"",
-    "\"a contemporary influencer with a controversial perspective\"",
-    "\"a scientist who pioneered a new field\"",
-    "\"a political figure who shaped modern history\"",
-    "\"an entrepreneur who disrupted an industry\""
+    "\"a contemporary influencer with controversial views\"",
+    "\"an scientist or researcher who most don't know about\"",
+    "\"a librarian or school teacher\"",
+    "\"an engineer or technical expert\""
   ]
   
   // Shorter placeholders for mobile
@@ -252,9 +252,9 @@ export function DataGrid<T extends Record<string, any>>({
   const peoplePlaceholdersMobile = [
     "\"impactful entertainer\"",
     "\"controversial influencer\"",
-    "\"pioneering scientist\"",
-    "\"political figure\"",
-    "\"disruptive entrepreneur\""
+    "\"pioneering scientist or researcher\"",
+    "\"librarian or school teacher\"",
+    "\"engineer or technical expert\""
   ]
   
   // Check screen size on mount and resize
@@ -846,7 +846,7 @@ export function DataGrid<T extends Record<string, any>>({
           <input
             type="text"
             placeholder={typedPlaceholder}
-            className="flex-1 h-10 p-2 focus:outline-none bg-background text-text border-b border-border font-base selection:bg-main selection:text-mtext"
+            className="flex-1 h-10 focus:outline-none bg-background text-text border-b border-border font-base selection:bg-main selection:text-mtext"
             value={searchState.inputValue}
             onChange={(e) => {
               handleSearch(e.target.value);
@@ -862,6 +862,7 @@ export function DataGrid<T extends Record<string, any>>({
             autoComplete="off"
             autoCorrect="off"
             spellCheck="false"
+            autoFocus
           />
           {/* Clear button or loading spinner */}
           <div className="flex items-center h-10 px-3 border-b border-border">
