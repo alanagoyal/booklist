@@ -51,10 +51,10 @@ export function DataGrid<T extends Record<string, any>>({
   const searchParams = useSearchParams();
 
   // Animation timing constants (in milliseconds)
-  const TYPING_SPEED = 30;      // Time between typing each character
-  const ERASING_SPEED = 15;     // Time between erasing each character
-  const PAUSE_AFTER_TYPING = 1000;  // How long to show the completed text
-  const PAUSE_BEFORE_NEXT = 250;    // Pause before starting the next placeholder
+  const TYPING_SPEED = 30; // Time between typing each character
+  const ERASING_SPEED = 15; // Time between erasing each character
+  const PAUSE_AFTER_TYPING = 1000; // How long to show the completed text
+  const PAUSE_BEFORE_NEXT = 250; // Pause before starting the next placeholder
 
   // Screen size breakpoint for truncating placeholders
   const MOBILE_BREAKPOINT = 768; // md breakpoint in Tailwind
@@ -63,7 +63,7 @@ export function DataGrid<T extends Record<string, any>>({
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [isDropdownClosing, setIsDropdownClosing] = useState(false);
   const [placeholderIndex, setPlaceholderIndex] = useState(0);
-  const [typedPlaceholder, setTypedPlaceholder] = useState('');
+  const [typedPlaceholder, setTypedPlaceholder] = useState("");
   const [isTyping, setIsTyping] = useState(true);
   const [isMobileView, setIsMobileView] = useState(false);
   const [searchState, setSearchState] = useState(() => {
@@ -225,52 +225,52 @@ export function DataGrid<T extends Record<string, any>>({
 
   // Placeholders
   const booksPlaceholders = [
-    "\"a character-driven, optimistic science fiction book\"",
-    "\"a historical fiction with an intense plot\"",
-    "\"a book to teach me about the industrial revolution\"",
-    "\"a crime novel with some political corruption\"",
-    "\"a book about the history of the internet\""
-  ]
+    'A book that will help me develop better taste',
+    'A dystopian science fiction novel with a little comedy',
+    'A historical fiction novel that takes place during the Industrial Revolution',
+    'A crime novel like "The White Lotus"-level character development',
+    'A biography or memoir of an underrated world leader',
+  ];
 
   const peoplePlaceholders = [
-    "\"an impactful musician or entertainer\"",
-    "\"a contemporary influencer with controversial views\"",
-    "\"an scientist or researcher who most don't know about\"",
-    "\"a librarian or school teacher\"",
-    "\"an engineer or technical expert\""
-  ]
-  
+    'An artist or designer with great taste',
+    'A journalist or influencer with controversial views',
+    'A scientist or researcher who flies under the radar',
+    'A chef or food critic who\'s seen it all',
+    'An entrepreneur or executive who writes code',
+  ];
+
   // Shorter placeholders for mobile
   const booksPlaceholdersMobile = [
-    "\"optimistic sci-fi novel\"",
-    "\"intense historical fiction\"",
-    "\"industrial revolution for dummies\"",
-    "\"gripping crime novel\"",
-    "\"history of the internet\""
-  ]
+    'A book on developing taste',
+    'A dystopian sci-fi novel',
+    'A book on the industrial revolution',
+    'A crime novel like "The White Lotus"',
+    'A biography of a world leader',
+  ];
 
   const peoplePlaceholdersMobile = [
-    "\"impactful entertainer\"",
-    "\"controversial influencer\"",
-    "\"pioneering scientist or researcher\"",
-    "\"librarian or school teacher\"",
-    "\"engineer or technical expert\""
-  ]
-  
+    'An artist or designer with taste',
+    'A controversial journalist',
+    'An underrated scientist',
+    'A renowned chef or food critic',
+    'A technical entrepreneur',
+  ];
+
   // Check screen size on mount and resize
   useEffect(() => {
     const checkScreenSize = () => {
       setIsMobileView(window.innerWidth < MOBILE_BREAKPOINT);
     };
-    
+
     // Initial check
     checkScreenSize();
-    
+
     // Add resize listener
-    window.addEventListener('resize', checkScreenSize);
-    
+    window.addEventListener("resize", checkScreenSize);
+
     // Cleanup
-    return () => window.removeEventListener('resize', checkScreenSize);
+    return () => window.removeEventListener("resize", checkScreenSize);
   }, [MOBILE_BREAKPOINT]);
 
   // Create debounced search function
@@ -487,28 +487,35 @@ export function DataGrid<T extends Record<string, any>>({
   useEffect(() => {
     // Only animate when there's no search query
     if (searchState.inputValue) return;
-    
-    const currentPlaceholders = viewMode === 'books' 
-      ? (isMobileView ? booksPlaceholdersMobile : booksPlaceholders)
-      : (isMobileView ? peoplePlaceholdersMobile : peoplePlaceholders);
-    
+
+    const currentPlaceholders =
+      viewMode === "books"
+        ? isMobileView
+          ? booksPlaceholdersMobile
+          : booksPlaceholders
+        : isMobileView
+          ? peoplePlaceholdersMobile
+          : peoplePlaceholders;
+
     const currentFullPlaceholder = currentPlaceholders[placeholderIndex];
-    
+
     if (isTyping) {
       // Typing phase
       if (typedPlaceholder.length < currentFullPlaceholder.length) {
         // Continue typing the current placeholder
         const typingTimeout = setTimeout(() => {
-          setTypedPlaceholder(currentFullPlaceholder.substring(0, typedPlaceholder.length + 1));
+          setTypedPlaceholder(
+            currentFullPlaceholder.substring(0, typedPlaceholder.length + 1)
+          );
         }, TYPING_SPEED);
-        
+
         return () => clearTimeout(typingTimeout);
       } else {
         // Finished typing, pause before erasing
         const pauseTimeout = setTimeout(() => {
           setIsTyping(false);
         }, PAUSE_AFTER_TYPING);
-        
+
         return () => clearTimeout(pauseTimeout);
       }
     } else {
@@ -516,21 +523,40 @@ export function DataGrid<T extends Record<string, any>>({
       if (typedPlaceholder.length > 0) {
         // Continue erasing the current placeholder
         const erasingTimeout = setTimeout(() => {
-          setTypedPlaceholder(typedPlaceholder.substring(0, typedPlaceholder.length - 1));
+          setTypedPlaceholder(
+            typedPlaceholder.substring(0, typedPlaceholder.length - 1)
+          );
         }, ERASING_SPEED);
-        
+
         return () => clearTimeout(erasingTimeout);
       } else {
         // Finished erasing, move to next placeholder
         const nextPlaceholderTimeout = setTimeout(() => {
-          setPlaceholderIndex((prevIndex) => (prevIndex + 1) % currentPlaceholders.length);
+          setPlaceholderIndex(
+            (prevIndex) => (prevIndex + 1) % currentPlaceholders.length
+          );
           setIsTyping(true);
         }, PAUSE_BEFORE_NEXT);
-        
+
         return () => clearTimeout(nextPlaceholderTimeout);
       }
     }
-  }, [viewMode, searchState.inputValue, placeholderIndex, typedPlaceholder, isTyping, booksPlaceholders, peoplePlaceholders, TYPING_SPEED, ERASING_SPEED, PAUSE_AFTER_TYPING, PAUSE_BEFORE_NEXT, isMobileView, booksPlaceholdersMobile, peoplePlaceholdersMobile]);
+  }, [
+    viewMode,
+    searchState.inputValue,
+    placeholderIndex,
+    typedPlaceholder,
+    isTyping,
+    booksPlaceholders,
+    peoplePlaceholders,
+    TYPING_SPEED,
+    ERASING_SPEED,
+    PAUSE_AFTER_TYPING,
+    PAUSE_BEFORE_NEXT,
+    isMobileView,
+    booksPlaceholdersMobile,
+    peoplePlaceholdersMobile,
+  ]);
 
   // Event handlers
   const handleRowClick = useCallback(
