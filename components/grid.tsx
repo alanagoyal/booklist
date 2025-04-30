@@ -846,7 +846,7 @@ export function DataGrid<T extends Record<string, any>>({
           <input
             type="text"
             placeholder={typedPlaceholder}
-            className="flex-1 h-10 focus:outline-none bg-background text-text border-b border-border font-base selection:bg-main selection:text-mtext"
+            className="flex-1 h-10 focus:outline-none bg-background border-b border-border text-text text-base sm:text-sm placeholder:text-sm selection:bg-main selection:text-mtext focus:outline-none rounded-none"
             value={searchState.inputValue}
             onChange={(e) => {
               handleSearch(e.target.value);
@@ -874,7 +874,7 @@ export function DataGrid<T extends Record<string, any>>({
                 className="text-text/70 transition-colors duration-200 md:hover:text-text"
                 disabled={searchState.isSearching}
               >
-                <X className="w-3 h-3" />
+                <X className="w-4 h-4" />
               </button>
             ) : null}
           </div>
