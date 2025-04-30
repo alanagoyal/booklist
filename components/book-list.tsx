@@ -92,18 +92,17 @@ export function BookList({
     setFilteredCount(count);
   }, []);
 
-  // Tab layout configuration - centralized in one place
+  // Calculate tab positions
   const tabConfig = {
-    height: 100, // Height allocated per tab
-    baseTopOffset: 82, // Starting position from top
-    bottomMargin: 100, // Increased margin to prevent overflow in production
-    width: 150, // Width of tab
-    horizontalOffset: 4, // Horizontal offset between tabs
+    height: 100,
+    baseTopOffset: 82,
+    bottomMargin: 100,
+    width: 150,
+    horizontalOffset: 4,
   };
 
   // Calculate visible tabs and their positions
   const tabPositions = useMemo(() => {
-    // Skip the most recent view (it's displayed as the main content)
     const tabsToPosition = viewHistory.slice(0, -1);
     if (tabsToPosition.length === 0) return [];
 
@@ -114,19 +113,13 @@ export function BookList({
       Math.floor(availableHeight / tabConfig.height)
     );
 
-    // If we have more tabs than can fit, only show the most recent ones
     const startIndex = Math.max(0, tabsToPosition.length - maxVisibleTabs);
 
-    return tabsToPosition.map((view, index) => {
-      // Calculate if this tab should be visible
+    return tabsToPosition.map((view: typeof viewHistory[0], index: number) => {
       const shouldShow = index >= startIndex;
-
-      // Calculate position from the top (relative to visible tabs)
       const positionIndex = index - startIndex;
       const calculatedPosition =
         positionIndex * tabConfig.height + tabConfig.baseTopOffset;
-
-      // Ensure we don't exceed the bottom margin
       const maxPosition = window.innerHeight - tabConfig.bottomMargin;
       const finalPosition = Math.min(calculatedPosition, maxPosition);
 
@@ -135,7 +128,7 @@ export function BookList({
         index,
         shouldShow,
         position: finalPosition,
-        zIndex: 50 + index, // Ensure proper stacking
+        zIndex: 50 + index,
       };
     });
   }, [viewHistory]);
@@ -211,7 +204,7 @@ export function BookList({
         );
       })}
 
-      {/* Render tabs as separate DOM elements outside of the detail components */}
+      {/* Render tabs */}
       {tabPositions.map(({ view, index, shouldShow, position, zIndex }) => {
         if (!shouldShow) return null;
 
@@ -249,18 +242,10 @@ export function BookList({
             }}
             onClick={(e) => {
               e.preventDefault();
-
-              // When clicking a tab, we want to truncate the view history to this point
-              // This means we'll remove all views above the clicked one
-              const newViewHistory = viewHistory.slice(0, index + 1);
-
-              // Update URL to show only the clicked view
               const params = new URLSearchParams(searchParams.toString());
-              params.set("key", view.id); // Use the original ID with timestamp
+              params.set("key", view.id);
               router.push(`?${params.toString()}`, { scroll: false });
-
-              // Update the view history state
-              setViewHistory(newViewHistory);
+              setViewHistory(viewHistory.slice(0, index + 1));
             }}
           >
             {tabTitle}

@@ -14,10 +14,13 @@ import {
   X,
   ArrowUp,
   ArrowDown,
+  Search,
 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { bookCountManager } from "./book-counter";
 import { useVirtualizer } from "@tanstack/react-virtual";
+import debounce from "lodash/debounce";
+import { generateEmbedding } from "@/utils/embeddings";
 
 type SortDirection = "asc" | "desc";
 
@@ -47,18 +50,44 @@ export function DataGrid<T extends Record<string, any>>({
   const router = useRouter();
   const searchParams = useSearchParams();
 
+  // Animation timing constants (in milliseconds)
+  const TYPING_SPEED = 30; // Time between typing each character
+  const ERASING_SPEED = 15; // Time between erasing each character
+  const PAUSE_AFTER_TYPING = 1000; // How long to show the completed text
+  const PAUSE_BEFORE_NEXT = 250; // Pause before starting the next placeholder
+
+  // Screen size breakpoint for truncating placeholders
+  const MOBILE_BREAKPOINT = 768; // md breakpoint in Tailwind
+
   // State
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [isDropdownClosing, setIsDropdownClosing] = useState(false);
+  const [placeholderIndex, setPlaceholderIndex] = useState(0);
+  const [typedPlaceholder, setTypedPlaceholder] = useState("");
+  const [isTyping, setIsTyping] = useState(true);
+  const [isMobileView, setIsMobileView] = useState(false);
+  const [searchState, setSearchState] = useState(() => {
+    const view = searchParams?.get("view") || "books";
+    const query = searchParams?.get(`${view}_search`) || "";
+    const cachedResults = searchParams?.get(`${view}_search_results`);
+    return {
+      query,
+      inputValue: query,
+      results: cachedResults
+        ? new Set(cachedResults.split(","))
+        : new Set<string>(),
+      isSearching: false,
+    };
+  });
 
   // Get current view and sort configs directly from URL
-  const currentView =
+  const viewMode =
     (searchParams.get("view") as "books" | "recommenders") || "books";
-  const directionParam = searchParams?.get(`${currentView}_dir`);
+  const directionParam = searchParams?.get(`${viewMode}_dir`);
   const sortConfig = {
     field:
-      searchParams?.get(`${currentView}_sort`) ||
-      (currentView === "books" ? "recommenders" : "recommendations"),
+      searchParams?.get(`${viewMode}_sort`) ||
+      (viewMode === "books" ? "recommenders" : "recommendations"),
     direction:
       directionParam === "asc" || directionParam === "desc"
         ? directionParam
@@ -74,7 +103,8 @@ export function DataGrid<T extends Record<string, any>>({
         !key.includes("sort") &&
         !key.includes("dir") &&
         key !== "key" &&
-        key !== "view"
+        key !== "view" &&
+        !key.includes("search")
       ) {
         filterParams[key] = value;
       }
@@ -99,62 +129,269 @@ export function DataGrid<T extends Record<string, any>>({
 
   // Memoize filtered data separately from sorting for better performance
   const filteredData = useMemo(() => {
-    if (!Object.values(filters).some(Boolean)) return data;
+    // Start with the base data
+    let filtered = data;
 
-    const lowercaseFilters = Object.fromEntries(
-      Object.entries(filters).map(([key, value]) => [key, value?.toLowerCase()])
-    );
+    // Handle semantic search
+    if (searchState.query) {
+      // Keep showing old results while searching
+      if (searchState.isSearching) {
+        return filtered;
+      }
+      // Return empty array if we have no results and search is complete
+      if (searchState.results.size === 0) {
+        return [];
+      }
+      // Only filter by results if we have them
+      filtered = filtered.filter((item) =>
+        searchState.results.has((item as any).id)
+      );
+    }
 
-    // Get list of valid filter fields from columns
-    const validFilterFields = columns.map((col) => String(col.field));
+    // Then apply column filters
+    if (Object.values(filters).some(Boolean)) {
+      const lowercaseFilters = Object.fromEntries(
+        Object.entries(filters).map(([key, value]) => [
+          key,
+          value?.toLowerCase(),
+        ])
+      );
 
-    return data.filter((item) => {
-      return Object.entries(lowercaseFilters).every(([field, filterValue]) => {
-        if (!filterValue) return true;
+      // Get list of valid filter fields from columns
+      const validFilterFields = columns.map((col) => String(col.field));
 
-        // Skip filters that don't correspond to any column
-        if (!validFilterFields.includes(field)) return true;
+      filtered = filtered.filter((item) => {
+        return Object.entries(lowercaseFilters).every(
+          ([field, filterValue]) => {
+            if (!filterValue) return true;
 
-        // Special handling for description fields
-        if (field === "book_description") {
-          return String(item.description || "")
-            .toLowerCase()
-            .includes(filterValue);
-        }
+            // Skip filters that don't correspond to any column
+            if (!validFilterFields.includes(field)) return true;
 
-        if (field === "recommender_description") {
-          return String(item.description || "")
-            .toLowerCase()
-            .includes(filterValue);
-        }
+            // Special handling for description fields
+            if (field === "book_description") {
+              return String(item.description || "")
+                .toLowerCase()
+                .includes(filterValue);
+            }
 
-        // Filter by recommender full name
-        if (field === "recommenders") {
-          const recommendations = (item as any).recommendations || [];
-          const recommenderNames = recommendations
-            .filter((rec: any) => rec.recommender)
-            .map((rec: any) => rec.recommender.full_name.toLowerCase());
-          return recommenderNames.some((name: string) =>
-            name.includes(filterValue)
-          );
-        }
+            if (field === "recommender_description") {
+              return String(item.description || "")
+                .toLowerCase()
+                .includes(filterValue);
+            }
 
-        // Filter by recommendation title
-        if (field === "recommendations") {
-          const recommendations = (item as any).recommendations || [];
-          const recommendationTitles = recommendations.map((rec: any) =>
-            rec.title.toLowerCase()
-          );
-          return recommendationTitles.some((title: string) =>
-            title.includes(filterValue)
-          );
-        }
+            // Filter by recommender full name
+            if (field === "recommenders") {
+              const recommendations = (item as any).recommendations || [];
+              const recommenderNames = recommendations
+                .filter((rec: any) => rec.recommender)
+                .map((rec: any) => rec.recommender.full_name.toLowerCase());
+              return recommenderNames.some((name: string) =>
+                name.includes(filterValue)
+              );
+            }
 
-        const value = String(item[field as keyof T] || "").toLowerCase();
-        return value.includes(filterValue);
+            // Filter by recommendation title
+            if (field === "recommendations") {
+              const recommendations = (item as any).recommendations || [];
+              const recommendationTitles = recommendations.map((rec: any) =>
+                rec.title.toLowerCase()
+              );
+              return recommendationTitles.some((title: string) =>
+                title.includes(filterValue)
+              );
+            }
+
+            // Default case: simple string includes check
+            const itemValue = String(
+              item[field as keyof T] || ""
+            ).toLowerCase();
+            return itemValue.includes(filterValue);
+          }
+        );
       });
-    });
-  }, [data, filters, columns]);
+    }
+
+    return filtered;
+  }, [
+    data,
+    filters,
+    columns,
+    searchState.query,
+    searchState.results,
+    searchState.isSearching,
+  ]);
+
+  // Placeholders
+  const booksPlaceholders = [
+    'A book that will help me develop better taste',
+    'A dystopian science fiction novel with a little comedy',
+    'A historical fiction novel that takes place during the Industrial Revolution',
+    'A crime novel with "The White Lotus"-level character development',
+    'A biography or memoir of an underrated world leader',
+  ];
+
+  const peoplePlaceholders = [
+    'An artist or designer with great taste',
+    'A journalist or influencer with controversial views',
+    'A scientist or researcher who flies under the radar',
+    'A chef or food critic who\'s seen it all',
+    'An entrepreneur or executive who writes code',
+  ];
+
+  // Shorter placeholders for mobile
+  const booksPlaceholdersMobile = [
+    'A book on developing taste',
+    'A dystopian sci-fi novel',
+    'A book on the industrial revolution',
+    'A crime novel like "The White Lotus"',
+    'A biography of a world leader',
+  ];
+
+  const peoplePlaceholdersMobile = [
+    'An artist or designer with taste',
+    'A controversial journalist',
+    'An underrated scientist',
+    'A renowned chef or food critic',
+    'A technical entrepreneur',
+  ];
+
+  // Check screen size on mount and resize
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsMobileView(window.innerWidth < MOBILE_BREAKPOINT);
+    };
+
+    // Initial check
+    checkScreenSize();
+
+    // Add resize listener
+    window.addEventListener("resize", checkScreenSize);
+
+    // Cleanup
+    return () => window.removeEventListener("resize", checkScreenSize);
+  }, [MOBILE_BREAKPOINT]);
+
+  // Create debounced search function
+  const debouncedSearch = useRef(
+    debounce(async (query: string) => {
+      if (!query) {
+        setSearchState((prev) => ({
+          ...prev,
+          query: "",
+          results: new Set(),
+          isSearching: false,
+        }));
+        return;
+      }
+
+      try {
+        // Generate embedding on the client side
+        const embedding = await generateEmbedding(query);
+
+        const response = await fetch("/api/search", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            query,
+            embedding,
+            viewMode: searchParams.get("view") || "books",
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error(`Search failed: ${response.status}`);
+        }
+
+        const results = await response.json();
+        setSearchState((prev) => ({
+          ...prev,
+          query, // Update the actual query that was searched
+          results: new Set(results.map((item: any) => item.id)),
+          isSearching: false,
+        }));
+      } catch (error) {
+        console.error("Search error:", error);
+        setSearchState((prev) => ({
+          ...prev,
+          isSearching: false,
+          // Keep the query but clear results on error
+          results: new Set(),
+        }));
+      }
+    }, 500) // 500ms debounce delay
+  ).current;
+
+  // Handle search input changes
+  const handleSearch = useCallback(
+    (inputValue: string) => {
+      // Update input value immediately
+      setSearchState((prev) => ({
+        ...prev,
+        inputValue,
+        isSearching: !!inputValue, // Start loading if there's input
+      }));
+
+      // Trigger debounced search
+      debouncedSearch(inputValue);
+    },
+    [debouncedSearch]
+  );
+
+  // Update URL when search state changes
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams.toString());
+    const viewMode = searchParams.get("view") || "books";
+
+    if (searchState.query) {
+      params.set(`${viewMode}_search`, searchState.query);
+      if (searchState.results.size > 0) {
+        params.set(
+          `${viewMode}_search_results`,
+          Array.from(searchState.results).join(",")
+        );
+      }
+    } else {
+      params.delete(`${viewMode}_search`);
+      params.delete(`${viewMode}_search_results`);
+    }
+
+    router.replace(`?${params.toString()}`, { scroll: false });
+  }, [searchState.query, searchState.results, router, searchParams]);
+
+  // Sync with URL changes
+  useEffect(() => {
+    const viewMode = searchParams.get("view") || "books";
+    const urlQuery = searchParams?.get(`${viewMode}_search`) || "";
+    const cachedResults = searchParams?.get(`${viewMode}_search_results`);
+
+    if (urlQuery !== searchState.query) {
+      setSearchState((prev) => ({
+        ...prev,
+        query: urlQuery,
+        inputValue: urlQuery,
+        results: cachedResults
+          ? new Set(cachedResults.split(","))
+          : prev.results,
+      }));
+    }
+  }, [searchParams]);
+
+  // Update filtered count whenever filteredData changes
+  useEffect(() => {
+    if (onFilteredDataChange) {
+      onFilteredDataChange(filteredData.length);
+    }
+  }, [filteredData, onFilteredDataChange]);
+
+  // Notify parent of filtered data changes
+  useEffect(() => {
+    if (onFilteredDataChange) {
+      onFilteredDataChange(filteredData.length);
+      bookCountManager.updateCount();
+    }
+  }, [filteredData.length, onFilteredDataChange]);
 
   // Memoize sorted data separately
   const filteredAndSortedData = useMemo(() => {
@@ -200,14 +437,6 @@ export function DataGrid<T extends Record<string, any>>({
     });
   }, [filteredData, sortConfig]);
 
-  // Notify parent of filtered data changes
-  useEffect(() => {
-    if (onFilteredDataChange) {
-      onFilteredDataChange(filteredAndSortedData.length);
-      bookCountManager.updateCount();
-    }
-  }, [filteredAndSortedData.length, onFilteredDataChange]);
-
   // Update state when URL params change
   useEffect(() => {
     const params = Object.fromEntries(searchParams.entries());
@@ -217,7 +446,8 @@ export function DataGrid<T extends Record<string, any>>({
         !key.includes("sort") &&
         !key.includes("dir") &&
         key !== "key" &&
-        key !== "view"
+        key !== "view" &&
+        !key.includes("search")
       ) {
         filterParams[key] = value;
       }
@@ -249,10 +479,84 @@ export function DataGrid<T extends Record<string, any>>({
 
     // Only update URL if params have changed
     if (newParams.toString() !== currentParams.toString()) {
-      router.push(newPath, { scroll: false });
+      router.replace(newPath, { scroll: false });
     }
   }, [filters, router, searchParams]);
 
+  // Animate placeholder text with typewriter effect
+  useEffect(() => {
+    // Only animate when there's no search query
+    if (searchState.inputValue) return;
+
+    const currentPlaceholders =
+      viewMode === "books"
+        ? isMobileView
+          ? booksPlaceholdersMobile
+          : booksPlaceholders
+        : isMobileView
+          ? peoplePlaceholdersMobile
+          : peoplePlaceholders;
+
+    const currentFullPlaceholder = currentPlaceholders[placeholderIndex];
+
+    if (isTyping) {
+      // Typing phase
+      if (typedPlaceholder.length < currentFullPlaceholder.length) {
+        // Continue typing the current placeholder
+        const typingTimeout = setTimeout(() => {
+          setTypedPlaceholder(
+            currentFullPlaceholder.substring(0, typedPlaceholder.length + 1)
+          );
+        }, TYPING_SPEED);
+
+        return () => clearTimeout(typingTimeout);
+      } else {
+        // Finished typing, pause before erasing
+        const pauseTimeout = setTimeout(() => {
+          setIsTyping(false);
+        }, PAUSE_AFTER_TYPING);
+
+        return () => clearTimeout(pauseTimeout);
+      }
+    } else {
+      // Erasing phase
+      if (typedPlaceholder.length > 0) {
+        // Continue erasing the current placeholder
+        const erasingTimeout = setTimeout(() => {
+          setTypedPlaceholder(
+            typedPlaceholder.substring(0, typedPlaceholder.length - 1)
+          );
+        }, ERASING_SPEED);
+
+        return () => clearTimeout(erasingTimeout);
+      } else {
+        // Finished erasing, move to next placeholder
+        const nextPlaceholderTimeout = setTimeout(() => {
+          setPlaceholderIndex(
+            (prevIndex) => (prevIndex + 1) % currentPlaceholders.length
+          );
+          setIsTyping(true);
+        }, PAUSE_BEFORE_NEXT);
+
+        return () => clearTimeout(nextPlaceholderTimeout);
+      }
+    }
+  }, [
+    viewMode,
+    searchState.inputValue,
+    placeholderIndex,
+    typedPlaceholder,
+    isTyping,
+    booksPlaceholders,
+    peoplePlaceholders,
+    TYPING_SPEED,
+    ERASING_SPEED,
+    PAUSE_AFTER_TYPING,
+    PAUSE_BEFORE_NEXT,
+    isMobileView,
+    booksPlaceholdersMobile,
+    peoplePlaceholdersMobile,
+  ]);
 
   // Event handlers
   const handleRowClick = useCallback(
@@ -309,7 +613,7 @@ export function DataGrid<T extends Record<string, any>>({
         }
       }
 
-      router.push(`/?${params.toString()}`, { scroll: false });
+      router.replace(`?${params.toString()}`, { scroll: false });
       setOpenDropdown(null);
     },
     [router, searchParams]
@@ -455,13 +759,6 @@ export function DataGrid<T extends Record<string, any>>({
                   onChange={(e) =>
                     handleFilterChange(String(column.field), e.target.value)
                   }
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      setOpenDropdown(null);
-                    }
-                  }}
                   onClick={(e) => e.stopPropagation()}
                 />
                 {filters[String(column.field)] && (
@@ -557,32 +854,6 @@ export function DataGrid<T extends Record<string, any>>({
     []
   );
 
-  // Rows
-  const renderRow = useCallback(
-    (row: T, virtualRow: any) => {
-      return (
-        <div
-          key={virtualRow.index}
-          className={`grid transition-colors duration-200 ${
-            getRowClassName?.(row) || ""
-          }`}
-          style={{
-            gridTemplateColumns: `repeat(${columns.length}, minmax(200px, 1fr))`,
-            position: "absolute",
-            top: `${virtualRow.start}px`,
-            left: 0,
-            width: "100%",
-            height: `${virtualRow.size}px`,
-          }}
-          onClick={(e) => handleRowClick(e, row)}
-        >
-          {columns.map((column) => renderCell({ column, row }))}
-        </div>
-      );
-    },
-    [columns, getRowClassName, handleRowClick, renderCell]
-  );
-
   // Row virtualizer
   const rowVirtualizer = useVirtualizer({
     count: filteredAndSortedData.length,
@@ -591,57 +862,105 @@ export function DataGrid<T extends Record<string, any>>({
   });
 
   return (
-    <div
-      ref={parentRef}
-      className="h-full overflow-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent"
-    >
-      <div className="inline-block min-w-full">
-        <div className="sticky top-0 z-10 bg-background">
-          <div
-            className="grid"
-            style={{
-              gridTemplateColumns: `repeat(${columns.length}, minmax(200px, 1fr))`,
+    <div className="h-full flex flex-col">
+      {/* Search input - fixed at top */}
+      <div className="bg-background">
+        <div className="flex items-center">
+          <div className="flex items-center h-10 px-2 border-b border-border">
+            <Search className="w-4 h-4 text-text/70" />
+          </div>
+          <input
+            type="text"
+            placeholder={typedPlaceholder}
+            className="flex-1 h-10 focus:outline-none bg-background border-b border-border text-text text-base sm:text-sm placeholder:text-sm selection:bg-main selection:text-mtext focus:outline-none rounded-none"
+            value={searchState.inputValue}
+            onChange={(e) => {
+              handleSearch(e.target.value);
             }}
-          >
-            {columns.map(renderHeader)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                // Force immediate search on Enter
+                debouncedSearch.flush();
+              }
+            }}
+            disabled={false} // Never disable input to keep it responsive
+            autoComplete="off"
+            autoCorrect="off"
+            spellCheck="false"
+            autoFocus
+          />
+          {/* Clear button or loading spinner */}
+          <div className="flex items-center h-10 px-3 border-b border-border">
+            {searchState.isSearching ? (
+              <div className="w-3 h-3 border-2 border-text/70 rounded-full animate-spin border-t-transparent" />
+            ) : searchState.inputValue ? (
+              <button
+                onClick={() => handleSearch("")}
+                className="text-text/70 transition-colors duration-200 md:hover:text-text"
+                disabled={searchState.isSearching}
+              >
+                <X className="w-4 h-4" />
+              </button>
+            ) : null}
           </div>
         </div>
+      </div>
 
-        {filteredAndSortedData.length === 0 ? (
-          <div className="fixed left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 text-center px-4">
-            <div className="text-text/70">No results match this search</div>
+      {/* Scrollable grid content */}
+      <div
+        ref={parentRef}
+        className="flex-1 overflow-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent"
+      >
+        <div className="inline-block min-w-full">
+          <div className="sticky top-0 z-10 bg-background">
+            {/* Column headers */}
+            <div
+              className="grid"
+              style={{
+                gridTemplateColumns: `repeat(${columns.length}, minmax(200px, 1fr))`,
+              }}
+            >
+              {columns.map(renderHeader)}
+            </div>
           </div>
-        ) : (
-          <div
-            className="relative"
-            style={{
-              height: `${rowVirtualizer.getTotalSize()}px`,
-            }}
-          >
-            {rowVirtualizer.getVirtualItems().map((virtualRow) => {
-              const row = filteredAndSortedData[virtualRow.index];
-              return (
-                <div
-                  key={virtualRow.index}
-                  className={`grid transition-colors duration-200 ${
-                    getRowClassName?.(row) || ""
-                  }`}
-                  style={{
-                    gridTemplateColumns: `repeat(${columns.length}, minmax(200px, 1fr))`,
-                    position: "absolute",
-                    top: `${virtualRow.start}px`,
-                    left: 0,
-                    width: "100%",
-                    height: `${virtualRow.size}px`,
-                  }}
-                  onClick={(e) => handleRowClick(e, row)}
-                >
-                  {columns.map((column) => renderCell({ column, row }))}
-                </div>
-              );
-            })}
-          </div>
-        )}
+
+          {filteredAndSortedData.length === 0 ? (
+            <div className="fixed left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 text-center px-4">
+              <div className="text-text/70">No results match this search</div>
+            </div>
+          ) : (
+            <div
+              className="relative"
+              style={{
+                height: `${rowVirtualizer.getTotalSize()}px`,
+              }}
+            >
+              {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+                const row = filteredAndSortedData[virtualRow.index];
+                return (
+                  <div
+                    key={virtualRow.index}
+                    className={`grid transition-colors duration-200 ${
+                      getRowClassName?.(row) || ""
+                    }`}
+                    style={{
+                      gridTemplateColumns: `repeat(${columns.length}, minmax(200px, 1fr))`,
+                      position: "absolute",
+                      top: `${virtualRow.start}px`,
+                      left: 0,
+                      width: "100%",
+                      height: `${virtualRow.size}px`,
+                    }}
+                    onClick={(e) => handleRowClick(e, row)}
+                  >
+                    {columns.map((column) => renderCell({ column, row }))}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
