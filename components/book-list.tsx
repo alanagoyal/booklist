@@ -25,6 +25,7 @@ export function BookList({
   >([]);
   const containerRef = useRef<HTMLDivElement>(null);
   const [isMobile, setIsMobile] = useState(false);
+  const [hoveredTabId, setHoveredTabId] = useState<string | null>(null);
 
   // Check if mobile on mount and when window resizes
   useEffect(() => {
@@ -92,6 +93,18 @@ export function BookList({
     setFilteredCount(count);
   }, []);
 
+  // Handle tab click
+  const handleTabClick = useCallback(
+    (view: (typeof viewHistory)[0]) => {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set("key", view.id);
+      router.push(`?${params.toString()}`, { scroll: false });
+      setViewHistory(viewHistory.slice(0, viewHistory.indexOf(view) + 1));
+      setHoveredTabId(null);
+    },
+    [router, searchParams, viewHistory]
+  );
+
   // Calculate tab positions
   const tabConfig = {
     height: 100,
@@ -115,22 +128,24 @@ export function BookList({
 
     const startIndex = Math.max(0, tabsToPosition.length - maxVisibleTabs);
 
-    return tabsToPosition.map((view: typeof viewHistory[0], index: number) => {
-      const shouldShow = index >= startIndex;
-      const positionIndex = index - startIndex;
-      const calculatedPosition =
-        positionIndex * tabConfig.height + tabConfig.baseTopOffset;
-      const maxPosition = window.innerHeight - tabConfig.bottomMargin;
-      const finalPosition = Math.min(calculatedPosition, maxPosition);
+    return tabsToPosition.map(
+      (view: (typeof viewHistory)[0], index: number) => {
+        const shouldShow = index >= startIndex;
+        const positionIndex = index - startIndex;
+        const calculatedPosition =
+          positionIndex * tabConfig.height + tabConfig.baseTopOffset;
+        const maxPosition = window.innerHeight - tabConfig.bottomMargin;
+        const finalPosition = Math.min(calculatedPosition, maxPosition);
 
-      return {
-        view,
-        index,
-        shouldShow,
-        position: finalPosition,
-        zIndex: 50 + index,
-      };
-    });
+        return {
+          view,
+          index,
+          shouldShow,
+          position: finalPosition,
+          zIndex: 50 + index,
+        };
+      }
+    );
   }, [viewHistory]);
 
   return (
@@ -176,6 +191,8 @@ export function BookList({
               })
             : null;
 
+        const isHovered = hoveredTabId === view.id && !isLast;
+
         return (
           <div
             key={`${view.id}-${index}`}
@@ -190,14 +207,16 @@ export function BookList({
               <BookDetail
                 book={selectedBook}
                 onClose={isLast ? handleClose : () => {}}
-                stackIndex={index}
+                isHovered={isHovered}
+                isTopIndex={index === viewHistory.length - 1}
               />
             )}
             {selectedRecommender && (
               <RecommenderDetail
                 recommender={selectedRecommender}
                 onClose={isLast ? handleClose : () => {}}
-                stackIndex={index}
+                isHovered={isHovered}
+                isTopIndex={index === viewHistory.length - 1}
               />
             )}
           </div>
@@ -232,7 +251,9 @@ export function BookList({
         return (
           <button
             key={`tab-${view.id}-${index}`}
-            className="hidden md:block fixed bg-background border-border border px-3 py-2 text-text/70 truncate h-[32px] w-[150px] text-sm text-right whitespace-nowrap cursor-pointer transition-colors duration-200"
+            className={`hidden md:block fixed bg-background border-border border border-b-0 px-3 py-2 text-text/70 truncate h-[32px] w-[150px] text-sm text-right whitespace-nowrap cursor-pointer transition-colors duration-200 ${
+              hoveredTabId === view.id ? "bg-accent" : "md:hover:bg-accent"
+            }`}
             style={{
               top: `${position}px`,
               left: `calc(50% + ${index * tabConfig.horizontalOffset}px)`,
@@ -242,11 +263,10 @@ export function BookList({
             }}
             onClick={(e) => {
               e.preventDefault();
-              const params = new URLSearchParams(searchParams.toString());
-              params.set("key", view.id);
-              router.push(`?${params.toString()}`, { scroll: false });
-              setViewHistory(viewHistory.slice(0, index + 1));
+              handleTabClick(view);
             }}
+            onMouseEnter={() => setHoveredTabId(view.id)}
+            onMouseLeave={() => setHoveredTabId(null)}
           >
             {tabTitle}
           </button>
