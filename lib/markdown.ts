@@ -7,11 +7,17 @@ export interface BlogPost {
   content: string;
 }
 
-const BLOG_DIRECTORY = path.join(process.cwd(), 'app/insights/content');
+const CONTENT_DIRECTORIES = {
+  insights: path.join(process.cwd(), 'app/insights/content'),
+  about: path.join(process.cwd(), 'app/about/content')
+};
 
 export async function getBlogPost(slug: string): Promise<BlogPost | null> {
   try {
-    const filePath = path.join(BLOG_DIRECTORY, `${slug}.md`);
+    // Determine which directory to use based on the slug
+    const directory = slug === 'about' ? CONTENT_DIRECTORIES.about : CONTENT_DIRECTORIES.insights;
+    const filePath = path.join(directory, `${slug}.md`);
+    
     const fileContent = fs.readFileSync(filePath, 'utf8');
     
     // Extract title from the first h2 heading
@@ -31,7 +37,7 @@ export async function getBlogPost(slug: string): Promise<BlogPost | null> {
 
 export async function getAllBlogPosts(): Promise<BlogPost[]> {
   try {
-    const files = fs.readdirSync(BLOG_DIRECTORY);
+    const files = fs.readdirSync(CONTENT_DIRECTORIES.insights);
     const markdownFiles = files.filter(file => file.endsWith('.md'));
     
     const posts = await Promise.all(

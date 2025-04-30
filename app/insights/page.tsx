@@ -1,6 +1,6 @@
 import { getAllBlogPosts } from "@/lib/markdown";
 import MarkdownRenderer from "@/components/markdown-renderer";
-import "./insights.css";
+import "@/styles/markdown.css";
 
 export default async function InsightsPage() {
   const posts = await getAllBlogPosts();

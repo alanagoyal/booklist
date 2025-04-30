@@ -5,7 +5,6 @@ import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation"; // Import useRouter hook
 import { ThemeToggle } from "./theme-toggle";
 import { useState, Suspense, useEffect, useRef } from "react";
-import AboutDialog from "./about-dialog";
 import { usePathname } from "next/navigation";
 import { Menu } from "lucide-react";
 
@@ -32,7 +31,6 @@ function HeaderContent() {
     : null;
 
   // State for menu
-  const [isAboutOpen, setIsAboutOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -221,7 +219,6 @@ function HeaderContent() {
           )}
         </div>
       </div>
-      <AboutDialog open={isAboutOpen} onOpenChange={setIsAboutOpen} />
     </div>
   );
 }
