@@ -6,13 +6,15 @@ import { useRouter, useSearchParams } from "next/navigation";
 type BookDetailProps = {
   book: FormattedBook;
   onClose?: () => void;
-  stackIndex?: number;
+  isHovered?: boolean;
+  isTopIndex?: boolean;
 };
 
 export default function BookDetail({
   book,
   onClose,
-  stackIndex = 0,
+  isHovered = false,
+  isTopIndex = false
 }: BookDetailProps) {
   const [showAllRecommenders, setShowAllRecommenders] = useState(false);
   const router = useRouter();
@@ -35,20 +37,15 @@ export default function BookDetail({
 
   return (
     <div
-      className="fixed inset-0 z-20 bg-background/80"
+      className="fixed inset-0 z-20 bg-transparent"
       onClick={handleBackdropClick}
-      style={{
-        backgroundColor:
-          stackIndex === 0 ? "rgba(var(--background), 0.8)" : "transparent",
-      }}
     >
       <div
-        className="absolute right-0 top-0 bottom-0 w-full md:w-1/2 bg-background border-border md:border-l"
-        style={{
-          boxShadow: stackIndex > 0 ? "0 0 20px rgba(0, 0, 0, 0.1)" : "none",
-        }}
+        className={`absolute right-0 top-0 bottom-0 w-full md:w-1/2 bg-background border-border md:border-l ${
+          isHovered ? "bg-accent" : ""
+        }`}
       >
-        <div className="overflow-auto h-full">
+        {isTopIndex && <div className="overflow-auto h-full">
           <div className="sticky top-0 bg-background pt-8 px-12 md:pt-16">
             <button
               onClick={onClose}
@@ -255,7 +252,7 @@ export default function BookDetail({
               )}
             </div>
           </div>
-        </div>
+        </div>}
       </div>
     </div>
   );
