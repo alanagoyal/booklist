@@ -228,7 +228,7 @@ export function DataGrid<T extends Record<string, any>>({
     'A book that will help me develop better taste',
     'A dystopian science fiction novel with a little comedy',
     'A historical fiction novel that takes place during the Industrial Revolution',
-    'A crime novel like "The White Lotus"-level character development',
+    'A crime novel with "The White Lotus"-level character development',
     'A biography or memoir of an underrated world leader',
   ];
 
