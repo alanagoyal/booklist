@@ -128,14 +128,7 @@ export default function BookDetail({
                           <div className="space-y-1 min-w-0 flex-1">
                             <div className="flex items-baseline gap-2">
                               <span className="text-text">
-                                <button
-                                  onClick={() =>
-                                    handleEntityClick(rec.recommender?.id || "")
-                                  }
-                                  className="text-text text-left font-base md:hover:underline transition-colors duration-200"
-                                >
-                                  {rec.recommender?.full_name}
-                                </button>
+                                {rec.recommender?.full_name}
                                 {rec.source && (
                                   <span className="text-text/70">
                                     {" "}
@@ -225,15 +218,7 @@ export default function BookDetail({
                           <div className="space-y-1 min-w-0 flex-1">
                             <div className="flex items-baseline gap-2">
                               <span className="text-text">
-                                <button
-                                  onClick={() => {
-                                    handleEntityClick(book.id);
-                                  }}
-                                  className="text-text text-left font-base md:hover:underline transition-colors duration-200"
-                                >
-                                  {book.title}
-                                </button>{" "}
-                                by {book.author}
+                                {book.title} by {book.author}
                               </span>
                             </div>
                             <div className="text-sm text-text/70 space-y-0.5">
