@@ -251,9 +251,9 @@ export function BookList({
         return (
           <button
             key={`tab-${view.id}-${index}`}
-            className={`hidden md:block fixed bg-background border-border border border-b-0 px-3 py-2 text-text/70 truncate h-[32px] w-[150px] text-sm text-right whitespace-nowrap cursor-pointer transition-colors duration-200 ${
-              hoveredTabId === view.id ? "bg-accent" : "md:hover:bg-accent"
-            }`}
+            className={`hidden md:block fixed ${
+              hoveredTabId === view.id ? "bg-accent" : "bg-background"
+            } border-border border border-b-0 px-3 py-2 text-text/70 truncate h-[32px] w-[150px] text-sm text-right whitespace-nowrap cursor-pointer transition-colors duration-200`}
             style={{
               top: `${position}px`,
               left: `calc(50% + ${index * tabConfig.horizontalOffset}px)`,
