@@ -41,9 +41,9 @@ export default function BookDetail({
       onClick={handleBackdropClick}
     >
       <div
-        className={`absolute right-0 top-0 bottom-0 w-full md:w-1/2 bg-background border-border md:border-l ${
-          isHovered ? "bg-accent" : ""
-        }`}
+        className={`absolute right-0 top-0 bottom-0 w-full md:w-1/2 ${
+          isHovered ? "bg-accent" : "bg-background"
+        } border-border md:border-l transition-all duration-300 ease-in-out`}
       >
         {isTopIndex && <div className="overflow-auto h-full">
           <div className="sticky top-0 bg-background pt-8 px-12 md:pt-16">
@@ -119,7 +119,7 @@ export default function BookDetail({
                       .map((rec) => (
                         <div
                           key={rec.recommender?.id}
-                          className="flex items-start gap-3 bg-accent/50 p-2 cursor-pointer transition-colors duration-200 border-l-2 border-transparent md:hover:bg-accent md:hover:border-border"
+                          className="flex items-start gap-3 bg-accent/50 p-2 cursor-pointer transition-colors duration-200 md:hover:bg-accent"
                           onClick={() =>
                             handleEntityClick(rec.recommender?.id || "")
                           }
@@ -128,14 +128,7 @@ export default function BookDetail({
                           <div className="space-y-1 min-w-0 flex-1">
                             <div className="flex items-baseline gap-2">
                               <span className="text-text">
-                                <button
-                                  onClick={() =>
-                                    handleEntityClick(rec.recommender?.id || "")
-                                  }
-                                  className="text-text text-left font-base md:hover:underline transition-colors duration-200"
-                                >
-                                  {rec.recommender?.full_name}
-                                </button>
+                                {rec.recommender?.full_name}
                                 {rec.source && (
                                   <span className="text-text/70">
                                     {" "}
@@ -216,7 +209,7 @@ export default function BookDetail({
                       .map((book) => (
                         <div
                           key={book.id}
-                          className="flex items-start gap-3 bg-accent/50 p-2 cursor-pointer transition-colors duration-200 border-l-2 border-transparent md:hover:bg-accent md:hover:border-border"
+                          className="flex items-start gap-3 bg-accent/50 p-2 cursor-pointer transition-colors duration-200 md:hover:bg-accent"
                           onClick={() => {
                             handleEntityClick(book.id);
                           }}
@@ -225,15 +218,7 @@ export default function BookDetail({
                           <div className="space-y-1 min-w-0 flex-1">
                             <div className="flex items-baseline gap-2">
                               <span className="text-text">
-                                <button
-                                  onClick={() => {
-                                    handleEntityClick(book.id);
-                                  }}
-                                  className="text-text text-left font-base md:hover:underline transition-colors duration-200"
-                                >
-                                  {book.title}
-                                </button>{" "}
-                                by {book.author}
+                                {book.title} by {book.author}
                               </span>
                             </div>
                             <div className="text-sm text-text/70 space-y-0.5">
