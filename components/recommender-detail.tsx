@@ -113,7 +113,7 @@ export default function RecommenderDetail({
                     .map((book) => (
                       <div
                         key={book.id}
-                        className="flex items-start gap-3 bg-accent/50 p-2 cursor-pointer transition-colors duration-200 border-l-2 border-transparent md:hover:bg-accent md:hover:border-border"
+                        className="flex items-start gap-3 bg-accent/50 p-2 cursor-pointer transition-colors duration-200 md:hover:bg-accent"
                         onClick={() => {
                           handleEntityClick(book.id);
                         }}
@@ -205,7 +205,7 @@ export default function RecommenderDetail({
                       .map((person) => (
                         <div
                           key={person.id}
-                          className="flex items-start gap-3 bg-accent/50 p-2 cursor-pointer transition-colors duration-200 border-l-2 border-transparent md:hover:bg-accent md:hover:border-border"
+                          className="flex items-start gap-3 bg-accent/50 p-2 cursor-pointer transition-colors duration-200 md:hover:bg-accent"
                           onClick={() => {
                             handleEntityClick(person.id);
                           }}
