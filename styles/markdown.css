@@ -1,4 +1,4 @@
-/* Insights page markdown styling */
+/* Shared markdown styling */
 
 .markdown-content {
   color: var(--text);
@@ -40,13 +40,6 @@
   border-bottom: 1px solid var(--border);
 }
 
-/* Apply dark mode styles */
-@media (prefers-color-scheme: dark) {
-  .markdown-content th {
-    background-color: var(--background);
-  }
-}
-
 .markdown-content aside {
   background-color: var(--background);
   padding: 1rem;
@@ -54,12 +47,6 @@
   font-style: italic;
   color: rgba(var(--text-rgb), 0.7);
   border: 1px solid var(--border);
-}
-
-@media (prefers-color-scheme: dark) {
-  .markdown-content aside {
-    background-color: var(--background);
-  }
 }
 
 .markdown-content hr {
