@@ -26,6 +26,7 @@ export function BookList({
   const containerRef = useRef<HTMLDivElement>(null);
   const [isMobile, setIsMobile] = useState(false);
   const [hoveredTabId, setHoveredTabId] = useState<string | null>(null);
+  const [isNavigating, setIsNavigating] = useState(false);
 
   // Check if mobile on mount and when window resizes
   useEffect(() => {
@@ -96,11 +97,20 @@ export function BookList({
   // Handle tab click
   const handleTabClick = useCallback(
     (view: (typeof viewHistory)[0]) => {
+      // Set navigating state to prevent transitions
+      setIsNavigating(true);
+      setHoveredTabId(null);
+      
+      // Update URL and history
       const params = new URLSearchParams(searchParams.toString());
       params.set("key", view.id);
       router.push(`?${params.toString()}`, { scroll: false });
       setViewHistory(viewHistory.slice(0, viewHistory.indexOf(view) + 1));
-      setHoveredTabId(null);
+      
+      // Reset navigating state after a short delay
+      setTimeout(() => {
+        setIsNavigating(false);
+      }, 50);
     },
     [router, searchParams, viewHistory]
   );
@@ -209,6 +219,7 @@ export function BookList({
                 onClose={isLast ? handleClose : () => {}}
                 isHovered={isHovered}
                 isTopIndex={index === viewHistory.length - 1}
+                isNavigating={isNavigating}
               />
             )}
             {selectedRecommender && (
@@ -217,6 +228,7 @@ export function BookList({
                 onClose={isLast ? handleClose : () => {}}
                 isHovered={isHovered}
                 isTopIndex={index === viewHistory.length - 1}
+                isNavigating={isNavigating}
               />
             )}
           </div>
@@ -253,7 +265,9 @@ export function BookList({
             key={`tab-${view.id}-${index}`}
             className={`hidden md:block fixed ${
               hoveredTabId === view.id ? "bg-accent" : "bg-background"
-            } border-border border border-b-0 px-3 py-2 text-text/70 truncate h-[32px] w-[150px] text-sm text-right whitespace-nowrap cursor-pointer transition-all duration-300 ease-in-out`}
+            } border-border border border-b-0 px-3 py-2 text-text/70 truncate h-[32px] w-[150px] text-sm text-right whitespace-nowrap cursor-pointer ${
+              isNavigating ? "" : "transition-colors duration-300 ease-in-out"
+            }`}
             style={{
               top: `${position}px`,
               left: `calc(50% + ${index * tabConfig.horizontalOffset}px)`,
