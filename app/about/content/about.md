@@ -1,10 +1,10 @@
 ## About
 
-Booklist is a curated collection of **the most frequently recommended books on the internet**, meticulously compiled from trusted sources across a diverse range of fields. We believe that great books have the power to influence, inspire, and shape ideas, yet it's easy to get trapped in the echo chamber of our own fields. Our goal is to connect readers with recommendations from some of the world's most insightful and influential thinkers across a wide range of disciplines. Whether you're exploring economics with prominent entrepreneurs, philosophy with leading academics, or creative insights from celebrated artists, Booklist brings together a rich tapestry of perspectives to help you discover your next impactful read.
+Booklist is a curated collection of **the most frequently recommended books on the internet**, meticulously compiled from trusted sources across a diverse range of fields. We believe that great books have the power to influence, inspire, and shape ideas, but it's easy to get trapped in the echo chamber of our own fields. Our goal is to connect readers with recommendations from some of the world's most insightful and influential thinkers across a wide range of disciplines. Whether you're exploring economics with prominent entrepreneurs, philosophy with leading academics, or creative insights from celebrated artists, Booklist brings together a rich tapestry of perspectives to help you discover your next impactful read.
 
 ### Our Sources
 
-The internet has no shortage of book recommendations, but many are scattered across countless websites, personal blogs, social media, and academic sources. To create the ultimate reading resource, we've systematically scoured and aggregated recommendations from some of the web's most authoritative and popular platforms, including:
+The internet has no shortage of book recommendations, yet scattered across countless websites, personal blogs, social media, and academic sources, they can be hard to find. To create the ultimate reading resource, we've systematically scoured and aggregated recommendations from some of the web's most authoritative and popular platforms, including:
 
 - [Blinkist](https://www.blinkist.com/)
 - [BookAuthority](https://bookauthority.org/)
