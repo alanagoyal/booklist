@@ -8,6 +8,7 @@ type RecommenderDetailProps = {
   onClose?: () => void;
   isHovered?: boolean;
   isTopIndex?: boolean;
+  isNavigating?: boolean;
 };
 
 export default function RecommenderDetail({
@@ -15,6 +16,7 @@ export default function RecommenderDetail({
   onClose,
   isHovered = false,
   isTopIndex = false,
+  isNavigating = false,
 }: RecommenderDetailProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -40,7 +42,9 @@ export default function RecommenderDetail({
       <div
         className={`absolute right-0 top-0 bottom-0 w-full md:w-1/2 ${
           isHovered ? "bg-accent" : "bg-background"
-        } border-border md:border-l transition-all duration-300 ease-in-out`}
+        } border-border md:border-l ${
+          isNavigating ? "" : "transition-colors duration-300 ease-in-out"
+        }`}
       >
         {isTopIndex && <div className="overflow-auto h-full">
           <div className="sticky top-0 bg-background pt-8 px-12 md:pt-16">
