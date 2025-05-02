@@ -275,12 +275,24 @@ export function DataGrid<T extends Record<string, any>>({
 
   // Create debounced search function
   const debouncedSearch = useRef(
-    debounce(async (query: string) => {
+    debounce(async (query: string, forceSearch = false) => {
+      // For empty queries, clear everything
       if (!query) {
         setSearchState((prev) => ({
           ...prev,
           query: "",
           results: new Set(),
+          isSearching: false,
+        }));
+        return;
+      }
+
+      // For short queries (1-3 chars), only search if explicitly forced (Enter key)
+      // This prevents URL updates that cause refreshing
+      if (query.length <= 3 && !forceSearch) {
+        setSearchState((prev) => ({
+          ...prev,
+          // Don't update query for short inputs unless forced
           isSearching: false,
         }));
         return;
@@ -307,7 +319,7 @@ export function DataGrid<T extends Record<string, any>>({
         const results = await response.json();
         setSearchState((prev) => ({
           ...prev,
-          query, // Update the actual query that was searched
+          query, // Only update the query for valid searches or forced searches
           results: new Set(results.map((item: any) => item.id)),
           isSearching: false,
         }));
@@ -316,25 +328,35 @@ export function DataGrid<T extends Record<string, any>>({
         setSearchState((prev) => ({
           ...prev,
           isSearching: false,
-          // Keep the query but clear results on error
+          // Don't update query on error
           results: new Set(),
         }));
       }
     }, 500) // 500ms debounce delay
   ).current;
 
+  // Clean up debounce on unmount
+  useEffect(() => {
+    return () => {
+      debouncedSearch.cancel();
+    };
+  }, [debouncedSearch]);
+
   // Handle search input changes
   const handleSearch = useCallback(
-    (inputValue: string) => {
+    (inputValue: string, forceSearch = false) => {
+      // For short queries, don't show loading unless forced
+      const shouldShowLoading = inputValue.length > 3 || (inputValue.length > 0 && forceSearch);
+      
       // Update input value immediately
       setSearchState((prev) => ({
         ...prev,
         inputValue,
-        isSearching: !!inputValue, // Start loading if there's input
+        isSearching: shouldShowLoading, // Only show loading for queries that will actually search
       }));
 
-      // Trigger debounced search
-      debouncedSearch(inputValue);
+      // Trigger debounced search with force flag
+      debouncedSearch(inputValue, forceSearch);
     },
     [debouncedSearch]
   );
@@ -875,13 +897,13 @@ export function DataGrid<T extends Record<string, any>>({
             className="flex-1 h-10 focus:outline-none bg-background border-b border-border text-text text-base sm:text-sm placeholder:text-sm selection:bg-main selection:text-mtext focus:outline-none rounded-none"
             value={searchState.inputValue}
             onChange={(e) => {
-              handleSearch(e.target.value);
+              handleSearch(e.target.value, false);
             }}
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();
-                // Force immediate search on Enter
-                debouncedSearch.flush();
+                // Force immediate search on Enter, even for short queries
+                handleSearch(searchState.inputValue, true);
               }
             }}
             disabled={false} // Never disable input to keep it responsive
