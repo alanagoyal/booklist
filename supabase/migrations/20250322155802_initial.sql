@@ -508,6 +508,117 @@ as $$
   limit 3
 $$;
 
+-- Books search function
+create or replace function hybrid_search_books(
+  query_input text,
+  embedding_input vector,
+  min_similarity float default 0.75
+)
+returns table (
+  id uuid,
+  title text,
+  author text,
+  description text,
+  genre text[],
+  similarity_score float
+)
+language sql
+as $$
+with input as (
+  select
+    query_input as query,
+    embedding_input as embedding
+),
+semantic_matches as (
+  select
+    b.id,
+    b.title,
+    b.author,
+    b.description,
+    b.genre,
+    1 - (b.description_embedding <=> i.embedding) as similarity_score
+  from books b, input i
+),
+exact_matches as (
+  select
+    b.id,
+    b.title,
+    b.author,
+    b.description,
+    b.genre,
+    1.1 as similarity_score
+  from books b, input i
+  where
+    b.title ilike '%' || i.query || '%'
+    or b.author ilike '%' || i.query || '%'
+    or b.description ilike '%' || i.query || '%'
+    or i.query ilike any(b.genre) -- <== correct array match
+)
+select *
+from (
+  select * from semantic_matches
+  union
+  select * from exact_matches
+) combined
+where similarity_score >= min_similarity
+order by similarity_score desc;
+$$;
+
+-- People search function
+create or replace function hybrid_search_people(
+  query_input text,
+  embedding_input vector,
+  min_similarity float default 0.75
+)
+returns table (
+  id uuid,
+  full_name text,
+  type text,
+  description text,
+  url text,
+  similarity_score float
+)
+language sql
+as $$
+with input as (
+  select
+    query_input as query,
+    embedding_input as embedding
+),
+semantic_matches as (
+  select
+    p.id,
+    p.full_name,
+    p.type,
+    p.description,
+    p.url,
+    1 - (p.description_embedding <=> i.embedding) as similarity_score
+  from people p, input i
+),
+exact_matches as (
+  select
+    p.id,
+    p.full_name,
+    p.type,
+    p.description,
+    p.url,
+    1.1 as similarity_score
+  from people p, input i
+  where
+    p.full_name ilike '%' || i.query || '%'
+    or p.description ilike '%' || i.query || '%'
+    or p.type ilike '%' || i.query || '%' -- <== added type field match
+)
+select *
+from (
+  select * from semantic_matches
+  union
+  select * from exact_matches
+) combined
+where similarity_score >= min_similarity
+order by similarity_score desc;
+$$;
+
 grant delete on table "public"."books" to "anon";
 
 grant insert on table "public"."books" to "anon";
