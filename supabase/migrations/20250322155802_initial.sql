@@ -177,7 +177,7 @@ BEGIN
       books.similar_books,
       COUNT(DISTINCT r.person_id)::int as recommendation_count
     FROM books
-    LEFT JOIN recommendations r ON books.id = r.book_id
+    INNER JOIN recommendations r ON books.id = r.book_id
     GROUP BY books.id, books.title, books.author, books.description, books.genre, books.amazon_url, books.similar_books
   )
   SELECT 
@@ -382,7 +382,10 @@ begin
 
   -- Get all recommender IDs first
   select array_agg(p.id) into recommender_ids
-  from people p;
+  from people p
+  where exists (
+    select 1 from recommendations r where r.person_id = p.id
+  );
 
   return query
     with recommender_base as (
@@ -409,8 +412,8 @@ begin
         count(b.id)::bigint as book_count,
         round((count(b.id)::numeric / max_books::numeric * 100)::numeric, 2) as percentile
       from people p
-      left join recommendations r on r.person_id = p.id
-      left join books b on b.id = r.book_id
+      inner join recommendations r on r.person_id = p.id
+      inner join books b on b.id = r.book_id
       group by p.id, p.full_name, p.type, p.url, p.description, p.similar_people
     ),
     related as (
