@@ -139,7 +139,7 @@ export default function BookGrid({ data, onFilteredDataChange }: BookGridProps) 
       data={data}
       columns={columns}
       getRowClassName={(row: FormattedBook) =>
-        `cursor-pointer transition-colors duration-200 ${row._background_color}`
+        `cursor-pointer ${row._background_color}`
       }
       onRowClick={handleRowClick}
       onFilteredDataChange={onFilteredDataChange}

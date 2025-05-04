@@ -126,7 +126,7 @@ export default function RecommenderGrid({
       data={data}
       columns={columns}
       getRowClassName={(row: FormattedRecommender) =>
-        `cursor-pointer transition-colors duration-200 ${row._background_color || ""}`
+        `cursor-pointer ${row._background_color || ""}`
       }
       onRowClick={handleRowClick}
       onFilteredDataChange={onFilteredDataChange}
