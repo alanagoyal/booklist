@@ -410,6 +410,17 @@ export function DataGrid<T extends Record<string, any>>({
     if (parentRef.current) {
       // This will force a browser style recalculation
       void parentRef.current.offsetHeight;
+      
+      // Apply immediate style updates to all visible rows
+      requestAnimationFrame(() => {
+        const rows = parentRef.current?.querySelectorAll('.grid');
+        if (rows) {
+          rows.forEach(row => {
+            // Force recalculation on each row
+            void (row as HTMLElement).offsetHeight;
+          });
+        }
+      });
     }
   }, [filteredData, onFilteredDataChange]);
 
