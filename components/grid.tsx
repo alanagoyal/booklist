@@ -960,10 +960,18 @@ export function DataGrid<T extends Record<string, any>>({
             >
               {rowVirtualizer.getVirtualItems().map((virtualRow) => {
                 const row = filteredAndSortedData[virtualRow.index];
+
+                // Use a stable key based on the row's unique identifier to
+                // ensure React remounts DOM nodes when the underlying data
+                // changes (e.g. after filtering). This prevents stale styles
+                // from lingering when different data occupies the same
+                // virtual index.
+                const rowKey = (row as any).id ?? `row-${virtualRow.index}`;
+
                 return (
                   <div
-                    key={virtualRow.index}
-                    className={`grid transition-none ${
+                    key={rowKey}
+                    className={`grid transition-colors duration-200 ${
                       getRowClassName?.(row) || ""
                     }`}
                     style={{
