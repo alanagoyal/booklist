@@ -72,7 +72,7 @@ export interface EssentialBook {
   amazon_url: string;
   recommendations: RecommenderRecommendation[];
   _recommendation_count: number;
-  _percentile: number;
+  _bucket: number;
   _background_color?: string;
 }
 
@@ -97,6 +97,6 @@ export interface FormattedRecommender {
   related_recommenders: RelatedRecommender[];
   similar_recommenders: SimilarRecommender[];
   _book_count: number;
-  _percentile: number;
+  _bucket: number;
   _background_color?: string;
 }

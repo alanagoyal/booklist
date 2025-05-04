@@ -17,31 +17,41 @@ import {
 // Load environment variables from .env.local
 config({ path: join(process.cwd(), ".env.local") });
 
-// Calculate background color based on count
-// This function is identical to the one in the grid components
-function getBackgroundColor(count: number): string {
-  if (!count) return "";
+// Calculate bucket (0-5) using log scale with equal-width buckets
+function calculateBucket(count: number, allCounts: number[], bucketCount = 6): number {
+  if (!count || !allCounts.length) return 0;
+  
+  // Apply log transformation to handle the long tail
+  const logCounts = allCounts.map(c => Math.log10(c + 1)); // +1 so log(0) is safe
+  const logValue = Math.log10(count + 1);
+  
+  // Find min and max of log values
+  const minLog = Math.min(...logCounts);
+  const maxLog = Math.max(...logCounts);
+  
+  // Normalize to 0-1 range and assign to bucket
+  const normalizedValue = (logValue - minLog) / (maxLog - minLog);
+  
+  // Return bucket index (0 to bucketCount-1)
+  return Math.min(bucketCount - 1, Math.floor(normalizedValue * bucketCount));
+}
 
-  let intensity = 0;
-  if (count >= 1) intensity = 1;
-  if (count >= 2) intensity = 2;
-  if (count >= 3) intensity = 3;
-  if (count >= 5) intensity = 4;
-  if (count >= 8) intensity = 5;
-  if (count >= 13) intensity = 6;
+// Calculate background color based on bucket (0-5)
+function getBackgroundColor(bucket: number): string {
+  if (bucket === undefined || bucket === null) return "";
 
-  switch (intensity) {
-    case 1:
+  switch (bucket) {
+    case 0:
       return "bg-[hsl(151,80%,95%)] hover:bg-[hsl(151,80%,92%)] dark:bg-[hsl(160,84%,5%)] dark:hover:bg-[hsl(160,84%,7%)] transition-colors duration-200";
-    case 2:
+    case 1:
       return "bg-[hsl(151,80%,90%)] hover:bg-[hsl(151,80%,88%)] dark:bg-[hsl(160,84%,9%)] dark:hover:bg-[hsl(160,84%,11%)] transition-colors duration-200";
-    case 3:
+    case 2:
       return "bg-[hsl(151,80%,85%)] hover:bg-[hsl(151,80%,84%)] dark:bg-[hsl(160,84%,13%)] dark:hover:bg-[hsl(160,84%,15%)] transition-colors duration-200";
-    case 4:
+    case 3:
       return "bg-[hsl(151,80%,80%)] hover:bg-[hsl(151,80%,80%)] dark:bg-[hsl(160,84%,17%)] dark:hover:bg-[hsl(160,84%,19%)] transition-colors duration-200";
-    case 5:
+    case 4:
       return "bg-[hsl(151,80%,75%)] hover:bg-[hsl(151,80%,76%)] dark:bg-[hsl(160,84%,21%)] dark:hover:bg-[hsl(160,84%,23%)] transition-colors duration-200";
-    case 6:
+    case 5:
       return "bg-[hsl(151,80%,70%)] hover:bg-[hsl(151,80%,72%)] dark:bg-[hsl(160,84%,25%)] dark:hover:bg-[hsl(160,84%,27%)] transition-colors duration-200";
     default:
       return "";
@@ -80,6 +90,15 @@ async function dumpData() {
 
     // Only fetch recommendations and related books if we have books
     if (allBooks.length > 0) {
+      // Get all recommendation counts for bucket calculation
+      const allRecommendationCounts = allBooks.map(book => book._recommendation_count);
+      
+      // Add bucket to each book
+      allBooks = allBooks.map(book => ({
+        ...book,
+        _bucket: calculateBucket(book._recommendation_count, allRecommendationCounts)
+      }));
+      
       // Get recommendations for all books
       const { data: recommendationsData, error: recommendationsError } = await supabase.rpc(
         "get_book_recommendations",
@@ -130,8 +149,8 @@ async function dumpData() {
           source_link: rec.source_link,
         })),
         _recommendation_count: book._recommendation_count,
-        _percentile: book._percentile,
-        _background_color: getBackgroundColor(book._recommendation_count),
+        _bucket: book._bucket,
+        _background_color: getBackgroundColor(book._bucket),
         related_books: (relatedBooksData?.[book.id] || []).map((rb: {
           id: string;
           title: string;
@@ -178,7 +197,7 @@ async function dumpData() {
         amazon_url: book.amazon_url,
         recommendations: book.recommendations,
         _recommendation_count: book._recommendation_count,
-        _percentile: book._percentile,
+        _bucket: book._bucket,
         _background_color: book._background_color
       }));
 
@@ -224,8 +243,17 @@ async function dumpData() {
     if (recommendersError) {
       console.error("Error fetching recommenders:", recommendersError);
     } else if (recommenders) {
+      // Get all book counts for bucket calculation
+      const allBookCounts = recommenders.map((recommender: any) => recommender._book_count);
+      
+      // Add bucket to each recommender
+      const recommendersWithBuckets = recommenders.map((recommender: any) => ({
+        ...recommender,
+        _bucket: calculateBucket(recommender._book_count, allBookCounts)
+      }));
+      
       // Format the recommenders data
-      const formattedRecommenders: FormattedRecommender[] = recommenders.map((recommender: {
+      const formattedRecommenders: FormattedRecommender[] = recommendersWithBuckets.map((recommender: {
         id: string;
         full_name: string;
         type: string | null;
@@ -235,7 +263,7 @@ async function dumpData() {
         related_recommenders: RelatedRecommender[];
         similar_people: SimilarRecommender[];
         _book_count: number;
-        _percentile: number;
+        _bucket: number;
       }) => ({
         id: recommender.id,
         full_name: recommender.full_name,
@@ -246,8 +274,8 @@ async function dumpData() {
         related_recommenders: recommender.related_recommenders || [],
         similar_recommenders: recommender.similar_people || [],
         _book_count: recommender._book_count,
-        _percentile: recommender._percentile,
-        _background_color: getBackgroundColor(recommender._book_count)
+        _bucket: recommender._bucket,
+        _background_color: getBackgroundColor(recommender._bucket)
       }));
 
       // Ensure the data directory exists (for recommenders.json)
