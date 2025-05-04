@@ -158,8 +158,7 @@ RETURNS TABLE (
   genre text[],
   amazon_url text,
   similar_books jsonb,
-  _recommendation_count int,
-  _percentile float
+  _recommendation_count int
 )
 LANGUAGE plpgsql
 VOLATILE
@@ -188,8 +187,7 @@ BEGIN
     bc.genre,
     bc.amazon_url,
     bc.similar_books,
-    bc.recommendation_count,
-    NTILE(100) OVER (ORDER BY bc.recommendation_count)::float as percentile
+    bc.recommendation_count
   FROM book_counts bc
   ORDER BY bc.recommendation_count DESC
   LIMIT p_limit
@@ -361,25 +359,14 @@ returns table (
   recommendations jsonb,
   related_recommenders jsonb,
   similar_people jsonb,
-  _book_count bigint,
-  _percentile numeric
+  _book_count bigint
 )
 language plpgsql
 security definer
 as $$
 declare
-  max_books bigint;
   recommender_ids uuid[];
 begin
-  -- Get max book count for percentile calculation
-  select max(book_count) into max_books
-  from (
-    select count(*) as book_count
-    from recommendations r
-    join people p on p.id = r.person_id
-    group by p.id
-  ) counts;
-
   -- Get all recommender IDs first
   select array_agg(p.id) into recommender_ids
   from people p
@@ -409,8 +396,7 @@ begin
           )
           order by b.title
         ) filter (where b.id is not null) as recommendations,
-        count(b.id)::bigint as book_count,
-        round((count(b.id)::numeric / max_books::numeric * 100)::numeric, 2) as percentile
+        count(b.id)::bigint as book_count
       from people p
       inner join recommendations r on r.person_id = p.id
       inner join books b on b.id = r.book_id
@@ -428,8 +414,7 @@ begin
       rb.recommendations,
       coalesce(r.related_recommenders, '[]'::jsonb) as related_recommenders,
       rb.similar_people,
-      rb.book_count as _book_count,
-      rb.percentile as _percentile
+      rb.book_count as _book_count
     from recommender_base rb
     left join related r on r.recommender_id = rb.id
     order by rb.full_name;
