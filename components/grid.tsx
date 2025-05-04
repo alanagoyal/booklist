@@ -405,23 +405,6 @@ export function DataGrid<T extends Record<string, any>>({
     if (onFilteredDataChange) {
       onFilteredDataChange(filteredData.length);
     }
-    
-    // Force immediate style recalculation after filtering
-    if (parentRef.current) {
-      // This will force a browser style recalculation
-      void parentRef.current.offsetHeight;
-      
-      // Apply immediate style updates to all visible rows
-      requestAnimationFrame(() => {
-        const rows = parentRef.current?.querySelectorAll('.grid');
-        if (rows) {
-          rows.forEach(row => {
-            // Force recalculation on each row
-            void (row as HTMLElement).offsetHeight;
-          });
-        }
-      });
-    }
   }, [filteredData, onFilteredDataChange]);
 
   // Notify parent of filtered data changes
@@ -980,7 +963,7 @@ export function DataGrid<T extends Record<string, any>>({
                 return (
                   <div
                     key={virtualRow.index}
-                    className={`grid transition-colors duration-200 ${
+                    className={`grid transition-none ${
                       getRowClassName?.(row) || ""
                     }`}
                     style={{
