@@ -7,6 +7,33 @@ const config = {
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   darkMode: ["class"],
+  safelist: [
+    // Safelist for background colors with arbitrary HSL values
+    'bg-[hsl(151,80%,95%)]',
+    'bg-[hsl(151,80%,90%)]',
+    'bg-[hsl(151,80%,85%)]',
+    'bg-[hsl(151,80%,80%)]',
+    'bg-[hsl(151,80%,75%)]',
+    'bg-[hsl(151,80%,70%)]',
+    'hover:bg-[hsl(151,80%,92%)]',
+    'hover:bg-[hsl(151,80%,88%)]',
+    'hover:bg-[hsl(151,80%,84%)]',
+    'hover:bg-[hsl(151,80%,80%)]',
+    'hover:bg-[hsl(151,80%,76%)]',
+    'hover:bg-[hsl(151,80%,72%)]',
+    'dark:bg-[hsl(160,84%,5%)]',
+    'dark:bg-[hsl(160,84%,9%)]',
+    'dark:bg-[hsl(160,84%,13%)]',
+    'dark:bg-[hsl(160,84%,17%)]',
+    'dark:bg-[hsl(160,84%,21%)]',
+    'dark:bg-[hsl(160,84%,25%)]',
+    'dark:hover:bg-[hsl(160,84%,7%)]',
+    'dark:hover:bg-[hsl(160,84%,11%)]',
+    'dark:hover:bg-[hsl(160,84%,15%)]',
+    'dark:hover:bg-[hsl(160,84%,19%)]',
+    'dark:hover:bg-[hsl(160,84%,23%)]',
+    'dark:hover:bg-[hsl(160,84%,27%)]',
+  ],
   theme: {
     extend: {
       colors: {
