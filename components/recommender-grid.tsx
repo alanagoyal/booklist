@@ -6,18 +6,18 @@ import { FormattedRecommender } from "@/types";
 import { useRouter, useSearchParams } from "next/navigation";
 import { truncateText } from "@/utils/text";
 
-const getBackgroundColor = (count: number, maxCount: number): string => {
-  if (count === 0) return "";
+const getBackgroundColor = (count: number): string => {
+  if (!count) return "";
 
-  const percentile = (count / maxCount) * 100;
-
+  // Use discrete intensity levels based on actual count values
+  // Similar to GitHub's contribution graph
   let intensity = 0;
-  if (percentile > 10) intensity = 1;
-  if (percentile > 25) intensity = 2;
-  if (percentile > 50) intensity = 3;
-  if (percentile > 75) intensity = 4;
-  if (percentile > 95) intensity = 5;
-  if (percentile > 99) intensity = 6;
+  if (count >= 1) intensity = 1;
+  if (count >= 2) intensity = 2;
+  if (count >= 3) intensity = 3;
+  if (count >= 5) intensity = 4;
+  if (count >= 8) intensity = 5;
+  if (count >= 13) intensity = 6;
 
   switch (intensity) {
     case 1:
@@ -61,19 +61,32 @@ function RecommendationCell({ original }: { original: FormattedRecommender }) {
 
   return (
     <div className="text-text">
-      {firstBook && (
-        <button
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            handleBookClick(firstBook.id);
-          }}
-          className="text-text md:hover:text-text/70 md:hover:underline transition-colors duration-200 text-left w-full whitespace-pre-line"
+      <span className="flex items-start gap-1">
+        <span className="flex-1">
+          {firstBook && (
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                handleBookClick(firstBook.id);
+              }}
+              className="text-text md:hover:text-text/70 md:hover:underline transition-colors duration-200 text-left w-full whitespace-pre-line"
+            >
+              {truncateText(firstBook.title, 38, moreCount)}
+              {moreCount > 0 && <span className="text-text/70"> + {moreCount} more</span>}
+            </button>
+          )}
+        </span>
+        <button 
+          title={`${original._book_count} books`}
+          className="inline-flex items-center justify-center rounded-full text-text/70 md:hover:text-text transition-colors duration-200 cursor-help shrink-0"
+          onClick={(e) => e.stopPropagation()}
         >
-          {truncateText(firstBook.title, 38, moreCount)}
-          {moreCount > 0 && <span className="text-text/70"> + {moreCount} more</span>}
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
+            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a.75.75 0 000 1.5h.253a.25.25 0 01.244.304l-.459 2.066A1.75 1.75 0 0010.747 15H11a.75.75 0 000-1.5h-.253a.25.25 0 01-.244-.304l.459-2.066A1.75 1.75 0 009.253 9H9z" clipRule="evenodd" />
+          </svg>
         </button>
-      )}
+      </span>
     </div>
   );
 }
@@ -85,6 +98,12 @@ export default function RecommenderGrid({
   // Hooks
   const router = useRouter();
   const searchParams = useSearchParams();
+
+  // Debug log for data length and counts
+  console.log("RecommenderGrid data length:", data.length);
+  console.log("RecommenderGrid book count range:", 
+    Math.min(...data.map(r => r._book_count || 0)), "to", 
+    Math.max(...data.map(r => r._book_count || 0)));
 
   // Row click handler
   const handleRowClick = useCallback(
@@ -138,7 +157,7 @@ export default function RecommenderGrid({
       data={data}
       columns={columns}
       getRowClassName={(row: FormattedRecommender) =>
-        `cursor-pointer transition-colors duration-200 ${getBackgroundColor(row._book_count, Math.max(...data.map((r) => r._book_count)))}`
+        `cursor-pointer transition-colors duration-200 ${getBackgroundColor(row._book_count)}`
       }
       onRowClick={handleRowClick}
       onFilteredDataChange={onFilteredDataChange}

@@ -6,18 +6,18 @@ import { FormattedBook } from "@/types";
 import { useRouter, useSearchParams } from "next/navigation";
 import { truncateText } from "@/utils/text";
 
-const getBackgroundColor = (count: number, maxCount: number): string => {
-  if (count === 0) return "";
+const getBackgroundColor = (count: number): string => {
+  if (!count) return "";
 
-  const percentile = (count / maxCount) * 100;
-
+  // Use discrete intensity levels based on actual count values
+  // Similar to GitHub's contribution graph
   let intensity = 0;
-  if (percentile > 10) intensity = 1;
-  if (percentile > 25) intensity = 2;
-  if (percentile > 50) intensity = 3;
-  if (percentile > 75) intensity = 4;
-  if (percentile > 95) intensity = 5;
-  if (percentile > 99) intensity = 6;
+  if (count >= 1) intensity = 1;
+  if (count >= 2) intensity = 2;
+  if (count >= 3) intensity = 3;
+  if (count >= 5) intensity = 4;
+  if (count >= 8) intensity = 5;
+  if (count >= 13) intensity = 6;
 
   switch (intensity) {
     case 1:
@@ -75,7 +75,7 @@ function RecommenderCell({ original }: { original: FormattedBook }) {
           )}
         </span>
         <button 
-          title={`${original._percentile}${(original._percentile % 100 > 10 && original._percentile % 100 < 14) ? 'th' : original._percentile % 10 === 1 ? 'st' : original._percentile % 10 === 2 ? 'nd' : original._percentile % 10 === 3 ? 'rd' : 'th'} percentile of all recommendations`}
+          title={`${original._recommendation_count} recommendations`}
           className="inline-flex items-center justify-center rounded-full text-text/70 md:hover:text-text transition-colors duration-200 cursor-help shrink-0"
           onClick={(e) => e.stopPropagation()}
         >
@@ -118,6 +118,12 @@ export default function BookGrid({ data, onFilteredDataChange }: BookGridProps) 
   // Hooks
   const router = useRouter();
   const searchParams = useSearchParams();
+
+  // Debug log for data length and counts
+  console.log("BookGrid data length:", data.length);
+  console.log("BookGrid recommendation count range:", 
+    Math.min(...data.map(b => b._recommendation_count || 0)), "to", 
+    Math.max(...data.map(b => b._recommendation_count || 0)));
 
   // Row click handler
   const handleRowClick = useCallback((book: FormattedBook) => {
@@ -164,7 +170,7 @@ export default function BookGrid({ data, onFilteredDataChange }: BookGridProps) 
       data={data}
       columns={columns}
       getRowClassName={(row: FormattedBook) =>
-        `cursor-pointer transition-colors duration-200 ${getBackgroundColor(row._recommendation_count, Math.max(...data.map(b => b._recommendation_count)))}`
+        `cursor-pointer transition-colors duration-200 ${getBackgroundColor(row._recommendation_count)}`
       }
       onRowClick={handleRowClick}
       onFilteredDataChange={onFilteredDataChange}
