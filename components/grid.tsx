@@ -405,6 +405,12 @@ export function DataGrid<T extends Record<string, any>>({
     if (onFilteredDataChange) {
       onFilteredDataChange(filteredData.length);
     }
+    
+    // Force immediate style recalculation after filtering
+    if (parentRef.current) {
+      // This will force a browser style recalculation
+      void parentRef.current.offsetHeight;
+    }
   }, [filteredData, onFilteredDataChange]);
 
   // Notify parent of filtered data changes
