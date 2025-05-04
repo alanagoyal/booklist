@@ -73,6 +73,7 @@ export interface EssentialBook {
   recommendations: RecommenderRecommendation[];
   _recommendation_count: number;
   _percentile: number;
+  _background_color?: string;
 }
 
 // Extended book data type
@@ -97,4 +98,5 @@ export interface FormattedRecommender {
   similar_recommenders: SimilarRecommender[];
   _book_count: number;
   _percentile: number;
+  _background_color?: string;
 }
