@@ -6,6 +6,8 @@ import React, {
   useEffect,
   useCallback,
   useMemo,
+  useTransition,
+  useDeferredValue,
 } from "react";
 import {
   ChevronDown,
@@ -49,6 +51,7 @@ export function DataGrid<T extends Record<string, any>>({
   // Hooks
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [isPending, startTransition] = useTransition();
 
   // Animation timing constants (in milliseconds)
   const TYPING_SPEED = 30; // Time between typing each character
@@ -112,6 +115,13 @@ export function DataGrid<T extends Record<string, any>>({
     return filterParams;
   });
 
+  // Memoize active filters
+  const activeFilters = useMemo(() => {
+    return Object.entries(filters)
+      .filter(([_, value]) => value)
+      .map(([field]) => field);
+  }, [filters]);
+
   // Refs
   const gridRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
@@ -119,13 +129,6 @@ export function DataGrid<T extends Record<string, any>>({
   const inputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
   const resizeTimeout = useRef<number | null>(null);
   const parentRef = useRef<HTMLDivElement>(null);
-
-  // Memoize active filters to prevent unnecessary recalculations
-  const activeFilters = useMemo(() => {
-    return Object.entries(filters)
-      .filter(([_, value]) => value)
-      .map(([field]) => field);
-  }, [filters]);
 
   // Memoize filtered data separately from sorting for better performance
   const filteredData = useMemo(() => {
@@ -223,6 +226,53 @@ export function DataGrid<T extends Record<string, any>>({
     searchState.isSearching,
   ]);
 
+  // Defer the filtered data updates
+  const deferredData = useDeferredValue(filteredData);
+
+  // Memoize sorted data separately
+  const filteredAndSortedData = useMemo(() => {
+    const field = sortConfig.field;
+    const direction = sortConfig.direction;
+
+    return [...deferredData].sort((a, b) => {
+      // Special handling for description fields
+      if (field === "book_description" || field === "recommender_description") {
+        const aValue = String(a.description || "").toLowerCase();
+        const bValue = String(b.description || "").toLowerCase();
+        return direction === "asc"
+          ? aValue.localeCompare(bValue)
+          : bValue.localeCompare(aValue);
+      }
+
+      // Handle recommender sorting
+      if (field === "recommenders") {
+        // Sort by number of recommenders (popularity)
+        const aRecs = (a as any).recommendations?.length || 0;
+        const bRecs = (b as any).recommendations?.length || 0;
+        const sortDirection = direction === "desc" ? 1 : -1;
+        return (bRecs - aRecs) * sortDirection;
+      }
+
+      if (field === "recommendations") {
+        const aCount = (a as any).recommendations?.length || 0;
+        const bCount = (b as any).recommendations?.length || 0;
+        const sortDirection = direction === "desc" ? 1 : -1;
+        return (bCount - aCount) * sortDirection;
+      }
+
+      if (a[field as keyof T] === b[field as keyof T]) return 0;
+      if (a[field as keyof T] === null || a[field as keyof T] === undefined)
+        return 1;
+      if (b[field as keyof T] === null || b[field as keyof T] === undefined)
+        return -1;
+
+      const sortDirection = direction === "asc" ? 1 : -1;
+      return a[field as keyof T] < b[field as keyof T]
+        ? -sortDirection
+        : sortDirection;
+    });
+  }, [deferredData, sortConfig]);
+
   // Placeholders
   const booksPlaceholders = [
     'A book that will help me develop better taste',
@@ -278,17 +328,18 @@ export function DataGrid<T extends Record<string, any>>({
     debounce(async (query: string, forceSearch = false) => {
       // For empty queries, clear everything
       if (!query) {
-        setSearchState((prev) => ({
-          ...prev,
-          query: "",
-          results: new Set(),
-          isSearching: false,
-        }));
+        startTransition(() => {
+          setSearchState((prev) => ({
+            ...prev,
+            query: "",
+            results: new Set(),
+            isSearching: false,
+          }));
+        });
         return;
       }
 
       // For short queries (1-3 chars), only search if explicitly forced (Enter key)
-      // This prevents URL updates that cause refreshing
       if (query.length <= 3 && !forceSearch) {
         setSearchState((prev) => ({
           ...prev,
@@ -317,22 +368,25 @@ export function DataGrid<T extends Record<string, any>>({
         }
 
         const results = await response.json();
-        setSearchState((prev) => ({
-          ...prev,
-          query, // Only update the query for valid searches or forced searches
-          results: new Set(results.map((item: any) => item.id)),
-          isSearching: false,
-        }));
+        startTransition(() => {
+          setSearchState((prev) => ({
+            ...prev,
+            query,
+            results: new Set(results.map((item: any) => item.id)),
+            isSearching: false,
+          }));
+        });
       } catch (error) {
         console.error("Search error:", error);
-        setSearchState((prev) => ({
-          ...prev,
-          isSearching: false,
-          // Don't update query on error
-          results: new Set(),
-        }));
+        startTransition(() => {
+          setSearchState((prev) => ({
+            ...prev,
+            isSearching: false,
+            results: new Set(),
+          }));
+        });
       }
-    }, 500) // 500ms debounce delay
+    }, 500)
   ).current;
 
   // Clean up debounce on unmount
@@ -414,50 +468,6 @@ export function DataGrid<T extends Record<string, any>>({
       bookCountManager.updateCount();
     }
   }, [filteredData.length, onFilteredDataChange]);
-
-  // Memoize sorted data separately
-  const filteredAndSortedData = useMemo(() => {
-    const field = sortConfig.field;
-    const direction = sortConfig.direction;
-
-    return [...filteredData].sort((a, b) => {
-      // Special handling for description fields
-      if (field === "book_description" || field === "recommender_description") {
-        const aValue = String(a.description || "").toLowerCase();
-        const bValue = String(b.description || "").toLowerCase();
-        return direction === "asc"
-          ? aValue.localeCompare(bValue)
-          : bValue.localeCompare(aValue);
-      }
-
-      // Handle recommender sorting
-      if (field === "recommenders") {
-        // Sort by number of recommenders (popularity)
-        const aRecs = (a as any).recommendations?.length || 0;
-        const bRecs = (b as any).recommendations?.length || 0;
-        const sortDirection = direction === "desc" ? 1 : -1;
-        return (bRecs - aRecs) * sortDirection;
-      }
-
-      if (field === "recommendations") {
-        const aCount = (a as any).recommendations?.length || 0;
-        const bCount = (b as any).recommendations?.length || 0;
-        const sortDirection = direction === "desc" ? 1 : -1;
-        return (bCount - aCount) * sortDirection;
-      }
-
-      if (a[field as keyof T] === b[field as keyof T]) return 0;
-      if (a[field as keyof T] === null || a[field as keyof T] === undefined)
-        return 1;
-      if (b[field as keyof T] === null || b[field as keyof T] === undefined)
-        return -1;
-
-      const sortDirection = direction === "asc" ? 1 : -1;
-      return a[field as keyof T] < b[field as keyof T]
-        ? -sortDirection
-        : sortDirection;
-    });
-  }, [filteredData, sortConfig]);
 
   // Update state when URL params change
   useEffect(() => {
@@ -914,13 +924,13 @@ export function DataGrid<T extends Record<string, any>>({
           />
           {/* Clear button or loading spinner */}
           <div className="flex items-center h-10 px-3 border-b border-border">
-            {searchState.isSearching ? (
+            {(searchState.isSearching || isPending) ? (
               <div className="w-3 h-3 border-2 border-text/70 rounded-full animate-spin border-t-transparent" />
             ) : searchState.inputValue ? (
               <button
                 onClick={() => handleSearch("")}
                 className="text-text/70 transition-colors duration-200 md:hover:text-text"
-                disabled={searchState.isSearching}
+                disabled={searchState.isSearching || isPending}
               >
                 <X className="w-4 h-4" />
               </button>
