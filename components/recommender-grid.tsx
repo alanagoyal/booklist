@@ -68,12 +68,6 @@ export default function RecommenderGrid({
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // Debug log for data length and counts
-  console.log("RecommenderGrid data length:", data.length);
-  console.log("RecommenderGrid book count range:", 
-    Math.min(...data.map(r => r._book_count || 0)), "to", 
-    Math.max(...data.map(r => r._book_count || 0)));
-
   // Row click handler
   const handleRowClick = useCallback(
     (recommender: FormattedRecommender) => {
