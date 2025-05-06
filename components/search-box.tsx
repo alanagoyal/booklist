@@ -122,6 +122,7 @@ export function SearchBox({
           autoComplete="off"
           autoCorrect="off"
           spellCheck="false"
+          autoFocus
         />
         <div className="flex items-center h-10 px-3 border-b border-border">
           {searching ? (
