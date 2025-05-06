@@ -673,6 +673,7 @@ export function DataGrid<T extends Record<string, any>>({
         onSearch={runSearch}
         searching={isPending}
         viewMode={viewMode}
+        isMobileView={isMobileView}
       />
       {/* Scrollable grid content */}
       <div
