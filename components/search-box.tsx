@@ -82,6 +82,8 @@ export function SearchBox({
     }, 500)
   ).current;
 
+  const inputRef = useRef<HTMLInputElement>(null);
+
   // Handle input changes
   const handleInputChange = (value: string) => {
     setLocalInput(value);
@@ -99,6 +101,7 @@ export function SearchBox({
     setLocalInput("");
     debouncedSearch.cancel();
     onSearch("");
+    inputRef.current?.focus();
   };
 
   // Placeholder animation logic
@@ -150,6 +153,7 @@ export function SearchBox({
       </div>
       <div className="flex-1 flex items-center">
         <input
+          ref={inputRef}
           type="text"
           placeholder={typedPlaceholder}
           className="flex-1 h-10 focus:outline-none bg-background border-b border-border text-text text-base sm:text-sm placeholder:text-sm selection:bg-main selection:text-mtext focus:outline-none rounded-none"
