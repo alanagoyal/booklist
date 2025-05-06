@@ -9,7 +9,7 @@ type SearchBoxProps = {
   onSearch: (query: string) => void;
   searching: boolean;
   viewMode: "books" | "recommenders";
-  placeholderTexts: string[];
+  isMobileView: boolean;
 };
 
 export function SearchBox({
@@ -17,7 +17,7 @@ export function SearchBox({
   onSearch,
   searching,
   viewMode,
-  placeholderTexts,
+  isMobileView,
 }: SearchBoxProps) {
   const [localInput, setLocalInput] = useState(value);
   const [typedPlaceholder, setTypedPlaceholder] = useState("");
@@ -29,6 +29,49 @@ export function SearchBox({
   const ERASING_SPEED = 15;
   const PAUSE_AFTER_TYPING = 1000;
   const PAUSE_BEFORE_NEXT = 250;
+
+  // Placeholders
+  const booksPlaceholders = [
+    "A book that will help me develop better taste",
+    "A dystopian science fiction novel with a little comedy",
+    "A historical fiction novel that takes place during the Industrial Revolution",
+    'A crime novel with "The White Lotus"-level character development',
+    "A biography or memoir of an underrated world leader",
+  ];
+
+  const peoplePlaceholders = [
+    "An artist or designer with great taste",
+    "A journalist or influencer with controversial views",
+    "A scientist or researcher who flies under the radar",
+    "A chef or food critic who's seen it all",
+    "An entrepreneur or executive who writes code",
+  ];
+
+  // Shorter placeholders for mobile
+  const booksPlaceholdersMobile = [
+    "A book on developing taste",
+    "A dystopian sci-fi novel",
+    "A book on the industrial revolution",
+    'A crime novel like "The White Lotus"',
+    "A biography of a world leader",
+  ];
+
+  const peoplePlaceholdersMobile = [
+    "An artist or designer with taste",
+    "A controversial journalist",
+    "An underrated scientist",
+    "A renowned chef or food critic",
+    "A technical entrepreneur",
+  ];
+
+  const placeholderTexts =
+    viewMode === "books"
+      ? isMobileView
+        ? booksPlaceholdersMobile
+        : booksPlaceholders
+      : isMobileView
+        ? peoplePlaceholdersMobile
+        : peoplePlaceholders;
 
   // Create a debounced search function
   const debouncedSearch = useRef(
