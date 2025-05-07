@@ -51,8 +51,8 @@ export function SearchBox({
   const booksPlaceholdersMobile = [
     "A book on developing taste",
     "A dystopian sci-fi novel",
-    "A book on the industrial revolution",
-    'A crime novel like "The White Lotus"',
+    "A fascinating historical fiction",
+    'A mystery like "The White Lotus"',
     "A biography of a world leader",
   ];
 
