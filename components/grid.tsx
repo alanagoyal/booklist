@@ -204,13 +204,17 @@ export function DataGrid<T extends Record<string, any>>({
   // Search handler
   const runSearch = useCallback(async (query: string) => {
     startTransition(async () => {
+      // Initialize URL params
+      const p = new URLSearchParams(searchParams.toString());
+
       if (query === "") {
-        setSearchResults(new Set());
-        setSearchQuery("");
-        const p = new URLSearchParams(searchParams.toString());
+        // Clear search params
         p.delete(`${viewMode}_search`);
         p.delete(`${viewMode}_search_results`);
         router.replace(`?${p.toString()}`, { scroll: false });
+        // Then update state
+        setSearchResults(new Set());
+        setSearchQuery("");
       } else {
         try {
           const embedding = await generateEmbedding(query);
@@ -228,20 +232,20 @@ export function DataGrid<T extends Record<string, any>>({
           
           const results = await response.json();
           const newResults: Set<string> = new Set(results.map((r: { id: string }) => r.id));
-          const p = new URLSearchParams(searchParams.toString());
-          if (query) {
-            p.set(`${viewMode}_search`, query);
-            p.set(`${viewMode}_search_results`, Array.from(newResults).join(","));
-          } else {
-            p.delete(`${viewMode}_search`);
-            p.delete(`${viewMode}_search_results`);
-          }
+
+          // Update URL with search results
+          p.set(`${viewMode}_search`, query);
+          p.set(`${viewMode}_search_results`, Array.from(newResults).join(","));
           router.replace(`?${p.toString()}`, { scroll: false });
+
+          // Then update state
           setSearchResults(newResults);
           setSearchQuery(query);
         } catch (error) {
           console.error("Search error:", error);
+          // Clear results on error
           setSearchResults(new Set());
+          // Keep the URL params as is on error
         }
       }
     });
