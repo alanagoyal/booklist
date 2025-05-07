@@ -69,7 +69,7 @@ export function DataGrid<T extends Record<string, any>>({
 
   // Get current view and sort configs directly from URL
   const viewMode =
-    (searchParams.get("view") as "books" | "recommenders") || "books";
+    (searchParams.get("view") as "books" | "people") || "books";
   const directionParam = searchParams?.get(`${viewMode}_dir`);
   const sortConfig = {
     field:
@@ -216,7 +216,7 @@ export function DataGrid<T extends Record<string, any>>({
             body: JSON.stringify({ 
               query,
               embedding, 
-              viewMode: viewMode === 'recommenders' ? 'people' : 'books' 
+              viewMode: viewMode === 'people' ? 'people' : 'books' 
             }),
           });
           
@@ -382,7 +382,7 @@ export function DataGrid<T extends Record<string, any>>({
   const handleSort = useCallback(
     (field: string, direction: SortDirection) => {
       const params = new URLSearchParams(searchParams?.toString() ?? "");
-      const view = (params.get("view") as "books" | "recommenders") || "books";
+      const view = (params.get("view") as "books" | "people") || "books";
 
       // Get current sort params
       const currentField = params.get(`${view}_sort`);

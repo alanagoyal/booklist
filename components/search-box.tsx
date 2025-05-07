@@ -8,7 +8,7 @@ type SearchBoxProps = {
   value: string;
   onSearch: (query: string) => void;
   searching: boolean;
-  viewMode: "books" | "recommenders";
+  viewMode: "books" | "people";
   isMobileView: boolean;
 };
 
