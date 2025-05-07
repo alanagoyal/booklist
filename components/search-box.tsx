@@ -23,6 +23,7 @@ export function SearchBox({
   const [typedPlaceholder, setTypedPlaceholder] = useState("");
   const [placeholderIndex, setPlaceholderIndex] = useState(0);
   const [isTyping, setIsTyping] = useState(true);
+  const [animationReady, setAnimationReady] = useState(false);
 
   // Animation timing constants
   const TYPING_SPEED = 30;
@@ -104,46 +105,86 @@ export function SearchBox({
     inputRef.current?.focus();
   };
 
+  // Use requestIdleCallback to start animation only when browser is idle
+  useEffect(() => {
+    // Fallback for browsers that don't support requestIdleCallback
+    const requestIdleCallbackPolyfill = 
+      window.requestIdleCallback || 
+      ((cb) => setTimeout(cb, 1));
+    
+    // Request idle time to start animation
+    const idleCallbackId = requestIdleCallbackPolyfill(() => {
+      // Once browser is idle, use requestAnimationFrame for next paint
+      requestAnimationFrame(() => {
+        setAnimationReady(true);
+      });
+    });
+    
+    return () => {
+      // Cleanup
+      if (window.cancelIdleCallback) {
+        window.cancelIdleCallback(idleCallbackId);
+      } else {
+        clearTimeout(idleCallbackId);
+      }
+    };
+  }, []);
+
   // Placeholder animation logic
   useEffect(() => {
-    // Only animate when there's no input
-    if (localInput) return;
+    // Only animate when there's no input and animation is ready
+    if (localInput || !animationReady) return;
 
     const currentPlaceholder = placeholderTexts[placeholderIndex];
-    let timeout: NodeJS.Timeout;
+    let animationId: number;
+    let timeoutId: NodeJS.Timeout;
 
-    if (isTyping) {
-      if (typedPlaceholder.length < currentPlaceholder.length) {
-        timeout = setTimeout(() => {
-          setTypedPlaceholder(
-            currentPlaceholder.slice(0, typedPlaceholder.length + 1)
-          );
-        }, TYPING_SPEED);
+    const runAnimation = (timestamp: number) => {
+      if (isTyping) {
+        if (typedPlaceholder.length < currentPlaceholder.length) {
+          timeoutId = setTimeout(() => {
+            setTypedPlaceholder(
+              currentPlaceholder.slice(0, typedPlaceholder.length + 1)
+            );
+            animationId = requestAnimationFrame(runAnimation);
+          }, TYPING_SPEED);
+        } else {
+          timeoutId = setTimeout(() => {
+            setIsTyping(false);
+            animationId = requestAnimationFrame(runAnimation);
+          }, PAUSE_AFTER_TYPING);
+        }
       } else {
-        timeout = setTimeout(() => {
-          setIsTyping(false);
-        }, PAUSE_AFTER_TYPING);
+        if (typedPlaceholder.length > 0) {
+          timeoutId = setTimeout(() => {
+            setTypedPlaceholder(typedPlaceholder.slice(0, -1));
+            animationId = requestAnimationFrame(runAnimation);
+          }, ERASING_SPEED);
+        } else {
+          timeoutId = setTimeout(() => {
+            setPlaceholderIndex((prev) => (prev + 1) % placeholderTexts.length);
+            setIsTyping(true);
+            animationId = requestAnimationFrame(runAnimation);
+          }, PAUSE_BEFORE_NEXT);
+        }
       }
-    } else {
-      if (typedPlaceholder.length > 0) {
-        timeout = setTimeout(() => {
-          setTypedPlaceholder(typedPlaceholder.slice(0, -1));
-        }, ERASING_SPEED);
-      } else {
-        timeout = setTimeout(() => {
-          setPlaceholderIndex((prev) => (prev + 1) % placeholderTexts.length);
-          setIsTyping(true);
-        }, PAUSE_BEFORE_NEXT);
-      }
-    }
+    };
 
-    return () => clearTimeout(timeout);
+    // Kick off animation loop with requestAnimationFrame
+    animationId = requestAnimationFrame(runAnimation);
+
+    return () => {
+      // Clean up all animation resources
+      cancelAnimationFrame(animationId);
+      clearTimeout(timeoutId);
+    };
   }, [
     typedPlaceholder,
     isTyping,
     placeholderIndex,
     placeholderTexts,
     localInput,
+    animationReady,
   ]);
 
   return (
