@@ -775,7 +775,7 @@ export function DataGrid<T extends Record<string, any>>({
                   ref={(el) =>
                     void (inputRefs.current[String(column.field)] = el)
                   }
-                  className="w-full px-2 py-1 border border-border bg-background text-text text-base sm:text-sm placeholder:text-sm selection:bg-main selection:text-mtext focus:outline-none rounded-none"
+                  className="w-full px-2 py-1 border border-border bg-background text-text text-base sm:text-sm selection:bg-main selection:text-mtext focus:outline-none rounded-none"
                   placeholder="Search"
                   value={filters[String(column.field)] || ""}
                   onChange={(e) =>
@@ -894,7 +894,7 @@ export function DataGrid<T extends Record<string, any>>({
           <input
             type="text"
             placeholder={typedPlaceholder}
-            className="flex-1 h-10 focus:outline-none bg-background border-b border-border text-text text-base sm:text-sm placeholder:text-sm selection:bg-main selection:text-mtext focus:outline-none rounded-none"
+            className="flex-1 h-10 focus:outline-none bg-background border-b border-border text-text text-base sm:text-sm selection:bg-main selection:text-mtext focus:outline-none rounded-none"
             value={searchState.inputValue}
             onChange={(e) => {
               handleSearch(e.target.value, false);
