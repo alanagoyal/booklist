@@ -207,6 +207,10 @@ export function DataGrid<T extends Record<string, any>>({
       if (query === "") {
         setSearchResults(new Set());
         setSearchQuery("");
+        const p = new URLSearchParams(searchParams.toString());
+        p.delete(`${viewMode}_search`);
+        p.delete(`${viewMode}_search_results`);
+        router.replace(`?${p.toString()}`, { scroll: false });
       } else {
         try {
           const embedding = await generateEmbedding(query);
@@ -223,30 +227,27 @@ export function DataGrid<T extends Record<string, any>>({
           if (!response.ok) throw new Error("Search failed");
           
           const results = await response.json();
-          setSearchResults(new Set(results.map((r: any) => r.id)));
+          const newResults: Set<string> = new Set(results.map((r: { id: string }) => r.id));
+          const p = new URLSearchParams(searchParams.toString());
+          if (query) {
+            p.set(`${viewMode}_search`, query);
+            p.set(`${viewMode}_search_results`, Array.from(newResults).join(","));
+          } else {
+            p.delete(`${viewMode}_search`);
+            p.delete(`${viewMode}_search_results`);
+          }
+          router.replace(`?${p.toString()}`, { scroll: false });
+          setSearchResults(newResults);
           setSearchQuery(query);
         } catch (error) {
           console.error("Search error:", error);
           setSearchResults(new Set());
         }
       }
-
-      // Update URL
-      const p = new URLSearchParams(searchParams.toString());
-      if (query) {
-        p.set(`${viewMode}_search`, query);
-        p.set(`${viewMode}_search_results`, Array.from(searchResults).join(","));
-      } else {
-        p.delete(`${viewMode}_search`);
-        p.delete(`${viewMode}_search_results`);
-      }
-      router.replace(`?${p.toString()}`, { scroll: false });
     });
-  }, [viewMode, router, searchParams, searchResults]);
+  }, [viewMode, router, searchParams]);
 
   // Data filtering and sorting
-  const idMap = useMemo(() => new Map(data.map(r => [r.id, r])), [data]);
-  
   const filteredAndSortedData = useMemo(() => {
     const field = sortConfig.field;
     const direction = sortConfig.direction;
