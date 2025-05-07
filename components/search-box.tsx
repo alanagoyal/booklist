@@ -156,7 +156,7 @@ export function SearchBox({
           ref={inputRef}
           type="text"
           placeholder={typedPlaceholder}
-          className="flex-1 h-10 focus:outline-none bg-background border-b border-border text-text text-base sm:text-sm placeholder:text-sm selection:bg-main selection:text-mtext focus:outline-none rounded-none"
+          className="flex-1 h-10 focus:outline-none bg-background border-b border-border text-text text-base sm:text-sm selection:bg-main selection:text-mtext focus:outline-none rounded-none"
           value={localInput}
           onChange={(e) => handleInputChange(e.target.value)}
           onKeyDown={(e) => {
