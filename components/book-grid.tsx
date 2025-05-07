@@ -88,12 +88,6 @@ export default function BookGrid({ data, onFilteredDataChange }: BookGridProps) 
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // Debug log for data length and counts
-  console.log("BookGrid data length:", data.length);
-  console.log("BookGrid recommendation count range:", 
-    Math.min(...data.map(b => b._recommendation_count || 0)), "to", 
-    Math.max(...data.map(b => b._recommendation_count || 0)));
-
   // Row click handler
   const handleRowClick = useCallback((book: FormattedBook) => {
     const params = new URLSearchParams(searchParams.toString());
