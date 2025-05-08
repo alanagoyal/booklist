@@ -189,7 +189,7 @@ export function SearchBox({
 
   return (
     <div className="flex items-center h-10 w-full">
-      <div className="flex items-center h-10 px-3 border-b border-border">
+      <div className="flex items-center h-10 px-3 pb-1 border-b border-border">
         <Search className="w-4 h-4 text-text/70" />
       </div>
       <div className="flex-1 flex items-center">
