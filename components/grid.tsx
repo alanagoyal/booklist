@@ -243,9 +243,15 @@ export function DataGrid<T extends Record<string, any>>({
           setSearchQuery(query);
         } catch (error) {
           console.error("Search error:", error);
-          // Clear results on error
+          // Clear everything on error
           setSearchResults(new Set());
-          // Keep the URL params as is on error
+          setSearchQuery("");
+          
+          // Update URL params to remove search
+          const p = new URLSearchParams(searchParams.toString());
+          p.delete(`${viewMode}_search`);
+          p.delete(`${viewMode}_search_results`);
+          router.replace(`?${p.toString()}`, { scroll: false });
         }
       }
     });
