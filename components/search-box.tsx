@@ -54,6 +54,14 @@ export function SearchBox({
   isMobileView,
 }: SearchBoxProps) {
 
+  // Input ref for auto-focus
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleClear = () => {
+    onSearch("");
+    inputRef.current?.focus();
+  };
+
   return (
     <div className="flex items-center h-10 w-full">
       <div className="flex items-center h-10 px-3 pb-1 border-b border-border">
@@ -61,6 +69,7 @@ export function SearchBox({
       </div>
       <div className="flex-1 flex items-center">
         <input
+          ref={inputRef}
           type="text"
           placeholder="Search"
           className="flex-1 h-10 focus:outline-none bg-background border-b border-border text-text text-base sm:text-sm selection:bg-main selection:text-mtext focus:outline-none rounded-none"
@@ -81,7 +90,7 @@ export function SearchBox({
         <div className="flex items-center h-10 px-3 border-b border-border">
           {value ? (
             <button
-              onClick={() => onSearch("")}
+              onClick={handleClear}
               className="text-text/70 transition-colors duration-200 md:hover:text-text"
               disabled={isSearching}
             >
