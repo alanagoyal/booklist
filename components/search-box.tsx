@@ -62,6 +62,48 @@ export function SearchBox({
     inputRef.current?.focus();
   };
 
+  // Animation timing constants (in milliseconds)
+  const TYPING_SPEED = 50;    // Time between typing each character
+  const ERASING_SPEED = 50;    // Time between erasing each character
+  const PAUSE_DURATION = 500; // How long to pause when text is fully typed
+
+  // Animation state
+  const [placeholderIndex, setPlaceholderIndex] = useState(0);
+  const [isTyping, setIsTyping] = useState(true);
+  const [currentText, setCurrentText] = useState("");
+
+  useEffect(() => {
+    const placeholders = viewMode === "books" 
+      ? (isMobileView ? booksPlaceholdersMobile : booksPlaceholders)
+      : (isMobileView ? peoplePlaceholdersMobile : peoplePlaceholders);
+    
+    const currentPlaceholder = placeholders[placeholderIndex];
+    
+    if (isTyping) {
+      if (currentText.length < currentPlaceholder.length) {
+        const timeoutId = setTimeout(() => {
+          setCurrentText(currentPlaceholder.slice(0, currentText.length + 1));
+        }, TYPING_SPEED);
+        return () => clearTimeout(timeoutId);
+      } else {
+        const timeoutId = setTimeout(() => setIsTyping(false), PAUSE_DURATION);
+        return () => clearTimeout(timeoutId);
+      }
+    } else {
+      if (currentText.length > 0) {
+        const timeoutId = setTimeout(() => {
+          setCurrentText(currentText.slice(0, -1));
+        }, ERASING_SPEED);
+        return () => clearTimeout(timeoutId);
+      } else {
+        setPlaceholderIndex((prev) => (prev + 1) % placeholders.length);
+        setIsTyping(true);
+        setCurrentText(placeholders[(placeholderIndex + 1) % placeholders.length][0]);
+        return undefined;
+      }
+    }
+  }, [currentText, isTyping, placeholderIndex, viewMode, isMobileView]);
+
   return (
     <div className="flex items-center h-10 w-full">
       <div className="flex items-center h-10 px-3 pb-1 border-b border-border">
@@ -71,7 +113,7 @@ export function SearchBox({
         <input
           ref={inputRef}
           type="text"
-          placeholder="Search"
+          placeholder={currentText}
           className="flex-1 h-10 focus:outline-none bg-background border-b border-border text-text text-base sm:text-sm selection:bg-main selection:text-mtext focus:outline-none rounded-none"
           value={value}
           onChange={(e) => onSearch(e.target.value)}
