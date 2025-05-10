@@ -16,7 +16,6 @@ import {
   ArrowDown,
   Search,
 } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
 import { bookCountManager } from "./book-counter";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import debounce from "lodash/debounce";
@@ -37,6 +36,7 @@ type DataGridProps<T extends Record<string, any>> = {
   getRowClassName?: (row: T) => string;
   onFilteredDataChange?: (count: number) => void;
   onRowClick?: (row: T) => void;
+  initialViewMode?: "books" | "recommenders";
 };
 
 // Placeholders
@@ -79,11 +79,8 @@ export function DataGrid<T extends Record<string, any>>({
   getRowClassName,
   onFilteredDataChange,
   onRowClick,
+  initialViewMode = "books",
 }: DataGridProps<T>) {
-  // Hooks
-  const router = useRouter();
-  const searchParams = useSearchParams();
-
   // Animation timing constants (in milliseconds)
   const TYPING_SPEED = 30; // Time between typing each character
   const ERASING_SPEED = 15; // Time between erasing each character
@@ -100,53 +97,24 @@ export function DataGrid<T extends Record<string, any>>({
   const [typedPlaceholder, setTypedPlaceholder] = useState("");
   const [isTyping, setIsTyping] = useState(true);
   const [isMobileView, setIsMobileView] = useState(false);
-  const [searchState, setSearchState] = useState(() => {
-    const view = searchParams?.get("view") || "books";
-    const query = searchParams?.get(`${view}_search`) || "";
-    const cachedResults = searchParams?.get(`${view}_search_results`);
-    return {
-      query,
-      inputValue: query,
-      results: cachedResults
-        ? new Set(cachedResults.split(","))
-        : new Set<string>(),
-      isSearching: false,
-    };
+  const [viewMode, setViewMode] = useState<"books" | "recommenders">(
+    initialViewMode
+  );
+  const [searchState, setSearchState] = useState({
+    query: "",
+    inputValue: "",
+    results: new Set<string>(),
+    isSearching: false,
   });
 
-  // Get current view and sort configs directly from URL
-  const viewMode =
-    (searchParams.get("view") as "books" | "recommenders") || "books";
-  const directionParam = searchParams?.get(`${viewMode}_dir`);
-  const sortConfig = useMemo(() => {
-    return {
-      field:
-        searchParams?.get(`${viewMode}_sort`) ||
-        (viewMode === "books" ? "recommenders" : "recommendations"),
-      direction:
-        directionParam === "asc" || directionParam === "desc"
-          ? directionParam
-          : "desc",
-    };
-  }, [searchParams, viewMode, directionParam]);
-
-  // Initialize filters from URL params
-  const [filters, setFilters] = useState<{ [key: string]: string }>(() => {
-    const params = Object.fromEntries(searchParams.entries());
-    const filterParams: { [key: string]: string } = {};
-    Object.entries(params).forEach(([key, value]) => {
-      if (
-        !key.includes("sort") &&
-        !key.includes("dir") &&
-        key !== "key" &&
-        key !== "view" &&
-        !key.includes("search")
-      ) {
-        filterParams[key] = value;
-      }
-    });
-    return filterParams;
+  // Sort configuration state
+  const [sortConfig, setSortConfig] = useState({
+    field: viewMode === "books" ? "recommenders" : "recommendations",
+    direction: "desc" as SortDirection,
   });
+
+  // Filters state
+  const [filters, setFilters] = useState<{ [key: string]: string }>({});
 
   // Refs
   const gridRef = useRef<HTMLDivElement>(null);
@@ -290,7 +258,6 @@ export function DataGrid<T extends Record<string, any>>({
       }
 
       // For short queries (1-3 chars), only search if explicitly forced (Enter key)
-      // This prevents URL updates that cause refreshing
       if (query.length <= 3 && !forceSearch) {
         setSearchState((prev) => ({
           ...prev,
@@ -310,7 +277,7 @@ export function DataGrid<T extends Record<string, any>>({
           body: JSON.stringify({
             query,
             embedding,
-            viewMode: searchParams.get("view") || "books",
+            viewMode,
           }),
         });
 
@@ -363,49 +330,6 @@ export function DataGrid<T extends Record<string, any>>({
     },
     [debouncedSearch]
   );
-
-  // Update URL when search state changes
-  useEffect(() => {
-    const params = new URLSearchParams(searchParams.toString());
-    const viewMode = searchParams.get("view") || "books";
-
-    if (searchState.query) {
-      params.set(`${viewMode}_search`, searchState.query);
-      if (searchState.results.size > 0) {
-        params.set(
-          `${viewMode}_search_results`,
-          Array.from(searchState.results).join(",")
-        );
-      }
-    } else {
-      params.delete(`${viewMode}_search`);
-      params.delete(`${viewMode}_search_results`);
-    }
-
-    router.replace(`?${params.toString()}`, { scroll: false });
-  }, [searchState.query, searchState.results, router, searchParams]);
-
-  // Sync with URL changes
-  useEffect(() => {
-    setSearchState((prev) => {
-      const viewMode = searchParams.get("view") || "books";
-      const urlQuery = searchParams?.get(`${viewMode}_search`) || "";
-      const cachedResults = searchParams?.get(`${viewMode}_search_results`);
-
-      if (urlQuery !== prev.query) {
-        return {
-          ...prev,
-          query: urlQuery,
-          inputValue: urlQuery,
-          results: cachedResults
-            ? new Set(cachedResults.split(","))
-            : prev.results,
-        };
-      } else {
-        return prev;
-      }
-    });
-  }, [searchParams]);
 
   // Update filtered count whenever filteredData changes
   useEffect(() => {
@@ -465,52 +389,6 @@ export function DataGrid<T extends Record<string, any>>({
         : sortDirection;
     });
   }, [filteredData, sortConfig]);
-
-  // Update state when URL params change
-  useEffect(() => {
-    const params = Object.fromEntries(searchParams.entries());
-    const filterParams: { [key: string]: string } = {};
-    Object.entries(params).forEach(([key, value]) => {
-      if (
-        !key.includes("sort") &&
-        !key.includes("dir") &&
-        key !== "key" &&
-        key !== "view" &&
-        !key.includes("search")
-      ) {
-        filterParams[key] = value;
-      }
-    });
-    setFilters(filterParams);
-  }, [searchParams]);
-
-  // Update URL when sort/filter changes
-  useEffect(() => {
-    const currentParams = new URLSearchParams(searchParams.toString());
-    const newParams = new URLSearchParams(currentParams.toString());
-
-    // Initialize default parameters if they don't exist
-    if (!currentParams.has("view")) {
-      newParams.set("view", "books");
-    }
-
-    // Update filter params
-    Object.entries(filters).forEach(([key, value]) => {
-      if (value) {
-        newParams.set(key, value);
-      } else {
-        newParams.delete(key);
-      }
-    });
-
-    const queryString = newParams.toString();
-    const newPath = queryString ? `/?${queryString}` : "/";
-
-    // Only update URL if params have changed
-    if (newParams.toString() !== currentParams.toString()) {
-      router.replace(newPath, { scroll: false });
-    }
-  }, [filters, router, searchParams]);
 
   // Animate placeholder text with typewriter effect
   useEffect(() => {
@@ -617,31 +495,23 @@ export function DataGrid<T extends Record<string, any>>({
   // Sort handlers
   const handleSort = useCallback(
     (field: string, direction: SortDirection) => {
-      const params = new URLSearchParams(searchParams?.toString() ?? "");
-      const view = (params.get("view") as "books" | "recommenders") || "books";
-
-      // Get current sort params
-      const currentField = params.get(`${view}_sort`);
-      const currentDir = params.get(`${view}_dir`);
-
       // If clicking the same sort option that's currently active, disable sorting
-      if (currentField === field && currentDir === direction) {
-        params.delete(`${view}_sort`);
-        params.delete(`${view}_dir`);
+      if (sortConfig.field === field && sortConfig.direction === direction) {
+        setSortConfig({
+          field: viewMode === "books" ? "recommenders" : "recommendations",
+          direction: "desc",
+        });
       } else {
         // Otherwise apply the new sort
-        params.set(`${view}_sort`, field);
-        if (direction) {
-          params.set(`${view}_dir`, direction);
-        } else {
-          params.delete(`${view}_dir`);
-        }
+        setSortConfig({
+          field,
+          direction,
+        });
       }
 
-      router.replace(`?${params.toString()}`, { scroll: false });
       setOpenDropdown(null);
     },
-    [router, searchParams]
+    [sortConfig, viewMode]
   );
 
   // Keep resize observer for header width syncing
