@@ -71,7 +71,7 @@ export function DataGrid<T extends Record<string, any>>({
   const viewMode =
     (searchParams.get("view") as "books" | "people") || "books";
   const directionParam = searchParams?.get(`${viewMode}_dir`);
-  const sortConfig = {
+  const sortConfig = useMemo(() => ({
     field:
       searchParams?.get(`${viewMode}_sort`) ||
       (viewMode === "books" ? "recommenders" : "recommendations"),
@@ -79,7 +79,7 @@ export function DataGrid<T extends Record<string, any>>({
       directionParam === "asc" || directionParam === "desc"
         ? directionParam
         : "desc",
-  };
+  }), [searchParams, viewMode, directionParam]);
 
   // Initialize filters from URL params
   const [filters, setFilters] = useState<{ [key: string]: string }>(() => {
