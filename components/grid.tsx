@@ -7,22 +7,13 @@ import React, {
   useCallback,
   useMemo,
 } from "react";
-import {
-  ChevronDown,
-  ListFilter,
-  Check,
-  X,
-  ArrowUp,
-  ArrowDown,
-  Search,
-} from "lucide-react";
+import { ChevronDown, Check, ArrowUp, ArrowDown } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { bookCountManager } from "./book-counter";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import debounce from "lodash/debounce";
-import { generateEmbedding } from "@/utils/embeddings";
-import { SearchBox } from "./search-box";
 import { useTransition } from "react";
+import { SearchBox } from "./search-box";
+import { debounce } from "lodash";
+import { generateEmbedding } from "@/utils/embeddings";
 
 type SortDirection = "asc" | "desc";
 
@@ -59,27 +50,30 @@ export function DataGrid<T extends Record<string, any>>({
     const view = searchParams?.get("view") || "books";
     return searchParams?.get(`${view}_search`) || "";
   });
-  const [searchResults, setSearchResults] = useState<Set<string>>(new Set<string>());
-  const [isLoadingResults, setIsLoadingResults] = useState(() => {
+  const [searchResults, setSearchResults] = useState<Set<string>>(
+    new Set<string>()
+  );
+  const [isSearching, setIsSearching] = useState(() => {
     // Set initial loading state to true if there's a search query in the URL
     const view = searchParams?.get("view") || "books";
     return Boolean(searchParams?.get(`${view}_search`));
   });
 
   // Get current view and sort configs directly from URL
-  const viewMode =
-    (searchParams.get("view") as "books" | "people") || "books";
+  const viewMode = (searchParams.get("view") as "books" | "people") || "books";
   const directionParam = searchParams?.get(`${viewMode}_dir`);
-  const sortConfig = useMemo(() => ({
-    field:
-      searchParams?.get(`${viewMode}_sort`) ||
-      (viewMode === "books" ? "recommenders" : "recommendations"),
-    direction:
-      directionParam === "asc" || directionParam === "desc"
-        ? directionParam
-        : "desc",
-  }), [searchParams, viewMode, directionParam]);
-
+  const sortConfig = useMemo(
+    () => ({
+      field:
+        searchParams?.get(`${viewMode}_sort`) ||
+        (viewMode === "books" ? "recommenders" : "recommendations"),
+      direction:
+        directionParam === "asc" || directionParam === "desc"
+          ? directionParam
+          : "desc",
+    }),
+    [searchParams, viewMode, directionParam]
+  );
 
   // Refs
   const gridRef = useRef<HTMLDivElement>(null);
@@ -89,12 +83,28 @@ export function DataGrid<T extends Record<string, any>>({
   const resizeTimeout = useRef<number | null>(null);
   const parentRef = useRef<HTMLDivElement>(null);
 
-  // Data filtering and sorting
+  // Data filtering
+  const filteredData = useMemo(() => {
+    // If no search is active, return all data
+    if (!searchQuery.trim()) {
+      return data;
+    }
+
+    // Only filter if we actually have results back
+    if (searchResults.size > 0) {
+      return data.filter((item) => searchResults.has(item.id));
+    }
+
+    // Show existing filtered data while searching
+    return data;
+  }, [data, searchResults, searchQuery]);
+
+  // Data sorting
   const sortedData = useMemo(() => {
     const field = sortConfig.field;
     const direction = sortConfig.direction;
 
-    return [...data].sort((a, b) => {
+    return [...filteredData].sort((a, b) => {
       // Special handling for description fields
       if (field === "book_description" || field === "recommender_description") {
         const aValue = String(a.description || "").toLowerCase();
@@ -131,7 +141,7 @@ export function DataGrid<T extends Record<string, any>>({
         ? -sortDirection
         : sortDirection;
     });
-  }, [data, sortConfig]);
+  }, [filteredData, sortConfig]);
 
   // Event handlers
   const handleRowClick = useCallback(
@@ -155,6 +165,51 @@ export function DataGrid<T extends Record<string, any>>({
     },
     [onRowClick, openDropdown, isDropdownClosing]
   );
+
+  // Search handler
+  const handleSearch = useCallback(
+    async (query: string) => {
+      setSearchQuery(query);
+      if (!query.trim()) {
+        // if input cleared
+        setIsSearching(false);
+        return;
+      }
+      setIsSearching(true);
+      try {
+        const embedding = await generateEmbedding(query);
+        const response = await fetch("/api/search", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            query,
+            embedding,
+            viewMode,
+          }),
+        });
+        const data = await response.json();
+        setSearchResults(new Set(data.map((item: any) => item.id)));
+      } catch (error) {
+        console.error("Error searching:", error);
+      } finally {
+        setIsSearching(false);
+      }
+    },
+    [viewMode]
+  );
+
+  // Debounce search
+  const debouncedSearch = useMemo(
+    () => debounce(handleSearch, 1000),
+    [handleSearch]
+  );
+
+  // Clean up debounced search on unmount
+  useEffect(() => {
+    return () => debouncedSearch.cancel();
+  }, [debouncedSearch]);
 
   // Sort handlers
   const handleSort = useCallback(
@@ -317,12 +372,7 @@ export function DataGrid<T extends Record<string, any>>({
         </div>
       );
     },
-    [
-      openDropdown,
-      isDropdownClosing,
-      sortConfig,
-      handleSort,
-    ]
+    [openDropdown, isDropdownClosing, sortConfig, handleSort]
   );
 
   // Header
@@ -412,6 +462,14 @@ export function DataGrid<T extends Record<string, any>>({
 
   return (
     <div className="flex flex-col h-full">
+      {/* Search box */}
+      <SearchBox
+        value={searchQuery}
+        onSearch={handleSearch}
+        isSearching={isSearching}
+        viewMode={viewMode}
+        isMobileView={isMobileView}
+      />
       {/* Scrollable grid content */}
       <div
         ref={parentRef}
@@ -429,13 +487,7 @@ export function DataGrid<T extends Record<string, any>>({
               {columns.map(renderHeader)}
             </div>
           </div>
-
-          {isLoadingResults ? (
-            <div className="fixed left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 text-center px-4">
-              <div className="w-6 h-6 border-2 border-text/70 rounded-full animate-spin border-t-transparent mx-auto mb-2"></div>
-              <div className="text-text/70">Loading search results...</div>
-            </div>
-          ) : sortedData.length === 0 ? (
+          {sortedData.length === 0 && searchQuery.trim() && !isSearching ? (
             <div className="fixed left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 text-center px-4">
               <div className="text-text/70">No results match this search</div>
             </div>
