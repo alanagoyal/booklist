@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
-import { BookCounter } from "@/components/book-counter";
+import { Counter } from "@/components/counter";
 import { FormattedBook, FormattedRecommender } from "@/types";
 import { useRouter, useSearchParams } from "next/navigation";
 import BookDetail from "@/components/book-detail";
@@ -168,13 +168,12 @@ export function BookList({
           />
         )}
       </div>
-      <BookCounter
+      <Counter
         total={
           viewMode === "books"
             ? initialBooks.length
             : initialRecommenders.length
         }
-        filtered={filteredCount}
         viewMode={viewMode}
       />
 

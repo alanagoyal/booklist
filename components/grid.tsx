@@ -10,10 +10,10 @@ import React, {
 import { ChevronDown, Check, ArrowUp, ArrowDown } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { useTransition } from "react";
 import { SearchBox } from "./search-box";
 import { debounce } from "lodash";
 import { generateEmbedding } from "@/utils/embeddings";
+import { countManager } from "@/components/counter";
 
 type SortDirection = "asc" | "desc";
 
@@ -109,6 +109,11 @@ export function DataGrid<T extends Record<string, any>>({
     // Show existing filtered data while searching
     return data;
   }, [data, searchResults, debouncedQuery]);
+
+  // Update counter
+  useEffect(() => {
+    countManager.updateCount(viewMode, filteredData.length);
+  }, [filteredData.length, viewMode]);
 
   // Data sorting
   const sortedData = useMemo(() => {
