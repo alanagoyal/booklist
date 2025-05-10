@@ -39,6 +39,40 @@ type DataGridProps<T extends Record<string, any>> = {
   onRowClick?: (row: T) => void;
 };
 
+// Placeholders
+const booksPlaceholders = [
+  "A book that will help me develop better taste",
+  "A dystopian science fiction novel with a little comedy",
+  "A historical fiction novel that takes place during the Industrial Revolution",
+  'A crime novel with "The White Lotus"-level character development',
+  "A biography or memoir of an underrated world leader",
+];
+
+const peoplePlaceholders = [
+  "An artist or designer with great taste",
+  "A journalist or influencer with controversial views",
+  "A scientist or researcher who flies under the radar",
+  "A chef or food critic who's seen it all",
+  "An entrepreneur or executive who writes code",
+];
+
+// Shorter placeholders for mobile
+const booksPlaceholdersMobile = [
+  "A book on developing taste",
+  "A dystopian sci-fi novel",
+  "A book on the industrial revolution",
+  'A crime novel like "The White Lotus"',
+  "A biography of a world leader",
+];
+
+const peoplePlaceholdersMobile = [
+  "An artist or designer with taste",
+  "A controversial journalist",
+  "An underrated scientist",
+  "A renowned chef or food critic",
+  "A technical entrepreneur",
+];
+
 export function DataGrid<T extends Record<string, any>>({
   data,
   columns,
@@ -84,15 +118,17 @@ export function DataGrid<T extends Record<string, any>>({
   const viewMode =
     (searchParams.get("view") as "books" | "recommenders") || "books";
   const directionParam = searchParams?.get(`${viewMode}_dir`);
-  const sortConfig = {
-    field:
-      searchParams?.get(`${viewMode}_sort`) ||
-      (viewMode === "books" ? "recommenders" : "recommendations"),
-    direction:
-      directionParam === "asc" || directionParam === "desc"
-        ? directionParam
-        : "desc",
-  };
+  const sortConfig = useMemo(() => {
+    return {
+      field:
+        searchParams?.get(`${viewMode}_sort`) ||
+        (viewMode === "books" ? "recommenders" : "recommendations"),
+      direction:
+        directionParam === "asc" || directionParam === "desc"
+          ? directionParam
+          : "desc",
+    };
+  }, [searchParams, viewMode, directionParam]);
 
   // Initialize filters from URL params
   const [filters, setFilters] = useState<{ [key: string]: string }>(() => {
@@ -223,40 +259,6 @@ export function DataGrid<T extends Record<string, any>>({
     searchState.isSearching,
   ]);
 
-  // Placeholders
-  const booksPlaceholders = [
-    'A book that will help me develop better taste',
-    'A dystopian science fiction novel with a little comedy',
-    'A historical fiction novel that takes place during the Industrial Revolution',
-    'A crime novel with "The White Lotus"-level character development',
-    'A biography or memoir of an underrated world leader',
-  ];
-
-  const peoplePlaceholders = [
-    'An artist or designer with great taste',
-    'A journalist or influencer with controversial views',
-    'A scientist or researcher who flies under the radar',
-    'A chef or food critic who\'s seen it all',
-    'An entrepreneur or executive who writes code',
-  ];
-
-  // Shorter placeholders for mobile
-  const booksPlaceholdersMobile = [
-    'A book on developing taste',
-    'A dystopian sci-fi novel',
-    'A book on the industrial revolution',
-    'A crime novel like "The White Lotus"',
-    'A biography of a world leader',
-  ];
-
-  const peoplePlaceholdersMobile = [
-    'An artist or designer with taste',
-    'A controversial journalist',
-    'An underrated scientist',
-    'A renowned chef or food critic',
-    'A technical entrepreneur',
-  ];
-
   // Check screen size on mount and resize
   useEffect(() => {
     const checkScreenSize = () => {
@@ -346,8 +348,9 @@ export function DataGrid<T extends Record<string, any>>({
   const handleSearch = useCallback(
     (inputValue: string, forceSearch = false) => {
       // For short queries, don't show loading unless forced
-      const shouldShowLoading = inputValue.length > 3 || (inputValue.length > 0 && forceSearch);
-      
+      const shouldShowLoading =
+        inputValue.length > 3 || (inputValue.length > 0 && forceSearch);
+
       // Update input value immediately
       setSearchState((prev) => ({
         ...prev,
@@ -384,20 +387,24 @@ export function DataGrid<T extends Record<string, any>>({
 
   // Sync with URL changes
   useEffect(() => {
-    const viewMode = searchParams.get("view") || "books";
-    const urlQuery = searchParams?.get(`${viewMode}_search`) || "";
-    const cachedResults = searchParams?.get(`${viewMode}_search_results`);
+    setSearchState((prev) => {
+      const viewMode = searchParams.get("view") || "books";
+      const urlQuery = searchParams?.get(`${viewMode}_search`) || "";
+      const cachedResults = searchParams?.get(`${viewMode}_search_results`);
 
-    if (urlQuery !== searchState.query) {
-      setSearchState((prev) => ({
-        ...prev,
-        query: urlQuery,
-        inputValue: urlQuery,
-        results: cachedResults
-          ? new Set(cachedResults.split(","))
-          : prev.results,
-      }));
-    }
+      if (urlQuery !== prev.query) {
+        return {
+          ...prev,
+          query: urlQuery,
+          inputValue: urlQuery,
+          results: cachedResults
+            ? new Set(cachedResults.split(","))
+            : prev.results,
+        };
+      } else {
+        return prev;
+      }
+    });
   }, [searchParams]);
 
   // Update filtered count whenever filteredData changes
@@ -569,15 +576,11 @@ export function DataGrid<T extends Record<string, any>>({
     placeholderIndex,
     typedPlaceholder,
     isTyping,
-    booksPlaceholders,
-    peoplePlaceholders,
     TYPING_SPEED,
     ERASING_SPEED,
     PAUSE_AFTER_TYPING,
     PAUSE_BEFORE_NEXT,
     isMobileView,
-    booksPlaceholdersMobile,
-    peoplePlaceholdersMobile,
   ]);
 
   // Event handlers
