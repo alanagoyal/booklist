@@ -40,13 +40,16 @@ export function DataGrid<T extends Record<string, any>>({
   // Hooks
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [isPending, startTransition] = useTransition();
 
   // State
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [isDropdownClosing, setIsDropdownClosing] = useState(false);
   const [isMobileView, setIsMobileView] = useState(false);
-  const [searchQuery, setSearchQuery] = useState(() => {
+  const [inputValue, setInputValue] = useState(() => {
+    const view = searchParams?.get("view") || "books";
+    return searchParams?.get(`${view}_search`) || "";
+  });
+  const [debouncedQuery, setDebouncedQuery] = useState(() => {
     const view = searchParams?.get("view") || "books";
     return searchParams?.get(`${view}_search`) || "";
   });
@@ -83,10 +86,18 @@ export function DataGrid<T extends Record<string, any>>({
   const resizeTimeout = useRef<number | null>(null);
   const parentRef = useRef<HTMLDivElement>(null);
 
+  // Debounce the query update
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedQuery(inputValue);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [inputValue]);
+
   // Data filtering
   const filteredData = useMemo(() => {
     // If no search is active, return all data
-    if (!searchQuery.trim()) {
+    if (!debouncedQuery.trim()) {
       return data;
     }
 
@@ -97,7 +108,7 @@ export function DataGrid<T extends Record<string, any>>({
 
     // Show existing filtered data while searching
     return data;
-  }, [data, searchResults, searchQuery]);
+  }, [data, searchResults, debouncedQuery]);
 
   // Data sorting
   const sortedData = useMemo(() => {
@@ -169,7 +180,7 @@ export function DataGrid<T extends Record<string, any>>({
   // Search handler
   const handleSearch = useCallback(
     async (query: string) => {
-      setSearchQuery(query);
+      setInputValue(query);
       if (!query.trim()) {
         // if input cleared
         setIsSearching(false);
@@ -464,7 +475,7 @@ export function DataGrid<T extends Record<string, any>>({
     <div className="flex flex-col h-full">
       {/* Search box */}
       <SearchBox
-        value={searchQuery}
+        value={inputValue}
         onSearch={handleSearch}
         isSearching={isSearching}
         viewMode={viewMode}
@@ -487,7 +498,7 @@ export function DataGrid<T extends Record<string, any>>({
               {columns.map(renderHeader)}
             </div>
           </div>
-          {sortedData.length === 0 && searchQuery.trim() && !isSearching ? (
+          {sortedData.length === 0 && debouncedQuery.trim() && !isSearching ? (
             <div className="fixed left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 text-center px-4">
               <div className="text-text/70">No results match this search</div>
             </div>
