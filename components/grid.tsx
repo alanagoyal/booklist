@@ -81,6 +81,7 @@ export function DataGrid<T extends Record<string, any>>({
   onRowClick,
   initialViewMode = "books",
 }: DataGridProps<T>) {
+  console.log("RENDERING GRID");
   // Animation timing constants (in milliseconds)
   const TYPING_SPEED = 30; // Time between typing each character
   const ERASING_SPEED = 15; // Time between erasing each character
@@ -229,6 +230,7 @@ export function DataGrid<T extends Record<string, any>>({
 
   // Check screen size on mount and resize
   useEffect(() => {
+    console.log("CHECKING SCREEN SIZE");
     const checkScreenSize = () => {
       setIsMobileView(window.innerWidth < MOBILE_BREAKPOINT);
     };
@@ -246,6 +248,17 @@ export function DataGrid<T extends Record<string, any>>({
   // Create debounced search function
   const debouncedSearch = useRef(
     debounce(async (query: string, forceSearch = false) => {
+      // For short queries, don't show loading unless forced
+      const shouldShowLoading =
+        query.length > 3 || (query.length > 0 && forceSearch);
+
+      // Update input value immediately
+      setSearchState((prev) => ({
+        ...prev,
+        query,
+        isSearching: shouldShowLoading, // Only show loading for queries that will actually search
+      }));
+
       // For empty queries, clear everything
       if (!query) {
         setSearchState((prev) => ({
@@ -314,17 +327,6 @@ export function DataGrid<T extends Record<string, any>>({
   // Handle search input changes
   const handleSearch = useCallback(
     (inputValue: string, forceSearch = false) => {
-      // For short queries, don't show loading unless forced
-      const shouldShowLoading =
-        inputValue.length > 3 || (inputValue.length > 0 && forceSearch);
-
-      // Update input value immediately
-      setSearchState((prev) => ({
-        ...prev,
-        inputValue,
-        isSearching: shouldShowLoading, // Only show loading for queries that will actually search
-      }));
-
       // Trigger debounced search with force flag
       debouncedSearch(inputValue, forceSearch);
     },
@@ -333,6 +335,7 @@ export function DataGrid<T extends Record<string, any>>({
 
   // Update filtered count whenever filteredData changes
   useEffect(() => {
+    console.log("UPDATING FILTERED COUNT");
     if (onFilteredDataChange) {
       onFilteredDataChange(filteredData.length);
     }
@@ -340,6 +343,7 @@ export function DataGrid<T extends Record<string, any>>({
 
   // Notify parent of filtered data changes
   useEffect(() => {
+    console.log("UPDATING FILTERED COUNT");
     if (onFilteredDataChange) {
       onFilteredDataChange(filteredData.length);
       bookCountManager.updateCount();
@@ -391,75 +395,76 @@ export function DataGrid<T extends Record<string, any>>({
   }, [filteredData, sortConfig]);
 
   // Animate placeholder text with typewriter effect
-  useEffect(() => {
-    // Only animate when there's no search query
-    if (searchState.inputValue) return;
+  // useEffect(() => {
+  //   console.log("ANIMATING PLACEHOLDER TEXT");
+  //   // Only animate when there's no search query
+  //   if (searchState.inputValue) return;
 
-    const currentPlaceholders =
-      viewMode === "books"
-        ? isMobileView
-          ? booksPlaceholdersMobile
-          : booksPlaceholders
-        : isMobileView
-          ? peoplePlaceholdersMobile
-          : peoplePlaceholders;
+  //   const currentPlaceholders =
+  //     viewMode === "books"
+  //       ? isMobileView
+  //         ? booksPlaceholdersMobile
+  //         : booksPlaceholders
+  //       : isMobileView
+  //         ? peoplePlaceholdersMobile
+  //         : peoplePlaceholders;
 
-    const currentFullPlaceholder = currentPlaceholders[placeholderIndex];
+  //   const currentFullPlaceholder = currentPlaceholders[placeholderIndex];
 
-    if (isTyping) {
-      // Typing phase
-      if (typedPlaceholder.length < currentFullPlaceholder.length) {
-        // Continue typing the current placeholder
-        const typingTimeout = setTimeout(() => {
-          setTypedPlaceholder(
-            currentFullPlaceholder.substring(0, typedPlaceholder.length + 1)
-          );
-        }, TYPING_SPEED);
+  //   if (isTyping) {
+  //     // Typing phase
+  //     if (typedPlaceholder.length < currentFullPlaceholder.length) {
+  //       // Continue typing the current placeholder
+  //       const typingTimeout = setTimeout(() => {
+  //         setTypedPlaceholder(
+  //           currentFullPlaceholder.substring(0, typedPlaceholder.length + 1)
+  //         );
+  //       }, TYPING_SPEED);
 
-        return () => clearTimeout(typingTimeout);
-      } else {
-        // Finished typing, pause before erasing
-        const pauseTimeout = setTimeout(() => {
-          setIsTyping(false);
-        }, PAUSE_AFTER_TYPING);
+  //       return () => clearTimeout(typingTimeout);
+  //     } else {
+  //       // Finished typing, pause before erasing
+  //       const pauseTimeout = setTimeout(() => {
+  //         setIsTyping(false);
+  //       }, PAUSE_AFTER_TYPING);
 
-        return () => clearTimeout(pauseTimeout);
-      }
-    } else {
-      // Erasing phase
-      if (typedPlaceholder.length > 0) {
-        // Continue erasing the current placeholder
-        const erasingTimeout = setTimeout(() => {
-          setTypedPlaceholder(
-            typedPlaceholder.substring(0, typedPlaceholder.length - 1)
-          );
-        }, ERASING_SPEED);
+  //       return () => clearTimeout(pauseTimeout);
+  //     }
+  //   } else {
+  //     // Erasing phase
+  //     if (typedPlaceholder.length > 0) {
+  //       // Continue erasing the current placeholder
+  //       const erasingTimeout = setTimeout(() => {
+  //         setTypedPlaceholder(
+  //           typedPlaceholder.substring(0, typedPlaceholder.length - 1)
+  //         );
+  //       }, ERASING_SPEED);
 
-        return () => clearTimeout(erasingTimeout);
-      } else {
-        // Finished erasing, move to next placeholder
-        const nextPlaceholderTimeout = setTimeout(() => {
-          setPlaceholderIndex(
-            (prevIndex) => (prevIndex + 1) % currentPlaceholders.length
-          );
-          setIsTyping(true);
-        }, PAUSE_BEFORE_NEXT);
+  //       return () => clearTimeout(erasingTimeout);
+  //     } else {
+  //       // Finished erasing, move to next placeholder
+  //       const nextPlaceholderTimeout = setTimeout(() => {
+  //         setPlaceholderIndex(
+  //           (prevIndex) => (prevIndex + 1) % currentPlaceholders.length
+  //         );
+  //         setIsTyping(true);
+  //       }, PAUSE_BEFORE_NEXT);
 
-        return () => clearTimeout(nextPlaceholderTimeout);
-      }
-    }
-  }, [
-    viewMode,
-    searchState.inputValue,
-    placeholderIndex,
-    typedPlaceholder,
-    isTyping,
-    TYPING_SPEED,
-    ERASING_SPEED,
-    PAUSE_AFTER_TYPING,
-    PAUSE_BEFORE_NEXT,
-    isMobileView,
-  ]);
+  //       return () => clearTimeout(nextPlaceholderTimeout);
+  //     }
+  //   }
+  // }, [
+  //   viewMode,
+  //   searchState.inputValue,
+  //   placeholderIndex,
+  //   typedPlaceholder,
+  //   isTyping,
+  //   TYPING_SPEED,
+  //   ERASING_SPEED,
+  //   PAUSE_AFTER_TYPING,
+  //   PAUSE_BEFORE_NEXT,
+  //   isMobileView,
+  // ]);
 
   // Event handlers
   const handleRowClick = useCallback(
@@ -516,6 +521,7 @@ export function DataGrid<T extends Record<string, any>>({
 
   // Keep resize observer for header width syncing
   useEffect(() => {
+    console.log("KEEPING RESIZE OBSERVER FOR HEADER WIDTH SYNCING");
     const observer = new ResizeObserver(() => {
       if (resizeTimeout.current) {
         cancelAnimationFrame(resizeTimeout.current);
@@ -543,6 +549,7 @@ export function DataGrid<T extends Record<string, any>>({
 
   // Clean up resize timeout
   useEffect(() => {
+    console.log("CLEANING UP RESIZE TIMEOUT");
     return () => {
       if (resizeTimeout.current) {
         cancelAnimationFrame(resizeTimeout.current);
@@ -552,6 +559,7 @@ export function DataGrid<T extends Record<string, any>>({
 
   // Handle dropdown interactions
   useEffect(() => {
+    console.log("HANDLING DROPDOWN INTERACTIONS");
     const handleClickOutside = (e: MouseEvent) => {
       if (!openDropdown) return;
 
@@ -768,7 +776,6 @@ export function DataGrid<T extends Record<string, any>>({
             type="text"
             placeholder={typedPlaceholder}
             className="flex-1 h-10 focus:outline-none bg-background border-b border-border text-text text-base sm:text-sm selection:bg-main selection:text-mtext focus:outline-none rounded-none"
-            value={searchState.inputValue}
             onChange={(e) => {
               handleSearch(e.target.value, false);
             }}
