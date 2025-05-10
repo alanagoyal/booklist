@@ -313,7 +313,7 @@ export function DataGrid<T extends Record<string, any>>({
         ? new Set(cachedResults.split(","))
         : new Set<string>());
     }
-  }, [searchParams]);
+  }, [searchParams, searchQuery]);
 
   // Update filtered count whenever filteredData changes
   useEffect(() => {
