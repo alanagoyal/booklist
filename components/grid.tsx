@@ -24,53 +24,6 @@ import { generateEmbedding } from "@/utils/embeddings";
 import { SearchBox } from "./search-box";
 import { useTransition } from "react";
 
-// Cache helper functions
-const CACHE_EXPIRY_MS = 5 * 60 * 1000; // 5 minutes
-
-const getCacheKey = (query: string, viewMode: string) => {
-  return `search_cache_${viewMode}_${query}`;
-};
-
-const getFromCache = (query: string, viewMode: string): string[] | null => {
-  if (typeof window === 'undefined') return null;
-  
-  try {
-    const cacheKey = getCacheKey(query, viewMode);
-    const cachedData = localStorage.getItem(cacheKey);
-    
-    if (!cachedData) return null;
-    
-    const { results, timestamp } = JSON.parse(cachedData);
-    
-    // Check if cache is expired
-    if (Date.now() - timestamp > CACHE_EXPIRY_MS) {
-      localStorage.removeItem(cacheKey);
-      return null;
-    }
-    
-    return results;
-  } catch (error) {
-    console.error('Error reading from cache:', error);
-    return null;
-  }
-};
-
-const saveToCache = (query: string, viewMode: string, results: string[]) => {
-  if (typeof window === 'undefined') return;
-  
-  try {
-    const cacheKey = getCacheKey(query, viewMode);
-    const cacheData = {
-      results,
-      timestamp: Date.now()
-    };
-    
-    localStorage.setItem(cacheKey, JSON.stringify(cacheData));
-  } catch (error) {
-    console.error('Error saving to cache:', error);
-  }
-};
-
 type SortDirection = "asc" | "desc";
 
 type ColumnDef<T> = {
@@ -84,7 +37,6 @@ type DataGridProps<T extends Record<string, any>> = {
   data: T[];
   columns: ColumnDef<T>[];
   getRowClassName?: (row: T) => string;
-  onFilteredDataChange?: (count: number) => void;
   onRowClick?: (row: T) => void;
 };
 
@@ -92,7 +44,6 @@ export function DataGrid<T extends Record<string, any>>({
   data,
   columns,
   getRowClassName,
-  onFilteredDataChange,
   onRowClick,
 }: DataGridProps<T>) {
   // Hooks
@@ -129,23 +80,6 @@ export function DataGrid<T extends Record<string, any>>({
         : "desc",
   }), [searchParams, viewMode, directionParam]);
 
-  // Initialize filters from URL params
-  const [filters, setFilters] = useState<{ [key: string]: string }>(() => {
-    const params = Object.fromEntries(searchParams.entries());
-    const filterParams: { [key: string]: string } = {};
-    Object.entries(params).forEach(([key, value]) => {
-      if (
-        !key.includes("sort") &&
-        !key.includes("dir") &&
-        key !== "key" &&
-        key !== "view" &&
-        !key.includes("search")
-      ) {
-        filterParams[key] = value;
-      }
-    });
-    return filterParams;
-  });
 
   // Refs
   const gridRef = useRef<HTMLDivElement>(null);
@@ -155,185 +89,12 @@ export function DataGrid<T extends Record<string, any>>({
   const resizeTimeout = useRef<number | null>(null);
   const parentRef = useRef<HTMLDivElement>(null);
 
-  // Memoize active filters to prevent unnecessary recalculations
-  const activeFilters = useMemo(() => {
-    return Object.entries(filters)
-      .filter(([_, value]) => value)
-      .map(([field]) => field);
-  }, [filters]);
-
-  // Memoize filtered data separately from sorting for better performance
-  const filteredData = useMemo(() => {
-    // Start with the base data
-    let filtered = data;
-
-    // Handle semantic search
-    if (searchQuery) {
-      // Only filter by results if we have them
-      filtered = filtered.filter((item) =>
-        searchResults.has((item as any).id)
-      );
-    }
-
-    // Then apply column filters
-    if (Object.values(filters).some(Boolean)) {
-      const lowercaseFilters = Object.fromEntries(
-        Object.entries(filters).map(([key, value]) => [
-          key,
-          value?.toLowerCase(),
-        ])
-      );
-
-      // Get list of valid filter fields from columns
-      const validFilterFields = columns.map((col) => String(col.field));
-
-      filtered = filtered.filter((item) => {
-        return Object.entries(lowercaseFilters).every(
-          ([field, filterValue]) => {
-            if (!filterValue) return true;
-
-            // Skip filters that don't correspond to any column
-            if (!validFilterFields.includes(field)) return true;
-
-            // Special handling for description fields
-            if (field === "book_description") {
-              return String(item.description || "")
-                .toLowerCase()
-                .includes(filterValue);
-            }
-
-            if (field === "recommender_description") {
-              return String(item.description || "")
-                .toLowerCase()
-                .includes(filterValue);
-            }
-
-            // Filter by recommender full name
-            if (field === "recommenders") {
-              const recommendations = (item as any).recommendations || [];
-              const recommenderNames = recommendations
-                .filter((rec: any) => rec.recommender)
-                .map((rec: any) => rec.recommender.full_name.toLowerCase());
-              return recommenderNames.some((name: string) =>
-                name.includes(filterValue)
-              );
-            }
-
-            // Filter by recommendation title
-            if (field === "recommendations") {
-              const recommendations = (item as any).recommendations || [];
-              const recommendationTitles = recommendations.map((rec: any) =>
-                rec.title.toLowerCase()
-              );
-              return recommendationTitles.some((title: string) =>
-                title.includes(filterValue)
-              );
-            }
-
-            // Default case: simple string includes check
-            const itemValue = String(
-              item[field as keyof T] || ""
-            ).toLowerCase();
-            return itemValue.includes(filterValue);
-          }
-        );
-      });
-    }
-
-    return filtered;
-  }, [
-    data,
-    filters,
-    columns,
-    searchQuery,
-    searchResults,
-  ]);
-
-  // Search handler
-  const runSearch = useCallback(async (query: string) => {
-    startTransition(async () => {
-      // Initialize URL params
-      const p = new URLSearchParams(searchParams.toString());
-
-      if (query === "") {
-        // Clear search params
-        p.delete(`${viewMode}_search`);
-        router.replace(`?${p.toString()}`, { scroll: false });
-        // Then update state
-        setSearchResults(new Set());
-        setSearchQuery("");
-        setIsLoadingResults(false);
-      } else {
-        try {
-          // Update URL with just the search query
-          p.set(`${viewMode}_search`, query);
-          
-          // Only update the URL if we're not already running this search from a URL change
-          if (searchQuery !== query) {
-            router.replace(`?${p.toString()}`, { scroll: false });
-          }
-          
-          // Check cache first
-          const cachedResults = getFromCache(query, viewMode);
-          
-          if (cachedResults) {
-            // Use cached results if available
-            console.log('Using cached search results');
-            setSearchResults(new Set(cachedResults));
-            setSearchQuery(query);
-            return;
-          }
-          
-          // Set loading state to true at the start of the search
-          setIsLoadingResults(true);
-          
-          // Run the actual search
-          const embedding = await generateEmbedding(query);
-          const response = await fetch("/api/search", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ 
-              query,
-              embedding, 
-              viewMode: viewMode === 'people' ? 'people' : 'books' 
-            }),
-          });
-          
-          if (!response.ok) throw new Error("Search failed");
-          
-          const results = await response.json();
-          const resultIds = results.map((r: { id: string }) => r.id);
-          const newResults: Set<string> = new Set(resultIds);
-
-          // Save to cache
-          saveToCache(query, viewMode, resultIds);
-          
-          // Update state with results
-          setSearchResults(newResults);
-          setSearchQuery(query);
-        } catch (error) {
-          console.error("Search error:", error);
-          // Clear everything on error
-          setSearchResults(new Set());
-          
-          // Update URL params to remove search
-          const p = new URLSearchParams(searchParams.toString());
-          p.delete(`${viewMode}_search`);
-          router.replace(`?${p.toString()}`, { scroll: false });
-        } finally {
-          // Set loading state to false when search completes (success or error)
-          setIsLoadingResults(false);
-        }
-      }
-    });
-  }, [viewMode, router, searchParams, searchQuery]);
-
   // Data filtering and sorting
-  const filteredAndSortedData = useMemo(() => {
+  const sortedData = useMemo(() => {
     const field = sortConfig.field;
     const direction = sortConfig.direction;
 
-    return [...filteredData].sort((a, b) => {
+    return [...data].sort((a, b) => {
       // Special handling for description fields
       if (field === "book_description" || field === "recommender_description") {
         const aValue = String(a.description || "").toLowerCase();
@@ -370,118 +131,7 @@ export function DataGrid<T extends Record<string, any>>({
         ? -sortDirection
         : sortDirection;
     });
-  }, [filteredData, sortConfig]);
-
-  // Run search on component mount and when URL params change
-  useEffect(() => {
-    const viewMode = searchParams.get("view") || "books";
-    const urlQuery = searchParams?.get(`${viewMode}_search`) || "";
-
-    // Always set the search query from URL
-    setSearchQuery(urlQuery);
-    
-    // If there's a search query in the URL, run the search
-    // This ensures search results are restored when navigating back to the page
-    if (urlQuery) {
-      // Set loading state to true at the start of the search
-      setIsLoadingResults(true);
-      
-      // Check cache first
-      const cachedResults = getFromCache(urlQuery, viewMode);
-      
-      if (cachedResults) {
-        // Use cached results if available
-        console.log('Using cached search results');
-        setSearchResults(new Set(cachedResults));
-        setIsLoadingResults(false);
-        return;
-      }
-      
-      // Use a local function to call runSearch to avoid dependency issues
-      const fetchSearchResults = async (query: string) => {
-        try {
-          const embedding = await generateEmbedding(query);
-          const response = await fetch("/api/search", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ 
-              query,
-              embedding, 
-              viewMode: viewMode === 'people' ? 'people' : 'books' 
-            }),
-          });
-          
-          if (!response.ok) throw new Error("Search failed");
-          
-          const results = await response.json();
-          const resultIds = results.map((r: { id: string }) => r.id);
-          const newResults: Set<string> = new Set(resultIds);
-          
-          // Save to cache
-          saveToCache(query, viewMode, resultIds);
-          
-          setSearchResults(newResults);
-        } catch (error) {
-          console.error("Search error:", error);
-          setSearchResults(new Set());
-        } finally {
-          // Set loading state to false when search completes (success or error)
-          setIsLoadingResults(false);
-        }
-      };
-      
-      // Start transition for the search
-      startTransition(() => {
-        fetchSearchResults(urlQuery);
-      });
-    } else {
-      setSearchResults(new Set<string>());
-      setIsLoadingResults(false);
-    }
-  }, [searchParams, viewMode]);  // Removed searchQuery to ensure search always runs on mount
-
-  // Update filtered count whenever filteredData changes
-  useEffect(() => {
-    if (onFilteredDataChange) {
-      onFilteredDataChange(filteredData.length);
-    }
-  }, [filteredData, onFilteredDataChange]);
-
-  // Notify parent of filtered data changes
-  useEffect(() => {
-    if (onFilteredDataChange) {
-      onFilteredDataChange(filteredData.length);
-      bookCountManager.updateCount();
-    }
-  }, [filteredData.length, onFilteredDataChange]);
-
-  // Update URL when sort/filter changes
-  useEffect(() => {
-    const currentParams = new URLSearchParams(searchParams.toString());
-    const newParams = new URLSearchParams(currentParams.toString());
-
-    // Initialize default parameters if they don't exist
-    if (!currentParams.has("view")) {
-      newParams.set("view", "books");
-    }
-
-    // Update filter params
-    Object.entries(filters).forEach(([key, value]) => {
-      if (value) {
-        newParams.set(key, value);
-      } else {
-        newParams.delete(key);
-      }
-    });
-
-    const queryString = newParams.toString();
-    const newPath = queryString ? `/?${queryString}` : "/";
-
-    // Only update URL if params have changed
-    if (newParams.toString() !== currentParams.toString()) {
-      router.replace(newPath, { scroll: false });
-    }
-  }, [filters, router, searchParams]);
+  }, [data, sortConfig]);
 
   // Event handlers
   const handleRowClick = useCallback(
@@ -505,14 +155,6 @@ export function DataGrid<T extends Record<string, any>>({
     },
     [onRowClick, openDropdown, isDropdownClosing]
   );
-
-  // Filter handlers
-  const handleFilterChange = useCallback((field: string, value: string) => {
-    setFilters((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-  }, []);
 
   // Sort handlers
   const handleSort = useCallback(
@@ -671,35 +313,6 @@ export function DataGrid<T extends Record<string, any>>({
                   <Check className="w-3 h-3 text-text/70" />
                 )}
             </button>
-            <div className="px-4 py-2">
-              <div className="relative">
-                <input
-                  type="text"
-                  ref={(el) =>
-                    void (inputRefs.current[String(column.field)] = el)
-                  }
-                  className="w-full px-2 py-1 border border-border bg-background text-text text-base sm:text-sm placeholder:text-sm selection:bg-main selection:text-mtext focus:outline-none rounded-none"
-                  placeholder="Search"
-                  value={filters[String(column.field)] || ""}
-                  onChange={(e) =>
-                    handleFilterChange(String(column.field), e.target.value)
-                  }
-                  onClick={(e) => e.stopPropagation()}
-                />
-                {filters[String(column.field)] && (
-                  <button
-                    className="absolute right-2 top-1/2 -translate-y-1/2 text-text/70 transition-colors duration-200 md:hover:text-text p-2 -mr-2"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      handleFilterChange(String(column.field), "");
-                    }}
-                  >
-                    <X className="w-3 h-3" />
-                  </button>
-                )}
-              </div>
-            </div>
           </div>
         </div>
       );
@@ -708,9 +321,7 @@ export function DataGrid<T extends Record<string, any>>({
       openDropdown,
       isDropdownClosing,
       sortConfig,
-      filters,
       handleSort,
-      handleFilterChange,
     ]
   );
 
@@ -735,9 +346,6 @@ export function DataGrid<T extends Record<string, any>>({
           <div className="flex items-center justify-between flex-shrink-0">
             <span className="font-base text-text">{column.header}</span>
             <div className="flex items-center gap-1">
-              {activeFilters.includes(String(column.field)) && (
-                <ListFilter className="w-3 h-3 text-text/70 md:group-hover:hidden" />
-              )}
               <div>
                 {sortConfig.field === String(column.field) && (
                   <div className="md:group-hover:hidden">
@@ -756,7 +364,7 @@ export function DataGrid<T extends Record<string, any>>({
         </div>
       );
     },
-    [activeFilters, sortConfig, handleDropdownClick, renderDropdownMenu]
+    [sortConfig, handleDropdownClick, renderDropdownMenu]
   );
 
   // Cells
@@ -781,7 +389,7 @@ export function DataGrid<T extends Record<string, any>>({
 
   // Row virtualizer
   const rowVirtualizer = useVirtualizer({
-    count: filteredAndSortedData.length,
+    count: sortedData.length,
     getScrollElement: () => parentRef.current,
     estimateSize: () => 56, // Adjust based on your actual row height
   });
@@ -804,13 +412,6 @@ export function DataGrid<T extends Record<string, any>>({
 
   return (
     <div className="flex flex-col h-full">
-      <SearchBox
-        value={searchQuery}
-        onSearch={runSearch}
-        searching={isPending}
-        viewMode={viewMode}
-        isMobileView={isMobileView}
-      />
       {/* Scrollable grid content */}
       <div
         ref={parentRef}
@@ -834,7 +435,7 @@ export function DataGrid<T extends Record<string, any>>({
               <div className="w-6 h-6 border-2 border-text/70 rounded-full animate-spin border-t-transparent mx-auto mb-2"></div>
               <div className="text-text/70">Loading search results...</div>
             </div>
-          ) : filteredAndSortedData.length === 0 ? (
+          ) : sortedData.length === 0 ? (
             <div className="fixed left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 text-center px-4">
               <div className="text-text/70">No results match this search</div>
             </div>
@@ -846,7 +447,7 @@ export function DataGrid<T extends Record<string, any>>({
               }}
             >
               {rowVirtualizer.getVirtualItems().map((virtualRow) => {
-                const row = filteredAndSortedData[virtualRow.index];
+                const row = sortedData[virtualRow.index];
 
                 // Use a stable key based on the row's unique identifier to
                 // ensure React remounts DOM nodes when the underlying data

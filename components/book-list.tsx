@@ -89,11 +89,6 @@ export function BookList({
     }
   }, [router, searchParams, viewHistory]);
 
-  // Handle filtered data change
-  const handleFilteredDataChange = useCallback((count: number) => {
-    setFilteredCount(count);
-  }, []);
-
   // Handle tab click
   const handleTabClick = useCallback(
     (view: (typeof viewHistory)[0]) => {
@@ -166,12 +161,10 @@ export function BookList({
         {viewMode === "books" ? (
           <BookGrid
             data={initialBooks}
-            onFilteredDataChange={handleFilteredDataChange}
           />
         ) : (
           <RecommenderGrid
             data={initialRecommenders}
-            onFilteredDataChange={handleFilteredDataChange}
           />
         )}
       </div>
