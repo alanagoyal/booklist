@@ -102,13 +102,13 @@ export function DataGrid<T extends Record<string, any>>({
     }
 
     // Only filter if we actually have results back
-    if (searchResults.size > 0) {
+    if (!isSearching) {
       return data.filter((item) => searchResults.has(item.id));
     }
 
     // Show existing filtered data while searching
     return data;
-  }, [data, searchResults, debouncedQuery]);
+  }, [data, searchResults, debouncedQuery, isSearching]);
 
   // Update counter
   useEffect(() => {
