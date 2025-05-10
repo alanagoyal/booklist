@@ -24,6 +24,53 @@ import { generateEmbedding } from "@/utils/embeddings";
 import { SearchBox } from "./search-box";
 import { useTransition } from "react";
 
+// Cache helper functions
+const CACHE_EXPIRY_MS = 5 * 60 * 1000; // 5 minutes
+
+const getCacheKey = (query: string, viewMode: string) => {
+  return `search_cache_${viewMode}_${query}`;
+};
+
+const getFromCache = (query: string, viewMode: string): string[] | null => {
+  if (typeof window === 'undefined') return null;
+  
+  try {
+    const cacheKey = getCacheKey(query, viewMode);
+    const cachedData = localStorage.getItem(cacheKey);
+    
+    if (!cachedData) return null;
+    
+    const { results, timestamp } = JSON.parse(cachedData);
+    
+    // Check if cache is expired
+    if (Date.now() - timestamp > CACHE_EXPIRY_MS) {
+      localStorage.removeItem(cacheKey);
+      return null;
+    }
+    
+    return results;
+  } catch (error) {
+    console.error('Error reading from cache:', error);
+    return null;
+  }
+};
+
+const saveToCache = (query: string, viewMode: string, results: string[]) => {
+  if (typeof window === 'undefined') return;
+  
+  try {
+    const cacheKey = getCacheKey(query, viewMode);
+    const cacheData = {
+      results,
+      timestamp: Date.now()
+    };
+    
+    localStorage.setItem(cacheKey, JSON.stringify(cacheData));
+  } catch (error) {
+    console.error('Error saving to cache:', error);
+  }
+};
+
 type SortDirection = "asc" | "desc";
 
 type ColumnDef<T> = {
@@ -61,10 +108,11 @@ export function DataGrid<T extends Record<string, any>>({
     const view = searchParams?.get("view") || "books";
     return searchParams?.get(`${view}_search`) || "";
   });
-  const [searchResults, setSearchResults] = useState<Set<string>>(() => {
+  const [searchResults, setSearchResults] = useState<Set<string>>(new Set<string>());
+  const [isLoadingResults, setIsLoadingResults] = useState(() => {
+    // Set initial loading state to true if there's a search query in the URL
     const view = searchParams?.get("view") || "books";
-    const cachedResults = searchParams?.get(`${view}_search_results`);
-    return cachedResults ? new Set(cachedResults.split(",")) : new Set<string>();
+    return Boolean(searchParams?.get(`${view}_search`));
   });
 
   // Get current view and sort configs directly from URL
@@ -210,13 +258,36 @@ export function DataGrid<T extends Record<string, any>>({
       if (query === "") {
         // Clear search params
         p.delete(`${viewMode}_search`);
-        p.delete(`${viewMode}_search_results`);
         router.replace(`?${p.toString()}`, { scroll: false });
         // Then update state
         setSearchResults(new Set());
         setSearchQuery("");
+        setIsLoadingResults(false);
       } else {
         try {
+          // Update URL with just the search query
+          p.set(`${viewMode}_search`, query);
+          
+          // Only update the URL if we're not already running this search from a URL change
+          if (searchQuery !== query) {
+            router.replace(`?${p.toString()}`, { scroll: false });
+          }
+          
+          // Check cache first
+          const cachedResults = getFromCache(query, viewMode);
+          
+          if (cachedResults) {
+            // Use cached results if available
+            console.log('Using cached search results');
+            setSearchResults(new Set(cachedResults));
+            setSearchQuery(query);
+            return;
+          }
+          
+          // Set loading state to true at the start of the search
+          setIsLoadingResults(true);
+          
+          // Run the actual search
           const embedding = await generateEmbedding(query);
           const response = await fetch("/api/search", {
             method: "POST",
@@ -231,31 +302,31 @@ export function DataGrid<T extends Record<string, any>>({
           if (!response.ok) throw new Error("Search failed");
           
           const results = await response.json();
-          const newResults: Set<string> = new Set(results.map((r: { id: string }) => r.id));
+          const resultIds = results.map((r: { id: string }) => r.id);
+          const newResults: Set<string> = new Set(resultIds);
 
-          // Update URL with search results
-          p.set(`${viewMode}_search`, query);
-          p.set(`${viewMode}_search_results`, Array.from(newResults).join(","));
-          router.replace(`?${p.toString()}`, { scroll: false });
-
-          // Then update state
+          // Save to cache
+          saveToCache(query, viewMode, resultIds);
+          
+          // Update state with results
           setSearchResults(newResults);
           setSearchQuery(query);
         } catch (error) {
           console.error("Search error:", error);
           // Clear everything on error
           setSearchResults(new Set());
-          setSearchQuery("");
           
           // Update URL params to remove search
           const p = new URLSearchParams(searchParams.toString());
           p.delete(`${viewMode}_search`);
-          p.delete(`${viewMode}_search_results`);
           router.replace(`?${p.toString()}`, { scroll: false });
+        } finally {
+          // Set loading state to false when search completes (success or error)
+          setIsLoadingResults(false);
         }
       }
     });
-  }, [viewMode, router, searchParams]);
+  }, [viewMode, router, searchParams, searchQuery]);
 
   // Data filtering and sorting
   const filteredAndSortedData = useMemo(() => {
@@ -301,19 +372,73 @@ export function DataGrid<T extends Record<string, any>>({
     });
   }, [filteredData, sortConfig]);
 
-  // Update state when URL params change
+  // Run search on component mount and when URL params change
   useEffect(() => {
     const viewMode = searchParams.get("view") || "books";
     const urlQuery = searchParams?.get(`${viewMode}_search`) || "";
-    const cachedResults = searchParams?.get(`${viewMode}_search_results`);
 
-    if (urlQuery !== searchQuery) {
-      setSearchQuery(urlQuery);
-      setSearchResults(cachedResults
-        ? new Set(cachedResults.split(","))
-        : new Set<string>());
+    // Always set the search query from URL
+    setSearchQuery(urlQuery);
+    
+    // If there's a search query in the URL, run the search
+    // This ensures search results are restored when navigating back to the page
+    if (urlQuery) {
+      // Set loading state to true at the start of the search
+      setIsLoadingResults(true);
+      
+      // Check cache first
+      const cachedResults = getFromCache(urlQuery, viewMode);
+      
+      if (cachedResults) {
+        // Use cached results if available
+        console.log('Using cached search results');
+        setSearchResults(new Set(cachedResults));
+        setIsLoadingResults(false);
+        return;
+      }
+      
+      // Use a local function to call runSearch to avoid dependency issues
+      const fetchSearchResults = async (query: string) => {
+        try {
+          const embedding = await generateEmbedding(query);
+          const response = await fetch("/api/search", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ 
+              query,
+              embedding, 
+              viewMode: viewMode === 'people' ? 'people' : 'books' 
+            }),
+          });
+          
+          if (!response.ok) throw new Error("Search failed");
+          
+          const results = await response.json();
+          const resultIds = results.map((r: { id: string }) => r.id);
+          const newResults: Set<string> = new Set(resultIds);
+          
+          // Save to cache
+          saveToCache(query, viewMode, resultIds);
+          
+          setSearchResults(newResults);
+        } catch (error) {
+          console.error("Search error:", error);
+          setSearchResults(new Set());
+        } finally {
+          // Set loading state to false when search completes (success or error)
+          setIsLoadingResults(false);
+        }
+      };
+      
+      // Start transition for the search
+      startTransition(() => {
+        fetchSearchResults(urlQuery);
+      });
+    } else {
+      setSearchResults(new Set<string>());
+      setIsLoadingResults(false);
     }
-  }, [searchParams, searchQuery]);
+  }, [searchParams, viewMode]);  // Removed searchQuery to ensure search always runs on mount
 
   // Update filtered count whenever filteredData changes
   useEffect(() => {
@@ -704,7 +829,12 @@ export function DataGrid<T extends Record<string, any>>({
             </div>
           </div>
 
-          {filteredAndSortedData.length === 0 ? (
+          {isLoadingResults ? (
+            <div className="fixed left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 text-center px-4">
+              <div className="w-6 h-6 border-2 border-text/70 rounded-full animate-spin border-t-transparent mx-auto mb-2"></div>
+              <div className="text-text/70">Loading search results...</div>
+            </div>
+          ) : filteredAndSortedData.length === 0 ? (
             <div className="fixed left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 text-center px-4">
               <div className="text-text/70">No results match this search</div>
             </div>
