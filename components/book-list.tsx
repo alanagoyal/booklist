@@ -116,13 +116,15 @@ export function BookList({
   );
 
   // Calculate tab positions
-  const tabConfig = {
-    height: 100,
-    baseTopOffset: 82,
-    bottomMargin: 100,
-    width: 150,
-    horizontalOffset: 4,
-  };
+  const tabConfig = useMemo(() => {
+    return {
+      height: 100,
+      baseTopOffset: 82,
+      bottomMargin: 100,
+      width: 150,
+      horizontalOffset: 4,
+    };
+  }, []);
 
   // Calculate visible tabs and their positions
   const tabPositions = useMemo(() => {
@@ -156,7 +158,7 @@ export function BookList({
         };
       }
     );
-  }, [viewHistory]);
+  }, [viewHistory, tabConfig]);
 
   return (
     <div ref={containerRef} className="h-full flex flex-col relative">
