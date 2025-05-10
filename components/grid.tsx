@@ -16,7 +16,6 @@ import {
   ArrowDown,
   Search,
 } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
 import { bookCountManager } from "./book-counter";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import debounce from "lodash/debounce";
@@ -37,7 +36,42 @@ type DataGridProps<T extends Record<string, any>> = {
   getRowClassName?: (row: T) => string;
   onFilteredDataChange?: (count: number) => void;
   onRowClick?: (row: T) => void;
+  initialViewMode?: "books" | "recommenders";
 };
+
+// Placeholders
+const booksPlaceholders = [
+  "A book that will help me develop better taste",
+  "A dystopian science fiction novel with a little comedy",
+  "A historical fiction novel that takes place during the Industrial Revolution",
+  'A crime novel with "The White Lotus"-level character development',
+  "A biography or memoir of an underrated world leader",
+];
+
+const peoplePlaceholders = [
+  "An artist or designer with great taste",
+  "A journalist or influencer with controversial views",
+  "A scientist or researcher who flies under the radar",
+  "A chef or food critic who's seen it all",
+  "An entrepreneur or executive who writes code",
+];
+
+// Shorter placeholders for mobile
+const booksPlaceholdersMobile = [
+  "A book on developing taste",
+  "A dystopian sci-fi novel",
+  "A book on the industrial revolution",
+  'A crime novel like "The White Lotus"',
+  "A biography of a world leader",
+];
+
+const peoplePlaceholdersMobile = [
+  "An artist or designer with taste",
+  "A controversial journalist",
+  "An underrated scientist",
+  "A renowned chef or food critic",
+  "A technical entrepreneur",
+];
 
 export function DataGrid<T extends Record<string, any>>({
   data,
@@ -45,11 +79,9 @@ export function DataGrid<T extends Record<string, any>>({
   getRowClassName,
   onFilteredDataChange,
   onRowClick,
+  initialViewMode = "books",
 }: DataGridProps<T>) {
-  // Hooks
-  const router = useRouter();
-  const searchParams = useSearchParams();
-
+  console.log("RENDERING GRID");
   // Animation timing constants (in milliseconds)
   const TYPING_SPEED = 30; // Time between typing each character
   const ERASING_SPEED = 15; // Time between erasing each character
@@ -66,51 +98,24 @@ export function DataGrid<T extends Record<string, any>>({
   const [typedPlaceholder, setTypedPlaceholder] = useState("");
   const [isTyping, setIsTyping] = useState(true);
   const [isMobileView, setIsMobileView] = useState(false);
-  const [searchState, setSearchState] = useState(() => {
-    const view = searchParams?.get("view") || "books";
-    const query = searchParams?.get(`${view}_search`) || "";
-    const cachedResults = searchParams?.get(`${view}_search_results`);
-    return {
-      query,
-      inputValue: query,
-      results: cachedResults
-        ? new Set(cachedResults.split(","))
-        : new Set<string>(),
-      isSearching: false,
-    };
+  const [viewMode, setViewMode] = useState<"books" | "recommenders">(
+    initialViewMode
+  );
+  const [searchState, setSearchState] = useState({
+    query: "",
+    inputValue: "",
+    results: new Set<string>(),
+    isSearching: false,
   });
 
-  // Get current view and sort configs directly from URL
-  const viewMode =
-    (searchParams.get("view") as "books" | "recommenders") || "books";
-  const directionParam = searchParams?.get(`${viewMode}_dir`);
-  const sortConfig = {
-    field:
-      searchParams?.get(`${viewMode}_sort`) ||
-      (viewMode === "books" ? "recommenders" : "recommendations"),
-    direction:
-      directionParam === "asc" || directionParam === "desc"
-        ? directionParam
-        : "desc",
-  };
-
-  // Initialize filters from URL params
-  const [filters, setFilters] = useState<{ [key: string]: string }>(() => {
-    const params = Object.fromEntries(searchParams.entries());
-    const filterParams: { [key: string]: string } = {};
-    Object.entries(params).forEach(([key, value]) => {
-      if (
-        !key.includes("sort") &&
-        !key.includes("dir") &&
-        key !== "key" &&
-        key !== "view" &&
-        !key.includes("search")
-      ) {
-        filterParams[key] = value;
-      }
-    });
-    return filterParams;
+  // Sort configuration state
+  const [sortConfig, setSortConfig] = useState({
+    field: viewMode === "books" ? "recommenders" : "recommendations",
+    direction: "desc" as SortDirection,
   });
+
+  // Filters state
+  const [filters, setFilters] = useState<{ [key: string]: string }>({});
 
   // Refs
   const gridRef = useRef<HTMLDivElement>(null);
@@ -223,42 +228,9 @@ export function DataGrid<T extends Record<string, any>>({
     searchState.isSearching,
   ]);
 
-  // Placeholders
-  const booksPlaceholders = [
-    'A book that will help me develop better taste',
-    'A dystopian science fiction novel with a little comedy',
-    'A historical fiction novel that takes place during the Industrial Revolution',
-    'A crime novel with "The White Lotus"-level character development',
-    'A biography or memoir of an underrated world leader',
-  ];
-
-  const peoplePlaceholders = [
-    'An artist or designer with great taste',
-    'A journalist or influencer with controversial views',
-    'A scientist or researcher who flies under the radar',
-    'A chef or food critic who\'s seen it all',
-    'An entrepreneur or executive who writes code',
-  ];
-
-  // Shorter placeholders for mobile
-  const booksPlaceholdersMobile = [
-    'A book on developing taste',
-    'A dystopian sci-fi novel',
-    'A book on the industrial revolution',
-    'A crime novel like "The White Lotus"',
-    'A biography of a world leader',
-  ];
-
-  const peoplePlaceholdersMobile = [
-    'An artist or designer with taste',
-    'A controversial journalist',
-    'An underrated scientist',
-    'A renowned chef or food critic',
-    'A technical entrepreneur',
-  ];
-
   // Check screen size on mount and resize
   useEffect(() => {
+    console.log("CHECKING SCREEN SIZE");
     const checkScreenSize = () => {
       setIsMobileView(window.innerWidth < MOBILE_BREAKPOINT);
     };
@@ -276,6 +248,17 @@ export function DataGrid<T extends Record<string, any>>({
   // Create debounced search function
   const debouncedSearch = useRef(
     debounce(async (query: string, forceSearch = false) => {
+      // For short queries, don't show loading unless forced
+      const shouldShowLoading =
+        query.length > 3 || (query.length > 0 && forceSearch);
+
+      // Update input value immediately
+      setSearchState((prev) => ({
+        ...prev,
+        query,
+        isSearching: shouldShowLoading, // Only show loading for queries that will actually search
+      }));
+
       // For empty queries, clear everything
       if (!query) {
         setSearchState((prev) => ({
@@ -288,7 +271,6 @@ export function DataGrid<T extends Record<string, any>>({
       }
 
       // For short queries (1-3 chars), only search if explicitly forced (Enter key)
-      // This prevents URL updates that cause refreshing
       if (query.length <= 3 && !forceSearch) {
         setSearchState((prev) => ({
           ...prev,
@@ -308,7 +290,7 @@ export function DataGrid<T extends Record<string, any>>({
           body: JSON.stringify({
             query,
             embedding,
-            viewMode: searchParams.get("view") || "books",
+            viewMode,
           }),
         });
 
@@ -345,63 +327,15 @@ export function DataGrid<T extends Record<string, any>>({
   // Handle search input changes
   const handleSearch = useCallback(
     (inputValue: string, forceSearch = false) => {
-      // For short queries, don't show loading unless forced
-      const shouldShowLoading = inputValue.length > 3 || (inputValue.length > 0 && forceSearch);
-      
-      // Update input value immediately
-      setSearchState((prev) => ({
-        ...prev,
-        inputValue,
-        isSearching: shouldShowLoading, // Only show loading for queries that will actually search
-      }));
-
       // Trigger debounced search with force flag
       debouncedSearch(inputValue, forceSearch);
     },
     [debouncedSearch]
   );
 
-  // Update URL when search state changes
-  useEffect(() => {
-    const params = new URLSearchParams(searchParams.toString());
-    const viewMode = searchParams.get("view") || "books";
-
-    if (searchState.query) {
-      params.set(`${viewMode}_search`, searchState.query);
-      if (searchState.results.size > 0) {
-        params.set(
-          `${viewMode}_search_results`,
-          Array.from(searchState.results).join(",")
-        );
-      }
-    } else {
-      params.delete(`${viewMode}_search`);
-      params.delete(`${viewMode}_search_results`);
-    }
-
-    router.replace(`?${params.toString()}`, { scroll: false });
-  }, [searchState.query, searchState.results, router, searchParams]);
-
-  // Sync with URL changes
-  useEffect(() => {
-    const viewMode = searchParams.get("view") || "books";
-    const urlQuery = searchParams?.get(`${viewMode}_search`) || "";
-    const cachedResults = searchParams?.get(`${viewMode}_search_results`);
-
-    if (urlQuery !== searchState.query) {
-      setSearchState((prev) => ({
-        ...prev,
-        query: urlQuery,
-        inputValue: urlQuery,
-        results: cachedResults
-          ? new Set(cachedResults.split(","))
-          : prev.results,
-      }));
-    }
-  }, [searchParams]);
-
   // Update filtered count whenever filteredData changes
   useEffect(() => {
+    console.log("UPDATING FILTERED COUNT");
     if (onFilteredDataChange) {
       onFilteredDataChange(filteredData.length);
     }
@@ -409,6 +343,7 @@ export function DataGrid<T extends Record<string, any>>({
 
   // Notify parent of filtered data changes
   useEffect(() => {
+    console.log("UPDATING FILTERED COUNT");
     if (onFilteredDataChange) {
       onFilteredDataChange(filteredData.length);
       bookCountManager.updateCount();
@@ -459,126 +394,77 @@ export function DataGrid<T extends Record<string, any>>({
     });
   }, [filteredData, sortConfig]);
 
-  // Update state when URL params change
-  useEffect(() => {
-    const params = Object.fromEntries(searchParams.entries());
-    const filterParams: { [key: string]: string } = {};
-    Object.entries(params).forEach(([key, value]) => {
-      if (
-        !key.includes("sort") &&
-        !key.includes("dir") &&
-        key !== "key" &&
-        key !== "view" &&
-        !key.includes("search")
-      ) {
-        filterParams[key] = value;
-      }
-    });
-    setFilters(filterParams);
-  }, [searchParams]);
-
-  // Update URL when sort/filter changes
-  useEffect(() => {
-    const currentParams = new URLSearchParams(searchParams.toString());
-    const newParams = new URLSearchParams(currentParams.toString());
-
-    // Initialize default parameters if they don't exist
-    if (!currentParams.has("view")) {
-      newParams.set("view", "books");
-    }
-
-    // Update filter params
-    Object.entries(filters).forEach(([key, value]) => {
-      if (value) {
-        newParams.set(key, value);
-      } else {
-        newParams.delete(key);
-      }
-    });
-
-    const queryString = newParams.toString();
-    const newPath = queryString ? `/?${queryString}` : "/";
-
-    // Only update URL if params have changed
-    if (newParams.toString() !== currentParams.toString()) {
-      router.replace(newPath, { scroll: false });
-    }
-  }, [filters, router, searchParams]);
-
   // Animate placeholder text with typewriter effect
-  useEffect(() => {
-    // Only animate when there's no search query
-    if (searchState.inputValue) return;
+  // useEffect(() => {
+  //   console.log("ANIMATING PLACEHOLDER TEXT");
+  //   // Only animate when there's no search query
+  //   if (searchState.inputValue) return;
 
-    const currentPlaceholders =
-      viewMode === "books"
-        ? isMobileView
-          ? booksPlaceholdersMobile
-          : booksPlaceholders
-        : isMobileView
-          ? peoplePlaceholdersMobile
-          : peoplePlaceholders;
+  //   const currentPlaceholders =
+  //     viewMode === "books"
+  //       ? isMobileView
+  //         ? booksPlaceholdersMobile
+  //         : booksPlaceholders
+  //       : isMobileView
+  //         ? peoplePlaceholdersMobile
+  //         : peoplePlaceholders;
 
-    const currentFullPlaceholder = currentPlaceholders[placeholderIndex];
+  //   const currentFullPlaceholder = currentPlaceholders[placeholderIndex];
 
-    if (isTyping) {
-      // Typing phase
-      if (typedPlaceholder.length < currentFullPlaceholder.length) {
-        // Continue typing the current placeholder
-        const typingTimeout = setTimeout(() => {
-          setTypedPlaceholder(
-            currentFullPlaceholder.substring(0, typedPlaceholder.length + 1)
-          );
-        }, TYPING_SPEED);
+  //   if (isTyping) {
+  //     // Typing phase
+  //     if (typedPlaceholder.length < currentFullPlaceholder.length) {
+  //       // Continue typing the current placeholder
+  //       const typingTimeout = setTimeout(() => {
+  //         setTypedPlaceholder(
+  //           currentFullPlaceholder.substring(0, typedPlaceholder.length + 1)
+  //         );
+  //       }, TYPING_SPEED);
 
-        return () => clearTimeout(typingTimeout);
-      } else {
-        // Finished typing, pause before erasing
-        const pauseTimeout = setTimeout(() => {
-          setIsTyping(false);
-        }, PAUSE_AFTER_TYPING);
+  //       return () => clearTimeout(typingTimeout);
+  //     } else {
+  //       // Finished typing, pause before erasing
+  //       const pauseTimeout = setTimeout(() => {
+  //         setIsTyping(false);
+  //       }, PAUSE_AFTER_TYPING);
 
-        return () => clearTimeout(pauseTimeout);
-      }
-    } else {
-      // Erasing phase
-      if (typedPlaceholder.length > 0) {
-        // Continue erasing the current placeholder
-        const erasingTimeout = setTimeout(() => {
-          setTypedPlaceholder(
-            typedPlaceholder.substring(0, typedPlaceholder.length - 1)
-          );
-        }, ERASING_SPEED);
+  //       return () => clearTimeout(pauseTimeout);
+  //     }
+  //   } else {
+  //     // Erasing phase
+  //     if (typedPlaceholder.length > 0) {
+  //       // Continue erasing the current placeholder
+  //       const erasingTimeout = setTimeout(() => {
+  //         setTypedPlaceholder(
+  //           typedPlaceholder.substring(0, typedPlaceholder.length - 1)
+  //         );
+  //       }, ERASING_SPEED);
 
-        return () => clearTimeout(erasingTimeout);
-      } else {
-        // Finished erasing, move to next placeholder
-        const nextPlaceholderTimeout = setTimeout(() => {
-          setPlaceholderIndex(
-            (prevIndex) => (prevIndex + 1) % currentPlaceholders.length
-          );
-          setIsTyping(true);
-        }, PAUSE_BEFORE_NEXT);
+  //       return () => clearTimeout(erasingTimeout);
+  //     } else {
+  //       // Finished erasing, move to next placeholder
+  //       const nextPlaceholderTimeout = setTimeout(() => {
+  //         setPlaceholderIndex(
+  //           (prevIndex) => (prevIndex + 1) % currentPlaceholders.length
+  //         );
+  //         setIsTyping(true);
+  //       }, PAUSE_BEFORE_NEXT);
 
-        return () => clearTimeout(nextPlaceholderTimeout);
-      }
-    }
-  }, [
-    viewMode,
-    searchState.inputValue,
-    placeholderIndex,
-    typedPlaceholder,
-    isTyping,
-    booksPlaceholders,
-    peoplePlaceholders,
-    TYPING_SPEED,
-    ERASING_SPEED,
-    PAUSE_AFTER_TYPING,
-    PAUSE_BEFORE_NEXT,
-    isMobileView,
-    booksPlaceholdersMobile,
-    peoplePlaceholdersMobile,
-  ]);
+  //       return () => clearTimeout(nextPlaceholderTimeout);
+  //     }
+  //   }
+  // }, [
+  //   viewMode,
+  //   searchState.inputValue,
+  //   placeholderIndex,
+  //   typedPlaceholder,
+  //   isTyping,
+  //   TYPING_SPEED,
+  //   ERASING_SPEED,
+  //   PAUSE_AFTER_TYPING,
+  //   PAUSE_BEFORE_NEXT,
+  //   isMobileView,
+  // ]);
 
   // Event handlers
   const handleRowClick = useCallback(
@@ -614,35 +500,28 @@ export function DataGrid<T extends Record<string, any>>({
   // Sort handlers
   const handleSort = useCallback(
     (field: string, direction: SortDirection) => {
-      const params = new URLSearchParams(searchParams?.toString() ?? "");
-      const view = (params.get("view") as "books" | "recommenders") || "books";
-
-      // Get current sort params
-      const currentField = params.get(`${view}_sort`);
-      const currentDir = params.get(`${view}_dir`);
-
       // If clicking the same sort option that's currently active, disable sorting
-      if (currentField === field && currentDir === direction) {
-        params.delete(`${view}_sort`);
-        params.delete(`${view}_dir`);
+      if (sortConfig.field === field && sortConfig.direction === direction) {
+        setSortConfig({
+          field: viewMode === "books" ? "recommenders" : "recommendations",
+          direction: "desc",
+        });
       } else {
         // Otherwise apply the new sort
-        params.set(`${view}_sort`, field);
-        if (direction) {
-          params.set(`${view}_dir`, direction);
-        } else {
-          params.delete(`${view}_dir`);
-        }
+        setSortConfig({
+          field,
+          direction,
+        });
       }
 
-      router.replace(`?${params.toString()}`, { scroll: false });
       setOpenDropdown(null);
     },
-    [router, searchParams]
+    [sortConfig, viewMode]
   );
 
   // Keep resize observer for header width syncing
   useEffect(() => {
+    console.log("KEEPING RESIZE OBSERVER FOR HEADER WIDTH SYNCING");
     const observer = new ResizeObserver(() => {
       if (resizeTimeout.current) {
         cancelAnimationFrame(resizeTimeout.current);
@@ -670,6 +549,7 @@ export function DataGrid<T extends Record<string, any>>({
 
   // Clean up resize timeout
   useEffect(() => {
+    console.log("CLEANING UP RESIZE TIMEOUT");
     return () => {
       if (resizeTimeout.current) {
         cancelAnimationFrame(resizeTimeout.current);
@@ -679,6 +559,7 @@ export function DataGrid<T extends Record<string, any>>({
 
   // Handle dropdown interactions
   useEffect(() => {
+    console.log("HANDLING DROPDOWN INTERACTIONS");
     const handleClickOutside = (e: MouseEvent) => {
       if (!openDropdown) return;
 
@@ -895,7 +776,6 @@ export function DataGrid<T extends Record<string, any>>({
             type="text"
             placeholder={typedPlaceholder}
             className="flex-1 h-10 focus:outline-none bg-background border-b border-border text-text text-base sm:text-sm selection:bg-main selection:text-mtext focus:outline-none rounded-none"
-            value={searchState.inputValue}
             onChange={(e) => {
               handleSearch(e.target.value, false);
             }}

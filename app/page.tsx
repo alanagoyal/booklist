@@ -1,31 +1,34 @@
 "use client";
 
 import { BookList } from "@/components/book-list";
-import type { EssentialBook, ExtendedBook, FormattedRecommender } from "@/types";
+import type {
+  EssentialBook,
+  ExtendedBook,
+  FormattedRecommender,
+} from "@/types";
 import useSWR from "swr";
 
-const fetcher = (url: string) => fetch(url).then(r => r.json());
-const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL || "http://localhost:3000";
+const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
 export default function Home() {
   const { data: essentialBooks } = useSWR<EssentialBook[]>(
-    `${baseUrl}/data/books-essential.json`,
+    `/data/books-essential.json`,
     fetcher
   );
   const { data: recommenders } = useSWR<FormattedRecommender[]>(
-    `${baseUrl}/data/recommenders.json`,
+    `/data/recommenders.json`,
     fetcher
   );
   const { data: extendedData } = useSWR<ExtendedBook[]>(
-    essentialBooks ? `${baseUrl}/data/books-extended.json` : null,
+    essentialBooks ? `/data/books-extended.json` : null,
     fetcher
   );
 
-  const books = essentialBooks?.map(book => {
-    const extended = extendedData?.find(e => e.id === book.id);
+  const books = essentialBooks?.map((book) => {
+    const extended = extendedData?.find((e) => e.id === book.id);
     return {
       ...book,
-      ...(extended || { related_books: [], similar_books: [] })
+      ...(extended || { related_books: [], similar_books: [] }),
     };
   });
 
@@ -33,10 +36,5 @@ export default function Home() {
     return null;
   }
 
-  return (
-    <BookList
-      initialBooks={books}
-      initialRecommenders={recommenders}
-    />
-  );
+  return <BookList initialBooks={books} initialRecommenders={recommenders} />;
 }
