@@ -4,10 +4,14 @@ import { createPortal } from 'react-dom';
 import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 
-// Global state manager for book counts
-export const bookCountManager = {
+// Global state manager for counts
+export const countManager = {
   _lastUpdate: 0,
   _callbacks: new Set<() => void>(),
+  _filteredCount: {
+    books: 0,
+    people: 0,
+  },
 
   addCallback(callback: () => void) {
     this._callbacks.add(callback);
@@ -16,13 +20,18 @@ export const bookCountManager = {
     };
   },
 
-  updateCount() {
+  updateCount(viewMode: 'books' | 'people', filteredCount: number) {
+    this._filteredCount[viewMode] = filteredCount;
     this._lastUpdate = Date.now();
     this._callbacks.forEach((callback) => callback());
   },
 
   getLastUpdate() {
     return this._lastUpdate;
+  },
+
+  getFilteredCount(viewMode: 'books' | 'people') {
+    return this._filteredCount[viewMode];
   }
 };
 
@@ -35,31 +44,40 @@ export function LoadingState() {
   );
 }
 
-interface BookCounterProps {
+interface CounterProps {
   total: number;
-  filtered: number;
   viewMode?: 'books' | 'people';
 }
 
-export function BookCounter({ total, filtered, viewMode = 'books' }: BookCounterProps) {
+export function Counter({ total, viewMode = 'books' }: CounterProps) {
   const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
   const isHomePage = pathname === '/';
+  const [filteredCount, setFilteredCount] = useState(total);
 
   useEffect(() => {
     setMounted(true);
-  }, []);
+    const cleanup = countManager.addCallback(() => {
+      setFilteredCount(countManager.getFilteredCount(viewMode));
+    });
+    return cleanup;
+  }, [viewMode]);
+
+  // Reset filtered count when view mode changes
+  useEffect(() => {
+    setFilteredCount(countManager.getFilteredCount(viewMode));
+  }, [viewMode]);
 
   // Only show on home page
   if (!mounted || !isHomePage) return null;
 
   const text = viewMode === 'books'
-    ? filtered === total 
+    ? filteredCount === total 
       ? `${total} books`
-      : `${filtered} of ${total} books`
-    : filtered === total
+      : `${filteredCount} of ${total} books`
+    : filteredCount === total
       ? `${total} people`
-      : `${filtered} of ${total} people`;
+      : `${filteredCount} of ${total} people`;
 
   return createPortal(
     <div className="fixed bottom-5 right-5 text-text/70 text-xs whitespace-pre-line transition-all duration-200 bg-background/80 backdrop-blur-sm p-2 selection:bg-main selection:text-mtext md:hover:bg-accent/50">

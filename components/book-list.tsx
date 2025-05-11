@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
-import { BookCounter } from "@/components/book-counter";
+import { Counter } from "@/components/counter";
 import { FormattedBook, FormattedRecommender } from "@/types";
 import { useRouter, useSearchParams } from "next/navigation";
 import BookDetail from "@/components/book-detail";
@@ -89,11 +89,6 @@ export function BookList({
     }
   }, [router, searchParams, viewHistory]);
 
-  // Handle filtered data change
-  const handleFilteredDataChange = useCallback((count: number) => {
-    setFilteredCount(count);
-  }, []);
-
   // Handle tab click
   const handleTabClick = useCallback(
     (view: (typeof viewHistory)[0]) => {
@@ -116,13 +111,15 @@ export function BookList({
   );
 
   // Calculate tab positions
-  const tabConfig = {
-    height: 100,
-    baseTopOffset: 82,
-    bottomMargin: 100,
-    width: 150,
-    horizontalOffset: 4,
-  };
+  const tabConfig = useMemo(() => {
+    return {
+      height: 100,
+      baseTopOffset: 82,
+      bottomMargin: 100,
+      width: 150,
+      horizontalOffset: 4,
+    };
+  }, []);
 
   // Calculate visible tabs and their positions
   const tabPositions = useMemo(() => {
@@ -156,7 +153,7 @@ export function BookList({
         };
       }
     );
-  }, [viewHistory]);
+  }, [viewHistory, tabConfig]);
 
   return (
     <div ref={containerRef} className="h-full flex flex-col relative">
@@ -164,22 +161,19 @@ export function BookList({
         {viewMode === "books" ? (
           <BookGrid
             data={initialBooks}
-            onFilteredDataChange={handleFilteredDataChange}
           />
         ) : (
           <RecommenderGrid
             data={initialRecommenders}
-            onFilteredDataChange={handleFilteredDataChange}
           />
         )}
       </div>
-      <BookCounter
+      <Counter
         total={
           viewMode === "books"
             ? initialBooks.length
             : initialRecommenders.length
         }
-        filtered={filteredCount}
         viewMode={viewMode}
       />
 

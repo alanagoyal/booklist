@@ -9,32 +9,28 @@ async function hybridSearchWithFallback(
   query: string, 
   embedding: number[], 
   viewMode: 'books' | 'people' = 'books',
-  thresholds = [0.85, 0.8, 0.78] // tighter thresholds only
+  threshold = 0.8 // single threshold
 ) {
   const rpcName = viewMode === 'people' ? 'hybrid_search_people' : 'hybrid_search_books';
   
-  for (const threshold of thresholds) {
-    console.log(`Trying threshold ${threshold}...`);
-    const { data, error } = await supabase.rpc(rpcName, {
-      query_input: query,
-      embedding_input: embedding,
-      min_similarity: threshold,
-    });
+  console.log(`Searching with threshold ${threshold}...`);
+  const { data, error } = await supabase.rpc(rpcName, {
+    query_input: query,
+    embedding_input: embedding,
+    min_similarity: threshold,
+  });
 
-    if (error) {
-      console.error('Supabase error:', error);
-      throw new Error('Search failed');
-    }
-
-    if (data && data.length > 0) {
-      console.log(`Found ${data.length} results at threshold ${threshold}`);
-      return data;
-    }
-
-    console.log(`No results at threshold ${threshold}, relaxing...`);
+  if (error) {
+    console.error('Supabase error:', error);
+    throw new Error('Search failed');
   }
 
-  // Nothing found even at the loosest threshold
+  if (data && data.length > 0) {
+    console.log(`Found ${data.length} results`);
+    return data;
+  }
+
+  // Nothing found
   return [];
 }
 

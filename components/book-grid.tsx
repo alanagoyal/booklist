@@ -80,10 +80,9 @@ function GenreCell({ original }: { original: FormattedBook }) {
 
 interface BookGridProps {
   data: FormattedBook[];
-  onFilteredDataChange?: (count: number) => void;
 }
 
-export default function BookGrid({ data, onFilteredDataChange }: BookGridProps) {
+export default function BookGrid({ data }: BookGridProps) {
   // Hooks
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -136,7 +135,6 @@ export default function BookGrid({ data, onFilteredDataChange }: BookGridProps) 
         `cursor-pointer ${row._background_color}`
       }
       onRowClick={handleRowClick}
-      onFilteredDataChange={onFilteredDataChange}
     />
   );
 }

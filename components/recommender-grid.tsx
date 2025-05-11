@@ -8,7 +8,6 @@ import { truncateText } from "@/utils/text";
 
 interface RecommenderGridProps {
   data: FormattedRecommender[];
-  onFilteredDataChange?: (count: number) => void;
 }
 
 // Recommendation cell  
@@ -62,7 +61,6 @@ function RecommendationCell({ original }: { original: FormattedRecommender }) {
 
 export default function RecommenderGrid({
   data,
-  onFilteredDataChange,
 }: RecommenderGridProps) {
   // Hooks
   const router = useRouter();
@@ -123,7 +121,6 @@ export default function RecommenderGrid({
         `cursor-pointer ${row._background_color || ""}`
       }
       onRowClick={handleRowClick}
-      onFilteredDataChange={onFilteredDataChange}
     />
   );
 }
