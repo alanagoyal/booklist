@@ -161,6 +161,9 @@ export function SearchBox({
   }, [debouncedSearchAndUpdate]);
 
   const handleClear = () => {
+    // Set searching flag to prevent "no results" flash during clearing
+    setIsSearching(true);
+    
     setValue("");
     onSearchResults(new Set());
     inputRef.current?.focus();
@@ -169,6 +172,11 @@ export function SearchBox({
     const current = new URLSearchParams(searchParams.toString());
     current.delete(`${viewMode}_search`);
     router.replace(`?${current.toString()}`, { scroll: false });
+    
+    // Reset searching flag after a short delay to ensure URL updates first
+    setTimeout(() => {
+      setIsSearching(false);
+    }, 50);
   };
 
   // Animation timing constants (in milliseconds)
