@@ -49,18 +49,11 @@ export function DataGrid<T extends Record<string, any>>({
     const view = searchParams?.get("view") || "books";
     return searchParams?.get(`${view}_search`) || "";
   });
-  const [debouncedQuery, setDebouncedQuery] = useState(() => {
-    const view = searchParams?.get("view") || "books";
-    return searchParams?.get(`${view}_search`) || "";
-  });
   const [searchResults, setSearchResults] = useState<Set<string>>(
     new Set<string>()
   );
-  const [isSearching, setIsSearching] = useState(() => {
-    // Set initial loading state to true if there's a search query in the URL
-    const view = searchParams?.get("view") || "books";
-    return Boolean(searchParams?.get(`${view}_search`));
-  });
+  const [isSearching, setIsSearching] = useState(false);
+  const [isPending, setIsPending] = useState(false);
 
   // Get current view and sort configs directly from URL
   const viewMode = (searchParams.get("view") as "books" | "people") || "books";
@@ -86,34 +79,110 @@ export function DataGrid<T extends Record<string, any>>({
   const resizeTimeout = useRef<number | null>(null);
   const parentRef = useRef<HTMLDivElement>(null);
 
-  // Debounce the query update
+  // Debounced search handler
+  const debouncedSearch = useMemo(
+    () =>
+      debounce(async (query: string) => {
+        if (!query.trim()) {
+          setSearchResults(new Set());
+          setIsSearching(false);
+          setIsPending(false);
+          return;
+        }
+        setIsSearching(true);
+        try {
+          const embedding = await generateEmbedding(query);
+          const response = await fetch("/api/search", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              query,
+              embedding,
+              viewMode,
+            }),
+          });
+          const data = await response.json();
+          setSearchResults(new Set(data.map((item: any) => item.id)));
+        } catch (error) {
+          console.error("Error searching:", error);
+        } finally {
+          setIsSearching(false);
+          setIsPending(false);
+        }
+      }, 1000), 
+    [viewMode]
+  );
+
+  // Add cleanup
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedQuery(inputValue);
-    }, 500);
-    return () => clearTimeout(timer);
-  }, [inputValue]);
+    return () => {
+      debouncedSearch.cancel();
+    };
+  }, [debouncedSearch]);
+
+  // Search handler
+  const handleSearchChange = (value: string) => {
+    setInputValue(value);
+    if (value.trim()) {
+      setIsPending(true);
+    } else {
+      setIsPending(false);
+    }
+    debouncedSearch(value);
+  };
 
   // Data filtering
   const filteredData = useMemo(() => {
     // If no search is active, return all data
-    if (!debouncedQuery.trim()) {
+    if (!inputValue.trim()) {
       return data;
     }
 
     // Only filter if we actually have results back
-    if (!isSearching) {
+    if (!isSearching && !isPending) {
       return data.filter((item) => searchResults.has(item.id));
     }
 
     // Show existing filtered data while searching
     return data;
-  }, [data, searchResults, debouncedQuery, isSearching]);
+  }, [data, searchResults, inputValue, isSearching, isPending]);
 
   // Update counter
   useEffect(() => {
     countManager.updateCount(viewMode, filteredData.length);
   }, [filteredData.length, viewMode]);
+
+  // Sort handlers
+  const handleSort = useCallback(
+    (field: string, direction: SortDirection) => {
+      const params = new URLSearchParams(searchParams?.toString() ?? "");
+      const view = (params.get("view") as "books" | "people") || "books";
+
+      // Get current sort params
+      const currentField = params.get(`${view}_sort`);
+      const currentDir = params.get(`${view}_dir`);
+
+      // If clicking the same sort option that's currently active, disable sorting
+      if (currentField === field && currentDir === direction) {
+        params.delete(`${view}_sort`);
+        params.delete(`${view}_dir`);
+      } else {
+        // Otherwise apply the new sort
+        params.set(`${view}_sort`, field);
+        if (direction) {
+          params.set(`${view}_dir`, direction);
+        } else {
+          params.delete(`${view}_dir`);
+        }
+      }
+
+      router.replace(`?${params.toString()}`, { scroll: false });
+      setOpenDropdown(null);
+    },
+    [router, searchParams]
+  );
 
   // Data sorting
   const sortedData = useMemo(() => {
@@ -158,104 +227,6 @@ export function DataGrid<T extends Record<string, any>>({
         : sortDirection;
     });
   }, [filteredData, sortConfig]);
-
-  // Event handlers
-  const handleRowClick = useCallback(
-    (e: React.MouseEvent, row: T) => {
-      const target = e.target as HTMLElement;
-
-      // Don't trigger row click if:
-      // 1. Clicking inside a dropdown menu or dropdown trigger
-      // 2. Clicking on interactive elements
-      // 3. A dropdown is open or closing
-      if (
-        target.closest("[data-dropdown]") ||
-        target.closest("a, button, input") ||
-        openDropdown ||
-        isDropdownClosing
-      ) {
-        return;
-      }
-
-      onRowClick?.(row);
-    },
-    [onRowClick, openDropdown, isDropdownClosing]
-  );
-
-  // Search handler
-  const handleSearch = useCallback(
-    async (query: string) => {
-      setInputValue(query);
-      if (!query.trim()) {
-        // if input cleared
-        setIsSearching(false);
-        return;
-      }
-      setIsSearching(true);
-      try {
-        const embedding = await generateEmbedding(query);
-        const response = await fetch("/api/search", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            query,
-            embedding,
-            viewMode,
-          }),
-        });
-        const data = await response.json();
-        setSearchResults(new Set(data.map((item: any) => item.id)));
-      } catch (error) {
-        console.error("Error searching:", error);
-      } finally {
-        setIsSearching(false);
-      }
-    },
-    [viewMode]
-  );
-
-  // Debounce search
-  const debouncedSearch = useMemo(
-    () => debounce(handleSearch, 1000),
-    [handleSearch]
-  );
-
-  // Clean up debounced search on unmount
-  useEffect(() => {
-    return () => debouncedSearch.cancel();
-  }, [debouncedSearch]);
-
-  // Sort handlers
-  const handleSort = useCallback(
-    (field: string, direction: SortDirection) => {
-      const params = new URLSearchParams(searchParams?.toString() ?? "");
-      const view = (params.get("view") as "books" | "people") || "books";
-
-      // Get current sort params
-      const currentField = params.get(`${view}_sort`);
-      const currentDir = params.get(`${view}_dir`);
-
-      // If clicking the same sort option that's currently active, disable sorting
-      if (currentField === field && currentDir === direction) {
-        params.delete(`${view}_sort`);
-        params.delete(`${view}_dir`);
-      } else {
-        // Otherwise apply the new sort
-        params.set(`${view}_sort`, field);
-        if (direction) {
-          params.set(`${view}_dir`, direction);
-        } else {
-          params.delete(`${view}_dir`);
-        }
-      }
-
-      router.replace(`?${params.toString()}`, { scroll: false });
-      setOpenDropdown(null);
-    },
-    [router, searchParams]
-  );
 
   // Keep resize observer for header width syncing
   useEffect(() => {
@@ -317,6 +288,29 @@ export function DataGrid<T extends Record<string, any>>({
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [openDropdown]);
+
+  // Event handlers
+  const handleRowClick = useCallback(
+    (e: React.MouseEvent, row: T) => {
+      const target = e.target as HTMLElement;
+
+      // Don't trigger row click if:
+      // 1. Clicking inside a dropdown menu or dropdown trigger
+      // 2. Clicking on interactive elements
+      // 3. A dropdown is open or closing
+      if (
+        target.closest("[data-dropdown]") ||
+        target.closest("a, button, input") ||
+        openDropdown ||
+        isDropdownClosing
+      ) {
+        return;
+      }
+
+      onRowClick?.(row);
+    },
+    [onRowClick, openDropdown, isDropdownClosing]
+  );
 
   // Dropdown handlers
   const handleDropdownClick = useCallback(
@@ -481,8 +475,9 @@ export function DataGrid<T extends Record<string, any>>({
       {/* Search box */}
       <SearchBox
         value={inputValue}
-        onSearch={handleSearch}
+        onSearch={handleSearchChange}
         isSearching={isSearching}
+        isPending={isPending}
         viewMode={viewMode}
         isMobileView={isMobileView}
       />
@@ -503,7 +498,7 @@ export function DataGrid<T extends Record<string, any>>({
               {columns.map(renderHeader)}
             </div>
           </div>
-          {sortedData.length === 0 && debouncedQuery.trim() && !isSearching ? (
+          {sortedData.length === 0 && inputValue.trim() && !isSearching && !isPending ? (
             <div className="fixed left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 text-center px-4">
               <div className="text-text/70">No results match this search</div>
             </div>

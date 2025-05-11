@@ -8,6 +8,7 @@ type SearchBoxProps = {
   value: string;
   onSearch: (query: string) => void;
   isSearching: boolean;
+  isPending: boolean;
   viewMode: "books" | "people";
   isMobileView: boolean;
 };
@@ -38,7 +39,7 @@ const booksPlaceholdersMobile = [
   "A biography of a world leader",
 ];
 
-  const peoplePlaceholdersMobile = [
+const peoplePlaceholdersMobile = [
   "An artist or designer with taste",
   "A controversial journalist",
   "An underrated scientist",
@@ -50,10 +51,10 @@ export function SearchBox({
   value,
   onSearch,
   isSearching,
+  isPending,
   viewMode,
   isMobileView,
 }: SearchBoxProps) {
-
   // Input ref for auto-focus
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -63,8 +64,8 @@ export function SearchBox({
   };
 
   // Animation timing constants (in milliseconds)
-  const TYPING_SPEED = 50;    // Time between typing each character
-  const ERASING_SPEED = 50;    // Time between erasing each character
+  const TYPING_SPEED = 50; // Time between typing each character
+  const ERASING_SPEED = 50; // Time between erasing each character
   const PAUSE_DURATION = 500; // How long to pause when text is fully typed
 
   // Animation state
@@ -73,12 +74,17 @@ export function SearchBox({
   const [currentText, setCurrentText] = useState("");
 
   useEffect(() => {
-    const placeholders = viewMode === "books" 
-      ? (isMobileView ? booksPlaceholdersMobile : booksPlaceholders)
-      : (isMobileView ? peoplePlaceholdersMobile : peoplePlaceholders);
-    
+    const placeholders =
+      viewMode === "books"
+        ? isMobileView
+          ? booksPlaceholdersMobile
+          : booksPlaceholders
+        : isMobileView
+          ? peoplePlaceholdersMobile
+          : peoplePlaceholders;
+
     const currentPlaceholder = placeholders[placeholderIndex];
-    
+
     if (isTyping) {
       if (currentText.length < currentPlaceholder.length) {
         const timeoutId = setTimeout(() => {
@@ -98,7 +104,9 @@ export function SearchBox({
       } else {
         setPlaceholderIndex((prev) => (prev + 1) % placeholders.length);
         setIsTyping(true);
-        setCurrentText(placeholders[(placeholderIndex + 1) % placeholders.length][0]);
+        setCurrentText(
+          placeholders[(placeholderIndex + 1) % placeholders.length][0]
+        );
         return undefined;
       }
     }
@@ -130,7 +138,9 @@ export function SearchBox({
           autoFocus
         />
         <div className="flex items-center h-10 px-3 border-b border-border">
-          {value ? (
+          {isSearching || isPending ? (
+            <div className="w-3 h-3 border-2 border-text/70 rounded-full animate-spin border-t-transparent" />
+          ) : value ? (
             <button
               onClick={handleClear}
               className="text-text/70 transition-colors duration-200 md:hover:text-text"
