@@ -161,7 +161,7 @@ export function SearchBox({
   }, [debouncedSearchAndUpdate]);
 
   const handleClear = () => {
-    // Set searching flag to prevent "no results" flash during clearing
+    // Set isSearching temporarily to prevent "no results" flash
     setIsSearching(true);
     
     setValue("");
@@ -173,10 +173,10 @@ export function SearchBox({
     current.delete(`${viewMode}_search`);
     router.replace(`?${current.toString()}`, { scroll: false });
     
-    // Reset searching flag after a short delay to ensure URL updates first
+    // Reset isSearching after URL update has time to process
     setTimeout(() => {
       setIsSearching(false);
-    }, 50);
+    }, 100);
   };
 
   // Animation timing constants (in milliseconds)

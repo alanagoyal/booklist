@@ -80,34 +80,15 @@ export function DataGrid<T extends Record<string, any>>({
   const filteredData = useMemo(() => {
     const searchQuery = searchParams?.get(`${viewMode}_search`);
     
-    // No query means show all data
-    if (!searchQuery?.trim()) {
-      return data;
-    }
-    
-    // If actively searching, use previous results if available or show all data
-    if (isSearching) {
-      // Keep showing previous filtered results during search refinement
-      if (searchResults.size > 0) {
-        return data.filter((item) => searchResults.has(item.id));
-      }
-      return data;
-    }
-    
-    // If we have search results, filter by them
-    if (searchResults.size > 0) {
+    // Only filter when we have both a query and results
+    // This maintains previous results during search refinements
+    if (searchQuery?.trim() && searchResults.size > 0) {
       return data.filter((item) => searchResults.has(item.id));
     }
     
-    // If search query exists, not searching, and no results - must be no matches
-    // Allow "no results" message to show
-    if (searchQuery?.trim()) {
-      return [];
-    }
-    
-    // Default to all data
+    // All other cases show all data
     return data;
-  }, [data, searchResults, searchParams, viewMode, isSearching]);
+  }, [data, searchResults, searchParams, viewMode]);
 
   // Update counter
   useEffect(() => {
@@ -457,7 +438,7 @@ export function DataGrid<T extends Record<string, any>>({
               {columns.map(renderHeader)}
             </div>
           </div>
-          {!isSearching && searchParams?.get(`${viewMode}_search`)?.trim() && sortedData.length === 0 ? (
+          {!isSearching && searchParams?.get(`${viewMode}_search`)?.trim() && searchResults.size === 0 ? (
             <div className="fixed left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 text-center px-4">
               <div className="text-text/70">No results match this search</div>
             </div>
