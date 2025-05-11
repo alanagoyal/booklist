@@ -29,7 +29,6 @@ type DataGridProps<T extends Record<string, any>> = {
   onRowClick?: (row: T) => void;
 };
 
-
 export function DataGrid<T extends Record<string, any>>({
   data,
   columns,
@@ -46,7 +45,6 @@ export function DataGrid<T extends Record<string, any>>({
   const [isMobileView, setIsMobileView] = useState(false);
   const [searchResults, setSearchResults] = useState<Set<string>>(new Set());
   const [isSearching, setIsSearching] = useState(false);
-  const [isPending, setIsPending] = useState(false);
 
   // Get current view and sort configs directly from URL
   const viewMode = (searchParams.get("view") as "books" | "people") || "books";
@@ -80,14 +78,16 @@ export function DataGrid<T extends Record<string, any>>({
 
   // Data filtering
   const filteredData = useMemo(() => {
-    // If no search results, return all data
-    if (searchResults.size === 0) {
+    const searchQuery = searchParams?.get(`${viewMode}_search`);
+    
+    // If no search query or currently searching, show current data
+    if (!searchQuery?.trim() || isSearching) {
       return data;
     }
 
-    // Only filter if we actually have results back
+    // Done searching - filter by results
     return data.filter((item) => searchResults.has(item.id));
-  }, [data, searchResults]);
+  }, [data, searchResults, searchParams, viewMode, isSearching]);
 
   // Update counter
   useEffect(() => {
@@ -418,6 +418,7 @@ export function DataGrid<T extends Record<string, any>>({
         onSearchResults={setSearchResults}
         viewMode={viewMode}
         isMobileView={isMobileView}
+        setIsSearching={setIsSearching}
       />
       {/* Scrollable grid content */}
       <div
@@ -436,10 +437,7 @@ export function DataGrid<T extends Record<string, any>>({
               {columns.map(renderHeader)}
             </div>
           </div>
-          {sortedData.length === 0 &&
-          searchResults.size > 0 &&
-          !isSearching &&
-          !isPending ? (
+          {!isSearching && searchParams?.get(`${viewMode}_search`)?.trim() && sortedData.length === 0 ? (
             <div className="fixed left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 text-center px-4">
               <div className="text-text/70">No results match this search</div>
             </div>

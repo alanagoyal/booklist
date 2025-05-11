@@ -9,6 +9,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 type SearchBoxProps = {
   initialValue?: string;
   onSearchResults: (results: Set<string>) => void;
+  setIsSearching: (isSearching: boolean) => void;
   viewMode: "books" | "people";
   isMobileView: boolean;
 };
@@ -50,6 +51,7 @@ const peoplePlaceholdersMobile = [
 export function SearchBox({
   initialValue = "",
   onSearchResults,
+  setIsSearching,
   viewMode,
   isMobileView,
 }: SearchBoxProps) {
@@ -59,7 +61,6 @@ export function SearchBox({
 
   // State
   const [value, setValue] = useState(initialValue);
-  const [isSearching, setIsSearching] = useState(false);
   const [isPending, setIsPending] = useState(false);
 
   // Refs
@@ -135,8 +136,8 @@ export function SearchBox({
           setIsSearching(false);
           setIsPending(false);
         }
-      }, 300),
-    [viewMode, onSearchResults, setIsPending, setIsSearching]
+      }, 500),
+    [viewMode, onSearchResults, setIsSearching, setIsPending]
   );
 
   // Handle initial value
@@ -254,13 +255,13 @@ export function SearchBox({
           autoFocus
         />
         <div className="flex items-center h-10 px-3 border-b border-border">
-          {isSearching || isPending ? (
+          {isPending ? (
             <div className="w-3 h-3 border-2 border-text/70 rounded-full animate-spin border-t-transparent" />
           ) : value ? (
             <button
               onClick={handleClear}
               className="text-text/70 transition-colors duration-200 md:hover:text-text"
-              disabled={isSearching}
+              disabled={false}
             >
               <X className="w-4 h-4" />
             </button>
