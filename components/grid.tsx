@@ -74,7 +74,7 @@ export function DataGrid<T extends Record<string, any>>({
     const cachedResults = getFromCache(query);
     if (query && !cachedResults) {
       // If we have a query but no cache, trigger a search
-      setTimeout(() => debouncedSearch(query), 0);
+      setTimeout(() => debouncedSearchAndUpdate(query), 0);
     }
     return cachedResults || new Set();
   });
@@ -105,80 +105,68 @@ export function DataGrid<T extends Record<string, any>>({
   const resizeTimeout = useRef<number | null>(null);
   const parentRef = useRef<HTMLDivElement>(null);
 
-  // Update url and cache
-  const updateUrlAndCache = useCallback(
-    (query: string, results?: Set<string>) => {
-      const params = new URLSearchParams(searchParams?.toString() ?? "");
-      if (query.trim()) {
-        params.set(`${viewMode}_search`, query);
-        if (results) {
-          setInCache(query, results);
-        }
-      } else {
-        params.delete(`${viewMode}_search`);
-      }
-      router.replace(`?${params.toString()}`, { scroll: false });
-    },
-    [router, searchParams, viewMode]
-  );
-
-  // Debounced search handler
-  const debouncedSearch = useMemo(
+  // Combined debounced search and URL update
+  const debouncedSearchAndUpdate = useMemo(
     () =>
-      debounce(async (query: string) => {
-        // Clear results if query is empty
-        if (!query.trim()) {
+      debounce(async (value: string) => {
+        // Update URL and cache
+        const view = searchParams?.get("view") || "books";
+        const current = new URLSearchParams(window.location.search);
+        if (value.trim()) {
+          current.set(`${view}_search`, value);
+        } else {
+          current.delete(`${view}_search`);
+        }
+        router.replace(`?${current.toString()}`, { scroll: false });
+
+        // Check cache first
+        const cachedResults = getFromCache(value);
+        if (value.trim() && cachedResults) {
+          setSearchResults(cachedResults);
+          setIsPending(false);
+          return;
+        }
+
+        // Perform search if there's a value
+        if (value.trim()) {
+          setIsSearching(true);
+          try {
+            const embedding = await generateEmbedding(value);
+            const response = await fetch("/api/search", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ 
+                query: value,
+                embedding,
+                viewMode: view
+              }),
+            });
+            if (!response.ok) throw new Error("Search failed");
+            const results: Array<{ id: string }> = await response.json();
+            const resultSet = new Set(results.map(item => item.id));
+            setSearchResults(resultSet);
+            setInCache(value, resultSet);
+          } catch (e) {
+            console.error("Search error:", e);
+          } finally {
+            setIsSearching(false);
+            setIsPending(false);
+          }
+        } else {
           setSearchResults(new Set());
           setIsSearching(false);
           setIsPending(false);
-          return;
         }
-
-        // Check cache for results
-        const cachedResults = getFromCache(query);
-        if (cachedResults) {
-          setSearchResults(cachedResults);
-          setIsSearching(false);
-          setIsPending(false);
-          return;
-        }
-
-        // If no cached results, perform search
-        setIsSearching(true);
-        try {
-          const embedding = await generateEmbedding(query);
-          const response = await fetch("/api/search", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              query,
-              embedding,
-              viewMode,
-            }),
-          });
-          const data = await response.json();
-          setSearchResults(new Set(data.map((item: any) => item.id)));
-          setInCache(query, new Set(data.map((item: any) => item.id)));
-
-        } catch (error) {
-          console.error("Error searching:", error);
-          
-        } finally {
-          setIsSearching(false);
-          setIsPending(false);
-        }
-      }, 1000),
-    [viewMode]
+      }, 300),
+    [router, searchParams]
   );
 
   // Add cleanup
   useEffect(() => {
     return () => {
-      debouncedSearch.cancel();
+      debouncedSearchAndUpdate.cancel();
     };
-  }, [debouncedSearch]);
+  }, [debouncedSearchAndUpdate]);
 
   // Search handler
   const handleSearchChange = (value: string) => {
@@ -188,8 +176,7 @@ export function DataGrid<T extends Record<string, any>>({
     } else {
       setIsPending(false);
     }
-    updateUrlAndCache(value);
-    debouncedSearch(value);
+    debouncedSearchAndUpdate(value);
   };
 
   // Data filtering
