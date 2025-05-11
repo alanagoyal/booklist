@@ -31,6 +31,24 @@ type DataGridProps<T extends Record<string, any>> = {
   onRowClick?: (row: T) => void;
 };
 
+// Cache helpers
+const getFromCache = (query: string): Set<string> | undefined => {
+  try {
+    const cached = localStorage.getItem(`search_${query}`);
+    return cached ? new Set(JSON.parse(cached)) : undefined;
+  } catch (e) {
+    return undefined;
+  }
+};
+
+const setInCache = (query: string, results: Set<string>) => {
+  try {
+    localStorage.setItem(`search_${query}`, JSON.stringify([...results]));
+  } catch (e) {
+    // Ignore storage errors
+  }
+};
+
 export function DataGrid<T extends Record<string, any>>({
   data,
   columns,
@@ -49,9 +67,17 @@ export function DataGrid<T extends Record<string, any>>({
     const view = searchParams?.get("view") || "books";
     return searchParams?.get(`${view}_search`) || "";
   });
-  const [searchResults, setSearchResults] = useState<Set<string>>(
-    new Set<string>()
-  );
+  // Initialize search results from cache
+  const [searchResults, setSearchResults] = useState<Set<string>>(() => {
+    const view = searchParams?.get("view") || "books";
+    const query = searchParams?.get(`${view}_search`) || "";
+    const cachedResults = getFromCache(query);
+    if (query && !cachedResults) {
+      // If we have a query but no cache, trigger a search
+      setTimeout(() => debouncedSearch(query), 0);
+    }
+    return cachedResults || new Set();
+  });
   const [isSearching, setIsSearching] = useState(false);
   const [isPending, setIsPending] = useState(false);
 
@@ -79,16 +105,45 @@ export function DataGrid<T extends Record<string, any>>({
   const resizeTimeout = useRef<number | null>(null);
   const parentRef = useRef<HTMLDivElement>(null);
 
+  // Update url and cache
+  const updateUrlAndCache = useCallback(
+    (query: string, results?: Set<string>) => {
+      const params = new URLSearchParams(searchParams?.toString() ?? "");
+      if (query.trim()) {
+        params.set(`${viewMode}_search`, query);
+        if (results) {
+          setInCache(query, results);
+        }
+      } else {
+        params.delete(`${viewMode}_search`);
+      }
+      router.replace(`?${params.toString()}`, { scroll: false });
+    },
+    [router, searchParams, viewMode]
+  );
+
   // Debounced search handler
   const debouncedSearch = useMemo(
     () =>
       debounce(async (query: string) => {
+        // Clear results if query is empty
         if (!query.trim()) {
           setSearchResults(new Set());
           setIsSearching(false);
           setIsPending(false);
           return;
         }
+
+        // Check cache for results
+        const cachedResults = getFromCache(query);
+        if (cachedResults) {
+          setSearchResults(cachedResults);
+          setIsSearching(false);
+          setIsPending(false);
+          return;
+        }
+
+        // If no cached results, perform search
         setIsSearching(true);
         try {
           const embedding = await generateEmbedding(query);
@@ -105,13 +160,16 @@ export function DataGrid<T extends Record<string, any>>({
           });
           const data = await response.json();
           setSearchResults(new Set(data.map((item: any) => item.id)));
+          setInCache(query, new Set(data.map((item: any) => item.id)));
+
         } catch (error) {
           console.error("Error searching:", error);
+          
         } finally {
           setIsSearching(false);
           setIsPending(false);
         }
-      }, 1000), 
+      }, 1000),
     [viewMode]
   );
 
@@ -130,6 +188,7 @@ export function DataGrid<T extends Record<string, any>>({
     } else {
       setIsPending(false);
     }
+    updateUrlAndCache(value);
     debouncedSearch(value);
   };
 
@@ -498,7 +557,10 @@ export function DataGrid<T extends Record<string, any>>({
               {columns.map(renderHeader)}
             </div>
           </div>
-          {sortedData.length === 0 && inputValue.trim() && !isSearching && !isPending ? (
+          {sortedData.length === 0 &&
+          inputValue.trim() &&
+          !isSearching &&
+          !isPending ? (
             <div className="fixed left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 text-center px-4">
               <div className="text-text/70">No results match this search</div>
             </div>
