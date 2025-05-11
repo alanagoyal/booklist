@@ -80,17 +80,15 @@ export function DataGrid<T extends Record<string, any>>({
   const filteredData = useMemo(() => {
     const searchQuery = searchParams?.get(`${viewMode}_search`);
     
-    // Only filter data when all these are true:
-    // 1. We have a search query
-    // 2. We're not currently searching
-    // 3. We have search results
-    if (searchQuery?.trim() && !isSearching && searchResults.size > 0) {
+    // Only filter when we have both a query and results
+    // This maintains previous results during search refinements
+    if (searchQuery?.trim() && searchResults.size > 0) {
       return data.filter((item) => searchResults.has(item.id));
     }
     
-    // In all other cases, show all data
+    // All other cases show all data
     return data;
-  }, [data, searchResults, searchParams, viewMode, isSearching]);
+  }, [data, searchResults, searchParams, viewMode]);
 
   // Update counter
   useEffect(() => {
