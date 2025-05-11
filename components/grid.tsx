@@ -11,8 +11,6 @@ import { ChevronDown, Check, ArrowUp, ArrowDown } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { SearchBox } from "./search-box";
-import { debounce } from "lodash";
-import { generateEmbedding } from "@/utils/embeddings";
 import { countManager } from "@/components/counter";
 
 type SortDirection = "asc" | "desc";
@@ -31,23 +29,6 @@ type DataGridProps<T extends Record<string, any>> = {
   onRowClick?: (row: T) => void;
 };
 
-// Cache helpers
-const getFromCache = (query: string): Set<string> | undefined => {
-  try {
-    const cached = localStorage.getItem(`search_${query}`);
-    return cached ? new Set(JSON.parse(cached)) : undefined;
-  } catch (e) {
-    return undefined;
-  }
-};
-
-const setInCache = (query: string, results: Set<string>) => {
-  try {
-    localStorage.setItem(`search_${query}`, JSON.stringify([...results]));
-  } catch (e) {
-    // Ignore storage errors
-  }
-};
 
 export function DataGrid<T extends Record<string, any>>({
   data,
@@ -63,21 +44,7 @@ export function DataGrid<T extends Record<string, any>>({
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [isDropdownClosing, setIsDropdownClosing] = useState(false);
   const [isMobileView, setIsMobileView] = useState(false);
-  const [inputValue, setInputValue] = useState(() => {
-    const view = searchParams?.get("view") || "books";
-    return searchParams?.get(`${view}_search`) || "";
-  });
-  // Initialize search results from cache
-  const [searchResults, setSearchResults] = useState<Set<string>>(() => {
-    const view = searchParams?.get("view") || "books";
-    const query = searchParams?.get(`${view}_search`) || "";
-    const cachedResults = getFromCache(query);
-    if (query && !cachedResults) {
-      // If we have a query but no cache, trigger a search
-      setTimeout(() => debouncedSearchAndUpdate(query), 0);
-    }
-    return cachedResults || new Set();
-  });
+  const [searchResults, setSearchResults] = useState<Set<string>>(new Set());
   const [isSearching, setIsSearching] = useState(false);
   const [isPending, setIsPending] = useState(false);
 
@@ -105,95 +72,22 @@ export function DataGrid<T extends Record<string, any>>({
   const resizeTimeout = useRef<number | null>(null);
   const parentRef = useRef<HTMLDivElement>(null);
 
-  // Combined debounced search and URL update
-  const debouncedSearchAndUpdate = useMemo(
-    () =>
-      debounce(async (value: string) => {
-        // Update URL and cache
-        const view = searchParams?.get("view") || "books";
-        const current = new URLSearchParams(window.location.search);
-        if (value.trim()) {
-          current.set(`${view}_search`, value);
-        } else {
-          current.delete(`${view}_search`);
-        }
-        router.replace(`?${current.toString()}`, { scroll: false });
-
-        // Check cache first
-        const cachedResults = getFromCache(value);
-        if (value.trim() && cachedResults) {
-          setSearchResults(cachedResults);
-          setIsPending(false);
-          return;
-        }
-
-        // Perform search if there's a value
-        if (value.trim()) {
-          setIsSearching(true);
-          try {
-            const embedding = await generateEmbedding(value);
-            const response = await fetch("/api/search", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ 
-                query: value,
-                embedding,
-                viewMode: view
-              }),
-            });
-            if (!response.ok) throw new Error("Search failed");
-            const results: Array<{ id: string }> = await response.json();
-            const resultSet = new Set(results.map(item => item.id));
-            setSearchResults(resultSet);
-            setInCache(value, resultSet);
-          } catch (e) {
-            console.error("Search error:", e);
-          } finally {
-            setIsSearching(false);
-            setIsPending(false);
-          }
-        } else {
-          setSearchResults(new Set());
-          setIsSearching(false);
-          setIsPending(false);
-        }
-      }, 300),
-    [router, searchParams]
-  );
-
-  // Add cleanup
-  useEffect(() => {
-    return () => {
-      debouncedSearchAndUpdate.cancel();
-    };
-  }, [debouncedSearchAndUpdate]);
-
-  // Search handler
-  const handleSearchChange = (value: string) => {
-    setInputValue(value);
-    if (value.trim()) {
-      setIsPending(true);
-    } else {
-      setIsPending(false);
-    }
-    debouncedSearchAndUpdate(value);
-  };
+  // Initial search value from URL
+  const initialSearchValue = useMemo(() => {
+    const view = searchParams?.get("view") || "books";
+    return searchParams?.get(`${view}_search`) || "";
+  }, [searchParams]);
 
   // Data filtering
   const filteredData = useMemo(() => {
-    // If no search is active, return all data
-    if (!inputValue.trim()) {
+    // If no search results, return all data
+    if (searchResults.size === 0) {
       return data;
     }
 
     // Only filter if we actually have results back
-    if (searchResults.size > 0) {
-      return data.filter((item) => searchResults.has(item.id));
-    }
-
-    // Show existing filtered data while searching
-    return data;
-  }, [data, searchResults, inputValue]);
+    return data.filter((item) => searchResults.has(item.id));
+  }, [data, searchResults]);
 
   // Update counter
   useEffect(() => {
@@ -520,10 +414,8 @@ export function DataGrid<T extends Record<string, any>>({
     <div className="flex flex-col h-full">
       {/* Search box */}
       <SearchBox
-        value={inputValue}
-        onSearch={handleSearchChange}
-        isSearching={isSearching}
-        isPending={isPending}
+        initialValue={initialSearchValue}
+        onSearchResults={setSearchResults}
         viewMode={viewMode}
         isMobileView={isMobileView}
       />
@@ -545,7 +437,7 @@ export function DataGrid<T extends Record<string, any>>({
             </div>
           </div>
           {sortedData.length === 0 &&
-          inputValue.trim() &&
+          searchResults.size > 0 &&
           !isSearching &&
           !isPending ? (
             <div className="fixed left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 text-center px-4">

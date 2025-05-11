@@ -1,14 +1,13 @@
 "use client";
 
-import React, { useState, useCallback, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import { Search, X } from "lucide-react";
 import debounce from "lodash/debounce";
+import { generateEmbedding } from "@/utils/embeddings";
 
 type SearchBoxProps = {
-  value: string;
-  onSearch: (query: string) => void;
-  isSearching: boolean;
-  isPending: boolean;
+  initialValue?: string;
+  onSearchResults: (results: Set<string>) => void;
   viewMode: "books" | "people";
   isMobileView: boolean;
 };
@@ -48,18 +47,116 @@ const peoplePlaceholdersMobile = [
 ];
 
 export function SearchBox({
-  value,
-  onSearch,
-  isSearching,
-  isPending,
+  initialValue = "",
+  onSearchResults,
   viewMode,
   isMobileView,
 }: SearchBoxProps) {
-  // Input ref for auto-focus
+  // State
+  const [value, setValue] = useState(initialValue);
+  const [isSearching, setIsSearching] = useState(false);
+  const [isPending, setIsPending] = useState(false);
+
+  // Refs
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // Cache helpers
+  const getFromCache = (query: string): Set<string> | undefined => {
+    try {
+      const cached = localStorage.getItem(`search_${query}`);
+      return cached ? new Set(JSON.parse(cached)) : undefined;
+    } catch (e) {
+      return undefined;
+    }
+  };
+
+  const setInCache = (query: string, results: Set<string>) => {
+    try {
+      localStorage.setItem(`search_${query}`, JSON.stringify([...results]));
+    } catch (e) {
+      // Ignore storage errors
+    }
+  };
+
+  // Combined debounced search and URL update
+  const debouncedSearchAndUpdate = useMemo(
+    () =>
+      debounce(async (searchValue: string) => {
+        // Update URL
+        const current = new URLSearchParams(window.location.search);
+        if (searchValue.trim()) {
+          current.set(`${viewMode}_search`, searchValue);
+        } else {
+          current.delete(`${viewMode}_search`);
+        }
+        window.history.replaceState({}, "", `?${current.toString()}`);
+
+        // Check cache first
+        const cachedResults = getFromCache(searchValue);
+        if (searchValue.trim() && cachedResults) {
+          onSearchResults(cachedResults);
+          setIsPending(false);
+          return;
+        }
+
+        // Perform search if there's a value
+        if (searchValue.trim()) {
+          setIsSearching(true);
+          try {
+            const embedding = await generateEmbedding(searchValue);
+            const response = await fetch("/api/search", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ 
+                query: searchValue,
+                embedding,
+                viewMode
+              }),
+            });
+            if (!response.ok) throw new Error("Search failed");
+            const results: Array<{ id: string }> = await response.json();
+            const resultSet = new Set(results.map(item => item.id));
+            onSearchResults(resultSet);
+            setInCache(searchValue, resultSet);
+          } catch (e) {
+            console.error("Search error:", e);
+            onSearchResults(new Set());
+          } finally {
+            setIsSearching(false);
+            setIsPending(false);
+          }
+        } else {
+          onSearchResults(new Set());
+          setIsSearching(false);
+          setIsPending(false);
+        }
+      }, 300),
+    [viewMode, onSearchResults, setIsPending, setIsSearching]
+  );
+
+  // Handle initial value
+  useEffect(() => {
+    if (initialValue.trim()) {
+      const cachedResults = getFromCache(initialValue);
+      if (cachedResults) {
+        onSearchResults(cachedResults);
+      } else {
+        // If no cache, trigger a search
+        debouncedSearchAndUpdate(initialValue);
+      }
+    }
+  }, [initialValue, debouncedSearchAndUpdate, onSearchResults]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      debouncedSearchAndUpdate.cancel();
+    };
+  }, [debouncedSearchAndUpdate]);
+
   const handleClear = () => {
-    onSearch("");
+    setValue("");
+    onSearchResults(new Set());
     inputRef.current?.focus();
   };
 
@@ -124,11 +221,20 @@ export function SearchBox({
           placeholder={currentText}
           className="flex-1 h-10 focus:outline-none bg-background border-b border-border text-text text-base sm:text-sm selection:bg-main selection:text-mtext focus:outline-none rounded-none"
           value={value}
-          onChange={(e) => onSearch(e.target.value)}
+          onChange={(e) => {
+            const newValue = e.target.value;
+            setValue(newValue);
+            if (newValue.trim()) {
+              setIsPending(true);
+            } else {
+              setIsPending(false);
+            }
+            debouncedSearchAndUpdate(newValue);
+          }}
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey) {
               e.preventDefault();
-              onSearch(value);
+              debouncedSearchAndUpdate(value);
             }
           }}
           disabled={false}
