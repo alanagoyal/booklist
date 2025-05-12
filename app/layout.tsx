@@ -4,10 +4,17 @@ import Providers from "./providers";
 import localFont from "next/font/local";
 import "./globals.css";
 import Header from "@/components/header";
+import Script from "next/script";
 
+// Font must be loaded at the module scope with a const assignment
+// Add error handling through optional fallback fonts
 const specialElite = localFont({
   src: '../public/fonts/SpecialElite-Regular.ttf',
   variable: '--font-special-elite',
+  preload: true,
+  display: 'swap', // Use fallback fonts until the custom font is loaded
+  fallback: ['system-ui', 'Arial'], // Fallback font stack if loading fails
+  adjustFontFallback: "Arial", // Use Arial metrics for the fallback adjustment
 });
 
 export const viewport = {
@@ -52,6 +59,21 @@ export default function RootLayout({
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        
+        {/* Error tracking script */}
+        <Script id="error-detection" strategy="afterInteractive">
+          {`
+            window.addEventListener('error', function(event) {
+              console.error('JavaScript error caught:', {
+                message: event.message,
+                source: event.filename,
+                lineno: event.lineno,
+                colno: event.colno,
+                error: event.error?.stack || event.error || 'Unknown'
+              });
+            });
+          `}
+        </Script>
       </head>
       <body className={`antialiased ${specialElite.className}`}>
         <Providers>
