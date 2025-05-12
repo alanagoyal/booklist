@@ -49,6 +49,16 @@ export function DataGrid<T extends Record<string, any>>({
   // Get current view and sort configs directly from URL
   const viewMode = (searchParams.get("view") as "books" | "people") || "books";
   const directionParam = searchParams?.get(`${viewMode}_dir`);
+
+  // Search state derived values
+  const searchQuery = useMemo(() => searchParams?.get(`${viewMode}_search`)?.trim() || "", [searchParams, viewMode]);
+  const hasSearchQuery = useMemo(() => Boolean(searchQuery), [searchQuery]);
+  const hasNoSearchResults = useMemo(() => searchResults.size === 0, [searchResults]);
+  const showNoResultsMessage = useMemo(
+    () => !isSearching && hasSearchQuery && hasNoSearchResults,
+    [isSearching, hasSearchQuery, hasNoSearchResults]
+  );
+
   const sortConfig = useMemo(
     () => ({
       field:
@@ -78,17 +88,15 @@ export function DataGrid<T extends Record<string, any>>({
 
   // Data filtering
   const filteredData = useMemo(() => {
-    const searchQuery = searchParams?.get(`${viewMode}_search`);
-    
     // Only filter when we have both a query and results
     // This maintains previous results during search refinements
-    if (searchQuery?.trim() && searchResults.size > 0) {
+    if (hasSearchQuery && !hasNoSearchResults) {
       return data.filter((item) => searchResults.has(item.id));
     }
     
     // All other cases show all data
     return data;
-  }, [data, searchResults, searchParams, viewMode]);
+  }, [data, searchResults, hasSearchQuery, hasNoSearchResults]);
 
   // Update counter
   useEffect(() => {
@@ -438,7 +446,7 @@ export function DataGrid<T extends Record<string, any>>({
               {columns.map(renderHeader)}
             </div>
           </div>
-          {!isSearching && searchParams?.get(`${viewMode}_search`)?.trim() && searchResults.size === 0 ? (
+          {showNoResultsMessage ? (
             <div className="fixed left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 text-center px-4">
               <div className="text-text/70">No results match this search</div>
             </div>
