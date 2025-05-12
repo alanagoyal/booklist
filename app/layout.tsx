@@ -55,7 +55,7 @@ export default function RootLayout({
       </head>
       <body className={`antialiased ${specialElite.className}`}>
         <Providers>
-          <div className="h-dvh w-full text-sm flex flex-col border border-border overflow-hidden">
+          <div className="h-dvh w-full text-sm flex flex-col overflow-hidden">
             <div className="flex flex-col flex-1 m-4 border border-border overflow-hidden">
               <Header />
               <main className="flex-1 overflow-hidden">
