@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "npm run dump-data && next dev",
     "dump-data": "tsx scripts/dump-data.ts",
     "build": "npm run dump-data && next build",
     "start": "next start",

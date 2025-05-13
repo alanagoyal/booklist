@@ -1,6 +1,7 @@
 "use client";
 
 import { BookList } from "@/components/book-list";
+import { GridSkeleton } from "@/components/grid-skeleton";
 import type { EssentialBook, ExtendedBook, FormattedRecommender } from "@/types";
 import useSWR from "swr";
 
@@ -29,8 +30,9 @@ export default function Home() {
     };
   });
 
+  // Return a skeleton loader rather than a simple loading message
   if (!books || !recommenders) {
-    return null;
+    return <GridSkeleton />;
   }
 
   return (
