@@ -56,10 +56,6 @@ export function DataGrid<T extends Record<string, any>>({
   const searchQuery = useMemo(() => searchParams?.get(`${viewMode}_search`)?.trim() || "", [searchParams, viewMode]);
   const hasSearchQuery = useMemo(() => Boolean(searchQuery), [searchQuery]);
   const hasNoSearchResults = useMemo(() => searchResults.size === 0, [searchResults]);
-  const showNoResultsMessage = useMemo(
-    () => !isSearching && hasSearchQuery && hasNoSearchResults,
-    [isSearching, hasSearchQuery, hasNoSearchResults]
-  );
 
   const sortConfig = useMemo(
     () => ({
@@ -150,6 +146,12 @@ export function DataGrid<T extends Record<string, any>>({
     
     return filtered;
   }, [data, searchResults, hasSearchQuery, hasNoSearchResults, debouncedFilters, viewMode]);
+
+  const hasNoFilteredResults = useMemo(() => filteredData.length === 0, [filteredData]);
+  const showNoResultsMessage = useMemo(
+    () => (!isSearching && ((hasSearchQuery && hasNoSearchResults) || hasNoFilteredResults)),
+    [isSearching, hasSearchQuery, hasNoSearchResults, hasNoFilteredResults]
+  );
 
   // Sort data after filtering
   const sortedData = useMemo(() => {
@@ -607,7 +609,7 @@ export function DataGrid<T extends Record<string, any>>({
           </div>
           {showNoResultsMessage ? (
             <div className="fixed left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 text-center px-4">
-              <div className="text-text/70">No results match this search</div>
+              <div className="text-text/70">No matching results found</div>
             </div>
           ) : (
             <div
