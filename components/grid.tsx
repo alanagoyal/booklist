@@ -12,6 +12,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { SearchBox } from "./search-box";
 import { countManager } from "@/components/counter";
+import { ColumnFilter } from "./column-filter";
 
 type SortDirection = "asc" | "desc";
 
@@ -74,7 +75,7 @@ export function DataGrid<T extends Record<string, any>>({
   const gridRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
   const dropdownRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
-  const inputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
+  const filterInputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
   const resizeTimeout = useRef<number | null>(null);
   const parentRef = useRef<HTMLDivElement>(null);
 
@@ -137,7 +138,6 @@ export function DataGrid<T extends Record<string, any>>({
             );
           }
 
-          // Default case: simple string includes check
           const itemValue = String(item[field as keyof T] || "").toLowerCase();
           return itemValue.includes(value);
         });
@@ -403,8 +403,8 @@ export function DataGrid<T extends Record<string, any>>({
       if (isOpening) {
         // Use setTimeout to ensure the dropdown is rendered before focusing
         setTimeout(() => {
-          inputRefs.current[field]?.focus();
-        }, 0);
+          filterInputRefs.current[field]?.focus();
+        }, 100); // Increased timeout to ensure dropdown is fully rendered
       }
     },
     [isDropdownClosing, openDropdown]
@@ -456,35 +456,12 @@ export function DataGrid<T extends Record<string, any>>({
                   <Check className="w-3 h-3 text-text/70" />
                 )}
             </button>
-            <div className="px-4 py-2">
-              <div className="relative">
-                <input
-                  type="text"
-                  ref={(el) =>
-                    void (inputRefs.current[String(column.field)] = el)
-                  }
-                  className="w-full px-2 py-1 border border-border bg-background text-text text-base sm:text-sm placeholder:text-sm selection:bg-main selection:text-mtext focus:outline-none rounded-none"
-                  placeholder="Search"
-                  value={filters[String(column.field)] || ""}
-                  onChange={(e) =>
-                    handleFilterChange(String(column.field), e.target.value)
-                  }
-                  onClick={(e) => e.stopPropagation()}
-                />
-                {filters[String(column.field)] && (
-                  <button
-                    className="absolute right-2 top-1/2 -translate-y-1/2 text-text/70 transition-colors duration-200 md:hover:text-text p-2 -mr-2"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      handleFilterChange(String(column.field), "");
-                    }}
-                  >
-                    <X className="w-3 h-3" />
-                  </button>
-                )}
-              </div>
-            </div>
+            <ColumnFilter
+              field={String(column.field)}
+              value={filters[String(column.field)] || ""}
+              onChange={handleFilterChange}
+              inputRef={(el) => (filterInputRefs.current[String(column.field)] = el)}
+            />
           </div>
         </div>
       );
