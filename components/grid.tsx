@@ -425,7 +425,7 @@ export function DataGrid<T extends Record<string, any>>({
         >
           <div>
             <button
-              className="w-full px-4 py-2 text-left text-text transition-colors duration-200 md:hover:bg-accent/50 flex items-center justify-between"
+              className="w-full p-2 text-left text-text transition-colors duration-200 md:hover:bg-accent/50 flex items-center justify-between"
               onClick={(e) => {
                 e.preventDefault();
                 handleSort(String(column.field), "asc");
@@ -441,7 +441,7 @@ export function DataGrid<T extends Record<string, any>>({
                 )}
             </button>
             <button
-              className="w-full px-4 py-2 text-left text-text transition-colors duration-200 md:hover:bg-accent/50 flex items-center justify-between"
+              className="w-full p-2 text-left text-text transition-colors duration-200 md:hover:bg-accent/50 flex items-center justify-between"
               onClick={(e) => {
                 e.preventDefault();
                 handleSort(String(column.field), "desc");
