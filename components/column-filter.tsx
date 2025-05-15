@@ -3,6 +3,54 @@
 import { useRef } from "react";
 import { Filter, X } from "lucide-react";
 
+// Define the possible enum values
+const FIELD_VALUES = {
+  type: [
+    "Anthropologist",
+    "Architect",
+    "Art Critic",
+    "Author or Publisher",
+    "Biographer",
+    "Chef or Food Writer",
+    "Economist",
+    "Engineer or Technologist",
+    "Entertainer",
+    "Entrepreneur",
+    "Executive",
+    "Historian or Philosopher",
+    "Investor",
+    "Journalist",
+    "Librarian or Teacher",
+    "Musician or Filmmaker",
+    "Product Manager or Designer",
+    "Scientist"
+  ],
+  genres: [
+    "Biography",
+    "Business",
+    "Children",
+    "Classic",
+    "Economics",
+    "Fantasy",
+    "Fiction",
+    "Historical",
+    "History",
+    "Horror",
+    "Memoir",
+    "Misc",
+    "Mystery",
+    "Nonfiction",
+    "Philosophy",
+    "Poetry",
+    "Politics",
+    "Romance",
+    "Science",
+    "Science Fiction",
+    "Self-Help",
+    "Young Adult"
+  ]
+};
+
 interface ColumnFilterProps {
   field: string;
   header: string;
@@ -19,6 +67,7 @@ export function ColumnFilter({
   inputRef,
 }: ColumnFilterProps) {
   const internalRef = useRef<HTMLInputElement>(null);
+  const enumValues = FIELD_VALUES[field as keyof typeof FIELD_VALUES];
 
   return (
     <div className="flex items-center p-2">
@@ -36,7 +85,7 @@ export function ColumnFilter({
           placeholder={`Filter by ${header.toLowerCase()}`}
           className="flex-1 min-w-0 bg-background text-text text-sm focus:outline-none selection:bg-main selection:text-mtext"
         />
-        {value && (
+        {value ? (
           <button
             onClick={() => {
               onChange(field, "");
@@ -46,7 +95,17 @@ export function ColumnFilter({
           >
             <X className="w-3 h-3" />
           </button>
-        )}
+        ) : enumValues ? (
+          <button 
+            className="inline-flex items-center justify-center rounded-full text-text/70 md:hover:text-text transition-colors duration-200 cursor-help shrink-0"
+            title={`${enumValues.join(", ")}`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
+              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a.75.75 0 000 1.5h.253a.25.25 0 01.244.304l-.459 2.066A1.75 1.75 0 0010.747 15H11a.75.75 0 000-1.5h-.253a.25.25 0 01-.244-.304l.459-2.066A1.75 1.75 0 009.253 9H9z" clipRule="evenodd" />
+            </svg>
+          </button>
+        ) : null}
       </div>
     </div>
   );
