@@ -31,7 +31,11 @@ export function ColumnFilter({
           type="text"
           value={value}
           onChange={(e) => onChange(field, e.target.value)}
-          placeholder={`Filter by ${field}`}
+          placeholder={`Filter by ${
+            field === "book_description" || field === "recommender_description"
+              ? "description"
+              : field
+          }`}
           className="flex-1 min-w-0 bg-background text-text text-sm focus:outline-none selection:bg-main selection:text-mtext"
         />
         {value && (
