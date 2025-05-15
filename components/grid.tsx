@@ -458,6 +458,7 @@ export function DataGrid<T extends Record<string, any>>({
             </button>
             <ColumnFilter
               field={String(column.field)}
+              header={column.header}
               value={filters[String(column.field)] || ""}
               onChange={handleFilterChange}
               inputRef={(el) => (filterInputRefs.current[String(column.field)] = el)}

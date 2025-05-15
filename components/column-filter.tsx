@@ -5,6 +5,7 @@ import { Filter, X } from "lucide-react";
 
 interface ColumnFilterProps {
   field: string;
+  header: string;
   value: string;
   onChange: (field: string, value: string) => void;
   inputRef?: (el: HTMLInputElement | null) => void;
@@ -12,6 +13,7 @@ interface ColumnFilterProps {
 
 export function ColumnFilter({
   field,
+  header,
   value,
   onChange,
   inputRef,
@@ -31,11 +33,7 @@ export function ColumnFilter({
           type="text"
           value={value}
           onChange={(e) => onChange(field, e.target.value)}
-          placeholder={`Filter by ${
-            field === "book_description" || field === "recommender_description"
-              ? "description"
-              : field
-          }`}
+          placeholder={`Filter by ${header.toLowerCase()}`}
           className="flex-1 min-w-0 bg-background text-text text-sm focus:outline-none selection:bg-main selection:text-mtext"
         />
         {value && (
