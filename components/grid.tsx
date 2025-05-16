@@ -7,11 +7,12 @@ import React, {
   useCallback,
   useMemo,
 } from "react";
-import { ChevronDown, Check, ArrowUp, ArrowDown } from "lucide-react";
+import { ChevronDown, Check, ArrowUp, ArrowDown, X, ListFilter } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { SearchBox } from "./search-box";
 import { countManager } from "@/components/counter";
+import { ColumnFilter } from "./column-filter";
 
 type SortDirection = "asc" | "desc";
 
@@ -45,6 +46,8 @@ export function DataGrid<T extends Record<string, any>>({
   const [isMobileView, setIsMobileView] = useState(false);
   const [searchResults, setSearchResults] = useState<Set<string>>(new Set());
   const [isSearching, setIsSearching] = useState(false);
+  const [filters, setFilters] = useState<Record<string, string>>({});
+  const [debouncedFilters, setDebouncedFilters] = useState<Record<string, string>>({});
 
   // Get current view and sort configs directly from URL
   const viewMode = (searchParams.get("view") as "books" | "people") || "books";
@@ -54,10 +57,6 @@ export function DataGrid<T extends Record<string, any>>({
   const searchQuery = useMemo(() => searchParams?.get(`${viewMode}_search`)?.trim() || "", [searchParams, viewMode]);
   const hasSearchQuery = useMemo(() => Boolean(searchQuery), [searchQuery]);
   const hasNoSearchResults = useMemo(() => searchResults.size === 0, [searchResults]);
-  const showNoResultsMessage = useMemo(
-    () => !isSearching && hasSearchQuery && hasNoSearchResults,
-    [isSearching, hasSearchQuery, hasNoSearchResults]
-  );
 
   const sortConfig = useMemo(
     () => ({
@@ -76,7 +75,7 @@ export function DataGrid<T extends Record<string, any>>({
   const gridRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
   const dropdownRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
-  const inputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
+  const filterInputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
   const resizeTimeout = useRef<number | null>(null);
   const parentRef = useRef<HTMLDivElement>(null);
 
@@ -88,20 +87,194 @@ export function DataGrid<T extends Record<string, any>>({
 
   // Data filtering
   const filteredData = useMemo(() => {
-    // Only filter when we have both a query and results
-    // This maintains previous results during search refinements
+    let filtered = data;
+
+    // Apply search filter first
     if (hasSearchQuery && !hasNoSearchResults) {
-      return data.filter((item) => searchResults.has(item.id));
+      filtered = filtered.filter((item) => searchResults.has(item.id));
+    }
+
+    // Then apply column filters
+    const activeFilters = Object.entries(debouncedFilters).filter(([field, value]) => {
+      // Only include filters relevant to current view
+      if (field === "book_description" && viewMode !== "books") return false;
+      if (field === "recommender_description" && viewMode !== "people") return false;
+      return Boolean(value);
+    });
+
+    if (activeFilters.length > 0) {
+      filtered = filtered.filter((item) => {
+        return activeFilters.every(([field, filterValue]) => {
+          const value = filterValue?.toLowerCase() || "";
+          if (!value) return true;
+
+          // Special handling for description fields
+          if ((field === "book_description" && viewMode === "books") || 
+              (field === "recommender_description" && viewMode === "people")) {
+            return String(item.description || "")
+              .toLowerCase()
+              .includes(value);
+          }
+
+          // Filter by recommender full name
+          if (field === "recommenders") {
+            const recommendations = (item as any).recommendations || [];
+            const recommenderNames = recommendations
+              .filter((rec: any) => rec.recommender)
+              .map((rec: any) => rec.recommender.full_name.toLowerCase());
+            return recommenderNames.some((name: string) =>
+              name.includes(value)
+            );
+          }
+
+          // Filter by recommendation title
+          if (field === "recommendations") {
+            const recommendations = (item as any).recommendations || [];
+            const recommendationTitles = recommendations.map((rec: any) =>
+              rec.title.toLowerCase()
+            );
+            return recommendationTitles.some((title: string) =>
+              title.includes(value)
+            );
+          }
+
+          const itemValue = String(item[field as keyof T] || "").toLowerCase();
+          return itemValue.includes(value);
+        });
+      });
     }
     
-    // All other cases show all data
-    return data;
-  }, [data, searchResults, hasSearchQuery, hasNoSearchResults]);
+    return filtered;
+  }, [data, searchResults, hasSearchQuery, hasNoSearchResults, debouncedFilters, viewMode]);
+
+  const hasNoFilteredResults = useMemo(() => filteredData.length === 0, [filteredData]);
+  const showNoResultsMessage = useMemo(
+    () => (!isSearching && ((hasSearchQuery && hasNoSearchResults) || hasNoFilteredResults)),
+    [isSearching, hasSearchQuery, hasNoSearchResults, hasNoFilteredResults]
+  );
+
+  // Sort data after filtering
+  const sortedData = useMemo(() => {
+    const sorted = [...filteredData];
+    
+    if (sortConfig.field) {
+      sorted.sort((a, b) => {
+        // Handle recommender sorting
+        if (sortConfig.field === "recommenders") {
+          // Sort by number of recommenders (popularity)
+          const aRecs = (a as any).recommendations?.length || 0;
+          const bRecs = (b as any).recommendations?.length || 0;
+          return sortConfig.direction === "desc" ? bRecs - aRecs : aRecs - bRecs;
+        }
+
+        // Handle recommendations sorting
+        if (sortConfig.field === "recommendations") {
+          const aCount = (a as any).recommendations?.length || 0;
+          const bCount = (b as any).recommendations?.length || 0;
+          return sortConfig.direction === "desc" ? bCount - aCount : aCount - bCount;
+        }
+
+        // Special handling for description fields
+        if (sortConfig.field === "book_description" || sortConfig.field === "recommender_description") {
+          const aValue = String(a.description || "").toLowerCase();
+          const bValue = String(b.description || "").toLowerCase();
+          return sortConfig.direction === "asc"
+            ? aValue.localeCompare(bValue)
+            : bValue.localeCompare(aValue);
+        }
+
+        // Default case: handle null/undefined and use localeCompare for strings
+        const aValue = a[sortConfig.field as keyof T];
+        const bValue = b[sortConfig.field as keyof T];
+
+        // Handle null/undefined
+        if (aValue === bValue) return 0;
+        if (aValue === null || aValue === undefined) return 1;
+        if (bValue === null || bValue === undefined) return -1;
+
+        // Convert to strings and compare
+        const aString = String(aValue).toLowerCase();
+        const bString = String(bValue).toLowerCase();
+        
+        return sortConfig.direction === "asc"
+          ? aString.localeCompare(bString)
+          : bString.localeCompare(aString);
+      });
+    }
+
+    return sorted;
+  }, [filteredData, sortConfig.field, sortConfig.direction]);
 
   // Update counter
   useEffect(() => {
     countManager.updateCount(viewMode, filteredData.length);
   }, [filteredData.length, viewMode]);
+
+  // Initialize filters from URL params
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams?.toString() ?? "");
+    const newFilters: Record<string, string> = {};
+    
+    // Get list of valid filter fields from columns
+    const validFilterFields = columns.map((col) => String(col.field));
+    
+    // Add special cases for description fields
+    validFilterFields.push("book_description", "recommender_description");
+    
+    // Check each param for filter values
+    params.forEach((value, key) => {
+      // Handle description fields specially
+      if (key === "book_description" || key === "recommender_description") {
+        newFilters[key] = value;
+      }
+      // For other fields, check if they match a column field directly
+      else if (validFilterFields.includes(key) && value) {
+        newFilters[key] = value;
+      }
+    });
+    
+    setFilters(newFilters);
+    setDebouncedFilters(newFilters);
+  }, [searchParams, viewMode, columns]);
+
+  // Debounce filter updates
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (JSON.stringify(filters) !== JSON.stringify(debouncedFilters)) {
+        const params = new URLSearchParams(searchParams?.toString() ?? "");
+        
+        // Remove all existing filter params
+        const validFilterFields = columns.map((col) => String(col.field));
+        validFilterFields.push("book_description", "recommender_description");
+        validFilterFields.forEach(field => params.delete(field));
+        
+        // Add new filter params
+        Object.entries(filters).forEach(([field, value]) => {
+          if (value) {
+            params.set(field, value);
+          }
+        });
+        
+        router.push(`?${params.toString()}`);
+        setDebouncedFilters(filters);
+      }
+    }, 300); // 300ms debounce delay
+
+    return () => clearTimeout(timeoutId);
+  }, [filters, debouncedFilters, searchParams, viewMode, router, columns]);
+
+  // Handle filter input changes
+  const handleFilterChange = useCallback((field: string, value: string) => {
+    // Map description field to the correct URL parameter
+    const urlField = field === "description" 
+      ? viewMode === "books" ? "book_description" : "recommender_description"
+      : field;
+      
+    setFilters(prev => ({
+      ...prev,
+      [urlField]: value
+    }));
+  }, [viewMode]);
 
   // Sort handlers
   const handleSort = useCallback(
@@ -132,50 +305,6 @@ export function DataGrid<T extends Record<string, any>>({
     },
     [router, searchParams]
   );
-
-  // Data sorting
-  const sortedData = useMemo(() => {
-    const field = sortConfig.field;
-    const direction = sortConfig.direction;
-
-    return [...filteredData].sort((a, b) => {
-      // Special handling for description fields
-      if (field === "book_description" || field === "recommender_description") {
-        const aValue = String(a.description || "").toLowerCase();
-        const bValue = String(b.description || "").toLowerCase();
-        return direction === "asc"
-          ? aValue.localeCompare(bValue)
-          : bValue.localeCompare(aValue);
-      }
-
-      // Handle recommender sorting
-      if (field === "recommenders") {
-        // Sort by number of recommenders (popularity)
-        const aRecs = (a as any).recommendations?.length || 0;
-        const bRecs = (b as any).recommendations?.length || 0;
-        const sortDirection = direction === "desc" ? 1 : -1;
-        return (bRecs - aRecs) * sortDirection;
-      }
-
-      if (field === "recommendations") {
-        const aCount = (a as any).recommendations?.length || 0;
-        const bCount = (b as any).recommendations?.length || 0;
-        const sortDirection = direction === "desc" ? 1 : -1;
-        return (bCount - aCount) * sortDirection;
-      }
-
-      if (a[field as keyof T] === b[field as keyof T]) return 0;
-      if (a[field as keyof T] === null || a[field as keyof T] === undefined)
-        return 1;
-      if (b[field as keyof T] === null || b[field as keyof T] === undefined)
-        return -1;
-
-      const sortDirection = direction === "asc" ? 1 : -1;
-      return a[field as keyof T] < b[field as keyof T]
-        ? -sortDirection
-        : sortDirection;
-    });
-  }, [filteredData, sortConfig]);
 
   // Keep resize observer for header width syncing
   useEffect(() => {
@@ -274,8 +403,8 @@ export function DataGrid<T extends Record<string, any>>({
       if (isOpening) {
         // Use setTimeout to ensure the dropdown is rendered before focusing
         setTimeout(() => {
-          inputRefs.current[field]?.focus();
-        }, 0);
+          filterInputRefs.current[field]?.focus();
+        }, 100); // Increased timeout to ensure dropdown is fully rendered
       }
     },
     [isDropdownClosing, openDropdown]
@@ -296,7 +425,7 @@ export function DataGrid<T extends Record<string, any>>({
         >
           <div>
             <button
-              className="w-full px-4 py-2 text-left text-text transition-colors duration-200 md:hover:bg-accent/50 flex items-center justify-between"
+              className="w-full p-2 text-left text-text transition-colors duration-200 md:hover:bg-accent/50 flex items-center justify-between"
               onClick={(e) => {
                 e.preventDefault();
                 handleSort(String(column.field), "asc");
@@ -312,7 +441,7 @@ export function DataGrid<T extends Record<string, any>>({
                 )}
             </button>
             <button
-              className="w-full px-4 py-2 text-left text-text transition-colors duration-200 md:hover:bg-accent/50 flex items-center justify-between"
+              className="w-full p-2 text-left text-text transition-colors duration-200 md:hover:bg-accent/50 flex items-center justify-between"
               onClick={(e) => {
                 e.preventDefault();
                 handleSort(String(column.field), "desc");
@@ -327,11 +456,18 @@ export function DataGrid<T extends Record<string, any>>({
                   <Check className="w-3 h-3 text-text/70" />
                 )}
             </button>
+            <ColumnFilter
+              field={String(column.field)}
+              header={column.header}
+              value={filters[String(column.field)] || ""}
+              onChange={handleFilterChange}
+              inputRef={(el) => (filterInputRefs.current[String(column.field)] = el)}
+            />
           </div>
         </div>
       );
     },
-    [openDropdown, isDropdownClosing, sortConfig, handleSort]
+    [openDropdown, isDropdownClosing, sortConfig, handleSort, filters, handleFilterChange]
   );
 
   // Header
@@ -355,6 +491,9 @@ export function DataGrid<T extends Record<string, any>>({
           <div className="flex items-center justify-between flex-shrink-0">
             <span className="font-base text-text">{column.header}</span>
             <div className="flex items-center gap-1">
+              {debouncedFilters[String(column.field)] && (
+                <ListFilter className="w-3 h-3 text-text/70 md:group-hover:hidden" />
+              )}
               <div>
                 {sortConfig.field === String(column.field) && (
                   <div className="md:group-hover:hidden">
@@ -373,7 +512,7 @@ export function DataGrid<T extends Record<string, any>>({
         </div>
       );
     },
-    [sortConfig, handleDropdownClick, renderDropdownMenu]
+    [sortConfig, handleDropdownClick, renderDropdownMenu, debouncedFilters]
   );
 
   // Cells
@@ -448,7 +587,7 @@ export function DataGrid<T extends Record<string, any>>({
           </div>
           {showNoResultsMessage ? (
             <div className="fixed left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 text-center px-4">
-              <div className="text-text/70">No results match this search</div>
+              <div className="text-text/70">No matching results found</div>
             </div>
           ) : (
             <div
