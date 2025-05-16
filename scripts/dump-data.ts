@@ -17,23 +17,12 @@ import {
 // Load environment variables from .env.local
 config({ path: join(process.cwd(), ".env.local") });
 
-// Calculate bucket (0-5) using log scale with equal-width buckets
-function calculateBucket(count: number, allCounts: number[], bucketCount = 6): number {
-  if (!count || !allCounts.length) return 0;
+// Calculate bucket (0-5) based on percentile
+function calculateBucket(percentile: number | null, bucketCount = 6): number {
+  if (percentile === null || percentile === undefined) return 0;
   
-  // Apply log transformation to handle the long tail
-  const logCounts = allCounts.map(c => Math.log10(c + 1)); // +1 so log(0) is safe
-  const logValue = Math.log10(count + 1);
-  
-  // Find min and max of log values
-  const minLog = Math.min(...logCounts);
-  const maxLog = Math.max(...logCounts);
-  
-  // Normalize to 0-1 range and assign to bucket
-  const normalizedValue = (logValue - minLog) / (maxLog - minLog);
-  
-  // Return bucket index (0 to bucketCount-1)
-  return Math.min(bucketCount - 1, Math.floor(normalizedValue * bucketCount));
+  // Convert percentile (0-1) to bucket (0-5)
+  return Math.min(bucketCount - 1, Math.floor(percentile * bucketCount));
 }
 
 // Calculate background color based on bucket (0-5)
@@ -90,13 +79,10 @@ async function dumpData() {
 
     // Only fetch recommendations and related books if we have books
     if (allBooks.length > 0) {
-      // Get all recommendation counts for bucket calculation
-      const allRecommendationCounts = allBooks.map(book => book._recommendation_count);
-      
       // Add bucket to each book
       allBooks = allBooks.map(book => ({
         ...book,
-        _bucket: calculateBucket(book._recommendation_count, allRecommendationCounts)
+        _bucket: calculateBucket(book.recommendation_percentile)
       }));
       
       // Get recommendations for all books
@@ -127,6 +113,7 @@ async function dumpData() {
         description: book.description,
         genres: book.genre || [],
         amazon_url: book.amazon_url || "",
+        recommendation_percentile: book.recommendation_percentile,
         recommendations: (recommendationsData?.[book.id] || []).map((rec: {
           recommender?: {
             id: string;
@@ -197,6 +184,7 @@ async function dumpData() {
         amazon_url: book.amazon_url,
         recommendations: book.recommendations,
         _recommendation_count: book._recommendation_count,
+        recommendation_percentile: book.recommendation_percentile,
         _bucket: book._bucket,
         _background_color: book._background_color
       }));
@@ -249,7 +237,7 @@ async function dumpData() {
       // Add bucket to each recommender
       const recommendersWithBuckets = recommenders.map((recommender: any) => ({
         ...recommender,
-        _bucket: calculateBucket(recommender._book_count, allBookCounts)
+        _bucket: calculateBucket(recommender.recommendation_percentile)
       }));
       
       // Format the recommenders data
