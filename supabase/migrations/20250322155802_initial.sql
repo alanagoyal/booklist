@@ -13,7 +13,8 @@ create table "public"."books" (
     "amazon_url" text,
     "title_embedding" vector(1536),
     "author_embedding" vector(1536),
-    "description_embedding" vector(1536)
+    "description_embedding" vector(1536),
+    "recommendation_percentile" numeric
 );
 
 
@@ -158,7 +159,8 @@ RETURNS TABLE (
   genre text[],
   amazon_url text,
   similar_books jsonb,
-  _recommendation_count int
+  _recommendation_count int,
+  recommendation_percentile numeric
 )
 LANGUAGE plpgsql
 VOLATILE
@@ -174,10 +176,11 @@ BEGIN
       books.genre,
       books.amazon_url,
       books.similar_books,
+      books.recommendation_percentile,
       COUNT(DISTINCT r.person_id)::int as recommendation_count
     FROM books
-    INNER JOIN recommendations r ON books.id = r.book_id
-    GROUP BY books.id, books.title, books.author, books.description, books.genre, books.amazon_url, books.similar_books
+    LEFT JOIN recommendations r ON books.id = r.book_id
+    GROUP BY books.id, books.title, books.author, books.description, books.genre, books.amazon_url, books.similar_books, books.recommendation_percentile
   )
   SELECT 
     bc.id,
@@ -187,7 +190,8 @@ BEGIN
     bc.genre,
     bc.amazon_url,
     bc.similar_books,
-    bc.recommendation_count
+    bc.recommendation_count,
+    bc.recommendation_percentile
   FROM book_counts bc
   ORDER BY bc.recommendation_count DESC
   LIMIT p_limit
