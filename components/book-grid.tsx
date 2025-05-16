@@ -5,6 +5,7 @@ import { DataGrid } from "@/components/grid";
 import { FormattedBook } from "@/types";
 import { useRouter, useSearchParams } from "next/navigation";
 import { truncateText } from "@/utils/text";
+import { formatPercentile } from '../utils/format';
 
 // Title cell
 function TitleCell({ row: { original } }: { row: { original: FormattedBook } }) {
@@ -44,7 +45,7 @@ function RecommenderCell({ original }: { original: FormattedBook }) {
           )}
         </span>
         <button 
-          title={`${original._recommendation_count} recommendations`}
+          title={formatPercentile(original.recommendation_percentile) + ' percentile'}
           className="inline-flex items-center justify-center rounded-full text-text/70 md:hover:text-text transition-colors duration-200 cursor-help shrink-0"
           onClick={(e) => e.stopPropagation()}
         >
