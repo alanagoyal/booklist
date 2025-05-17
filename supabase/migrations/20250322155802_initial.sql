@@ -28,7 +28,9 @@ create table "public"."people" (
     "url" text,
     "type" text,
     "description" text,
-    "description_embedding" vector(1536)
+    "description_embedding" vector(1536),
+    "similar_people" jsonb,
+    "recommendation_percentile" numeric
 );
 
 
@@ -363,7 +365,8 @@ returns table (
   recommendations jsonb,
   related_recommenders jsonb,
   similar_people jsonb,
-  _book_count bigint
+  _book_count bigint,
+  recommendation_percentile numeric
 )
 language plpgsql
 security definer
@@ -400,11 +403,12 @@ begin
           )
           order by b.title
         ) filter (where b.id is not null) as recommendations,
-        count(b.id)::bigint as book_count
+        count(b.id)::bigint as book_count,
+        p.recommendation_percentile
       from people p
       inner join recommendations r on r.person_id = p.id
       inner join books b on b.id = r.book_id
-      group by p.id, p.full_name, p.type, p.url, p.description, p.similar_people
+      group by p.id, p.full_name, p.type, p.url, p.description, p.similar_people, p.recommendation_percentile
     ),
     related as (
       select * from get_related_recommenders(recommender_ids)
@@ -418,7 +422,8 @@ begin
       rb.recommendations,
       coalesce(r.related_recommenders, '[]'::jsonb) as related_recommenders,
       rb.similar_people,
-      rb.book_count as _book_count
+      rb.book_count as _book_count,
+      rb.recommendation_percentile
     from recommender_base rb
     left join related r on r.recommender_id = rb.id
     order by rb.full_name;

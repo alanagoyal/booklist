@@ -100,4 +100,5 @@ export interface FormattedRecommender {
   _book_count: number;
   _bucket: number;
   _background_color?: string;
+  recommendation_percentile: number | null;
 }

@@ -235,10 +235,16 @@ async function dumpData() {
       const allBookCounts = recommenders.map((recommender: any) => recommender._book_count);
       
       // Add bucket to each recommender
-      const recommendersWithBuckets = recommenders.map((recommender: any) => ({
-        ...recommender,
-        _bucket: calculateBucket(recommender.recommendation_percentile)
-      }));
+      const recommendersWithBuckets = recommenders.map((recommender: any) => {
+        // Ensure recommendation_percentile is a number between 0 and 1
+        const percentile = recommender.recommendation_percentile;
+        const validPercentile = typeof percentile === 'number' && !isNaN(percentile) ? percentile : null;
+        
+        return {
+          ...recommender,
+          _bucket: calculateBucket(validPercentile)
+        };
+      });
       
       // Format the recommenders data
       const formattedRecommenders: FormattedRecommender[] = recommendersWithBuckets.map((recommender: {
@@ -252,6 +258,7 @@ async function dumpData() {
         similar_people: SimilarRecommender[];
         _book_count: number;
         _bucket: number;
+        recommendation_percentile: number | null;
       }) => ({
         id: recommender.id,
         full_name: recommender.full_name,
@@ -263,7 +270,8 @@ async function dumpData() {
         similar_recommenders: recommender.similar_people || [],
         _book_count: recommender._book_count,
         _bucket: recommender._bucket,
-        _background_color: getBackgroundColor(recommender._bucket)
+        _background_color: getBackgroundColor(recommender._bucket),
+        recommendation_percentile: recommender.recommendation_percentile
       }));
 
       // Ensure the data directory exists (for recommenders.json)
