@@ -175,7 +175,7 @@ export function DataGrid<T extends Record<string, any>>({
         }
 
         // Handle numeric fields
-        if (sortConfig.field === "book_count") {
+        if (sortConfig.field === "_book_count") {
           const aNum = Number(a[sortConfig.field as keyof T]) || 0;
           const bNum = Number(b[sortConfig.field as keyof T]) || 0;
           return sortConfig.direction === "desc" ? bNum - aNum : aNum - bNum;
