@@ -161,10 +161,12 @@ export function BookList({
         {viewMode === "books" ? (
           <BookGrid
             data={initialBooks}
+            isMobile={isMobile}
           />
         ) : (
           <RecommenderGrid
             data={initialRecommenders}
+            isMobile={isMobile}
           />
         )}
       </div>
