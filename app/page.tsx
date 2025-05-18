@@ -24,9 +24,11 @@ export default function Home() {
 
   const books = essentialBooks?.map(book => {
     const extended = extendedData?.find(e => e.id === book.id);
+    // Only merge specific properties from extended to avoid overwriting essential data
     return {
       ...book,
-      ...(extended || { related_books: [], similar_books: [] })
+      related_books: extended?.related_books || [],
+      similar_books: extended?.similar_books || []
     };
   });
 
