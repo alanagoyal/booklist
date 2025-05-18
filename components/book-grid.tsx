@@ -69,7 +69,7 @@ function RecommenderCell({
         {!isMobile && (
           <button
             title={
-              formatPercentile(original.recommendation_percentile) +
+              formatPercentile(original.recommendation_percentile ?? null) +
               " percentile"
             }
             className="inline-flex items-center justify-center rounded-full text-text/70 md:hover:text-text transition-colors duration-200 cursor-help shrink-0"
