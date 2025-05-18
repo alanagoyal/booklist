@@ -11,10 +11,9 @@ import Script from "next/script";
 const specialElite = localFont({
   src: '../public/fonts/SpecialElite-Regular.ttf',
   variable: '--font-special-elite',
-  preload: true,
-  display: 'swap', // Use fallback fonts until the custom font is loaded
-  fallback: ['system-ui', 'Arial'], // Fallback font stack if loading fails
-  adjustFontFallback: "Arial", // Use Arial metrics for the fallback adjustment
+  display: 'block',
+  fallback: ['system-ui', 'Arial'],
+  adjustFontFallback: "Arial",
 });
 
 export const viewport = {
