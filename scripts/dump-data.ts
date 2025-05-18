@@ -80,10 +80,22 @@ async function dumpData() {
     // Only fetch recommendations and related books if we have books
     if (allBooks.length > 0) {
       // Add bucket to each book
-      allBooks = allBooks.map(book => ({
-        ...book,
-        _bucket: calculateBucket(book.recommendation_percentile)
-      }));
+      allBooks = allBooks.map(book => {
+        // Ensure recommendation_percentile is a number between 0 and 1
+        const percentile = book.recommendation_percentile;
+        const validPercentile = typeof percentile === 'number' && !isNaN(percentile) ? percentile : null;
+        
+        // Log any problematic percentiles
+        if (percentile !== validPercentile) {
+          console.log(`[DEBUG] Book "${book.title}" has invalid percentile: ${percentile}`);
+        }
+        
+        return {
+          ...book,
+          recommendation_percentile: validPercentile,
+          _bucket: calculateBucket(validPercentile)
+        };
+      });
       
       // Get recommendations for all books
       const { data: recommendationsData, error: recommendationsError } = await supabase.rpc(
