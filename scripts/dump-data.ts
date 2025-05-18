@@ -83,19 +83,11 @@ async function dumpData() {
       allBooks = allBooks.map(book => {
         // Ensure recommendation_percentile is a number between 0 and 1
         const percentile = book.recommendation_percentile;
-        const validPercentile = percentile !== undefined && percentile !== null && 
-                              typeof percentile === 'number' && !isNaN(percentile) ? 
-                              percentile : null;
-        
-        // Log any problematic percentiles
-        if (percentile !== validPercentile) {
-          console.log(`[DEBUG] Book "${book.title}" has invalid percentile: ${percentile}, type: ${typeof percentile}`);
-        }
         
         return {
           ...book,
-          recommendation_percentile: validPercentile,
-          _bucket: calculateBucket(validPercentile)
+          recommendation_percentile: percentile,
+          _bucket: calculateBucket(percentile)
         };
       });
       

@@ -1,10 +1,5 @@
 // Formats a decimal number as a percentile with the correct ordinal suffix
 export function formatPercentile(decimal: number | null): string {
-  // Add logging for non-null but invalid values
-  if (decimal !== null && (decimal === undefined || isNaN(decimal))) {
-    console.log(`[DEBUG] Invalid percentile value detected: ${decimal}`);
-  }
-
   if (decimal === null || decimal === undefined || isNaN(decimal)) return 'N/A';
   
   const percentile = Math.round(decimal * 100);
