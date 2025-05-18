@@ -2,54 +2,7 @@
 
 import { useRef } from "react";
 import { Filter, X } from "lucide-react";
-
-// Define the possible enum values
-const FIELD_VALUES = {
-  type: [
-    "Anthropologist",
-    "Architect",
-    "Art Critic",
-    "Author or Publisher",
-    "Biographer",
-    "Chef or Food Writer",
-    "Economist",
-    "Engineer or Technologist",
-    "Entertainer",
-    "Entrepreneur",
-    "Executive",
-    "Historian or Philosopher",
-    "Investor",
-    "Journalist",
-    "Librarian or Teacher",
-    "Musician or Filmmaker",
-    "Product Manager or Designer",
-    "Scientist"
-  ],
-  genres: [
-    "Biography",
-    "Business",
-    "Children",
-    "Classic",
-    "Economics",
-    "Fantasy",
-    "Fiction",
-    "Historical",
-    "History",
-    "Horror",
-    "Memoir",
-    "Misc",
-    "Mystery",
-    "Nonfiction",
-    "Philosophy",
-    "Poetry",
-    "Politics",
-    "Romance",
-    "Science",
-    "Science Fiction",
-    "Self-Help",
-    "Young Adult"
-  ]
-};
+import { FIELD_VALUES } from "@/utils/constants";
 
 interface ColumnFilterProps {
   field: string;
