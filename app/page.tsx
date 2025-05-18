@@ -5,14 +5,7 @@ import { GridSkeleton } from "@/components/grid-skeleton";
 import type { EssentialBook, ExtendedBook, FormattedRecommender } from "@/types";
 import useSWR from "swr";
 
-const fetcher = async (url: string) => {
-  const response = await fetch(url);
-  const text = await response.text();
-  console.log('Raw JSON:', text.slice(0, 200)); // Show first 200 chars
-  const data = JSON.parse(text);
-  console.log('Parsed data first item keys:', Object.keys(data[0] || {}));
-  return data;
-};
+const fetcher = (url: string) => fetch(url).then(r => r.json());
 
 export default function Home() {
   const { data: essentialBooks } = useSWR<EssentialBook[]>(
@@ -30,11 +23,9 @@ export default function Home() {
 
   const books = essentialBooks?.map(book => {
     const extended = extendedData?.find(e => e.id === book.id);
-    // Only merge specific properties from extended to avoid overwriting essential data
     return {
       ...book,
-      related_books: extended?.related_books || [],
-      similar_books: extended?.similar_books || []
+      ...(extended || { related_books: [], similar_books: [] })
     };
   });
 
