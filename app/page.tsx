@@ -6,19 +6,18 @@ import type { EssentialBook, ExtendedBook, FormattedRecommender } from "@/types"
 import useSWR from "swr";
 
 const fetcher = (url: string) => fetch(url).then(r => r.json());
-const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL || "http://localhost:3000";
 
 export default function Home() {
   const { data: essentialBooks } = useSWR<EssentialBook[]>(
-    `${baseUrl}/data/books-essential.json`,
+    "/data/books-essential.json",
     fetcher
   );
   const { data: recommenders } = useSWR<FormattedRecommender[]>(
-    `${baseUrl}/data/recommenders.json`,
+    "/data/recommenders.json",
     fetcher
   );
   const { data: extendedData } = useSWR<ExtendedBook[]>(
-    essentialBooks ? `${baseUrl}/data/books-extended.json` : null,
+    essentialBooks ? "/data/books-extended.json" : null,
     fetcher
   );
 

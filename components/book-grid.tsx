@@ -5,26 +5,48 @@ import { DataGrid } from "@/components/grid";
 import { FormattedBook } from "@/types";
 import { useRouter, useSearchParams } from "next/navigation";
 import { truncateText } from "@/utils/text";
+import { formatPercentile } from "../utils/format";
+import { InfoIcon } from './icons';
 
 // Title cell
-function TitleCell({ row: { original } }: { row: { original: FormattedBook } }) {
-  return <span className="text-text whitespace-pre-line line-clamp-2">{original.title}</span>;
+function TitleCell({
+  row: { original },
+}: {
+  row: { original: FormattedBook };
+}) {
+  return (
+    <span className="text-text whitespace-pre-line line-clamp-2">
+      {original.title}
+    </span>
+  );
 }
 
 // Recommender cell
-function RecommenderCell({ original }: { original: FormattedBook }) {
+function RecommenderCell({
+  original,
+  isMobile,
+}: {
+  original: FormattedBook;
+  isMobile: boolean;
+}) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  
-  const handleRecommenderClick = useCallback((id: string) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set('key', `${id}--${Date.now()}`);
-    router.push(`?${params.toString()}`, { scroll: false });
-  }, [searchParams, router]);
-  
+
+  const handleRecommenderClick = useCallback(
+    (id: string) => {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set("key", `${id}--${Date.now()}`);
+      router.push(`?${params.toString()}`, { scroll: false });
+    },
+    [searchParams, router]
+  );
+
   const firstRecommender = original.recommendations?.[0]?.recommender;
-  const moreCount = (original.recommendations?.length ?? 0) > 1 ? (original.recommendations?.length ?? 0) - 1 : 0;
-  
+  const moreCount =
+    (original.recommendations?.length ?? 0) > 1
+      ? (original.recommendations?.length ?? 0) - 1
+      : 0;
+
   return (
     <div className="text-text">
       <span className="flex items-start gap-1">
@@ -39,19 +61,26 @@ function RecommenderCell({ original }: { original: FormattedBook }) {
               className="text-text md:hover:text-text/70 md:hover:underline transition-colors duration-200 text-left w-full whitespace-pre-line"
             >
               {truncateText(firstRecommender.full_name, 35, moreCount)}
-              {moreCount > 0 && <span className="text-text/70"> + {moreCount} more</span>}
+              {moreCount > 0 && (
+                <span className="text-text/70"> + {moreCount} more</span>
+              )}
             </button>
           )}
         </span>
-        <button 
-          title={`${original._recommendation_count} recommendations`}
-          className="inline-flex items-center justify-center rounded-full text-text/70 md:hover:text-text transition-colors duration-200 cursor-help shrink-0"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
-            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a.75.75 0 000 1.5h.253a.25.25 0 01.244.304l-.459 2.066A1.75 1.75 0 0010.747 15H11a.75.75 0 000-1.5h-.253a.25.25 0 01-.244-.304l.459-2.066A1.75 1.75 0 009.253 9H9z" clipRule="evenodd" />
-          </svg>
-        </button>
+        {!isMobile && (
+          <button
+            title={
+              formatPercentile(original.recommendation_percentile) +
+              " percentile"
+            }
+            className="inline-flex items-center justify-center rounded-full text-text/70 md:hover:text-text transition-colors duration-200 cursor-help shrink-0"
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
+            <InfoIcon />
+          </button>
+        )}
       </span>
     </div>
   );
@@ -62,7 +91,7 @@ function GenreCell({ original }: { original: FormattedBook }) {
   return (
     <div className="whitespace-pre-line line-clamp-2 text-text">
       <span className="break-words">
-        {Array.isArray(original.genres) 
+        {Array.isArray(original.genres)
           ? original.genres.map((genre, i, arr) => (
               <Fragment key={genre}>
                 <span className="inline whitespace-nowrap">
@@ -80,33 +109,39 @@ function GenreCell({ original }: { original: FormattedBook }) {
 
 interface BookGridProps {
   data: FormattedBook[];
+  isMobile: boolean;
 }
 
-export default function BookGrid({ data }: BookGridProps) {
+export default function BookGrid({ data, isMobile }: BookGridProps) {
   // Hooks
   const router = useRouter();
   const searchParams = useSearchParams();
 
   // Row click handler
-  const handleRowClick = useCallback((book: FormattedBook) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set('key', `${book.id || book.title}--${Date.now()}`);
-    router.push(`?${params.toString()}`, { scroll: false });
-  }, [searchParams, router]);
+  const handleRowClick = useCallback(
+    (book: FormattedBook) => {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set("key", `${book.id || book.title}--${Date.now()}`);
+      router.push(`?${params.toString()}`, { scroll: false });
+    },
+    [searchParams, router]
+  );
 
   // Columns
   const columns = [
     {
       field: "title" as keyof FormattedBook,
       header: "Title",
-      cell: (props: { row: { original: FormattedBook } }) => <TitleCell {...props} />,
+      cell: (props: { row: { original: FormattedBook } }) => (
+        <TitleCell {...props} />
+      ),
     },
     { field: "author" as keyof FormattedBook, header: "Author" },
     {
       field: "recommenders" as keyof FormattedBook,
       header: "Recommenders",
       cell: (props: { row: { original: FormattedBook } }) => (
-        <RecommenderCell original={props.row.original} />
+        <RecommenderCell original={props.row.original} isMobile={isMobile} />
       ),
     },
     {

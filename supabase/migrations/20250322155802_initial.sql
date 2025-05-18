@@ -13,7 +13,8 @@ create table "public"."books" (
     "amazon_url" text,
     "title_embedding" vector(1536),
     "author_embedding" vector(1536),
-    "description_embedding" vector(1536)
+    "description_embedding" vector(1536),
+    "recommendation_percentile" numeric
 );
 
 
@@ -27,7 +28,9 @@ create table "public"."people" (
     "url" text,
     "type" text,
     "description" text,
-    "description_embedding" vector(1536)
+    "description_embedding" vector(1536),
+    "similar_people" jsonb,
+    "recommendation_percentile" numeric
 );
 
 
@@ -158,7 +161,8 @@ RETURNS TABLE (
   genre text[],
   amazon_url text,
   similar_books jsonb,
-  _recommendation_count int
+  _recommendation_count int,
+  recommendation_percentile numeric
 )
 LANGUAGE plpgsql
 VOLATILE
@@ -174,10 +178,11 @@ BEGIN
       books.genre,
       books.amazon_url,
       books.similar_books,
+      books.recommendation_percentile,
       COUNT(DISTINCT r.person_id)::int as recommendation_count
     FROM books
-    INNER JOIN recommendations r ON books.id = r.book_id
-    GROUP BY books.id, books.title, books.author, books.description, books.genre, books.amazon_url, books.similar_books
+    LEFT JOIN recommendations r ON books.id = r.book_id
+    GROUP BY books.id, books.title, books.author, books.description, books.genre, books.amazon_url, books.similar_books, books.recommendation_percentile
   )
   SELECT 
     bc.id,
@@ -187,7 +192,8 @@ BEGIN
     bc.genre,
     bc.amazon_url,
     bc.similar_books,
-    bc.recommendation_count
+    bc.recommendation_count,
+    bc.recommendation_percentile
   FROM book_counts bc
   ORDER BY bc.recommendation_count DESC
   LIMIT p_limit
@@ -359,7 +365,8 @@ returns table (
   recommendations jsonb,
   related_recommenders jsonb,
   similar_people jsonb,
-  _book_count bigint
+  _book_count bigint,
+  recommendation_percentile numeric
 )
 language plpgsql
 security definer
@@ -396,11 +403,12 @@ begin
           )
           order by b.title
         ) filter (where b.id is not null) as recommendations,
-        count(b.id)::bigint as book_count
+        count(b.id)::bigint as book_count,
+        p.recommendation_percentile
       from people p
       inner join recommendations r on r.person_id = p.id
       inner join books b on b.id = r.book_id
-      group by p.id, p.full_name, p.type, p.url, p.description, p.similar_people
+      group by p.id, p.full_name, p.type, p.url, p.description, p.similar_people, p.recommendation_percentile
     ),
     related as (
       select * from get_related_recommenders(recommender_ids)
@@ -414,7 +422,8 @@ begin
       rb.recommendations,
       coalesce(r.related_recommenders, '[]'::jsonb) as related_recommenders,
       rb.similar_people,
-      rb.book_count as _book_count
+      rb.book_count as _book_count,
+      rb.recommendation_percentile
     from recommender_base rb
     left join related r on r.recommender_id = rb.id
     order by rb.full_name;

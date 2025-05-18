@@ -95,13 +95,13 @@ export function BookList({
       // Set navigating state to prevent transitions
       setIsNavigating(true);
       setHoveredTabId(null);
-      
+
       // Update URL and history
       const params = new URLSearchParams(searchParams.toString());
       params.set("key", view.id);
       router.push(`?${params.toString()}`, { scroll: false });
       setViewHistory(viewHistory.slice(0, viewHistory.indexOf(view) + 1));
-      
+
       // Reset navigating state after a short delay
       setTimeout(() => {
         setIsNavigating(false);
@@ -159,13 +159,9 @@ export function BookList({
     <div ref={containerRef} className="h-full flex flex-col relative">
       <div className="flex-1 overflow-hidden">
         {viewMode === "books" ? (
-          <BookGrid
-            data={initialBooks}
-          />
+          <BookGrid data={initialBooks} isMobile={isMobile} />
         ) : (
-          <RecommenderGrid
-            data={initialRecommenders}
-          />
+          <RecommenderGrid data={initialRecommenders} isMobile={isMobile} />
         )}
       </div>
       <Counter
@@ -186,13 +182,10 @@ export function BookList({
             : null;
         const selectedBook =
           view.type === "book"
-            ? (initialBooks.find(
+            ? initialBooks.find(
                 (book) =>
                   book.id === view.actualId || book.title === view.actualId
-              ) as FormattedBook & {
-                _recommendation_count: number;
-                _percentile: number;
-              })
+              )
             : null;
 
         const isHovered = hoveredTabId === view.id && !isLast;
@@ -239,13 +232,10 @@ export function BookList({
             : null;
         const selectedBook =
           view.type === "book"
-            ? (initialBooks.find(
+            ? initialBooks.find(
                 (book) =>
                   book.id === view.actualId || book.title === view.actualId
-              ) as FormattedBook & {
-                _recommendation_count: number;
-                _percentile: number;
-              })
+              )
             : null;
 
         const tabTitle = selectedBook

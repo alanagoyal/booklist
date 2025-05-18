@@ -174,6 +174,13 @@ export function DataGrid<T extends Record<string, any>>({
           return sortConfig.direction === "desc" ? bCount - aCount : aCount - bCount;
         }
 
+        // Handle numeric fields
+        if (sortConfig.field === "_book_count") {
+          const aNum = Number(a[sortConfig.field as keyof T]) || 0;
+          const bNum = Number(b[sortConfig.field as keyof T]) || 0;
+          return sortConfig.direction === "desc" ? bNum - aNum : aNum - bNum;
+        }
+
         // Special handling for description fields
         if (sortConfig.field === "book_description" || sortConfig.field === "recommender_description") {
           const aValue = String(a.description || "").toLowerCase();

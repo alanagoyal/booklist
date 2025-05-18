@@ -17,23 +17,23 @@ import {
 // Load environment variables from .env.local
 config({ path: join(process.cwd(), ".env.local") });
 
-// Calculate bucket (0-5) using log scale with equal-width buckets
-function calculateBucket(count: number, allCounts: number[], bucketCount = 6): number {
-  if (!count || !allCounts.length) return 0;
+// Calculate bucket (0-5) based on percentile ranges
+function calculateBucket(percentile: number | null, bucketCount = 6): number {
+  if (percentile === null || percentile === undefined) return 0;
   
-  // Apply log transformation to handle the long tail
-  const logCounts = allCounts.map(c => Math.log10(c + 1)); // +1 so log(0) is safe
-  const logValue = Math.log10(count + 1);
+  // Cap percentile at 0.99 to avoid showing 100th percentile
+  const cappedPercentile = Math.min(0.99, percentile);
   
-  // Find min and max of log values
-  const minLog = Math.min(...logCounts);
-  const maxLog = Math.max(...logCounts);
+  // Convert to percentile (0-99)
+  const asPercentile = cappedPercentile * 100;
   
-  // Normalize to 0-1 range and assign to bucket
-  const normalizedValue = (logValue - minLog) / (maxLog - minLog);
-  
-  // Return bucket index (0 to bucketCount-1)
-  return Math.min(bucketCount - 1, Math.floor(normalizedValue * bucketCount));
+  // Assign bucket based on percentile ranges
+  if (asPercentile >= 98) return 5;     // 98-99th
+  if (asPercentile >= 95) return 4;     // 95-98th
+  if (asPercentile >= 90) return 3;     // 90-95th
+  if (asPercentile >= 80) return 2;     // 80-90th
+  if (asPercentile >= 50) return 1;     // 50-80th
+  return 0;                             // 0-50th
 }
 
 // Calculate background color based on bucket (0-5)
@@ -90,14 +90,17 @@ async function dumpData() {
 
     // Only fetch recommendations and related books if we have books
     if (allBooks.length > 0) {
-      // Get all recommendation counts for bucket calculation
-      const allRecommendationCounts = allBooks.map(book => book._recommendation_count);
-      
       // Add bucket to each book
-      allBooks = allBooks.map(book => ({
-        ...book,
-        _bucket: calculateBucket(book._recommendation_count, allRecommendationCounts)
-      }));
+      allBooks = allBooks.map(book => {
+        // Ensure recommendation_percentile is a number between 0 and 1
+        const percentile = book.recommendation_percentile;
+        
+        return {
+          ...book,
+          recommendation_percentile: percentile,
+          _bucket: calculateBucket(percentile)
+        };
+      });
       
       // Get recommendations for all books
       const { data: recommendationsData, error: recommendationsError } = await supabase.rpc(
@@ -127,6 +130,7 @@ async function dumpData() {
         description: book.description,
         genres: book.genre || [],
         amazon_url: book.amazon_url || "",
+        recommendation_percentile: book.recommendation_percentile,
         recommendations: (recommendationsData?.[book.id] || []).map((rec: {
           recommender?: {
             id: string;
@@ -197,6 +201,7 @@ async function dumpData() {
         amazon_url: book.amazon_url,
         recommendations: book.recommendations,
         _recommendation_count: book._recommendation_count,
+        recommendation_percentile: book.recommendation_percentile,
         _bucket: book._bucket,
         _background_color: book._background_color
       }));
@@ -247,10 +252,16 @@ async function dumpData() {
       const allBookCounts = recommenders.map((recommender: any) => recommender._book_count);
       
       // Add bucket to each recommender
-      const recommendersWithBuckets = recommenders.map((recommender: any) => ({
-        ...recommender,
-        _bucket: calculateBucket(recommender._book_count, allBookCounts)
-      }));
+      const recommendersWithBuckets = recommenders.map((recommender: any) => {
+        // Ensure recommendation_percentile is a number between 0 and 1
+        const percentile = recommender.recommendation_percentile;
+        const validPercentile = typeof percentile === 'number' && !isNaN(percentile) ? percentile : null;
+        
+        return {
+          ...recommender,
+          _bucket: calculateBucket(validPercentile)
+        };
+      });
       
       // Format the recommenders data
       const formattedRecommenders: FormattedRecommender[] = recommendersWithBuckets.map((recommender: {
@@ -264,6 +275,7 @@ async function dumpData() {
         similar_people: SimilarRecommender[];
         _book_count: number;
         _bucket: number;
+        recommendation_percentile: number | null;
       }) => ({
         id: recommender.id,
         full_name: recommender.full_name,
@@ -275,7 +287,8 @@ async function dumpData() {
         similar_recommenders: recommender.similar_people || [],
         _book_count: recommender._book_count,
         _bucket: recommender._bucket,
-        _background_color: getBackgroundColor(recommender._bucket)
+        _background_color: getBackgroundColor(recommender._bucket),
+        recommendation_percentile: recommender.recommendation_percentile
       }));
 
       // Ensure the data directory exists (for recommenders.json)
