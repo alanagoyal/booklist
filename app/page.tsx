@@ -5,7 +5,14 @@ import { GridSkeleton } from "@/components/grid-skeleton";
 import type { EssentialBook, ExtendedBook, FormattedRecommender } from "@/types";
 import useSWR from "swr";
 
-const fetcher = (url: string) => fetch(url).then(r => r.json());
+const fetcher = async (url: string) => {
+  const response = await fetch(url);
+  const text = await response.text();
+  console.log('Raw JSON:', text.slice(0, 200)); // Show first 200 chars
+  const data = JSON.parse(text);
+  console.log('Parsed data first item keys:', Object.keys(data[0] || {}));
+  return data;
+};
 const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL || "http://localhost:3000";
 
 export default function Home() {
