@@ -17,12 +17,15 @@ import {
 // Load environment variables from .env.local
 config({ path: join(process.cwd(), ".env.local") });
 
-// Calculate bucket (0-5) based on percentile
+// Calculate bucket (0-5) based on percentile with exponential weighting
 function calculateBucket(percentile: number | null, bucketCount = 6): number {
   if (percentile === null || percentile === undefined) return 0;
   
-  // Convert percentile (0-1) to bucket (0-5)
-  return Math.min(bucketCount - 1, Math.floor(percentile * bucketCount));
+  // Use quadratic weighting to make higher buckets more exclusive
+  const weighted = Math.pow(percentile, 2);
+  
+  // Convert weighted value (0-1) to bucket (0-5)
+  return Math.min(bucketCount - 1, Math.floor(weighted * bucketCount));
 }
 
 // Calculate background color based on bucket (0-5)
