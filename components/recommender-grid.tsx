@@ -60,23 +60,8 @@ function RecommendationCell({
         </span>
         {!isMobile && (
           <button
-            title={formatPercentile(original.recommendation_percentile ?? null) + " percentile"}
+            title={formatPercentile(original.recommendation_percentile) + " percentile"}
             className="inline-flex items-center justify-center rounded-full text-text/70 md:hover:text-text transition-colors duration-200 cursor-help shrink-0"
-            onClick={(e) => {
-              // More detailed diagnostic logging
-              console.log('========== RECOMMENDER PERCENTILE DEBUG ==========');
-              console.log(`Recommender: ${original.full_name} (${original.type})`);
-              console.log(`Recommendation percentile:`, original.recommendation_percentile);
-              console.log(`Type:`, typeof original.recommendation_percentile);
-              console.log(`Is null:`, original.recommendation_percentile === null);
-              console.log(`Is undefined:`, original.recommendation_percentile === undefined);
-              console.log(`Has property:`, Object.prototype.hasOwnProperty.call(original, 'recommendation_percentile'));
-              console.log(`All properties:`, Object.keys(original));
-              console.log(`Value after nullish coalescing:`, original.recommendation_percentile ?? null);
-              console.log(`Formatted value:`, formatPercentile(original.recommendation_percentile ?? null));
-              console.log('=====================================');
-              e.stopPropagation();
-            }}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
