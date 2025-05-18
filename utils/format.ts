@@ -2,7 +2,8 @@
 export function formatPercentile(decimal: number | null): string {
   if (decimal === null || decimal === undefined || isNaN(decimal)) return 'N/A';
   
-  const percentile = Math.round(decimal * 100);
+  // Cap at 99th percentile
+  const percentile = Math.min(99, Math.round(decimal * 100));
   
   const suffixes: Record<number, string> = {
     1: 'st',
