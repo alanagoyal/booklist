@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useState, useCallback, Suspense } from 'react';
-import { supabase } from '@/utils/supabase/client';
-import { FIELD_VALUES } from '@/utils/constants';
+import { useState, useCallback, Suspense } from "react";
+import { supabase } from "@/utils/supabase/client";
+import { FIELD_VALUES } from "@/utils/constants";
 import { useRouter, useSearchParams } from "next/navigation";
 
 interface Book {
@@ -44,88 +44,100 @@ function RecommendationsContent() {
   const [inspiringPeople, setInspiringPeople] = useState<Person[]>([]);
   const [favoriteBooks, setFavoriteBooks] = useState<Book[]>([]);
   const [recommendations, setRecommendations] = useState<Book[]>([]);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const handleSearch = async (query: string, type: 'people' | 'books') => {
+  const handleSearch = async (query: string, type: "people" | "books") => {
     if (!query) {
       setSearchResults([]);
       return;
     }
 
-    const table = type === 'people' ? 'people' : 'books';
+    const table = type === "people" ? "people" : "books";
     const { data } = await supabase
       .from(table)
-      .select('*')
-      .ilike(type === 'people' ? 'full_name' : 'title', `%${query}%`)
+      .select("*")
+      .ilike(type === "people" ? "full_name" : "title", `%${query}%`)
       .limit(5);
 
     setSearchResults(data || []);
   };
 
-  const handleGenreToggle = useCallback((genre: string) => {
-    console.log('Attempting to toggle genre:', genre);
-    console.log('Current selected genres:', selectedGenres);
-    console.log('Available genres:', FIELD_VALUES.genres);
-    
-    setSelectedGenres(prev => {
-      const isSelected = prev.includes(genre);
-      console.log('Is genre currently selected?', isSelected);
-      console.log('Current number of selected genres:', prev.length);
-      
-      if (isSelected) {
-        const next = prev.filter(g => g !== genre);
-        console.log('Removing genre. New selection:', next);
-        return next;
-      } else if (prev.length < 3) {
-        const next = [...prev, genre];
-        console.log('Adding genre. New selection:', next);
-        return next;
-      }
-      console.log('Max genres reached, keeping current selection:', prev);
-      return prev;
-    });
-  }, [selectedGenres]);
+  const handleGenreToggle = useCallback(
+    (genre: string) => {
+      console.log("Attempting to toggle genre:", genre);
+      console.log("Current selected genres:", selectedGenres);
+      console.log("Available genres:", FIELD_VALUES.genres);
+
+      setSelectedGenres((prev) => {
+        const isSelected = prev.includes(genre);
+        console.log("Is genre currently selected?", isSelected);
+        console.log("Current number of selected genres:", prev.length);
+
+        if (isSelected) {
+          const next = prev.filter((g) => g !== genre);
+          console.log("Removing genre. New selection:", next);
+          return next;
+        } else if (prev.length < 3) {
+          const next = [...prev, genre];
+          console.log("Adding genre. New selection:", next);
+          return next;
+        }
+        console.log("Max genres reached, keeping current selection:", prev);
+        return prev;
+      });
+    },
+    [selectedGenres]
+  );
 
   const handlePersonSelect = (person: Person) => {
-    if (inspiringPeople.length < 3 && !inspiringPeople.find(p => p.id === person.id)) {
-      setInspiringPeople(prev => [...prev, person]);
+    if (
+      inspiringPeople.length < 3 &&
+      !inspiringPeople.find((p) => p.id === person.id)
+    ) {
+      setInspiringPeople((prev) => [...prev, person]);
     }
-    setSearchQuery('');
+    setSearchQuery("");
     setSearchResults([]);
   };
 
   const handleBookSelect = (book: Book) => {
-    if (favoriteBooks.length < 3 && !favoriteBooks.find(b => b.id === book.id)) {
-      setFavoriteBooks(prev => [...prev, book]);
+    if (
+      favoriteBooks.length < 3 &&
+      !favoriteBooks.find((b) => b.id === book.id)
+    ) {
+      setFavoriteBooks((prev) => [...prev, book]);
     }
-    setSearchQuery('');
+    setSearchQuery("");
     setSearchResults([]);
   };
 
   const getRecommendations = async () => {
     if (!userType) {
-      console.error('User type is required');
+      console.error("User type is required");
       return;
     }
 
     setLoading(true);
     try {
-      const { data, error } = await supabase.rpc('get_personalized_recommendations', {
-        p_user_type: userType,
-        p_genres: selectedGenres,
-        p_inspiration_ids: inspiringPeople.map(p => p.id),
-        p_favorite_book_ids: favoriteBooks.map(b => b.id),
-        p_limit: 10
-      });
+      const { data, error } = await supabase.rpc(
+        "get_personalized_recommendations",
+        {
+          p_user_type: userType,
+          p_genres: selectedGenres,
+          p_inspiration_ids: inspiringPeople.map((p) => p.id),
+          p_favorite_book_ids: favoriteBooks.map((b) => b.id),
+          p_limit: 10,
+        }
+      );
 
       if (error) throw error;
       setRecommendations(data);
       setStep(5);
     } catch (error) {
-      console.error('Error getting recommendations:', error);
+      console.error("Error getting recommendations:", error);
     } finally {
       setLoading(false);
     }
@@ -150,19 +162,19 @@ function RecommendationsContent() {
             <div className="grid grid-cols-2 gap-2">
               {FIELD_VALUES.type
                 .slice(0, showAllTypes ? undefined : 12)
-                .map(type => (
-                <button
-                  key={type}
-                  onClick={() => setUserType(type)}
-                  className={`p-2 border border-border text-text transition-colors duration-200 ${
-                    userType === type
-                      ? 'bg-accent'
-                      : 'bg-background md:hover:bg-accent/50'
-                  }`}
-                >
-                  {type}
-                </button>
-              ))}
+                .map((type) => (
+                  <button
+                    key={type}
+                    onClick={() => setUserType(type)}
+                    className={`p-2 border border-border text-text transition-colors duration-200 ${
+                      userType === type
+                        ? "bg-accent"
+                        : "bg-background md:hover:bg-accent/50"
+                    }`}
+                  >
+                    {type}
+                  </button>
+                ))}
             </div>
             {FIELD_VALUES.type.length > 12 && (
               <button
@@ -193,19 +205,19 @@ function RecommendationsContent() {
             <div className="grid grid-cols-2 gap-2">
               {FIELD_VALUES.genres
                 .slice(0, showAllGenres ? undefined : 12)
-                .map(genre => (
-                <button
-                  key={genre}
-                  onClick={() => handleGenreToggle(genre)}
-                  className={`p-2 border border-border transition-colors duration-200 ${
-                    selectedGenres.includes(genre)
-                      ? 'bg-accent text-text'
-                      : 'bg-background text-text/70 md:hover:bg-accent/50'
-                  }`}
-                >
-                  {genre}
-                </button>
-              ))}
+                .map((genre) => (
+                  <button
+                    key={genre}
+                    onClick={() => handleGenreToggle(genre)}
+                    className={`p-2 border border-border transition-colors duration-200 ${
+                      selectedGenres.includes(genre)
+                        ? "bg-accent text-text"
+                        : "bg-background text-text/70 md:hover:bg-accent/50"
+                    }`}
+                  >
+                    {genre}
+                  </button>
+                ))}
             </div>
             {FIELD_VALUES.genres.length > 12 && (
               <button
@@ -217,16 +229,22 @@ function RecommendationsContent() {
                   : `Show ${FIELD_VALUES.genres.length - 12} more`}
               </button>
             )}
-            <div className="mt-4">
-              <p className="text-text/70">Selected ({selectedGenres.length}/3): {selectedGenres.join(', ')}</p>
-            </div>
+
             {selectedGenres.length > 0 && (
-              <button
-                onClick={() => setStep(3)}
-                className="w-full p-3 bg-background text-text border border-border md:hover:bg-accent/50 transition-colors duration-200"
-              >
-                Next
-              </button>
+              <>
+                <div className="mt-4">
+                  <p className="text-text/70">
+                    Selected ({selectedGenres.length}/3):{" "}
+                    {selectedGenres.join(", ")}
+                  </p>
+                </div>
+                <button
+                  onClick={() => setStep(3)}
+                  className="w-full p-3 bg-background text-text border border-border md:hover:bg-accent/50 transition-colors duration-200"
+                >
+                  Next
+                </button>
+              </>
             )}
           </div>
         );
@@ -234,13 +252,15 @@ function RecommendationsContent() {
       case 3:
         return (
           <div className="space-y-4">
-            <h2 className="text-xl font-base">Who inspires you? (Choose up to 3)</h2>
+            <h2 className="text-xl font-base">
+              Who inspires you? (Choose up to 3)
+            </h2>
             <input
               type="text"
               value={searchQuery}
-              onChange={e => {
+              onChange={(e) => {
                 setSearchQuery(e.target.value);
-                handleSearch(e.target.value, 'people');
+                handleSearch(e.target.value, "people");
               }}
               placeholder="Search for people..."
               className="w-full p-3 bg-background text-text border border-border focus:outline-none rounded-none"
@@ -253,17 +273,24 @@ function RecommendationsContent() {
                     onClick={() => handlePersonSelect(person)}
                     className="w-full p-3 text-left text-text md:hover:bg-accent/50 transition-colors duration-200"
                   >
-                    {person.full_name} {person.type ? `(${person.type})` : ''}
+                    {person.full_name} {person.type ? `(${person.type})` : ""}
                   </button>
                 ))}
               </div>
             )}
             <div className="space-y-2">
-              {inspiringPeople.map(person => (
-                <div key={person.id} className="flex justify-between items-center p-3 border border-border">
+              {inspiringPeople.map((person) => (
+                <div
+                  key={person.id}
+                  className="flex justify-between items-center p-3 border border-border"
+                >
                   <span>{person.full_name}</span>
                   <button
-                    onClick={() => setInspiringPeople(prev => prev.filter(p => p.id !== person.id))}
+                    onClick={() =>
+                      setInspiringPeople((prev) =>
+                        prev.filter((p) => p.id !== person.id)
+                      )
+                    }
                     className="text-text/70 md:hover:text-text transition-colors duration-200"
                   >
                     Remove
@@ -285,13 +312,15 @@ function RecommendationsContent() {
       case 4:
         return (
           <div className="space-y-4">
-            <h2 className="text-xl font-base">What are your favorite books? (Choose up to 3)</h2>
+            <h2 className="text-xl font-base">
+              What are your favorite books? (Choose up to 3)
+            </h2>
             <input
               type="text"
               value={searchQuery}
-              onChange={e => {
+              onChange={(e) => {
                 setSearchQuery(e.target.value);
-                handleSearch(e.target.value, 'books');
+                handleSearch(e.target.value, "books");
               }}
               placeholder="Search for books..."
               className="w-full p-3 bg-background text-text border border-border focus:outline-none rounded-none"
@@ -310,11 +339,20 @@ function RecommendationsContent() {
               </div>
             )}
             <div className="space-y-2">
-              {favoriteBooks.map(book => (
-                <div key={book.id} className="flex justify-between items-center p-3 border border-border">
-                  <span>{book.title} by {book.author}</span>
+              {favoriteBooks.map((book) => (
+                <div
+                  key={book.id}
+                  className="flex justify-between items-center p-3 border border-border"
+                >
+                  <span>
+                    {book.title} by {book.author}
+                  </span>
                   <button
-                    onClick={() => setFavoriteBooks(prev => prev.filter(b => b.id !== book.id))}
+                    onClick={() =>
+                      setFavoriteBooks((prev) =>
+                        prev.filter((b) => b.id !== book.id)
+                      )
+                    }
                     className="text-text/70 md:hover:text-text transition-colors duration-200"
                   >
                     Remove
@@ -328,7 +366,7 @@ function RecommendationsContent() {
                 disabled={loading}
                 className="w-full p-3 bg-background text-text border border-border md:hover:bg-accent/50 transition-colors duration-200 disabled:opacity-50"
               >
-                {loading ? 'Getting Recommendations...' : 'Get Recommendations'}
+                {loading ? "Getting Recommendations..." : "Get Recommendations"}
               </button>
             )}
           </div>
@@ -337,14 +375,26 @@ function RecommendationsContent() {
       case 5:
         return (
           <div className="space-y-4">
-            <h2 className="text-xl font-base">Your Personalized Recommendations</h2>
+            <h2 className="text-xl font-base">
+              Your Personalized Recommendations
+            </h2>
             <div className="space-y-4">
-              {recommendations.map(book => (
-                <div key={book.id} className="p-4 border border-border space-y-2">
-                  <h3 className="text-lg font-base cursor-pointer md:hover:underline transition-colors duration-200" onClick={() => handleBookClick(book.id)}>{book.title}</h3>
+              {recommendations.map((book) => (
+                <div
+                  key={book.id}
+                  className="p-4 border border-border space-y-2"
+                >
+                  <h3
+                    className="text-lg font-base cursor-pointer md:hover:underline transition-colors duration-200"
+                    onClick={() => handleBookClick(book.id)}
+                  >
+                    {book.title}
+                  </h3>
                   <p className="text-text/70">{book.author}</p>
                   {book.description && (
-                    <p className="text-text/70 whitespace-pre-line line-clamp-2">{book.description}</p>
+                    <p className="text-text/70 whitespace-pre-line line-clamp-2">
+                      {book.description}
+                    </p>
                   )}
                   <div className="text-sm space-y-1">
                     <p className="text-text/70">Recommended because:</p>
@@ -356,7 +406,9 @@ function RecommendationsContent() {
                         <li>Recommended by people who inspire you</li>
                       )}
                       {book.match_reasons.recommended_by_similar_people && (
-                        <li>Recommended by people similar to your inspirations</li>
+                        <li>
+                          Recommended by people similar to your inspirations
+                        </li>
                       )}
                       {book.match_reasons.genre_match && (
                         <li>Matches your preferred genres</li>
@@ -394,11 +446,11 @@ function RecommendationsContent() {
     <div>
       <div className="flex justify-between items-center">
         <div className="space-x-2">
-          {[1, 2, 3, 4].map(i => (
+          {[1, 2, 3, 4].map((i) => (
             <span
               key={i}
               className={`inline-block w-2 h-2 rounded-full ${
-                i === step ? 'bg-text' : 'bg-text/30'
+                i === step ? "bg-text" : "bg-text/30"
               }`}
             />
           ))}
