@@ -38,7 +38,7 @@ function HeaderContent() {
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
       if (!isMenuOpen) return;
-      
+
       const target = e.target as HTMLElement;
       if (!menuRef.current?.contains(target)) {
         e.preventDefault();
@@ -105,6 +105,16 @@ function HeaderContent() {
             People
           </Link>
           <Link
+            href={`/recommendations?${searchParams.toString()}`}
+            className={`h-full flex items-center px-1 transition-colors duration-200 border-b-2 ${
+              pathname === "/recommendations"
+                ? "text-text border-text"
+                : "text-text/70 md:hover:text-text border-transparent"
+            }`}
+          >
+            Recommendations
+          </Link>
+          <Link
             href={`/insights?${searchParams.toString()}`}
             className={`h-full flex items-center px-1 transition-colors duration-200 border-b-2 ${
               pathname === "/insights"
@@ -142,7 +152,10 @@ function HeaderContent() {
             <Menu size={24} />
           </button>
           {isMenuOpen && (
-            <div ref={menuRef} className="absolute right-0 top-12 w-56 bg-background border-l border-b border-border z-50">
+            <div
+              ref={menuRef}
+              className="absolute right-0 top-12 w-56 bg-background border-l border-b border-border z-50"
+            >
               <Link
                 href={getViewHref("books")}
                 className="w-full px-4 py-2 flex items-center text-left text-text/70"
@@ -177,6 +190,21 @@ function HeaderContent() {
                   className={`transition-all duration-200 ${isHomePage && view === "people" ? "border-b-2 border-text text-text" : ""}`}
                 >
                   People
+                </span>
+              </Link>
+              <Link
+                href={`/recommendations?${currentParams}`}
+                className="w-full px-4 py-2 flex items-center text-left text-text/70"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setIsMenuOpen(false);
+                  router.push(`/recommendations?${currentParams}`);
+                }}
+              >
+                <span
+                  className={`transition-all duration-200 ${pathname === "/recommendations" ? "border-b-2 border-text text-text" : ""}`}
+                >
+                  Recommendations
                 </span>
               </Link>
               <Link
