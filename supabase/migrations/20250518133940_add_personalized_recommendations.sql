@@ -15,13 +15,7 @@ RETURNS TABLE (
 )
 LANGUAGE plpgsql
 AS $$
-DECLARE
-    debug_msg text;
 BEGIN
-    -- Debug logging
-    RAISE NOTICE 'Input parameters: user_type=%, genres=%, inspiration_ids=%, favorite_book_ids=%', 
-        p_user_type, p_genres, p_inspiration_ids, p_favorite_book_ids;
-
     RETURN QUERY
     WITH 
     -- Get books directly recommended by inspiration people
@@ -149,9 +143,5 @@ BEGIN
     ) cs
     ORDER BY cs.total_score DESC
     LIMIT p_limit;
-
-    -- Debug logging
-    GET DIAGNOSTICS debug_msg = ROW_COUNT;
-    RAISE NOTICE 'Number of recommendations returned: %', debug_msg;
 END;
 $$;
