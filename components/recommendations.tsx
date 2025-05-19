@@ -153,11 +153,12 @@ function RecommendationsContent() {
                 .map(type => (
                 <button
                   key={type}
-                  onClick={() => {
-                    setUserType(type);
-                    setStep(2);
-                  }}
-                  className={`p-2 border border-border text-text bg-background md:hover:bg-accent/50 transition-colors duration-200`}
+                  onClick={() => setUserType(type)}
+                  className={`p-2 border border-border text-text transition-colors duration-200 ${
+                    userType === type
+                      ? 'bg-accent'
+                      : 'bg-background md:hover:bg-accent/50'
+                  }`}
                 >
                   {type}
                 </button>
@@ -171,6 +172,14 @@ function RecommendationsContent() {
                 {showAllTypes
                   ? "Show less"
                   : `Show ${FIELD_VALUES.type.length - 12} more`}
+              </button>
+            )}
+            {userType && (
+              <button
+                onClick={() => setStep(2)}
+                className="w-full p-3 bg-background text-text border border-border md:hover:bg-accent/50 transition-colors duration-200"
+              >
+                Next
               </button>
             )}
           </div>
