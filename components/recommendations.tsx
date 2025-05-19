@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, Suspense } from 'react';
 import { supabase } from '@/utils/supabase/client';
 import { FIELD_VALUES } from '@/utils/constants';
 import { useRouter, useSearchParams } from "next/navigation";
@@ -27,6 +27,14 @@ interface Person {
 }
 
 export function Recommendations() {
+  return (
+    <Suspense>
+      <RecommendationsContent />
+    </Suspense>
+  );
+}
+
+function RecommendationsContent() {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [userType, setUserType] = useState<string | null>(null);
