@@ -201,12 +201,14 @@ function RecommendationsContent() {
               </button>
             )}
             {userType && (
-              <button
-                onClick={() => setStep(2)}
-                className="w-full p-3 bg-background text-text border border-border md:hover:bg-accent/50 transition-colors duration-200"
-              >
-                Next
-              </button>
+              <div className="space-y-2">
+                <button
+                  onClick={() => setStep(2)}
+                  className="w-full p-3 bg-background text-text border border-border md:hover:bg-accent/50 transition-colors duration-200"
+                >
+                  Next
+                </button>
+              </div>
             )}
           </div>
         );
@@ -216,42 +218,45 @@ function RecommendationsContent() {
           <div className="space-y-4">
             <h2 className="text-xl font-base">What genres interest you?</h2>
             <p className="text-text/70">Select up to 3 genres</p>
-            <div className="grid grid-cols-2 gap-2">
-              {FIELD_VALUES.genres
-                .slice(0, showAllGenres ? undefined : 12)
-                .map((genre) => (
-                  <button
-                    key={genre}
-                    onClick={() => handleGenreToggle(genre)}
-                    className={`p-2 border border-border transition-colors duration-200 ${
-                      selectedGenres.includes(genre)
-                        ? "bg-accent text-text"
-                        : "bg-background text-text/70 md:hover:bg-accent/50"
-                    }`}
-                  >
-                    {genre}
-                  </button>
-                ))}
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-2">
+                {FIELD_VALUES.genres
+                  .slice(0, showAllGenres ? undefined : 12)
+                  .map((genre) => (
+                    <button
+                      key={genre}
+                      onClick={() => handleGenreToggle(genre)}
+                      className={`p-2 border border-border transition-colors duration-200 ${
+                        selectedGenres.includes(genre)
+                          ? "bg-accent text-text"
+                          : "bg-background text-text/70 md:hover:bg-accent/50"
+                      }`}
+                    >
+                      {genre}
+                    </button>
+                  ))}
+              </div>
+              {FIELD_VALUES.genres.length > 12 && (
+                <button
+                  onClick={() => setShowAllGenres(!showAllGenres)}
+                  className="w-full p-2 text-text/70 transition-colors duration-200 md:hover:text-text md:hover:underline"
+                >
+                  {showAllGenres
+                    ? "Show less"
+                    : `Show ${FIELD_VALUES.genres.length - 12} more`}
+                </button>
+              )}
             </div>
-            {FIELD_VALUES.genres.length > 12 && (
-              <button
-                onClick={() => setShowAllGenres(!showAllGenres)}
-                className="w-full p-2 text-text/70 transition-colors duration-200 md:hover:text-text md:hover:underline"
-              >
-                {showAllGenres
-                  ? "Show less"
-                  : `Show ${FIELD_VALUES.genres.length - 12} more`}
-              </button>
-            )}
-
             {selectedGenres.length > 0 && (
-              <>
-                <div className="mt-4">
-                  <p className="text-text/70">
-                    Selected ({selectedGenres.length}/3):{" "}
-                    {selectedGenres.join(", ")}
-                  </p>
-                </div>
+              <div className="mt-4">
+                <p className="text-text/70">
+                  Selected ({selectedGenres.length}/3):{" "}
+                  {selectedGenres.join(", ")}
+                </p>
+              </div>
+            )}
+            <div className="space-y-2">
+              {selectedGenres.length > 0 && (
                 <button
                   onClick={() => {
                     setStep(3);
@@ -262,8 +267,16 @@ function RecommendationsContent() {
                 >
                   Next
                 </button>
-              </>
-            )}
+              )}
+              {step > 1 && (
+                <button
+                  onClick={() => setStep(step - 1)}
+                  className="w-full p-3 bg-background text-text/70 border border-border md:hover:bg-accent/50 transition-colors duration-200"
+                >
+                  Back
+                </button>
+              )}
+            </div>
           </div>
         );
 
@@ -303,7 +316,9 @@ function RecommendationsContent() {
                   key={person.id}
                   className="flex justify-between items-center p-3 border border-border"
                 >
-                  <span>{person.full_name}</span>
+                  <span>
+                    {person.full_name} {person.type ? `(${person.type})` : ""}
+                  </span>
                   <button
                     onClick={() =>
                       setInspiringPeople((prev) =>
@@ -317,18 +332,28 @@ function RecommendationsContent() {
                 </div>
               ))}
             </div>
-            {inspiringPeople.length > 0 && (
-              <button
-                onClick={() => {
-                  setStep(4);
-                  setShouldFocusSearch(true);
-                  setTimeout(() => setShouldFocusSearch(false), 100);
-                }}
-                className="w-full p-3 bg-background text-text border border-border md:hover:bg-accent/50 transition-colors duration-200"
-              >
-                Continue
-              </button>
-            )}
+            <div className="space-y-2">
+              {inspiringPeople.length > 0 && (
+                <button
+                  onClick={() => {
+                    setStep(4);
+                    setShouldFocusSearch(true);
+                    setTimeout(() => setShouldFocusSearch(false), 100);
+                  }}
+                  className="w-full p-3 bg-background text-text border border-border md:hover:bg-accent/50 transition-colors duration-200"
+                >
+                  Next
+                </button>
+              )}
+              {step > 1 && (
+                <button
+                  onClick={() => setStep(step - 1)}
+                  className="w-full p-3 bg-background text-text/70 border border-border md:hover:bg-accent/50 transition-colors duration-200"
+                >
+                  Back
+                </button>
+              )}
+            </div>
           </div>
         );
 
@@ -384,15 +409,25 @@ function RecommendationsContent() {
                 </div>
               ))}
             </div>
-            {favoriteBooks.length > 0 && (
-              <button
-                onClick={getRecommendations}
-                disabled={loading}
-                className="w-full p-3 bg-background text-text border border-border md:hover:bg-accent/50 transition-colors duration-200 disabled:opacity-50"
-              >
-                {loading ? "Getting Recommendations..." : "Get Recommendations"}
-              </button>
-            )}
+            <div className="space-y-2">
+              {favoriteBooks.length > 0 && (
+                <button
+                  onClick={getRecommendations}
+                  disabled={loading}
+                  className="w-full p-3 bg-background text-text border border-border md:hover:bg-accent/50 transition-colors duration-200 disabled:opacity-50"
+                >
+                  {loading ? "Getting Recommendations..." : "Get Recommendations"}
+                </button>
+              )}
+              {step > 1 && (
+                <button
+                  onClick={() => setStep(step - 1)}
+                  className="w-full p-3 bg-background text-text/70 border border-border md:hover:bg-accent/50 transition-colors duration-200"
+                >
+                  Back
+                </button>
+              )}
+            </div>
           </div>
         );
 
@@ -468,25 +503,15 @@ function RecommendationsContent() {
 
   return (
     <div>
-      <div className="flex justify-between items-center">
-        <div className="space-x-2">
-          {[1, 2, 3, 4].map((i) => (
-            <span
-              key={i}
-              className={`inline-block w-2 h-2 rounded-full ${
-                i === step ? "bg-text" : "bg-text/30"
-              }`}
-            />
-          ))}
-        </div>
-        {step < 5 && step > 1 && (
-          <button
-            onClick={() => setStep(step - 1)}
-            className="text-text/70 md:hover:text-text transition-colors duration-200"
-          >
-            Back
-          </button>
-        )}
+      <div className="space-x-2">
+        {[1, 2, 3, 4].map((i) => (
+          <span
+            key={i}
+            className={`inline-block w-2 h-2 rounded-full ${
+              i === step ? "bg-text" : "bg-text/30"
+            }`}
+          />
+        ))}
       </div>
       {renderStep()}
     </div>
