@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useCallback, Suspense } from "react";
+import { useState, useCallback, Suspense, useRef, useEffect } from "react";
 import { supabase } from "@/utils/supabase/client";
 import { FIELD_VALUES } from "@/utils/constants";
 import { useRouter, useSearchParams } from "next/navigation";
+
 
 interface Book {
   id: string;
@@ -46,8 +47,17 @@ function RecommendationsContent() {
   const [recommendations, setRecommendations] = useState<Book[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [shouldFocusSearch, setShouldFocusSearch] = useState(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
+
+  useEffect(() => {
+    if (shouldFocusSearch && searchInputRef.current) {
+      searchInputRef.current.focus();
+      setShouldFocusSearch(false);
+    }
+  }, [shouldFocusSearch]);
 
   const handleSearch = async (query: string, type: "people" | "books") => {
     if (!query) {
@@ -98,6 +108,8 @@ function RecommendationsContent() {
       !inspiringPeople.find((p) => p.id === person.id)
     ) {
       setInspiringPeople((prev) => [...prev, person]);
+      setShouldFocusSearch(true);
+      setTimeout(() => setShouldFocusSearch(false), 100);
     }
     setSearchQuery("");
     setSearchResults([]);
@@ -109,6 +121,8 @@ function RecommendationsContent() {
       !favoriteBooks.find((b) => b.id === book.id)
     ) {
       setFavoriteBooks((prev) => [...prev, book]);
+      setShouldFocusSearch(true);
+      setTimeout(() => setShouldFocusSearch(false), 100);
     }
     setSearchQuery("");
     setSearchResults([]);
@@ -239,7 +253,11 @@ function RecommendationsContent() {
                   </p>
                 </div>
                 <button
-                  onClick={() => setStep(3)}
+                  onClick={() => {
+                    setStep(3);
+                    setShouldFocusSearch(true);
+                    setTimeout(() => setShouldFocusSearch(false), 100);
+                  }}
                   className="w-full p-3 bg-background text-text border border-border md:hover:bg-accent/50 transition-colors duration-200"
                 >
                   Next
@@ -256,6 +274,7 @@ function RecommendationsContent() {
               Who inspires you? (Choose up to 3)
             </h2>
             <input
+              ref={searchInputRef}
               type="text"
               value={searchQuery}
               onChange={(e) => {
@@ -300,10 +319,14 @@ function RecommendationsContent() {
             </div>
             {inspiringPeople.length > 0 && (
               <button
-                onClick={() => setStep(4)}
+                onClick={() => {
+                  setStep(4);
+                  setShouldFocusSearch(true);
+                  setTimeout(() => setShouldFocusSearch(false), 100);
+                }}
                 className="w-full p-3 bg-background text-text border border-border md:hover:bg-accent/50 transition-colors duration-200"
               >
-                Next
+                Continue
               </button>
             )}
           </div>
@@ -316,6 +339,7 @@ function RecommendationsContent() {
               What are your favorite books? (Choose up to 3)
             </h2>
             <input
+              ref={searchInputRef}
               type="text"
               value={searchQuery}
               onChange={(e) => {
