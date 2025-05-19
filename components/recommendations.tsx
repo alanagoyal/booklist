@@ -135,7 +135,8 @@ function RecommendationsContent() {
     (id: string) => {
       const params = new URLSearchParams(searchParams.toString());
       params.set("key", `${id}--${Date.now()}`);
-      router.push(`?${params.toString()}`, { scroll: false });
+      params.set("view", "books");
+      router.push(`/?${params.toString()}`, { scroll: false });
     },
     [searchParams, router]
   );
@@ -331,7 +332,7 @@ function RecommendationsContent() {
             <div className="space-y-4">
               {recommendations.map(book => (
                 <div key={book.id} className="p-4 border border-border space-y-2">
-                  <h3 className="text-lg font-base cursor-pointer md:hover:text-text/70 transition-colors duration-200" onClick={() => handleBookClick(book.id)}>{book.title}</h3>
+                  <h3 className="text-lg font-base cursor-pointer md:hover:underline transition-colors duration-200" onClick={() => handleBookClick(book.id)}>{book.title}</h3>
                   <p className="text-text/70">{book.author}</p>
                   {book.description && (
                     <p className="text-text/70 whitespace-pre-line line-clamp-2">{book.description}</p>
