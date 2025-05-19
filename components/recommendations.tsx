@@ -225,7 +225,7 @@ export function Recommendations() {
                 handleSearch(e.target.value, 'people');
               }}
               placeholder="Search for people..."
-              className="w-full p-3 bg-background text-text border border-border"
+              className="w-full p-3 bg-background text-text border border-border focus:outline-none rounded-none"
             />
             {searchResults.length > 0 && (
               <div className="border border-border bg-background">
@@ -276,7 +276,7 @@ export function Recommendations() {
                 handleSearch(e.target.value, 'books');
               }}
               placeholder="Search for books..."
-              className="w-full p-3 bg-background text-text border border-border"
+              className="w-full p-3 bg-background text-text border border-border focus:outline-none rounded-none"
             />
             {searchResults.length > 0 && (
               <div className="border border-border bg-background">
