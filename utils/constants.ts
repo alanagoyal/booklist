@@ -1,3 +1,5 @@
+import { Book, Person } from "@/types";
+
 export const FIELD_VALUES = {
   type: [
     "Anthropologist",
@@ -42,5 +44,5 @@ export const FIELD_VALUES = {
     "Science Fiction",
     "Self-Help",
     "Young Adult"
-  ]
+  ],
 } as const;

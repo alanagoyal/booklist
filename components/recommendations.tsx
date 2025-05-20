@@ -1,16 +1,21 @@
 "use client";
 
-import { useState, useCallback, Suspense, useRef, useEffect } from "react";
+import {
+  useState,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  Suspense,
+} from "react";
 import { supabase } from "@/utils/supabase/client";
 import { FIELD_VALUES } from "@/utils/constants";
 import { useRouter, useSearchParams } from "next/navigation";
+import type { Book, Person, FormattedRecommender } from "@/types";
+import useSWR from "swr";
+import fetcher, { fetchRecommenders } from "../utils/fetcher";
 
-
-interface Book {
-  id: string;
-  title: string;
-  author: string;
-  description: string | null;
+interface RecommendedBook extends Book {
   score: number;
   match_reasons: {
     similar_to_favorites: boolean;
@@ -21,11 +26,7 @@ interface Book {
   };
 }
 
-interface Person {
-  id: string;
-  full_name: string;
-  type: string | null;
-}
+
 
 export function Recommendations() {
   return (
@@ -41,88 +42,74 @@ function RecommendationsContent() {
   const [userType, setUserType] = useState<string | null>(null);
   const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
   const [showAllGenres, setShowAllGenres] = useState(false);
-  const [inspiringPeople, setInspiringPeople] = useState<Person[]>([]);
-  const [favoriteBooks, setFavoriteBooks] = useState<Book[]>([]);
-  const [recommendations, setRecommendations] = useState<Book[]>([]);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [searchResults, setSearchResults] = useState<any[]>([]);
-  const [shouldFocusSearch, setShouldFocusSearch] = useState(false);
-  const searchInputRef = useRef<HTMLInputElement>(null);
+  const [selectedPeopleIds, setSelectedPeopleIds] = useState<string[]>([]);
+  const [selectedBookIds, setSelectedBookIds] = useState<string[]>([]);
+  const [recommendations, setRecommendations] = useState<RecommendedBook[]>([]);
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  useEffect(() => {
-    if (shouldFocusSearch && searchInputRef.current) {
-      searchInputRef.current.focus();
-      setShouldFocusSearch(false);
-    }
-  }, [shouldFocusSearch]);
-
-  const handleSearch = async (query: string, type: "people" | "books") => {
-    if (!query) {
-      setSearchResults([]);
-      return;
-    }
-
-    const table = type === "people" ? "people" : "books";
-    const { data } = await supabase
-      .from(table)
-      .select("*")
-      .ilike(type === "people" ? "full_name" : "title", `%${query}%`)
-      .limit(5);
-
-    setSearchResults(data || []);
-  };
-
-  const handleGenreToggle = useCallback(
-    (genre: string) => {
-      setSelectedGenres((prev) => {
-        const isSelected = prev.includes(genre);
-
-        if (isSelected) {
-          const next = prev.filter((g) => g !== genre);
-          return next;
-        } else if (prev.length < 3) {
-          const next = [...prev, genre];
-          return next;
-        }
-        return prev;
-      });
-    },
-    []
+  // Only fetch data when needed
+  const { data: books } = useSWR<Book[]>(
+    step >= 3 ? "/data/books-essential.json" : null,
+    fetcher
+  );
+  const { data: recommenders } = useSWR<FormattedRecommender[]>(
+    step >= 3 ? "/data/recommenders.json" : null,
+    fetchRecommenders
   );
 
-  const handlePersonSelect = (person: Person) => {
-    if (
-      inspiringPeople.length < 3 &&
-      !inspiringPeople.find((p) => p.id === person.id)
-    ) {
-      setInspiringPeople((prev) => [...prev, person]);
-      setShouldFocusSearch(true);
-      setTimeout(() => setShouldFocusSearch(false), 100);
-    }
-    setSearchQuery("");
-    setSearchResults([]);
+
+  const handleGenreToggle = useCallback((genre: string) => {
+    setSelectedGenres((prev) => {
+      const isSelected = prev.includes(genre);
+
+      if (isSelected) {
+        const next = prev.filter((g) => g !== genre);
+        return next;
+      } else if (prev.length < 3) {
+        const next = [...prev, genre];
+        return next;
+      }
+      return prev;
+    });
+  }, []);
+
+  const handlePersonSelect = (person: FormattedRecommender): void => {
+    setSelectedPeopleIds((prev) => {
+      const isSelected = prev.includes(person.id);
+      if (isSelected) {
+        return prev.filter((id) => id !== person.id);
+      } else if (prev.length < 3) {
+        return [...prev, person.id];
+      }
+      return prev;
+    });
   };
 
-  const handleBookSelect = (book: Book) => {
-    if (
-      favoriteBooks.length < 3 &&
-      !favoriteBooks.find((b) => b.id === book.id)
-    ) {
-      setFavoriteBooks((prev) => [...prev, book]);
-      setShouldFocusSearch(true);
-      setTimeout(() => setShouldFocusSearch(false), 100);
-    }
-    setSearchQuery("");
-    setSearchResults([]);
+  const handleBookSelect = (book: Book): void => {
+    setSelectedBookIds((prev) => {
+      const isSelected = prev.includes(book.id);
+      if (isSelected) {
+        return prev.filter((id) => id !== book.id);
+      } else if (prev.length < 3) {
+        return [...prev, book.id];
+      }
+      return prev;
+    });
   };
 
-  const getRecommendations = async () => {
+  const getRecommendations = async (): Promise<void> => {
     if (!userType) {
       console.error("User type is required");
       return;
     }
+
+    console.log("Getting recommendations for:", {
+      userType,
+      selectedGenres,
+      selectedPeopleIds,
+      selectedBookIds,
+    });
 
     setLoading(true);
     try {
@@ -131,8 +118,8 @@ function RecommendationsContent() {
         {
           p_user_type: userType,
           p_genres: selectedGenres,
-          p_inspiration_ids: inspiringPeople.map((p) => p.id),
-          p_favorite_book_ids: favoriteBooks.map((b) => b.id),
+          p_inspiration_ids: selectedPeopleIds,
+          p_favorite_book_ids: selectedBookIds,
           p_limit: 10,
         }
       );
@@ -158,6 +145,17 @@ function RecommendationsContent() {
   );
 
   const renderStep = () => {
+    // Add loading states for steps that need data
+    if (step >= 3 && step <= 4) {
+      if (!books || !recommenders) {
+        return (
+          <div className="space-y-4">
+            <h2 className="text-xl font-base">Loading...</h2>
+          </div>
+        );
+      }
+    }
+
     switch (step) {
       case 1:
         return (
@@ -178,14 +176,13 @@ function RecommendationsContent() {
                 </button>
               ))}
             </div>
-
             <div className="space-y-2">
               <button
                 onClick={() => setStep(2)}
                 disabled={!userType}
                 className="w-full p-3 bg-accent text-text border border-border md:hover:bg-accent/50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {userType ? 'Next (1/1 selected)' : '0/1 selected'}
+                {userType ? "Next (1/1 selected)" : "0/1 selected"}
               </button>
             </div>
           </div>
@@ -226,13 +223,13 @@ function RecommendationsContent() {
               <button
                 onClick={() => {
                   setStep(3);
-                  setShouldFocusSearch(true);
-                  setTimeout(() => setShouldFocusSearch(false), 100);
                 }}
                 disabled={selectedGenres.length === 0}
                 className="w-full p-3 bg-accent text-text border border-border md:hover:bg-accent/50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {selectedGenres.length === 0 ? '0/3 selected' : `Next (${selectedGenres.length}/3 selected)`}
+                {selectedGenres.length === 0
+                  ? "0/3 selected"
+                  : `Next (${selectedGenres.length}/3 selected)`}
               </button>
               <button
                 onClick={() => setStep(step - 1)}
@@ -245,141 +242,81 @@ function RecommendationsContent() {
         );
 
       case 3:
+        if (!recommenders) return null;
         return (
           <div className="space-y-4">
             <h2 className="text-xl font-base">
               Who inspires you? (Choose up to 3)
             </h2>
-            <input
-              ref={searchInputRef}
-              type="text"
-              value={searchQuery}
-              onChange={(e) => {
-                setSearchQuery(e.target.value);
-                handleSearch(e.target.value, "people");
-              }}
-              placeholder="Search for people..."
-              className="w-full p-3 bg-background text-text border border-border focus:outline-none rounded-none"
-            />
-            {searchResults.length > 0 && (
-              <div className="border border-border bg-background">
-                {searchResults.map((person: Person) => (
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-2 mt-4">
+                {/* Show top 18 recommenders */}
+                {recommenders.slice(0, 18).map((person) => (
                   <button
                     key={person.id}
                     onClick={() => handlePersonSelect(person)}
-                    className="w-full p-3 text-left text-text md:hover:bg-accent/50 transition-colors duration-200"
+                    className={`p-2 border border-border text-text transition-colors duration-200 ${selectedPeopleIds.includes(person.id) ? "bg-accent" : "bg-background md:hover:bg-accent/50"}`}
                   >
-                    {person.full_name} {person.type ? `(${person.type})` : ""}
+                    {person.full_name}
+                    {person.type ? ` (${person.type})` : ""}
                   </button>
                 ))}
               </div>
-            )}
-            <div className="space-y-2">
-              {inspiringPeople.map((person) => (
-                <div
-                  key={person.id}
-                  className="flex justify-between items-center p-3 border border-border"
-                >
-                  <span>
-                    {person.full_name} {person.type ? `(${person.type})` : ""}
-                  </span>
-                  <button
-                    onClick={() =>
-                      setInspiringPeople((prev) =>
-                        prev.filter((p) => p.id !== person.id)
-                      )
-                    }
-                    className="text-text/70 md:hover:text-text transition-colors duration-200"
-                  >
-                    Remove
-                  </button>
-                </div>
-              ))}
             </div>
             <div className="space-y-2">
-              {inspiringPeople.length > 0 && (
-                <button
-                  onClick={() => {
-                    setStep(4);
-                    setShouldFocusSearch(true);
-                    setTimeout(() => setShouldFocusSearch(false), 100);
-                  }}
-                  className="w-full p-3 bg-accent text-text border border-border md:hover:bg-accent/50 transition-colors duration-200"
-                >
-                  Next
-                </button>
-              )}
-              {step > 1 && (
-                <button
-                  onClick={() => setStep(step - 1)}
-                  className="w-full p-3 bg-background text-text/70 border border-border md:hover:bg-accent/30 transition-colors duration-200"
-                >
-                  Back
-                </button>
-              )}
+              <button
+                onClick={() => {
+                  setStep(4);
+                }}
+                disabled={!selectedPeopleIds.length}
+                className="w-full p-3 bg-accent text-text border border-border md:hover:bg-accent/50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {selectedPeopleIds.length === 0
+                  ? "0/3 selected"
+                  : `Next (${selectedPeopleIds.length}/3 selected)`}
+              </button>
+              <button
+                onClick={() => setStep(step - 1)}
+                className="w-full p-3 bg-background text-text/70 border border-border md:hover:bg-accent/30 transition-colors duration-200"
+              >
+                Back
+              </button>
             </div>
           </div>
         );
 
       case 4:
+        if (!books) return null;
         return (
           <div className="space-y-4">
             <h2 className="text-xl font-base">
               What are your favorite books? (Choose up to 3)
             </h2>
-            <input
-              ref={searchInputRef}
-              type="text"
-              value={searchQuery}
-              onChange={(e) => {
-                setSearchQuery(e.target.value);
-                handleSearch(e.target.value, "books");
-              }}
-              placeholder="Search for books..."
-              className="w-full p-3 bg-background text-text border border-border focus:outline-none rounded-none"
-            />
-            {searchResults.length > 0 && (
-              <div className="border border-border bg-background">
-                {searchResults.map((book: Book) => (
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-2 mt-4">
+                {/* First show all popular books */}
+                {books.slice(0, 18).map((book) => (
                   <button
                     key={book.id}
                     onClick={() => handleBookSelect(book)}
-                    className="w-full p-3 text-left text-text md:hover:bg-accent/50 transition-colors duration-200"
+                    className={`p-2 border border-border text-text transition-colors duration-200 ${selectedBookIds.includes(book.id) ? "bg-accent" : "bg-background md:hover:bg-accent/50"}`}
                   >
-                    {book.title} by {book.author}
+                    {book.title}
                   </button>
                 ))}
               </div>
-            )}
-            <div className="space-y-2">
-              {favoriteBooks.map((book) => (
-                <div
-                  key={book.id}
-                  className="flex justify-between items-center p-3 border border-border"
-                >
-                  <span>
-                    {book.title} by {book.author}
-                  </span>
-                  <button
-                    onClick={() =>
-                      setFavoriteBooks((prev) =>
-                        prev.filter((b) => b.id !== book.id)
-                      )
-                    }
-                    className="text-text/70 md:hover:text-text transition-colors duration-200"
-                  >
-                    Remove
-                  </button>
-                </div>
-              ))}
             </div>
             <div className="space-y-2">
               <button
                 onClick={getRecommendations}
-                disabled={loading || favoriteBooks.length === 0}
+                disabled={loading || !selectedBookIds.length}
                 className="w-full p-3 bg-accent text-text border border-border md:hover:bg-accent/50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {loading ? "Getting Recommendations..." : "Get Recommendations"}
+                {loading
+                  ? "Getting Recommendations..."
+                  : selectedBookIds.length === 0
+                  ? "0/3 selected"
+                  : `Get Recommendations (${selectedBookIds.length}/3 selected)`}
               </button>
               {step > 1 && (
                 <button
@@ -447,8 +384,8 @@ function RecommendationsContent() {
                 setStep(1);
                 setUserType(null);
                 setSelectedGenres([]);
-                setInspiringPeople([]);
-                setFavoriteBooks([]);
+                setSelectedPeopleIds([]);
+                setSelectedBookIds([]);
                 setRecommendations([]);
               }}
               className="w-full p-3 bg-accent/50 text-text border border-border md:hover:bg-accent transition-colors duration-200"

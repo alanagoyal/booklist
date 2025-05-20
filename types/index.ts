@@ -1,3 +1,26 @@
+// Book type for recommendations
+export interface Book {
+  id: string;
+  title: string;
+  author: string;
+  description: string | null;
+  score?: number;
+  match_reasons?: {
+    similar_to_favorites: boolean;
+    recommended_by_inspiration: boolean;
+    recommended_by_similar_people: boolean;
+    genre_match: boolean;
+    recommended_by_similar_type: boolean;
+  };
+}
+
+// Person type for recommendations
+export interface Person {
+  id: string;
+  full_name: string;
+  type: string | null;
+}
+
 // Related book type for book detail page
 export interface RelatedBook {
   id: string;
