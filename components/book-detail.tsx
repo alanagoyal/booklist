@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 type BookDetailProps = {
   book: FormattedBook;
   onClose?: () => void;
+  onBackdropClick?: () => void;
   isHovered?: boolean;
   isTopIndex?: boolean;
   isNavigating?: boolean;
@@ -14,6 +15,7 @@ type BookDetailProps = {
 export default function BookDetail({
   book,
   onClose,
+  onBackdropClick,
   isHovered = false,
   isTopIndex = false,
   isNavigating = false
@@ -25,10 +27,10 @@ export default function BookDetail({
   const handleBackdropClick = useCallback(
     (e: React.MouseEvent) => {
       if (e.target === e.currentTarget) {
-        onClose?.();
+        onBackdropClick?.();
       }
     },
-    [onClose]
+    [onBackdropClick]
   );
 
   const handleEntityClick = (id: string) => {

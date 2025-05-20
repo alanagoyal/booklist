@@ -6,6 +6,7 @@ import { useState } from "react";
 type RecommenderDetailProps = {
   recommender: FormattedRecommender;
   onClose?: () => void;
+  onBackdropClick?: () => void;
   isHovered?: boolean;
   isTopIndex?: boolean;
   isNavigating?: boolean;
@@ -14,6 +15,7 @@ type RecommenderDetailProps = {
 export default function RecommenderDetail({
   recommender,
   onClose,
+  onBackdropClick,
   isHovered = false,
   isTopIndex = false,
   isNavigating = false,
@@ -23,8 +25,8 @@ export default function RecommenderDetail({
   const [showAllRecommendations, setShowAllRecommendations] = useState(false);
 
   const handleBackdropClick = (e: React.MouseEvent) => {
-    if (e.target === e.currentTarget && onClose) {
-      onClose();
+    if (e.target === e.currentTarget && onBackdropClick) {
+      onBackdropClick();
     }
   };
 

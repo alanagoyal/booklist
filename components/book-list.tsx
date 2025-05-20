@@ -89,6 +89,14 @@ export function BookList({
     }
   }, [router, searchParams, viewHistory]);
 
+  // Handle closing all detail views
+  const handleCloseAll = useCallback(() => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete("key");
+    router.push(`?${params.toString()}`, { scroll: false });
+    setViewHistory([]);
+  }, [router, searchParams]);
+
   // Handle tab click
   const handleTabClick = useCallback(
     (view: (typeof viewHistory)[0]) => {
@@ -204,6 +212,7 @@ export function BookList({
               <BookDetail
                 book={selectedBook}
                 onClose={isLast ? handleClose : () => {}}
+                onBackdropClick={isLast ? handleCloseAll : () => {}}
                 isHovered={isHovered}
                 isTopIndex={index === viewHistory.length - 1}
                 isNavigating={isNavigating}
@@ -213,6 +222,7 @@ export function BookList({
               <RecommenderDetail
                 recommender={selectedRecommender}
                 onClose={isLast ? handleClose : () => {}}
+                onBackdropClick={isLast ? handleCloseAll : () => {}}
                 isHovered={isHovered}
                 isTopIndex={index === viewHistory.length - 1}
                 isNavigating={isNavigating}
