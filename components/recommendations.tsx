@@ -41,7 +41,6 @@ function RecommendationsContent() {
   const [userType, setUserType] = useState<string | null>(null);
   const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
   const [showAllGenres, setShowAllGenres] = useState(false);
-  const [showAllTypes, setShowAllTypes] = useState(false);
   const [inspiringPeople, setInspiringPeople] = useState<Person[]>([]);
   const [favoriteBooks, setFavoriteBooks] = useState<Book[]>([]);
   const [recommendations, setRecommendations] = useState<Book[]>([]);
@@ -77,29 +76,20 @@ function RecommendationsContent() {
 
   const handleGenreToggle = useCallback(
     (genre: string) => {
-      console.log("Attempting to toggle genre:", genre);
-      console.log("Current selected genres:", selectedGenres);
-      console.log("Available genres:", FIELD_VALUES.genres);
-
       setSelectedGenres((prev) => {
         const isSelected = prev.includes(genre);
-        console.log("Is genre currently selected?", isSelected);
-        console.log("Current number of selected genres:", prev.length);
 
         if (isSelected) {
           const next = prev.filter((g) => g !== genre);
-          console.log("Removing genre. New selection:", next);
           return next;
         } else if (prev.length < 3) {
           const next = [...prev, genre];
-          console.log("Adding genre. New selection:", next);
           return next;
         }
-        console.log("Max genres reached, keeping current selection:", prev);
         return prev;
       });
     },
-    [selectedGenres]
+    []
   );
 
   const handlePersonSelect = (person: Person) => {
@@ -172,44 +162,32 @@ function RecommendationsContent() {
       case 1:
         return (
           <div className="space-y-4">
-            <h2 className="text-xl font-base">What type best describes you?</h2>
+            <h2 className="text-xl font-base">What is your profession?</h2>
             <div className="grid grid-cols-2 gap-2">
-              {FIELD_VALUES.type
-                .slice(0, showAllTypes ? undefined : 12)
-                .map((type) => (
-                  <button
-                    key={type}
-                    onClick={() => setUserType(type)}
-                    className={`p-2 border border-border text-text transition-colors duration-200 ${
-                      userType === type
-                        ? "bg-accent"
-                        : "bg-background md:hover:bg-accent/50"
-                    }`}
-                  >
-                    {type}
-                  </button>
-                ))}
-            </div>
-            {FIELD_VALUES.type.length > 12 && (
-              <button
-                onClick={() => setShowAllTypes(!showAllTypes)}
-                className="w-full p-2 text-text/70 transition-colors duration-200 md:hover:text-text md:hover:underline"
-              >
-                {showAllTypes
-                  ? "Show less"
-                  : `Show ${FIELD_VALUES.type.length - 12} more`}
-              </button>
-            )}
-            {userType && (
-              <div className="space-y-2">
+              {FIELD_VALUES.type.map((type) => (
                 <button
-                  onClick={() => setStep(2)}
-                  className="w-full p-3 bg-background text-text border border-border md:hover:bg-accent/50 transition-colors duration-200"
+                  key={type}
+                  onClick={() => setUserType(type)}
+                  className={`p-2 border border-border text-text transition-colors duration-200 ${
+                    userType === type
+                      ? "bg-accent"
+                      : "bg-background md:hover:bg-accent/50"
+                  }`}
                 >
-                  Next
+                  {type}
                 </button>
-              </div>
-            )}
+              ))}
+            </div>
+
+            <div className="space-y-2">
+              <button
+                onClick={() => setStep(2)}
+                disabled={!userType}
+                className="w-full p-3 bg-accent text-text border border-border md:hover:bg-accent/50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {userType ? 'Next (1/1 selected)' : '0/1 selected'}
+              </button>
+            </div>
           </div>
         );
 
@@ -217,65 +195,51 @@ function RecommendationsContent() {
         return (
           <div className="space-y-4">
             <h2 className="text-xl font-base">What genres interest you?</h2>
-            <p className="text-text/70">Select up to 3 genres</p>
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-2">
                 {FIELD_VALUES.genres
-                  .slice(0, showAllGenres ? undefined : 12)
+                  .slice(0, showAllGenres ? undefined : 18)
                   .map((genre) => (
                     <button
                       key={genre}
                       onClick={() => handleGenreToggle(genre)}
-                      className={`p-2 border border-border transition-colors duration-200 ${
+                      className={`p-2 border border-border text-text transition-colors duration-200 ${
                         selectedGenres.includes(genre)
-                          ? "bg-accent text-text"
-                          : "bg-background text-text/70 md:hover:bg-accent/50"
+                          ? "bg-accent"
+                          : "bg-background md:hover:bg-accent/50"
                       }`}
                     >
                       {genre}
                     </button>
                   ))}
               </div>
-              {FIELD_VALUES.genres.length > 12 && (
+              {FIELD_VALUES.genres.length > 18 && (
                 <button
                   onClick={() => setShowAllGenres(!showAllGenres)}
-                  className="w-full p-2 text-text/70 transition-colors duration-200 md:hover:text-text md:hover:underline"
+                  className="w-full p-2 text-text/70 md:hover:text-text transition-colors duration-200"
                 >
-                  {showAllGenres
-                    ? "Show less"
-                    : `Show ${FIELD_VALUES.genres.length - 12} more`}
+                  {showAllGenres ? "Show less" : "Show more"}
                 </button>
               )}
             </div>
-            {selectedGenres.length > 0 && (
-              <div className="mt-4">
-                <p className="text-text/70">
-                  Selected ({selectedGenres.length}/3):{" "}
-                  {selectedGenres.join(", ")}
-                </p>
-              </div>
-            )}
             <div className="space-y-2">
-              {selectedGenres.length > 0 && (
-                <button
-                  onClick={() => {
-                    setStep(3);
-                    setShouldFocusSearch(true);
-                    setTimeout(() => setShouldFocusSearch(false), 100);
-                  }}
-                  className="w-full p-3 bg-background text-text border border-border md:hover:bg-accent/50 transition-colors duration-200"
-                >
-                  Next
-                </button>
-              )}
-              {step > 1 && (
-                <button
-                  onClick={() => setStep(step - 1)}
-                  className="w-full p-3 bg-background text-text/70 border border-border md:hover:bg-accent/50 transition-colors duration-200"
-                >
-                  Back
-                </button>
-              )}
+              <button
+                onClick={() => {
+                  setStep(3);
+                  setShouldFocusSearch(true);
+                  setTimeout(() => setShouldFocusSearch(false), 100);
+                }}
+                disabled={selectedGenres.length === 0}
+                className="w-full p-3 bg-accent text-text border border-border md:hover:bg-accent/50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {selectedGenres.length === 0 ? '0/3 selected' : `Next (${selectedGenres.length}/3 selected)`}
+              </button>
+              <button
+                onClick={() => setStep(step - 1)}
+                className="w-full p-3 bg-background text-text/70 border border-border md:hover:bg-accent/30 transition-colors duration-200"
+              >
+                Back
+              </button>
             </div>
           </div>
         );
@@ -340,7 +304,7 @@ function RecommendationsContent() {
                     setShouldFocusSearch(true);
                     setTimeout(() => setShouldFocusSearch(false), 100);
                   }}
-                  className="w-full p-3 bg-background text-text border border-border md:hover:bg-accent/50 transition-colors duration-200"
+                  className="w-full p-3 bg-accent text-text border border-border md:hover:bg-accent/50 transition-colors duration-200"
                 >
                   Next
                 </button>
@@ -348,7 +312,7 @@ function RecommendationsContent() {
               {step > 1 && (
                 <button
                   onClick={() => setStep(step - 1)}
-                  className="w-full p-3 bg-background text-text/70 border border-border md:hover:bg-accent/50 transition-colors duration-200"
+                  className="w-full p-3 bg-background text-text/70 border border-border md:hover:bg-accent/30 transition-colors duration-200"
                 >
                   Back
                 </button>
@@ -410,19 +374,17 @@ function RecommendationsContent() {
               ))}
             </div>
             <div className="space-y-2">
-              {favoriteBooks.length > 0 && (
-                <button
-                  onClick={getRecommendations}
-                  disabled={loading}
-                  className="w-full p-3 bg-background text-text border border-border md:hover:bg-accent/50 transition-colors duration-200 disabled:opacity-50"
-                >
-                  {loading ? "Getting Recommendations..." : "Get Recommendations"}
-                </button>
-              )}
+              <button
+                onClick={getRecommendations}
+                disabled={loading || favoriteBooks.length === 0}
+                className="w-full p-3 bg-accent text-text border border-border md:hover:bg-accent/50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {loading ? "Getting Recommendations..." : "Get Recommendations"}
+              </button>
               {step > 1 && (
                 <button
                   onClick={() => setStep(step - 1)}
-                  className="w-full p-3 bg-background text-text/70 border border-border md:hover:bg-accent/50 transition-colors duration-200"
+                  className="w-full p-3 bg-background text-text/70 border border-border md:hover:bg-accent/30 transition-colors duration-200"
                 >
                   Back
                 </button>
@@ -489,7 +451,7 @@ function RecommendationsContent() {
                 setFavoriteBooks([]);
                 setRecommendations([]);
               }}
-              className="w-full p-3 bg-background text-text border border-border md:hover:bg-accent/50 transition-colors duration-200"
+              className="w-full p-3 bg-accent/50 text-text border border-border md:hover:bg-accent transition-colors duration-200"
             >
               Start Over
             </button>
