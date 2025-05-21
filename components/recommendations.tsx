@@ -140,31 +140,37 @@ function RecommendationsContent() {
       
       if (step === 3 && recommenders) {
         const gridPeopleIds = gridItems(recommenders, 'people').map(p => p.id);
-        const results = recommenders
-          .filter(person => 
-            person.full_name.toLowerCase().includes(lowerQuery) ||
-            (person.type?.toLowerCase() || '').includes(lowerQuery)
-          )
-          .map(person => ({
-            id: person.id,
-            name: person.full_name,
-            subtitle: person.type || '',
-            isInGrid: gridPeopleIds.includes(person.id)
-          }));
+        const results = Array.from(new Map(
+          recommenders
+            .filter(person => 
+              person.full_name.toLowerCase().includes(lowerQuery) ||
+              (person.type?.toLowerCase() || '').includes(lowerQuery)
+            )
+            .map(person => ({
+              id: person.id,
+              name: person.full_name,
+              subtitle: person.type || '',
+              isInGrid: gridPeopleIds.includes(person.id)
+            }))
+            .map(result => [result.id, result])
+        ).values());
         setSearchResults(results);
       } else if (step === 4 && books) {
         const gridBookIds = gridItems(books, 'books').map(b => b.id);
-        const results = books
-          .filter(book => 
-            book.title.toLowerCase().includes(lowerQuery) ||
-            book.author.toLowerCase().includes(lowerQuery)
-          )
-          .map(book => ({
-            id: book.id,
-            name: book.title,
-            subtitle: book.author,
-            isInGrid: gridBookIds.includes(book.id)
-          }));
+        const results = Array.from(new Map(
+          books
+            .filter(book => 
+              book.title.toLowerCase().includes(lowerQuery) ||
+              book.author.toLowerCase().includes(lowerQuery)
+            )
+            .map(book => ({
+              id: book.id,
+              name: book.title,
+              subtitle: book.author,
+              isInGrid: gridBookIds.includes(book.id)
+            }))
+            .map(result => [result.id, result])
+        ).values());
         setSearchResults(results);
       }
       
