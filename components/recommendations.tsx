@@ -66,7 +66,7 @@ function SearchDropdown({ results, onSelect, isOpen, loading }: SearchDropdownPr
             onClick={() => onSelect(result)}
             className={`p-3 cursor-pointer md:hover:bg-accent/50 transition-colors duration-200 ${result.isInGrid ? 'bg-accent/30' : ''}`}
           >
-            <div className="text-text">{result.name} ({result.subtitle})</div>
+            <div className="text-text">{result.name}</div>
           </div>
         ))
       )}
@@ -165,8 +165,7 @@ function RecommendationsContent() {
             )
             .map(book => ({
               id: book.id,
-              name: book.title,
-              subtitle: book.author,
+              name: `${book.title} by ${book.author}`,
               isInGrid: gridBookIds.includes(book.id)
             }))
             .map(result => [result.id, result])
@@ -469,9 +468,9 @@ function RecommendationsContent() {
                   <button
                     key={book.id}
                     onClick={() => handleBookSelect(book)}
-                    className={`p-3 border border-border cursor-pointer md:hover:bg-accent/50 transition-colors duration-200 ${selectedBookIds.includes(book.id) ? 'bg-accent' : ''}`}
+                    className={`p-3 border border-border cursor-pointer md:hover:bg-accent/50 transition-colors duration-200 whitespace-pre-line line-clamp-2 ${selectedBookIds.includes(book.id) ? 'bg-accent' : ''}`}
                   >
-                    {book.title}
+                    {book.title} by {book.author}
                   </button>
                 ))}
               </div>
