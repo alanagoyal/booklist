@@ -15,6 +15,20 @@ import type { Book, Person, FormattedRecommender } from "@/types";
 import useSWR from "swr";
 import fetcher, { fetchRecommenders } from "../utils/fetcher";
 
+interface SearchResult {
+  id: string;
+  name: string;
+  subtitle?: string;
+  isInGrid: boolean;
+}
+
+interface SearchDropdownProps {
+  results: SearchResult[];
+  onSelect: (result: SearchResult) => void;
+  isOpen: boolean;
+  loading?: boolean;
+}
+
 interface RecommendedBook extends Book {
   score: number;
   match_reasons: {
@@ -36,14 +50,42 @@ export function Recommendations() {
   );
 }
 
+function SearchDropdown({ results, onSelect, isOpen, loading }: SearchDropdownProps) {
+  if (!isOpen) return null;
+
+  return (
+    <div className="absolute z-10 w-full border-x border-b border-border bg-background max-h-60 overflow-auto">
+      {loading ? (
+        <div className="p-3 text-text/70">Searching...</div>
+      ) : results.length === 0 ? (
+        <div className="p-3 text-text/70">No results found</div>
+      ) : (
+        results.map((result) => (
+          <div
+            key={result.id}
+            onClick={() => onSelect(result)}
+            className={`p-3 cursor-pointer md:hover:bg-accent/50 transition-colors duration-200 ${result.isInGrid ? 'bg-accent/30' : ''}`}
+          >
+            <div className="text-text">{result.name} ({result.subtitle})</div>
+          </div>
+        ))
+      )}
+    </div>
+  );
+}
+
 function RecommendationsContent() {
   const [step, setStep] = useState(1);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
   const [loading, setLoading] = useState(false);
   const [userType, setUserType] = useState<string | null>(null);
   const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
   const [showAllGenres, setShowAllGenres] = useState(false);
   const [selectedPeopleIds, setSelectedPeopleIds] = useState<string[]>([]);
   const [selectedBookIds, setSelectedBookIds] = useState<string[]>([]);
+  const [extraGridItems, setExtraGridItems] = useState<string[]>([]);
   const [recommendations, setRecommendations] = useState<RecommendedBook[]>([]);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -73,6 +115,100 @@ function RecommendationsContent() {
       return prev;
     });
   }, []);
+
+  const gridItems = useCallback(
+    (items: any[], type: 'people' | 'books') => {
+      const baseItems = items.slice(0, 18);
+      const extraItems = items.filter(item => extraGridItems.includes(item.id));
+      return [...baseItems, ...extraItems];
+    },
+    [extraGridItems]
+  );
+
+  const handleSearch = useCallback(
+    (query: string) => {
+      setSearchQuery(query);
+      setIsSearching(true);
+
+      if (!query.trim()) {
+        setSearchResults([]);
+        setIsSearching(false);
+        return;
+      }
+
+      const lowerQuery = query.toLowerCase();
+      
+      if (step === 3 && recommenders) {
+        const gridPeopleIds = gridItems(recommenders, 'people').map(p => p.id);
+        const results = recommenders
+          .filter(person => 
+            person.full_name.toLowerCase().includes(lowerQuery) ||
+            (person.type?.toLowerCase() || '').includes(lowerQuery)
+          )
+          .map(person => ({
+            id: person.id,
+            name: person.full_name,
+            subtitle: person.type || '',
+            isInGrid: gridPeopleIds.includes(person.id)
+          }));
+        setSearchResults(results);
+      } else if (step === 4 && books) {
+        const gridBookIds = gridItems(books, 'books').map(b => b.id);
+        const results = books
+          .filter(book => 
+            book.title.toLowerCase().includes(lowerQuery) ||
+            book.author.toLowerCase().includes(lowerQuery)
+          )
+          .map(book => ({
+            id: book.id,
+            name: book.title,
+            subtitle: book.author,
+            isInGrid: gridBookIds.includes(book.id)
+          }));
+        setSearchResults(results);
+      }
+      
+      setIsSearching(false);
+    },
+    [step, books, recommenders, gridItems]
+  );
+
+  useEffect(() => {
+    const timer = setTimeout(() => handleSearch(searchQuery), 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery, handleSearch]);
+
+  const handleSearchResultSelect = (result: SearchResult) => {
+    setSearchQuery(''); // Close dropdown
+    
+    if (step === 3 && recommenders) {
+      const gridPeople = gridItems(recommenders, 'people');
+      const isInFirstEighteen = gridPeople.slice(0, 18).some(p => p.id === result.id);
+      
+      if (!isInFirstEighteen && !extraGridItems.includes(result.id)) {
+        setExtraGridItems(prev => [...prev, result.id]);
+      }
+
+      // Select the person if not already selected
+      const person = recommenders.find(p => p.id === result.id);
+      if (person && !selectedPeopleIds.includes(result.id) && selectedPeopleIds.length < 3) {
+        handlePersonSelect(person);
+      }
+    } else if (step === 4 && books) {
+      const gridBooks = gridItems(books, 'books');
+      const isInFirstEighteen = gridBooks.slice(0, 18).some(b => b.id === result.id);
+      
+      if (!isInFirstEighteen && !extraGridItems.includes(result.id)) {
+        setExtraGridItems(prev => [...prev, result.id]);
+      }
+
+      // Select the book if not already selected
+      const book = books.find(b => b.id === result.id);
+      if (book && !selectedBookIds.includes(result.id) && selectedBookIds.length < 3) {
+        handleBookSelect(book);
+      }
+    }
+  };
 
   const handlePersonSelect = (person: FormattedRecommender): void => {
     setSelectedPeopleIds((prev) => {
@@ -242,20 +378,35 @@ function RecommendationsContent() {
         );
 
       case 3:
-        if (!recommenders) return null;
+        if (!recommenders) return <div>Loading...</div>;
+
         return (
           <div className="space-y-4">
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Search all people..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full p-3 bg-background text-text border border-border focus:outline-none"
+              />
+              <SearchDropdown
+                results={searchResults}
+                onSelect={handleSearchResultSelect}
+                isOpen={searchQuery.length > 0}
+                loading={isSearching}
+              />
+            </div>
             <h2 className="text-xl font-base">
               Who inspires you? (Choose up to 3)
             </h2>
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-2 mt-4">
-                {/* Show top 18 recommenders */}
-                {recommenders.slice(0, 18).map((person) => (
+                {recommenders && gridItems(recommenders, 'people').map((person) => (
                   <button
                     key={person.id}
                     onClick={() => handlePersonSelect(person)}
-                    className={`p-2 border border-border text-text transition-colors duration-200 ${selectedPeopleIds.includes(person.id) ? "bg-accent" : "bg-background md:hover:bg-accent/50"}`}
+                    className={`p-3 border border-border cursor-pointer md:hover:bg-accent/50 transition-colors duration-200 ${selectedPeopleIds.includes(person.id) ? 'bg-accent' : ''}`}
                   >
                     {person.full_name}
                     {person.type ? ` (${person.type})` : ""}
@@ -265,9 +416,7 @@ function RecommendationsContent() {
             </div>
             <div className="space-y-2">
               <button
-                onClick={() => {
-                  setStep(4);
-                }}
+                onClick={() => setStep(4)}
                 disabled={!selectedPeopleIds.length}
                 className="w-full p-3 bg-accent text-text border border-border md:hover:bg-accent/50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >
@@ -286,20 +435,35 @@ function RecommendationsContent() {
         );
 
       case 4:
-        if (!books) return null;
+        if (!books) return <div>Loading...</div>;
+
         return (
           <div className="space-y-4">
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Search all books..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full p-3 bg-background text-text border border-border focus:outline-none"
+              />
+              <SearchDropdown
+                results={searchResults}
+                onSelect={handleSearchResultSelect}
+                isOpen={searchQuery.length > 0}
+                loading={isSearching}
+              />
+            </div>
             <h2 className="text-xl font-base">
               What are your favorite books? (Choose up to 3)
             </h2>
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-2 mt-4">
-                {/* First show all popular books */}
-                {books.slice(0, 18).map((book) => (
+                {books && gridItems(books, 'books').map((book) => (
                   <button
                     key={book.id}
                     onClick={() => handleBookSelect(book)}
-                    className={`p-2 border border-border text-text transition-colors duration-200 ${selectedBookIds.includes(book.id) ? "bg-accent" : "bg-background md:hover:bg-accent/50"}`}
+                    className={`p-3 border border-border cursor-pointer md:hover:bg-accent/50 transition-colors duration-200 ${selectedBookIds.includes(book.id) ? 'bg-accent' : ''}`}
                   >
                     {book.title}
                   </button>
@@ -318,14 +482,12 @@ function RecommendationsContent() {
                   ? "0/3 selected"
                   : `Get Recommendations (${selectedBookIds.length}/3 selected)`}
               </button>
-              {step > 1 && (
-                <button
-                  onClick={() => setStep(step - 1)}
-                  className="w-full p-3 bg-background text-text/70 border border-border md:hover:bg-accent/30 transition-colors duration-200"
-                >
-                  Back
-                </button>
-              )}
+              <button
+                onClick={() => setStep(step - 1)}
+                className="w-full p-3 bg-background text-text/70 border border-border md:hover:bg-accent/30 transition-colors duration-200"
+              >
+                Back
+              </button>
             </div>
           </div>
         );
