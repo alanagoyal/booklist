@@ -66,7 +66,7 @@ function SearchDropdown({ results, onSelect, isOpen, loading }: SearchDropdownPr
             onClick={() => onSelect(result)}
             className={`p-3 cursor-pointer md:hover:bg-accent/50 transition-colors duration-200 ${result.isInGrid ? 'bg-accent/30' : ''}`}
           >
-            <div className="text-text">{result.name}</div>
+            <div className="text-text whitespace-pre-line">{result.name}</div>
           </div>
         ))
       )}
@@ -148,8 +148,7 @@ function RecommendationsContent() {
             )
             .map(person => ({
               id: person.id,
-              name: person.full_name,
-              subtitle: person.type || '',
+              name: `${person.full_name}${person.type ? ` (${person.type})` : ''}`,
               isInGrid: gridPeopleIds.includes(person.id)
             }))
             .map(result => [result.id, result])
@@ -387,21 +386,6 @@ function RecommendationsContent() {
 
         return (
           <div className="space-y-4">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Search all people..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full p-3 bg-background text-text border border-border focus:outline-none"
-              />
-              <SearchDropdown
-                results={searchResults}
-                onSelect={handleSearchResultSelect}
-                isOpen={searchQuery.length > 0}
-                loading={isSearching}
-              />
-            </div>
             <h2 className="text-xl font-base">
               Who inspires you? (Choose up to 3)
             </h2>
@@ -418,6 +402,21 @@ function RecommendationsContent() {
                   </button>
                 ))}
               </div>
+            </div>
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Search all people..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full p-3 bg-background text-text border border-border focus:outline-none"
+              />
+              <SearchDropdown
+                results={searchResults}
+                onSelect={handleSearchResultSelect}
+                isOpen={searchQuery.length > 0}
+                loading={isSearching}
+              />
             </div>
             <div className="space-y-2">
               <button
@@ -444,21 +443,6 @@ function RecommendationsContent() {
 
         return (
           <div className="space-y-4">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Search all books..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full p-3 bg-background text-text border border-border focus:outline-none"
-              />
-              <SearchDropdown
-                results={searchResults}
-                onSelect={handleSearchResultSelect}
-                isOpen={searchQuery.length > 0}
-                loading={isSearching}
-              />
-            </div>
             <h2 className="text-xl font-base">
               What are your favorite books? (Choose up to 3)
             </h2>
@@ -474,6 +458,21 @@ function RecommendationsContent() {
                   </button>
                 ))}
               </div>
+            </div>
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Search all books..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full p-3 bg-background text-text border border-border focus:outline-none"
+              />
+              <SearchDropdown
+                results={searchResults}
+                onSelect={handleSearchResultSelect}
+                isOpen={searchQuery.length > 0}
+                loading={isSearching}
+              />
             </div>
             <div className="space-y-2">
               <button
