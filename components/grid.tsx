@@ -10,7 +10,7 @@ import React, {
 import { ChevronDown, Check, ArrowUp, ArrowDown, X, ListFilter } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { SearchBox } from "./search-box";
+import { SearchBox } from "./semantic-search";
 import { countManager } from "@/components/counter";
 import { ColumnFilter } from "./column-filter";
 

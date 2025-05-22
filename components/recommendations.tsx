@@ -4,14 +4,13 @@ import {
   useState,
   useCallback,
   useEffect,
-  useMemo,
-  useRef,
   Suspense,
 } from "react";
+import { SearchInput } from "./search-input";
 import { supabase } from "@/utils/supabase/client";
 import { FIELD_VALUES } from "@/utils/constants";
 import { useRouter, useSearchParams } from "next/navigation";
-import type { Book, Person, FormattedRecommender } from "@/types";
+import type { Book, FormattedRecommender } from "@/types";
 import useSWR from "swr";
 import fetcher, { fetchRecommenders } from "../utils/fetcher";
 
@@ -50,21 +49,34 @@ export function Recommendations() {
   );
 }
 
-function SearchDropdown({ results, onSelect, isOpen, loading }: SearchDropdownProps) {
+interface SearchDropdownProps {
+  results: SearchResult[];
+  onSelect: (result: SearchResult) => void;
+  isOpen: boolean;
+  loading?: boolean;
+  selectedIndex: number;
+}
+
+function SearchDropdown({ results, onSelect, isOpen, loading, selectedIndex }: SearchDropdownProps) {
   if (!isOpen) return null;
+
+  const sortedResults = [...results].sort((a, b) => {
+    if (a.isInGrid === b.isInGrid) return 0;
+    return a.isInGrid ? 1 : -1;
+  });
 
   return (
     <div className="absolute z-10 w-full border-x border-b border-border bg-background max-h-60 overflow-auto">
       {loading ? (
         <div className="p-3 text-text/70">Searching...</div>
-      ) : results.length === 0 ? (
+      ) : sortedResults.length === 0 ? (
         <div className="p-3 text-text/70">No results found</div>
       ) : (
-        results.map((result) => (
+        sortedResults.map((result, index) => (
           <div
             key={result.id}
             onClick={() => onSelect(result)}
-            className={`p-3 cursor-pointer md:hover:bg-accent/50 transition-colors duration-200 ${result.isInGrid ? 'bg-accent/30' : ''}`}
+            className={`p-3 cursor-pointer transition-colors duration-200 ${index === selectedIndex ? 'bg-accent/50' : 'bg-background md:hover:bg-accent/50'}`}
           >
             <div className="text-text whitespace-pre-line">{result.name}</div>
           </div>
@@ -79,6 +91,7 @@ function RecommendationsContent() {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(-1);
   const [loading, setLoading] = useState(false);
   const [userType, setUserType] = useState<string | null>(null);
   const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
@@ -129,6 +142,7 @@ function RecommendationsContent() {
     (query: string) => {
       setSearchQuery(query);
       setIsSearching(true);
+      setSelectedIndex(-1);
 
       if (!query.trim()) {
         setSearchResults([]);
@@ -404,18 +418,39 @@ function RecommendationsContent() {
               </div>
             </div>
             <div className="relative">
-              <input
-                type="text"
-                placeholder="Search for more people..."
+              <SearchInput
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full p-3 bg-background text-text border border-border focus:outline-none"
+                onChange={handleSearch}
+                onClear={() => {
+                  setSearchQuery('');
+                  setSearchResults([]);
+                  setIsSearching(false);
+                  setSelectedIndex(-1);
+                }}
+                placeholder="Search for more people..."
+                onKeyDown={(e) => {
+                  if (searchResults.length === 0) return;
+                  
+                  if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    setSelectedIndex(prev => 
+                      prev < searchResults.length - 1 ? prev + 1 : prev
+                    );
+                  } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    setSelectedIndex(prev => prev > 0 ? prev - 1 : prev);
+                  } else if (e.key === 'Enter' && selectedIndex >= 0) {
+                    e.preventDefault();
+                    handleSearchResultSelect(searchResults[selectedIndex]);
+                  }
+                }}
               />
               <SearchDropdown
                 results={searchResults}
                 onSelect={handleSearchResultSelect}
                 isOpen={searchQuery.length > 0}
                 loading={isSearching}
+                selectedIndex={selectedIndex}
               />
             </div>
             <div className="space-y-2">
@@ -460,18 +495,39 @@ function RecommendationsContent() {
               </div>
             </div>
             <div className="relative">
-              <input
-                type="text"
-                placeholder="Search for more books..."
+              <SearchInput
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full p-3 bg-background text-text border border-border focus:outline-none"
+                onChange={handleSearch}
+                onClear={() => {
+                  setSearchQuery('');
+                  setSearchResults([]);
+                  setIsSearching(false);
+                  setSelectedIndex(-1);
+                }}
+                placeholder="Search for more books..."
+                onKeyDown={(e) => {
+                  if (searchResults.length === 0) return;
+                  
+                  if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    setSelectedIndex(prev => 
+                      prev < searchResults.length - 1 ? prev + 1 : prev
+                    );
+                  } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    setSelectedIndex(prev => prev > 0 ? prev - 1 : prev);
+                  } else if (e.key === 'Enter' && selectedIndex >= 0) {
+                    e.preventDefault();
+                    handleSearchResultSelect(searchResults[selectedIndex]);
+                  }
+                }}
               />
               <SearchDropdown
                 results={searchResults}
                 onSelect={handleSearchResultSelect}
                 isOpen={searchQuery.length > 0}
                 loading={isSearching}
+                selectedIndex={selectedIndex}
               />
             </div>
             <div className="space-y-2">
