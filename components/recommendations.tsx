@@ -44,7 +44,9 @@ interface RecommendedBook extends Book {
 export function Recommendations() {
   return (
     <Suspense>
-      <RecommendationsContent />
+      <div className="focus:outline-none">
+        <RecommendationsContent />
+      </div>
     </Suspense>
   );
 }
@@ -87,7 +89,11 @@ function SearchDropdown({ results, onSelect, isOpen, loading, selectedIndex }: S
 }
 
 function RecommendationsContent() {
-  const [step, setStep] = useState(1);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // Initialize with undefined to prevent flash of step 1
+  const [step, setStep] = useState<number>();
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
@@ -100,16 +106,88 @@ function RecommendationsContent() {
   const [selectedBookIds, setSelectedBookIds] = useState<string[]>([]);
   const [extraGridItems, setExtraGridItems] = useState<string[]>([]);
   const [recommendations, setRecommendations] = useState<RecommendedBook[]>([]);
-  const router = useRouter();
-  const searchParams = useSearchParams();
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  // Initialize state from localStorage and update URL on mount
+  useEffect(() => {
+    if (typeof window === 'undefined' || isInitialized) return;
+
+    // Load saved state
+    const savedUserType = localStorage.getItem('userType');
+    const savedGenres = localStorage.getItem('selectedGenres');
+    const savedPeopleIds = localStorage.getItem('selectedPeopleIds');
+    const savedBookIds = localStorage.getItem('selectedBookIds');
+    const savedRecommendations = localStorage.getItem('recommendations');
+
+    // Initialize state from localStorage
+    if (savedUserType) setUserType(savedUserType);
+    if (savedGenres) setSelectedGenres(JSON.parse(savedGenres));
+    if (savedPeopleIds) setSelectedPeopleIds(JSON.parse(savedPeopleIds));
+    if (savedBookIds) setSelectedBookIds(JSON.parse(savedBookIds));
+    
+    // Check for recommendations last
+    if (savedRecommendations) {
+      setRecommendations(JSON.parse(savedRecommendations));
+      setStep(5);
+    } else {
+      // If no recommendations, check URL for step
+      const urlStep = searchParams.get('step');
+      setStep(urlStep ? parseInt(urlStep) : 1);
+    }
+
+    setIsInitialized(true);
+  }, [searchParams, isInitialized]);
+
+  // Update URL when step changes
+  useEffect(() => {
+    if (!isInitialized || step === undefined) return;
+    const params = new URLSearchParams(window.location.search);
+    params.set('step', step.toString());
+    router.replace(`?${params.toString()}`);
+  }, [step, router, isInitialized]);
+
+  // Save form state to localStorage
+  useEffect(() => {
+    if (!isInitialized) return;
+    
+    if (userType) {
+      localStorage.setItem('userType', userType);
+    } else {
+      localStorage.removeItem('userType');
+    }
+
+    if (selectedGenres.length) {
+      localStorage.setItem('selectedGenres', JSON.stringify(selectedGenres));
+    } else {
+      localStorage.removeItem('selectedGenres');
+    }
+
+    if (selectedPeopleIds.length) {
+      localStorage.setItem('selectedPeopleIds', JSON.stringify(selectedPeopleIds));
+    } else {
+      localStorage.removeItem('selectedPeopleIds');
+    }
+
+    if (selectedBookIds.length) {
+      localStorage.setItem('selectedBookIds', JSON.stringify(selectedBookIds));
+    } else {
+      localStorage.removeItem('selectedBookIds');
+    }
+
+    if (recommendations.length) {
+      localStorage.setItem('recommendations', JSON.stringify(recommendations));
+    } else {
+      localStorage.removeItem('recommendations');
+    }
+  }, [userType, selectedGenres, selectedPeopleIds, selectedBookIds, recommendations, isInitialized]);
 
   // Only fetch data when needed
   const { data: books } = useSWR<Book[]>(
-    step >= 3 ? "/data/books-essential.json" : null,
+    step !== undefined && step >= 3 ? "/data/books-essential.json" : null,
     fetcher
   );
   const { data: recommenders } = useSWR<FormattedRecommender[]>(
-    step >= 3 ? "/data/recommenders.json" : null,
+    step !== undefined && step >= 3 ? "/data/recommenders.json" : null,
     fetchRecommenders
   );
 
@@ -299,6 +377,10 @@ function RecommendationsContent() {
   );
 
   const renderStep = () => {
+    // Don't render anything until we've initialized
+    if (!isInitialized || step === undefined) {
+      return null;
+    }
     // Add loading states for steps that need data
     if (step >= 3 && step <= 4) {
       if (!books || !recommenders) {
@@ -603,14 +685,20 @@ function RecommendationsContent() {
             </div>
             <button
               onClick={() => {
+                // Clear all form state and localStorage
                 setStep(1);
                 setUserType(null);
                 setSelectedGenres([]);
                 setSelectedPeopleIds([]);
                 setSelectedBookIds([]);
                 setRecommendations([]);
+                localStorage.removeItem('userType');
+                localStorage.removeItem('selectedGenres');
+                localStorage.removeItem('selectedPeopleIds');
+                localStorage.removeItem('selectedBookIds');
+                localStorage.removeItem('recommendations');
               }}
-              className="w-full p-3 bg-accent/50 text-text border border-border md:hover:bg-accent transition-colors duration-200"
+              className="w-full p-3 bg-accent text-text border border-border md:hover:bg-accent/50 transition-colors duration-200"
             >
               Start Over
             </button>
