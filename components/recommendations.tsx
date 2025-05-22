@@ -406,7 +406,7 @@ function RecommendationsContent() {
             <div className="relative">
               <input
                 type="text"
-                placeholder="Search all people..."
+                placeholder="Search for more people..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full p-3 bg-background text-text border border-border focus:outline-none"
@@ -462,7 +462,7 @@ function RecommendationsContent() {
             <div className="relative">
               <input
                 type="text"
-                placeholder="Search all books..."
+                placeholder="Search for more books..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full p-3 bg-background text-text border border-border focus:outline-none"
