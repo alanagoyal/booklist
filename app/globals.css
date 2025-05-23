@@ -127,4 +127,9 @@
   body {
     @apply bg-background text-foreground;
   }
+  
+  /* Remove focus outlines on container divs while preserving accessibility */
+  div:focus:not([role="button"]):not([role="textbox"]):not([role="checkbox"]):not([role="radio"]):not([role="combobox"]):not([role="listbox"]):not([role="menu"]) {
+    outline: none;
+  }
 }

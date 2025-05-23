@@ -44,9 +44,7 @@ interface RecommendedBook extends Book {
 export function Recommendations() {
   return (
     <Suspense>
-      <div className="focus:outline-none">
-        <RecommendationsContent />
-      </div>
+      <RecommendationsContent />
     </Suspense>
   );
 }
