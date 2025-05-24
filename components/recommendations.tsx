@@ -26,6 +26,7 @@ interface SearchDropdownProps {
   onSelect: (result: SearchResult) => void;
   isOpen: boolean;
   loading?: boolean;
+  selectedIndex: number;
 }
 
 interface RecommendedBook extends Book {
@@ -100,6 +101,7 @@ function RecommendationsContent() {
   const [userType, setUserType] = useState<string | null>(null);
   const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
   const [showAllGenres, setShowAllGenres] = useState(false);
+  const [showAllTypes, setShowAllTypes] = useState(false);
   const [selectedPeopleIds, setSelectedPeopleIds] = useState<string[]>([]);
   const [selectedBookIds, setSelectedBookIds] = useState<string[]>([]);
   const [extraGridItems, setExtraGridItems] = useState<string[]>([]);
@@ -207,7 +209,7 @@ function RecommendationsContent() {
 
   const gridItems = useCallback(
     (items: any[], type: 'people' | 'books') => {
-      const baseItems = items.slice(0, 18);
+      const baseItems = items.slice(0, 10);
       const extraItems = items.filter(item => extraGridItems.includes(item.id));
       return [...baseItems, ...extraItems];
     },
@@ -277,9 +279,9 @@ function RecommendationsContent() {
     
     if (step === 3 && recommenders) {
       const gridPeople = gridItems(recommenders, 'people');
-      const isInFirstEighteen = gridPeople.slice(0, 18).some(p => p.id === result.id);
+      const isInFirstTen = gridPeople.slice(0, 10).some(p => p.id === result.id);
       
-      if (!isInFirstEighteen && !extraGridItems.includes(result.id)) {
+      if (!isInFirstTen && !extraGridItems.includes(result.id)) {
         setExtraGridItems(prev => [...prev, result.id]);
       }
 
@@ -290,9 +292,9 @@ function RecommendationsContent() {
       }
     } else if (step === 4 && books) {
       const gridBooks = gridItems(books, 'books');
-      const isInFirstEighteen = gridBooks.slice(0, 18).some(b => b.id === result.id);
+      const isInFirstTen = gridBooks.slice(0, 10).some(b => b.id === result.id);
       
-      if (!isInFirstEighteen && !extraGridItems.includes(result.id)) {
+      if (!isInFirstTen && !extraGridItems.includes(result.id)) {
         setExtraGridItems(prev => [...prev, result.id]);
       }
 
@@ -395,20 +397,32 @@ function RecommendationsContent() {
         return (
           <div className="space-y-4">
             <h2 className="text-xl font-base">What is your profession?</h2>
-            <div className="grid grid-cols-2 gap-2">
-              {FIELD_VALUES.type.map((type) => (
+            <div className="space-y-2">
+              <div className="grid grid-cols-2 gap-2">
+                {FIELD_VALUES.type
+                  .slice(0, showAllTypes ? undefined : 10)
+                  .map((type) => (
+                  <button
+                    key={type}
+                    onClick={() => setUserType(type)}
+                    className={`p-3 border border-border text-text transition-colors duration-200 whitespace-pre-line line-clamp-2 ${
+                      userType === type
+                        ? "bg-accent"
+                        : "bg-background md:hover:bg-accent/50"
+                    }`}
+                  >
+                    {type}
+                  </button>
+                ))}
+              </div>
+              {FIELD_VALUES.type.length > 10 && (
                 <button
-                  key={type}
-                  onClick={() => setUserType(type)}
-                  className={`p-2 border border-border text-text transition-colors duration-200 ${
-                    userType === type
-                      ? "bg-accent"
-                      : "bg-background md:hover:bg-accent/50"
-                  }`}
+                  onClick={() => setShowAllTypes(!showAllTypes)}
+                  className="w-full p-2 text-text/70 md:hover:text-text transition-colors duration-200"
                 >
-                  {type}
+                  {showAllTypes ? "Show less" : "Show more"}
                 </button>
-              ))}
+              )}
             </div>
             <div className="space-y-2">
               <button
@@ -426,15 +440,15 @@ function RecommendationsContent() {
         return (
           <div className="space-y-4">
             <h2 className="text-xl font-base">What genres interest you?</h2>
-            <div className="space-y-4">
+            <div className="space-y-2">
               <div className="grid grid-cols-2 gap-2">
                 {FIELD_VALUES.genres
-                  .slice(0, showAllGenres ? undefined : 18)
+                  .slice(0, showAllGenres ? undefined : 10)
                   .map((genre) => (
                     <button
                       key={genre}
                       onClick={() => handleGenreToggle(genre)}
-                      className={`p-2 border border-border text-text transition-colors duration-200 ${
+                      className={`p-3 border border-border text-text transition-colors duration-200 whitespace-pre-line line-clamp-2 ${
                         selectedGenres.includes(genre)
                           ? "bg-accent"
                           : "bg-background md:hover:bg-accent/50"
@@ -444,7 +458,7 @@ function RecommendationsContent() {
                     </button>
                   ))}
               </div>
-              {FIELD_VALUES.genres.length > 18 && (
+              {FIELD_VALUES.genres.length > 10 && (
                 <button
                   onClick={() => setShowAllGenres(!showAllGenres)}
                   className="w-full p-2 text-text/70 md:hover:text-text transition-colors duration-200"
@@ -483,13 +497,13 @@ function RecommendationsContent() {
             <h2 className="text-xl font-base">
               Who inspires you? (Choose up to 3)
             </h2>
-            <div className="space-y-4">
+            <div className="space-y-2">
               <div className="grid grid-cols-2 gap-2 mt-4">
                 {recommenders && gridItems(recommenders, 'people').map((person) => (
                   <button
                     key={person.id}
                     onClick={() => handlePersonSelect(person)}
-                    className={`p-3 border border-border cursor-pointer md:hover:bg-accent/50 transition-colors duration-200 ${selectedPeopleIds.includes(person.id) ? 'bg-accent' : ''}`}
+                    className={`p-3 border border-border cursor-pointer md:hover:bg-accent/50 transition-colors duration-200 whitespace-pre-line line-clamp-2 ${selectedPeopleIds.includes(person.id) ? 'bg-accent' : ''}`}
                   >
                     {person.full_name}
                     {person.type ? ` (${person.type})` : ""}
@@ -561,7 +575,7 @@ function RecommendationsContent() {
             <h2 className="text-xl font-base">
               What are your favorite books? (Choose up to 3)
             </h2>
-            <div className="space-y-4">
+            <div className="space-y-2">
               <div className="grid grid-cols-2 gap-2 mt-4">
                 {books && gridItems(books, 'books').map((book) => (
                   <button
