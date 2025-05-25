@@ -490,6 +490,7 @@ function RecommendationsContent() {
         );
 
       case 3:
+        console.log('First 12 people:', recommenders?.slice(0, 12))
         if (!recommenders) return <div>Loading...</div>;
 
         return (
@@ -568,6 +569,7 @@ function RecommendationsContent() {
         );
 
       case 4:
+        console.log('First 12 books:', books?.slice(0, 12))
         if (!books) return <div>Loading...</div>;
 
         return (
