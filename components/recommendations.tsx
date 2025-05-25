@@ -75,7 +75,7 @@ function SearchDropdown({ results, onSelect, isOpen, loading, selectedIndex }: S
           <div
             key={result.id}
             onClick={() => onSelect(result)}
-            className={`p-3 cursor-pointer border border-border transition-colors duration-200 ${
+            className={`p-3 cursor-pointer transition-colors duration-200 ${
               index === selectedIndex ? 'bg-accent hover:bg-accent/50' : 'bg-background hover:bg-accent/30'
             }`}
           >
