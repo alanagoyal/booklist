@@ -40,8 +40,6 @@ interface RecommendedBook extends Book {
   };
 }
 
-
-
 export function Recommendations() {
   return (
     <Suspense>
@@ -77,9 +75,11 @@ function SearchDropdown({ results, onSelect, isOpen, loading, selectedIndex }: S
           <div
             key={result.id}
             onClick={() => onSelect(result)}
-            className={`p-3 cursor-pointer transition-colors duration-200 ${index === selectedIndex ? 'bg-accent/50' : 'bg-background md:hover:bg-accent/50'}`}
+            className={`p-3 cursor-pointer border border-border transition-colors duration-200 ${
+              index === selectedIndex ? 'bg-accent hover:bg-accent/50' : 'bg-background hover:bg-accent/30'
+            }`}
           >
-            <div className="text-text whitespace-pre-line">{result.name}</div>
+            <div className="text-text whitespace-pre-line line-clamp-2">{result.name}</div>
           </div>
         ))
       )}
@@ -190,7 +190,6 @@ function RecommendationsContent() {
     step !== undefined ? "/data/recommenders.json" : null,
     fetchRecommenders
   );
-
 
   const handleGenreToggle = useCallback((genre: string) => {
     setSelectedGenres((prev) => {
@@ -392,17 +391,15 @@ function RecommendationsContent() {
                 {FIELD_VALUES.type
                   .slice(0, showAllTypes ? undefined : 10)
                   .map((type) => (
-                  <button
+                  <div
                     key={type}
                     onClick={() => setUserType(type)}
-                    className={`p-3 border border-border text-text transition-colors duration-200 whitespace-pre-line line-clamp-2 ${
-                      userType === type
-                        ? "bg-accent"
-                        : "bg-background md:hover:bg-accent/50"
+                    className={`p-3 cursor-pointer border border-border transition-colors duration-200 whitespace-pre-line line-clamp-2 ${
+                      type === userType ? 'bg-accent hover:bg-accent/50' : 'bg-background hover:bg-accent/30'
                     }`}
                   >
                     {type}
-                  </button>
+                  </div>
                 ))}
               </div>
               {FIELD_VALUES.type.length > 10 && (
@@ -418,7 +415,11 @@ function RecommendationsContent() {
               <button
                 onClick={() => setStep(2)}
                 disabled={!userType}
-                className="w-full p-3 bg-accent text-text border border-border md:hover:bg-accent/50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                className={`w-full p-3 ${
+                  !userType
+                    ? 'bg-accent/30 cursor-not-allowed'
+                    : 'bg-accent/80 md:hover:bg-accent'
+                } text-text border border-border transition-colors duration-200`}
               >
                 {userType ? "Next (1/1 selected)" : "0/1 selected"}
               </button>
@@ -435,17 +436,15 @@ function RecommendationsContent() {
                 {FIELD_VALUES.genres
                   .slice(0, showAllGenres ? undefined : 10)
                   .map((genre) => (
-                    <button
+                    <div
                       key={genre}
                       onClick={() => handleGenreToggle(genre)}
-                      className={`p-3 border border-border text-text transition-colors duration-200 whitespace-pre-line line-clamp-2 ${
-                        selectedGenres.includes(genre)
-                          ? "bg-accent"
-                          : "bg-background md:hover:bg-accent/50"
+                      className={`p-3 cursor-pointer border border-border transition-colors duration-200 whitespace-pre-line line-clamp-2 ${
+                        selectedGenres.includes(genre) ? 'bg-accent hover:bg-accent/50' : 'bg-background hover:bg-accent/30'
                       }`}
                     >
                       {genre}
-                    </button>
+                    </div>
                   ))}
               </div>
               {FIELD_VALUES.genres.length > 10 && (
@@ -463,7 +462,11 @@ function RecommendationsContent() {
                   setStep(3);
                 }}
                 disabled={selectedGenres.length === 0}
-                className="w-full p-3 bg-accent text-text border border-border md:hover:bg-accent/50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                className={`w-full p-3 ${
+                  selectedGenres.length === 0
+                    ? 'bg-accent/30 cursor-not-allowed'
+                    : 'bg-accent/80 md:hover:bg-accent'
+                } text-text border border-border transition-colors duration-200`}
               >
                 {selectedGenres.length === 0
                   ? "0/3 selected"
@@ -491,14 +494,16 @@ function RecommendationsContent() {
             <div className="space-y-2">
               <div className="grid grid-cols-2 gap-2 mt-4">
                 {recommenders && gridItems(recommenders, 'people').map((person) => (
-                  <button
+                  <div
                     key={person.id}
                     onClick={() => handlePersonSelect(person)}
-                    className={`p-3 border border-border cursor-pointer md:hover:bg-accent/50 transition-colors duration-200 whitespace-pre-line line-clamp-2 ${selectedPeopleIds.includes(person.id) ? 'bg-accent' : ''}`}
+                    className={`p-3 cursor-pointer border border-border transition-colors duration-200 whitespace-pre-line line-clamp-2 ${
+                      selectedPeopleIds.includes(person.id) ? 'bg-accent hover:bg-accent/50' : 'bg-background hover:bg-accent/30'
+                    }`}
                   >
                     {person.full_name}
                     {person.type ? ` (${person.type})` : ""}
-                  </button>
+                  </div>
                 ))}
               </div>
             </div>
@@ -542,7 +547,11 @@ function RecommendationsContent() {
               <button
                 onClick={() => setStep(4)}
                 disabled={!selectedPeopleIds.length}
-                className="w-full p-3 bg-accent text-text border border-border md:hover:bg-accent/50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                className={`w-full p-3 ${
+                  !selectedPeopleIds.length
+                    ? 'bg-accent/30 cursor-not-allowed'
+                    : 'bg-accent/80 md:hover:bg-accent'
+                } text-text border border-border transition-colors duration-200`}
               >
                 {selectedPeopleIds.length === 0
                   ? "0/3 selected"
@@ -570,13 +579,15 @@ function RecommendationsContent() {
             <div className="space-y-2">
               <div className="grid grid-cols-2 gap-2 mt-4">
                 {books && gridItems(books, 'books').map((book) => (
-                  <button
+                  <div
                     key={book.id}
                     onClick={() => handleBookSelect(book)}
-                    className={`p-3 border border-border cursor-pointer md:hover:bg-accent/50 transition-colors duration-200 whitespace-pre-line line-clamp-2 ${selectedBookIds.includes(book.id) ? 'bg-accent' : ''}`}
+                    className={`p-3 cursor-pointer border border-border transition-colors duration-200 whitespace-pre-line line-clamp-2 ${
+                      selectedBookIds.includes(book.id) ? 'bg-accent hover:bg-accent/50' : 'bg-background hover:bg-accent/30'
+                    }`}
                   >
                     {book.title} by {book.author}
-                  </button>
+                  </div>
                 ))}
               </div>
             </div>
@@ -620,7 +631,11 @@ function RecommendationsContent() {
               <button
                 onClick={getRecommendations}
                 disabled={loading || !selectedBookIds.length}
-                className="w-full p-3 bg-accent text-text border border-border md:hover:bg-accent/50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                className={`w-full p-3 ${
+                  loading || !selectedBookIds.length
+                    ? 'bg-accent/30 cursor-not-allowed'
+                    : 'bg-accent/80 md:hover:bg-accent'
+                } text-text border border-border transition-colors duration-200`}
               >
                 {loading
                   ? "Getting Recommendations..."
@@ -702,7 +717,7 @@ function RecommendationsContent() {
                 localStorage.removeItem('selectedBookIds');
                 localStorage.removeItem('recommendations');
               }}
-              className="w-full p-3 bg-accent text-text border border-border md:hover:bg-accent/50 transition-colors duration-200"
+              className="w-full p-3 bg-accent/80 text-text border border-border md:hover:bg-accent transition-colors duration-200"
             >
               Start Over
             </button>
