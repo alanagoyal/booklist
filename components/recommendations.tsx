@@ -183,11 +183,11 @@ function RecommendationsContent() {
 
   // Only fetch data when needed
   const { data: books } = useSWR<Book[]>(
-    step !== undefined && step >= 3 ? "/data/books-essential.json" : null,
+    step !== undefined ? "/data/books-essential.json" : null,
     fetcher
   );
   const { data: recommenders } = useSWR<FormattedRecommender[]>(
-    step !== undefined && step >= 3 ? "/data/recommenders.json" : null,
+    step !== undefined ? "/data/recommenders.json" : null,
     fetchRecommenders
   );
 
@@ -381,16 +381,6 @@ function RecommendationsContent() {
     if (!isInitialized || step === undefined) {
       return null;
     }
-    // Add loading states for steps that need data
-    if (step >= 3 && step <= 4) {
-      if (!books || !recommenders) {
-        return (
-          <div className="space-y-4">
-            <h2 className="text-xl font-base">Loading...</h2>
-          </div>
-        );
-      }
-    }
 
     switch (step) {
       case 1:
@@ -491,12 +481,12 @@ function RecommendationsContent() {
 
       case 3:
         console.log('First 12 people:', recommenders?.slice(0, 12))
-        if (!recommenders) return <div>Loading...</div>;
+        if (!recommenders) return null;
 
         return (
           <div className="space-y-4">
             <h2 className="text-xl font-base">
-              Who inspires you? (Choose up to 3)
+              Whose reading tastes do you admire?
             </h2>
             <div className="space-y-2">
               <div className="grid grid-cols-2 gap-2 mt-4">
@@ -570,12 +560,12 @@ function RecommendationsContent() {
 
       case 4:
         console.log('First 12 books:', books?.slice(0, 12))
-        if (!books) return <div>Loading...</div>;
+        if (!books) return null;
 
         return (
           <div className="space-y-4">
             <h2 className="text-xl font-base">
-              What are your favorite books? (Choose up to 3)
+              What books are exemplary of your reading taste?
             </h2>
             <div className="space-y-2">
               <div className="grid grid-cols-2 gap-2 mt-4">
