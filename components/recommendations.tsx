@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  useState,
-  useCallback,
-  useEffect,
-  Suspense,
-} from "react";
+import { useState, useCallback, useEffect, Suspense } from "react";
 import { SearchInput } from "./search-input";
 import { supabase } from "@/utils/supabase/client";
 import { FIELD_VALUES } from "@/utils/constants";
@@ -59,7 +54,13 @@ interface SearchDropdownProps {
   selectedIndex: number;
 }
 
-function SearchDropdown({ results, onSelect, isOpen, loading, selectedIndex }: SearchDropdownProps) {
+function SearchDropdown({
+  results,
+  onSelect,
+  isOpen,
+  loading,
+  selectedIndex,
+}: SearchDropdownProps) {
   if (!isOpen) return null;
 
   const sortedResults = [...results].sort((a, b) => {
@@ -79,10 +80,14 @@ function SearchDropdown({ results, onSelect, isOpen, loading, selectedIndex }: S
             key={result.id}
             onClick={() => onSelect(result)}
             className={`p-3 cursor-pointer transition-colors duration-200 ${
-              index === selectedIndex ? 'bg-accent hover:bg-accent/50' : 'bg-background hover:bg-accent/30'
+              index === selectedIndex
+                ? "bg-accent/70 hover:bg-accent"
+                : "bg-background hover:bg-accent/50"
             }`}
           >
-            <div className="text-text whitespace-pre-line line-clamp-2">{result.name}</div>
+            <div className="text-text whitespace-pre-line line-clamp-2">
+              {result.name}
+            </div>
           </div>
         ))
       )}
@@ -96,7 +101,7 @@ function RecommendationsContent() {
 
   // Initialize with undefined to prevent flash of step 1
   const [step, setStep] = useState<number>();
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
@@ -114,28 +119,28 @@ function RecommendationsContent() {
 
   // Initialize state from localStorage and update URL on mount
   useEffect(() => {
-    if (typeof window === 'undefined' || isInitialized) return;
+    if (typeof window === "undefined" || isInitialized) return;
 
     // Load saved state
-    const savedUserType = localStorage.getItem('userType');
-    const savedGenres = localStorage.getItem('selectedGenres');
-    const savedPeopleIds = localStorage.getItem('selectedPeopleIds');
-    const savedBookIds = localStorage.getItem('selectedBookIds');
-    const savedRecommendations = localStorage.getItem('recommendations');
+    const savedUserType = localStorage.getItem("userType");
+    const savedGenres = localStorage.getItem("selectedGenres");
+    const savedPeopleIds = localStorage.getItem("selectedPeopleIds");
+    const savedBookIds = localStorage.getItem("selectedBookIds");
+    const savedRecommendations = localStorage.getItem("recommendations");
 
     // Initialize state from localStorage
     if (savedUserType) setUserType(savedUserType);
     if (savedGenres) setSelectedGenres(JSON.parse(savedGenres));
     if (savedPeopleIds) setSelectedPeopleIds(JSON.parse(savedPeopleIds));
     if (savedBookIds) setSelectedBookIds(JSON.parse(savedBookIds));
-    
+
     // Check for recommendations last
     if (savedRecommendations) {
       setRecommendations(JSON.parse(savedRecommendations));
       setStep(5);
     } else {
       // If no recommendations, check URL for step
-      const urlStep = searchParams.get('step');
+      const urlStep = searchParams.get("step");
       setStep(urlStep ? parseInt(urlStep) : 1);
     }
 
@@ -146,44 +151,54 @@ function RecommendationsContent() {
   useEffect(() => {
     if (!isInitialized || step === undefined) return;
     const params = new URLSearchParams(window.location.search);
-    params.set('step', step.toString());
+    params.set("step", step.toString());
     router.replace(`?${params.toString()}`);
   }, [step, router, isInitialized]);
 
   // Save form state to localStorage
   useEffect(() => {
     if (!isInitialized) return;
-    
+
     if (userType) {
-      localStorage.setItem('userType', userType);
+      localStorage.setItem("userType", userType);
     } else {
-      localStorage.removeItem('userType');
+      localStorage.removeItem("userType");
     }
 
     if (selectedGenres.length) {
-      localStorage.setItem('selectedGenres', JSON.stringify(selectedGenres));
+      localStorage.setItem("selectedGenres", JSON.stringify(selectedGenres));
     } else {
-      localStorage.removeItem('selectedGenres');
+      localStorage.removeItem("selectedGenres");
     }
 
     if (selectedPeopleIds.length) {
-      localStorage.setItem('selectedPeopleIds', JSON.stringify(selectedPeopleIds));
+      localStorage.setItem(
+        "selectedPeopleIds",
+        JSON.stringify(selectedPeopleIds)
+      );
     } else {
-      localStorage.removeItem('selectedPeopleIds');
+      localStorage.removeItem("selectedPeopleIds");
     }
 
     if (selectedBookIds.length) {
-      localStorage.setItem('selectedBookIds', JSON.stringify(selectedBookIds));
+      localStorage.setItem("selectedBookIds", JSON.stringify(selectedBookIds));
     } else {
-      localStorage.removeItem('selectedBookIds');
+      localStorage.removeItem("selectedBookIds");
     }
 
     if (recommendations.length) {
-      localStorage.setItem('recommendations', JSON.stringify(recommendations));
+      localStorage.setItem("recommendations", JSON.stringify(recommendations));
     } else {
-      localStorage.removeItem('recommendations');
+      localStorage.removeItem("recommendations");
     }
-  }, [userType, selectedGenres, selectedPeopleIds, selectedBookIds, recommendations, isInitialized]);
+  }, [
+    userType,
+    selectedGenres,
+    selectedPeopleIds,
+    selectedBookIds,
+    recommendations,
+    isInitialized,
+  ]);
 
   // Only fetch data when needed
   const { data: books } = useSWR<Book[]>(
@@ -211,9 +226,11 @@ function RecommendationsContent() {
   }, []);
 
   const gridItems = useCallback(
-    (items: any[], type: 'people' | 'books') => {
+    (items: any[], type: "people" | "books") => {
       const baseItems = items.slice(0, 10);
-      const extraItems = items.filter(item => extraGridItems.includes(item.id));
+      const extraItems = items.filter((item) =>
+        extraGridItems.includes(item.id)
+      );
       return [...baseItems, ...extraItems];
     },
     [extraGridItems]
@@ -232,41 +249,49 @@ function RecommendationsContent() {
       }
 
       const lowerQuery = query.toLowerCase();
-      
+
       if (step === 3 && recommenders) {
-        const gridPeopleIds = gridItems(recommenders, 'people').map(p => p.id);
-        const results = Array.from(new Map(
-          recommenders
-            .filter(person => 
-              person.full_name.toLowerCase().includes(lowerQuery) ||
-              (person.type?.toLowerCase() || '').includes(lowerQuery)
-            )
-            .map(person => ({
-              id: person.id,
-              name: `${person.full_name}${person.type ? ` (${person.type})` : ''}`,
-              isInGrid: gridPeopleIds.includes(person.id)
-            }))
-            .map(result => [result.id, result])
-        ).values());
+        const gridPeopleIds = gridItems(recommenders, "people").map(
+          (p) => p.id
+        );
+        const results = Array.from(
+          new Map(
+            recommenders
+              .filter(
+                (person) =>
+                  person.full_name.toLowerCase().includes(lowerQuery) ||
+                  (person.type?.toLowerCase() || "").includes(lowerQuery)
+              )
+              .map((person) => ({
+                id: person.id,
+                name: `${person.full_name}${person.type ? ` (${person.type})` : ""}`,
+                isInGrid: gridPeopleIds.includes(person.id),
+              }))
+              .map((result) => [result.id, result])
+          ).values()
+        );
         setSearchResults(results);
       } else if (step === 4 && books) {
-        const gridBookIds = gridItems(books, 'books').map(b => b.id);
-        const results = Array.from(new Map(
-          books
-            .filter(book => 
-              book.title.toLowerCase().includes(lowerQuery) ||
-              book.author.toLowerCase().includes(lowerQuery)
-            )
-            .map(book => ({
-              id: book.id,
-              name: `${book.title} by ${book.author}`,
-              isInGrid: gridBookIds.includes(book.id)
-            }))
-            .map(result => [result.id, result])
-        ).values());
+        const gridBookIds = gridItems(books, "books").map((b) => b.id);
+        const results = Array.from(
+          new Map(
+            books
+              .filter(
+                (book) =>
+                  book.title.toLowerCase().includes(lowerQuery) ||
+                  book.author.toLowerCase().includes(lowerQuery)
+              )
+              .map((book) => ({
+                id: book.id,
+                name: `${book.title} by ${book.author}`,
+                isInGrid: gridBookIds.includes(book.id),
+              }))
+              .map((result) => [result.id, result])
+          ).values()
+        );
         setSearchResults(results);
       }
-      
+
       setIsSearching(false);
     },
     [step, books, recommenders, gridItems]
@@ -278,32 +303,44 @@ function RecommendationsContent() {
   }, [searchQuery, handleSearch]);
 
   const handleSearchResultSelect = (result: SearchResult) => {
-    setSearchQuery(''); // Close dropdown
-    
+    setSearchQuery(""); // Close dropdown
+
     if (step === 3 && recommenders) {
-      const gridPeople = gridItems(recommenders, 'people');
-      const isInFirstTen = gridPeople.slice(0, 10).some(p => p.id === result.id);
-      
+      const gridPeople = gridItems(recommenders, "people");
+      const isInFirstTen = gridPeople
+        .slice(0, 10)
+        .some((p) => p.id === result.id);
+
       if (!isInFirstTen && !extraGridItems.includes(result.id)) {
-        setExtraGridItems(prev => [...prev, result.id]);
+        setExtraGridItems((prev) => [...prev, result.id]);
       }
 
       // Select the person if not already selected
-      const person = recommenders.find(p => p.id === result.id);
-      if (person && !selectedPeopleIds.includes(result.id) && selectedPeopleIds.length < 3) {
+      const person = recommenders.find((p) => p.id === result.id);
+      if (
+        person &&
+        !selectedPeopleIds.includes(result.id) &&
+        selectedPeopleIds.length < 3
+      ) {
         handlePersonSelect(person);
       }
     } else if (step === 4 && books) {
-      const gridBooks = gridItems(books, 'books');
-      const isInFirstTen = gridBooks.slice(0, 10).some(b => b.id === result.id);
-      
+      const gridBooks = gridItems(books, "books");
+      const isInFirstTen = gridBooks
+        .slice(0, 10)
+        .some((b) => b.id === result.id);
+
       if (!isInFirstTen && !extraGridItems.includes(result.id)) {
-        setExtraGridItems(prev => [...prev, result.id]);
+        setExtraGridItems((prev) => [...prev, result.id]);
       }
 
       // Select the book if not already selected
-      const book = books.find(b => b.id === result.id);
-      if (book && !selectedBookIds.includes(result.id) && selectedBookIds.length < 3) {
+      const book = books.find((b) => b.id === result.id);
+      if (
+        book &&
+        !selectedBookIds.includes(result.id) &&
+        selectedBookIds.length < 3
+      ) {
         handleBookSelect(book);
       }
     }
@@ -395,16 +432,18 @@ function RecommendationsContent() {
                 {FIELD_VALUES.type
                   .slice(0, showAllTypes ? undefined : 10)
                   .map((type) => (
-                  <div
-                    key={type}
-                    onClick={() => setUserType(type)}
-                    className={`p-3 cursor-pointer border border-border transition-colors duration-200 whitespace-pre-line line-clamp-2 ${
-                      type === userType ? 'bg-accent hover:bg-accent/50' : 'bg-background hover:bg-accent/30'
-                    }`}
-                  >
-                    {type}
-                  </div>
-                ))}
+                    <div
+                      key={type}
+                      onClick={() => setUserType(type)}
+                      className={`p-3 cursor-pointer border border-border transition-colors duration-200 whitespace-pre-line line-clamp-2 ${
+                        type === userType
+                          ? "bg-accent/70 hover:bg-accent"
+                          : "bg-background hover:bg-accent/50"
+                      }`}
+                    >
+                      {type}
+                    </div>
+                  ))}
               </div>
               {FIELD_VALUES.type.length > 10 && (
                 <button
@@ -421,8 +460,8 @@ function RecommendationsContent() {
                 disabled={!userType}
                 className={`w-full p-3 ${
                   !userType
-                    ? 'bg-accent/30 cursor-not-allowed'
-                    : 'bg-accent/80 md:hover:bg-accent'
+                    ? "bg-accent/30 cursor-not-allowed"
+                    : "bg-accent/50 hover:bg-accent"
                 } text-text border border-border transition-colors duration-200`}
               >
                 {userType ? "Next (1/1 selected)" : "0/1 selected"}
@@ -444,7 +483,9 @@ function RecommendationsContent() {
                       key={genre}
                       onClick={() => handleGenreToggle(genre)}
                       className={`p-3 cursor-pointer border border-border transition-colors duration-200 whitespace-pre-line line-clamp-2 ${
-                        selectedGenres.includes(genre) ? 'bg-accent hover:bg-accent/50' : 'bg-background hover:bg-accent/30'
+                        selectedGenres.includes(genre)
+                          ? "bg-accent/70 hover:bg-accent"
+                          : "bg-background hover:bg-accent/50"
                       }`}
                     >
                       {genre}
@@ -468,8 +509,8 @@ function RecommendationsContent() {
                 disabled={selectedGenres.length === 0}
                 className={`w-full p-3 ${
                   selectedGenres.length === 0
-                    ? 'bg-accent/30 cursor-not-allowed'
-                    : 'bg-accent/80 md:hover:bg-accent'
+                    ? "bg-accent/30 cursor-not-allowed"
+                    : "bg-accent/50 hover:bg-accent"
                 } text-text border border-border transition-colors duration-200`}
               >
                 {selectedGenres.length === 0
@@ -487,7 +528,7 @@ function RecommendationsContent() {
         );
 
       case 3:
-        console.log('First 12 people:', recommenders?.slice(0, 12))
+        console.log("First 12 people:", recommenders?.slice(0, 12));
         if (!recommenders) return null;
 
         return (
@@ -497,18 +538,21 @@ function RecommendationsContent() {
             </h2>
             <div className="space-y-2">
               <div className="grid grid-cols-2 gap-2 mt-4">
-                {recommenders && gridItems(recommenders, 'people').map((person) => (
-                  <div
-                    key={person.id}
-                    onClick={() => handlePersonSelect(person)}
-                    className={`p-3 cursor-pointer border border-border transition-colors duration-200 whitespace-pre-line line-clamp-2 ${
-                      selectedPeopleIds.includes(person.id) ? 'bg-accent hover:bg-accent/50' : 'bg-background hover:bg-accent/30'
-                    }`}
-                  >
-                    {person.full_name}
-                    {person.type ? ` (${person.type})` : ""}
-                  </div>
-                ))}
+                {recommenders &&
+                  gridItems(recommenders, "people").map((person) => (
+                    <div
+                      key={person.id}
+                      onClick={() => handlePersonSelect(person)}
+                      className={`p-3 cursor-pointer border border-border transition-colors duration-200 whitespace-pre-line line-clamp-2 ${
+                        selectedPeopleIds.includes(person.id)
+                          ? "bg-accent/70 hover:bg-accent"
+                          : "bg-background hover:bg-accent/50"
+                      }`}
+                    >
+                      {person.full_name}
+                      {person.type ? ` (${person.type})` : ""}
+                    </div>
+                  ))}
               </div>
             </div>
             <div className="relative">
@@ -516,7 +560,7 @@ function RecommendationsContent() {
                 value={searchQuery}
                 onChange={handleSearch}
                 onClear={() => {
-                  setSearchQuery('');
+                  setSearchQuery("");
                   setSearchResults([]);
                   setIsSearching(false);
                   setSelectedIndex(-1);
@@ -524,16 +568,16 @@ function RecommendationsContent() {
                 placeholder="Search for more people..."
                 onKeyDown={(e) => {
                   if (searchResults.length === 0) return;
-                  
-                  if (e.key === 'ArrowDown') {
+
+                  if (e.key === "ArrowDown") {
                     e.preventDefault();
-                    setSelectedIndex(prev => 
+                    setSelectedIndex((prev) =>
                       prev < searchResults.length - 1 ? prev + 1 : prev
                     );
-                  } else if (e.key === 'ArrowUp') {
+                  } else if (e.key === "ArrowUp") {
                     e.preventDefault();
-                    setSelectedIndex(prev => prev > 0 ? prev - 1 : prev);
-                  } else if (e.key === 'Enter' && selectedIndex >= 0) {
+                    setSelectedIndex((prev) => (prev > 0 ? prev - 1 : prev));
+                  } else if (e.key === "Enter" && selectedIndex >= 0) {
                     e.preventDefault();
                     handleSearchResultSelect(searchResults[selectedIndex]);
                   }
@@ -553,8 +597,8 @@ function RecommendationsContent() {
                 disabled={!selectedPeopleIds.length}
                 className={`w-full p-3 ${
                   !selectedPeopleIds.length
-                    ? 'bg-accent/30 cursor-not-allowed'
-                    : 'bg-accent/80 md:hover:bg-accent'
+                    ? "bg-accent/30 cursor-not-allowed"
+                    : "bg-accent/50 hover:bg-accent"
                 } text-text border border-border transition-colors duration-200`}
               >
                 {selectedPeopleIds.length === 0
@@ -572,7 +616,7 @@ function RecommendationsContent() {
         );
 
       case 4:
-        console.log('First 12 books:', books?.slice(0, 12))
+        console.log("First 12 books:", books?.slice(0, 12));
         if (!books) return null;
 
         return (
@@ -582,17 +626,20 @@ function RecommendationsContent() {
             </h2>
             <div className="space-y-2">
               <div className="grid grid-cols-2 gap-2 mt-4">
-                {books && gridItems(books, 'books').map((book) => (
-                  <div
-                    key={book.id}
-                    onClick={() => handleBookSelect(book)}
-                    className={`p-3 cursor-pointer border border-border transition-colors duration-200 whitespace-pre-line line-clamp-2 ${
-                      selectedBookIds.includes(book.id) ? 'bg-accent hover:bg-accent/50' : 'bg-background hover:bg-accent/30'
-                    }`}
-                  >
-                    {book.title} by {book.author}
-                  </div>
-                ))}
+                {books &&
+                  gridItems(books, "books").map((book) => (
+                    <div
+                      key={book.id}
+                      onClick={() => handleBookSelect(book)}
+                      className={`p-3 cursor-pointer border border-border transition-colors duration-200 whitespace-pre-line line-clamp-2 ${
+                        selectedBookIds.includes(book.id)
+                          ? "bg-accent/70 hover:bg-accent"
+                          : "bg-background hover:bg-accent/50"
+                      }`}
+                    >
+                      {book.title} by {book.author}
+                    </div>
+                  ))}
               </div>
             </div>
             <div className="relative">
@@ -600,7 +647,7 @@ function RecommendationsContent() {
                 value={searchQuery}
                 onChange={handleSearch}
                 onClear={() => {
-                  setSearchQuery('');
+                  setSearchQuery("");
                   setSearchResults([]);
                   setIsSearching(false);
                   setSelectedIndex(-1);
@@ -608,16 +655,16 @@ function RecommendationsContent() {
                 placeholder="Search for more books..."
                 onKeyDown={(e) => {
                   if (searchResults.length === 0) return;
-                  
-                  if (e.key === 'ArrowDown') {
+
+                  if (e.key === "ArrowDown") {
                     e.preventDefault();
-                    setSelectedIndex(prev => 
+                    setSelectedIndex((prev) =>
                       prev < searchResults.length - 1 ? prev + 1 : prev
                     );
-                  } else if (e.key === 'ArrowUp') {
+                  } else if (e.key === "ArrowUp") {
                     e.preventDefault();
-                    setSelectedIndex(prev => prev > 0 ? prev - 1 : prev);
-                  } else if (e.key === 'Enter' && selectedIndex >= 0) {
+                    setSelectedIndex((prev) => (prev > 0 ? prev - 1 : prev));
+                  } else if (e.key === "Enter" && selectedIndex >= 0) {
                     e.preventDefault();
                     handleSearchResultSelect(searchResults[selectedIndex]);
                   }
@@ -637,15 +684,15 @@ function RecommendationsContent() {
                 disabled={loading || !selectedBookIds.length}
                 className={`w-full p-3 ${
                   loading || !selectedBookIds.length
-                    ? 'bg-accent/30 cursor-not-allowed'
-                    : 'bg-accent/80 md:hover:bg-accent'
+                    ? "bg-accent/30 cursor-not-allowed"
+                    : "bg-accent/50 hover:bg-accent"
                 } text-text border border-border transition-colors duration-200`}
               >
                 {loading
                   ? "Getting Recommendations..."
                   : selectedBookIds.length === 0
-                  ? "0/3 selected"
-                  : `Get Recommendations (${selectedBookIds.length}/3 selected)`}
+                    ? "0/3 selected"
+                    : `Get Recommendations (${selectedBookIds.length}/3 selected)`}
               </button>
               <button
                 onClick={() => setStep(step - 1)}
@@ -659,25 +706,53 @@ function RecommendationsContent() {
 
       case 5:
         return (
-          <div className="space-y-4">
-            <h2 className="text-xl font-base">
-              Your Personalized Recommendations
-            </h2>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-base">
+                Your Personalized Recommendations
+              </h2>
+              <button
+                onClick={() => {
+                  // Clear all form state and localStorage
+                  setStep(1);
+                  setUserType(null);
+                  setSelectedGenres([]);
+                  setSelectedPeopleIds([]);
+                  setSelectedBookIds([]);
+                  setRecommendations([]);
+                  setCurrentCardIndex(0);
+                  localStorage.removeItem("userType");
+                  localStorage.removeItem("selectedGenres");
+                  localStorage.removeItem("selectedPeopleIds");
+                  localStorage.removeItem("selectedBookIds");
+                  localStorage.removeItem("recommendations");
+                }}
+                className="p-2 text-text/70 md:hover:text-text transition-colors duration-200"
+              >
+                Redo Recommendations
+              </button>
+            </div>
             <div className="space-y-4">
               {recommendations.length > 0 && (
                 <>
                   <div className="flex flex-col space-y-4">
                     <div className="bg-background border border-border">
-                      <div className="h-[450px] overflow-y-auto p-8">
+                      <div className="h-[500px] overflow-y-auto p-8">
                         <div className="space-y-4">
                           {/* Title and Author */}
-                          <h1 
-                            onClick={() => handleBookClick(recommendations[currentCardIndex].id)}
+                          <h1
+                            onClick={() =>
+                              handleBookClick(
+                                recommendations[currentCardIndex].id
+                              )
+                            }
                             className="text-2xl font-base text-text cursor-pointer md:hover:underline transition-colors duration-200"
                           >
                             {recommendations[currentCardIndex].title}
                           </h1>
-                          <p className="text-text/70 text-lg">{recommendations[currentCardIndex].author}</p>
+                          <p className="text-text/70 text-lg">
+                            {recommendations[currentCardIndex].author}
+                          </p>
 
                           {/* Book metadata */}
                           <div className="flex justify-between items-center">
@@ -685,8 +760,12 @@ function RecommendationsContent() {
                               <div className="flex items-center gap-2 text-text">
                                 <Tag className="w-4 h-4 text-text/70" />
                                 <span>
-                                  {Array.isArray(recommendations[currentCardIndex].genres)
-                                    ? recommendations[currentCardIndex].genres.join(", ")
+                                  {Array.isArray(
+                                    recommendations[currentCardIndex].genres
+                                  )
+                                    ? recommendations[
+                                        currentCardIndex
+                                      ].genres.join(", ")
                                     : recommendations[currentCardIndex].genres}
                                 </span>
                               </div>
@@ -695,7 +774,9 @@ function RecommendationsContent() {
                               <div className="flex items-center gap-2">
                                 <Link className="w-4 h-4 text-text/70" />
                                 <a
-                                  href={recommendations[currentCardIndex].amazon_url}
+                                  href={
+                                    recommendations[currentCardIndex].amazon_url
+                                  }
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   className="text-text transition-colors duration-200 hover:underline"
@@ -709,7 +790,9 @@ function RecommendationsContent() {
                           {/* Book description */}
                           {recommendations[currentCardIndex].description && (
                             <div className="space-y-2">
-                              <h2 className="text-base text-text font-bold">About</h2>
+                              <h2 className="text-base text-text font-bold">
+                                About
+                              </h2>
                               <p className="text-text whitespace-pre-line leading-relaxed">
                                 {recommendations[currentCardIndex].description}
                               </p>
@@ -718,36 +801,54 @@ function RecommendationsContent() {
 
                           {/* Recommendation reasons */}
                           <div className="space-y-2">
-                            <h2 className="text-base text-text font-bold">Why we recommend this</h2>
+                            <h2 className="text-base text-text font-bold">
+                              Why we recommend this
+                            </h2>
                             <div className="space-y-2">
-                              {recommendations[currentCardIndex].match_reasons.similar_to_favorites && (
+                              {recommendations[currentCardIndex].match_reasons
+                                .similar_to_favorites && (
                                 <div className="flex items-start gap-3 bg-accent/50 p-2">
                                   <BookOpen className="w-5 h-5 mt-0.5 text-text/70 shrink-0" />
-                                  <span className="text-text">Similar to your favorite books</span>
+                                  <span className="text-text">
+                                    Similar to your favorite books
+                                  </span>
                                 </div>
                               )}
-                              {recommendations[currentCardIndex].match_reasons.recommended_by_inspiration && (
+                              {recommendations[currentCardIndex].match_reasons
+                                .recommended_by_inspiration && (
                                 <div className="flex items-start gap-3 bg-accent/50 p-2">
                                   <User className="w-5 h-5 mt-0.5 text-text/70 shrink-0" />
-                                  <span className="text-text">Recommended by people who inspire you</span>
+                                  <span className="text-text">
+                                    Recommended by people who inspire you
+                                  </span>
                                 </div>
                               )}
-                              {recommendations[currentCardIndex].match_reasons.recommended_by_similar_people && (
+                              {recommendations[currentCardIndex].match_reasons
+                                .recommended_by_similar_people && (
                                 <div className="flex items-start gap-3 bg-accent/50 p-2">
                                   <User className="w-5 h-5 mt-0.5 text-text/70 shrink-0" />
-                                  <span className="text-text">Recommended by people similar to your inspirations</span>
+                                  <span className="text-text">
+                                    Recommended by people similar to your
+                                    inspirations
+                                  </span>
                                 </div>
                               )}
-                              {recommendations[currentCardIndex].match_reasons.genre_match && (
+                              {recommendations[currentCardIndex].match_reasons
+                                .genre_match && (
                                 <div className="flex items-start gap-3 bg-accent/50 p-2">
                                   <Tag className="w-5 h-5 mt-0.5 text-text/70 shrink-0" />
-                                  <span className="text-text">Matches your preferred genres</span>
+                                  <span className="text-text">
+                                    Matches your preferred genres
+                                  </span>
                                 </div>
                               )}
-                              {recommendations[currentCardIndex].match_reasons.recommended_by_similar_type && (
+                              {recommendations[currentCardIndex].match_reasons
+                                .recommended_by_similar_type && (
                                 <div className="flex items-start gap-3 bg-accent/50 p-2">
                                   <User className="w-5 h-5 mt-0.5 text-text/70 shrink-0" />
-                                  <span className="text-text">Popular among {userType}s</span>
+                                  <span className="text-text">
+                                    Popular among {userType}s
+                                  </span>
                                 </div>
                               )}
                             </div>
@@ -757,23 +858,31 @@ function RecommendationsContent() {
                     </div>
                     <div className="flex justify-between space-x-2">
                       <button
-                        onClick={() => setCurrentCardIndex(prev => Math.max(0, prev - 1))}
+                        onClick={() =>
+                          setCurrentCardIndex((prev) => Math.max(0, prev - 1))
+                        }
                         disabled={currentCardIndex === 0}
                         className={`flex-1 p-3 border border-border transition-colors duration-200 ${
                           currentCardIndex === 0
-                            ? 'bg-accent/30 cursor-not-allowed'
-                            : 'bg-accent/80 md:hover:bg-accent'
+                            ? "bg-accent/30 cursor-not-allowed"
+                            : "bg-accent/50 hover:bg-accent"
                         } text-text`}
                       >
                         Previous
                       </button>
                       <button
-                        onClick={() => setCurrentCardIndex(prev => Math.min(recommendations.length - 1, prev + 1))}
-                        disabled={currentCardIndex === recommendations.length - 1}
+                        onClick={() =>
+                          setCurrentCardIndex((prev) =>
+                            Math.min(recommendations.length - 1, prev + 1)
+                          )
+                        }
+                        disabled={
+                          currentCardIndex === recommendations.length - 1
+                        }
                         className={`flex-1 p-3 border border-border transition-colors duration-200 ${
                           currentCardIndex === recommendations.length - 1
-                            ? 'bg-accent/30 cursor-not-allowed'
-                            : 'bg-accent/80 md:hover:bg-accent'
+                            ? "bg-accent/30 cursor-not-allowed"
+                            : "bg-accent/50 hover:bg-accent"
                         } text-text`}
                       >
                         Next
@@ -786,26 +895,6 @@ function RecommendationsContent() {
                 </>
               )}
             </div>
-            <button
-              onClick={() => {
-                // Clear all form state and localStorage
-                setStep(1);
-                setUserType(null);
-                setSelectedGenres([]);
-                setSelectedPeopleIds([]);
-                setSelectedBookIds([]);
-                setRecommendations([]);
-                setCurrentCardIndex(0);
-                localStorage.removeItem('userType');
-                localStorage.removeItem('selectedGenres');
-                localStorage.removeItem('selectedPeopleIds');
-                localStorage.removeItem('selectedBookIds');
-                localStorage.removeItem('recommendations');
-              }}
-              className="w-full p-3 bg-accent/80 text-text border border-border md:hover:bg-accent transition-colors duration-200"
-            >
-              Start Over
-            </button>
           </div>
         );
 
