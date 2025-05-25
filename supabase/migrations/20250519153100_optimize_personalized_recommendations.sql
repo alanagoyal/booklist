@@ -28,6 +28,8 @@ RETURNS TABLE (
     title text,
     author text,
     description text,
+    genres text[],
+    amazon_url text,
     score float,
     match_reasons jsonb
 )
@@ -44,6 +46,8 @@ BEGIN
             b.title AS title,
             b.author AS author,
             b.description AS description,
+            b.genre AS genres,
+            b.amazon_url AS amazon_url,
             1.0      AS score,
             true     AS from_inspiration,
             false    AS from_similar_people,
@@ -80,6 +84,8 @@ BEGIN
             b.title AS title,
             b.author AS author,
             b.description AS description,
+            b.genre AS genres,
+            b.amazon_url AS amazon_url,
             0.5      AS score,
             false    AS from_inspiration,
             true     AS from_similar_people,
@@ -99,6 +105,8 @@ BEGIN
             b2.title,
             b2.author,
             b2.description,
+            b2.genres,
+            b2.amazon_url,
             0.8 * (1 - (b2.description_embedding <=> b2.fav_embedding)) AS score,
             false    AS from_inspiration,
             false    AS from_similar_people,
@@ -111,6 +119,8 @@ BEGIN
                 b2.title,
                 b2.author,
                 b2.description,
+                b2.genre AS genres,
+                b2.amazon_url,
                 b2.description_embedding,
                 fav.description_embedding as fav_embedding
             FROM books fav,
@@ -120,6 +130,8 @@ BEGIN
                     b2.title,
                     b2.author,
                     b2.description,
+                    b2.genre,
+                    b2.amazon_url,
                     b2.description_embedding
                 FROM books b2
                 WHERE b2.id <> fav.id
@@ -139,6 +151,8 @@ BEGIN
             b.title AS title,
             b.author AS author,
             b.description AS description,
+            b.genre AS genres,
+            b.amazon_url AS amazon_url,
             0.6 * (
                 array_length(ARRAY(
                     SELECT UNNEST(b.genre)
@@ -164,6 +178,8 @@ BEGIN
             b.title AS title,
             b.author AS author,
             b.description AS description,
+            b.genre AS genres,
+            b.amazon_url AS amazon_url,
             0.4      AS score,
             false    AS from_inspiration,
             false    AS from_similar_people,
@@ -194,6 +210,8 @@ BEGIN
         MAX(ac.title)                   AS title,
         MAX(ac.author)                  AS author,
         MAX(ac.description)             AS description,
+        MAX(ac.genres)                  AS genres,
+        MAX(ac.amazon_url)              AS amazon_url,
         SUM(ac.score)::float            AS score,
         jsonb_build_object(
             'recommended_by_inspiration', bool_or(ac.from_inspiration),

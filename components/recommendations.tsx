@@ -13,6 +13,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import type { Book, FormattedRecommender } from "@/types";
 import useSWR from "swr";
 import fetcher, { fetchRecommenders } from "../utils/fetcher";
+import { BookOpen, Link, Tag, User } from "lucide-react";
 
 interface SearchResult {
   id: string;
@@ -31,6 +32,8 @@ interface SearchDropdownProps {
 
 interface RecommendedBook extends Book {
   score: number;
+  genres?: string[] | string;
+  amazon_url?: string;
   match_reasons: {
     similar_to_favorites: boolean;
     recommended_by_inspiration: boolean;
@@ -107,6 +110,7 @@ function RecommendationsContent() {
   const [extraGridItems, setExtraGridItems] = useState<string[]>([]);
   const [recommendations, setRecommendations] = useState<RecommendedBook[]>([]);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [currentCardIndex, setCurrentCardIndex] = useState(0);
 
   // Initialize state from localStorage and update URL on mount
   useEffect(() => {
@@ -660,47 +664,127 @@ function RecommendationsContent() {
               Your Personalized Recommendations
             </h2>
             <div className="space-y-4">
-              {recommendations.map((book) => (
-                <div
-                  key={book.id}
-                  className="p-4 border border-border space-y-2"
-                >
-                  <h3
-                    className="text-lg font-base cursor-pointer md:hover:underline transition-colors duration-200"
-                    onClick={() => handleBookClick(book.id)}
-                  >
-                    {book.title}
-                  </h3>
-                  <p className="text-text/70">{book.author}</p>
-                  {book.description && (
-                    <p className="text-text/70 whitespace-pre-line line-clamp-2">
-                      {book.description}
-                    </p>
-                  )}
-                  <div className="text-sm space-y-1">
-                    <p className="text-text/70">Recommended because:</p>
-                    <ul className="list-disc list-inside">
-                      {book.match_reasons.similar_to_favorites && (
-                        <li>Similar to your favorite books</li>
-                      )}
-                      {book.match_reasons.recommended_by_inspiration && (
-                        <li>Recommended by people who inspire you</li>
-                      )}
-                      {book.match_reasons.recommended_by_similar_people && (
-                        <li>
-                          Recommended by people similar to your inspirations
-                        </li>
-                      )}
-                      {book.match_reasons.genre_match && (
-                        <li>Matches your preferred genres</li>
-                      )}
-                      {book.match_reasons.recommended_by_similar_type && (
-                        <li>Popular among {userType}s</li>
-                      )}
-                    </ul>
+              {recommendations.length > 0 && (
+                <>
+                  <div className="flex flex-col space-y-4">
+                    <div className="bg-background border border-border">
+                      <div className="h-[450px] overflow-y-auto p-8">
+                        <div className="space-y-4">
+                          {/* Title and Author */}
+                          <h1 
+                            onClick={() => handleBookClick(recommendations[currentCardIndex].id)}
+                            className="text-2xl font-base text-text cursor-pointer md:hover:underline transition-colors duration-200"
+                          >
+                            {recommendations[currentCardIndex].title}
+                          </h1>
+                          <p className="text-text/70 text-lg">{recommendations[currentCardIndex].author}</p>
+
+                          {/* Book metadata */}
+                          <div className="flex justify-between items-center">
+                            {recommendations[currentCardIndex].genres && (
+                              <div className="flex items-center gap-2 text-text">
+                                <Tag className="w-4 h-4 text-text/70" />
+                                <span>
+                                  {Array.isArray(recommendations[currentCardIndex].genres)
+                                    ? recommendations[currentCardIndex].genres.join(", ")
+                                    : recommendations[currentCardIndex].genres}
+                                </span>
+                              </div>
+                            )}
+                            {recommendations[currentCardIndex].amazon_url && (
+                              <div className="flex items-center gap-2">
+                                <Link className="w-4 h-4 text-text/70" />
+                                <a
+                                  href={recommendations[currentCardIndex].amazon_url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-text transition-colors duration-200 hover:underline"
+                                >
+                                  View on Amazon
+                                </a>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Book description */}
+                          {recommendations[currentCardIndex].description && (
+                            <div className="space-y-2">
+                              <h2 className="text-base text-text font-bold">About</h2>
+                              <p className="text-text whitespace-pre-line leading-relaxed">
+                                {recommendations[currentCardIndex].description}
+                              </p>
+                            </div>
+                          )}
+
+                          {/* Recommendation reasons */}
+                          <div className="space-y-2">
+                            <h2 className="text-base text-text font-bold">Why we recommend this</h2>
+                            <div className="space-y-2">
+                              {recommendations[currentCardIndex].match_reasons.similar_to_favorites && (
+                                <div className="flex items-start gap-3 bg-accent/50 p-2">
+                                  <BookOpen className="w-5 h-5 mt-0.5 text-text/70 shrink-0" />
+                                  <span className="text-text">Similar to your favorite books</span>
+                                </div>
+                              )}
+                              {recommendations[currentCardIndex].match_reasons.recommended_by_inspiration && (
+                                <div className="flex items-start gap-3 bg-accent/50 p-2">
+                                  <User className="w-5 h-5 mt-0.5 text-text/70 shrink-0" />
+                                  <span className="text-text">Recommended by people who inspire you</span>
+                                </div>
+                              )}
+                              {recommendations[currentCardIndex].match_reasons.recommended_by_similar_people && (
+                                <div className="flex items-start gap-3 bg-accent/50 p-2">
+                                  <User className="w-5 h-5 mt-0.5 text-text/70 shrink-0" />
+                                  <span className="text-text">Recommended by people similar to your inspirations</span>
+                                </div>
+                              )}
+                              {recommendations[currentCardIndex].match_reasons.genre_match && (
+                                <div className="flex items-start gap-3 bg-accent/50 p-2">
+                                  <Tag className="w-5 h-5 mt-0.5 text-text/70 shrink-0" />
+                                  <span className="text-text">Matches your preferred genres</span>
+                                </div>
+                              )}
+                              {recommendations[currentCardIndex].match_reasons.recommended_by_similar_type && (
+                                <div className="flex items-start gap-3 bg-accent/50 p-2">
+                                  <User className="w-5 h-5 mt-0.5 text-text/70 shrink-0" />
+                                  <span className="text-text">Popular among {userType}s</span>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex justify-between space-x-2">
+                      <button
+                        onClick={() => setCurrentCardIndex(prev => Math.max(0, prev - 1))}
+                        disabled={currentCardIndex === 0}
+                        className={`flex-1 p-3 border border-border transition-colors duration-200 ${
+                          currentCardIndex === 0
+                            ? 'bg-accent/30 cursor-not-allowed'
+                            : 'bg-accent/80 md:hover:bg-accent'
+                        } text-text`}
+                      >
+                        Previous
+                      </button>
+                      <button
+                        onClick={() => setCurrentCardIndex(prev => Math.min(recommendations.length - 1, prev + 1))}
+                        disabled={currentCardIndex === recommendations.length - 1}
+                        className={`flex-1 p-3 border border-border transition-colors duration-200 ${
+                          currentCardIndex === recommendations.length - 1
+                            ? 'bg-accent/30 cursor-not-allowed'
+                            : 'bg-accent/80 md:hover:bg-accent'
+                        } text-text`}
+                      >
+                        Next
+                      </button>
+                    </div>
+                    <div className="text-center text-text/70">
+                      {currentCardIndex + 1} of {recommendations.length}
+                    </div>
                   </div>
-                </div>
-              ))}
+                </>
+              )}
             </div>
             <button
               onClick={() => {
@@ -711,6 +795,7 @@ function RecommendationsContent() {
                 setSelectedPeopleIds([]);
                 setSelectedBookIds([]);
                 setRecommendations([]);
+                setCurrentCardIndex(0);
                 localStorage.removeItem('userType');
                 localStorage.removeItem('selectedGenres');
                 localStorage.removeItem('selectedPeopleIds');
