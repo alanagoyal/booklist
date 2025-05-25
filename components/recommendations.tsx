@@ -127,12 +127,14 @@ function RecommendationsContent() {
     const savedPeopleIds = localStorage.getItem("selectedPeopleIds");
     const savedBookIds = localStorage.getItem("selectedBookIds");
     const savedRecommendations = localStorage.getItem("recommendations");
+    const savedCardIndex = localStorage.getItem("currentCardIndex");
 
     // Initialize state from localStorage
     if (savedUserType) setUserType(savedUserType);
     if (savedGenres) setSelectedGenres(JSON.parse(savedGenres));
     if (savedPeopleIds) setSelectedPeopleIds(JSON.parse(savedPeopleIds));
     if (savedBookIds) setSelectedBookIds(JSON.parse(savedBookIds));
+    if (savedCardIndex) setCurrentCardIndex(parseInt(savedCardIndex));
 
     // Check for recommendations last
     if (savedRecommendations) {
@@ -188,8 +190,10 @@ function RecommendationsContent() {
 
     if (recommendations.length) {
       localStorage.setItem("recommendations", JSON.stringify(recommendations));
+      localStorage.setItem("currentCardIndex", currentCardIndex.toString());
     } else {
       localStorage.removeItem("recommendations");
+      localStorage.removeItem("currentCardIndex");
     }
   }, [
     userType,
@@ -197,6 +201,7 @@ function RecommendationsContent() {
     selectedPeopleIds,
     selectedBookIds,
     recommendations,
+    currentCardIndex,
     isInitialized,
   ]);
 
@@ -726,6 +731,7 @@ function RecommendationsContent() {
                   localStorage.removeItem("selectedPeopleIds");
                   localStorage.removeItem("selectedBookIds");
                   localStorage.removeItem("recommendations");
+                  localStorage.removeItem("currentCardIndex");
                 }}
                 className="p-2 text-text/70 md:hover:text-text transition-colors duration-200"
               >
