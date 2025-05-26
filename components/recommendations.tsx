@@ -8,7 +8,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import type { Book, FormattedRecommender } from "@/types";
 import useSWR from "swr";
 import fetcher, { fetchRecommenders } from "../utils/fetcher";
-import { BookOpen, Link, Tag, User } from "lucide-react";
+import { ArrowLeftRight, BookOpen, Link, Tag, Undo, Undo2, User } from "lucide-react";
 
 interface SearchResult {
   id: string;
@@ -431,7 +431,20 @@ function RecommendationsContent() {
       case 1:
         return (
           <div className="space-y-4">
-            <h2 className="text-xl font-base">What is your profession?</h2>
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-0">
+              <h2 className="text-xl font-base">What is your profession?</h2>
+              <div className="flex justify-end gap-4">
+                <button
+                  onClick={() => setStep(2)}
+                  disabled={!userType}
+                  className={
+                    !userType ? "cursor-not-allowed" : "md:hover:underline"
+                  }
+                >
+                  {userType ? "Next (1/1 selected)" : "0/1 selected"}
+                </button>
+              </div>
+            </div>
             <div className="space-y-2">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                 {FIELD_VALUES.type
@@ -453,24 +466,11 @@ function RecommendationsContent() {
               {FIELD_VALUES.type.length > 10 && (
                 <button
                   onClick={() => setShowAllTypes(!showAllTypes)}
-                  className="w-full p-2 text-text/70 md:hover:text-text transition-colors duration-200"
+                  className="w-full p-2 text-text/70 md:hover:underline transition-colors duration-200"
                 >
                   {showAllTypes ? "Show less" : "Show more"}
                 </button>
               )}
-            </div>
-            <div className="space-y-2">
-              <button
-                onClick={() => setStep(2)}
-                disabled={!userType}
-                className={`w-full p-3 ${
-                  !userType
-                    ? "bg-accent/30 cursor-not-allowed"
-                    : "bg-accent/50 hover:bg-accent"
-                } text-text border border-border transition-colors duration-200`}
-              >
-                {userType ? "Next (1/1 selected)" : "0/1 selected"}
-              </button>
             </div>
           </div>
         );
@@ -478,7 +478,32 @@ function RecommendationsContent() {
       case 2:
         return (
           <div className="space-y-4">
-            <h2 className="text-xl font-base">What genres interest you?</h2>
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-0">
+              <h2 className="text-xl font-base">What genres interest you?</h2>
+              <div className="flex justify-between md:justify-end gap-4">
+                <button
+                  onClick={() => setStep(step - 1)}
+                  className="bg-background text-text/70 md:hover:underline transition-colors duration-200"
+                >
+                  Back
+                </button>
+                <button
+                  onClick={() => {
+                    setStep(3);
+                  }}
+                  disabled={selectedGenres.length === 0}
+                  className={
+                    selectedGenres.length === 0
+                      ? "cursor-not-allowed"
+                      : "md:hover:underline"
+                  }
+                >
+                  {selectedGenres.length === 0
+                    ? "0/3 selected"
+                    : `Next (${selectedGenres.length}/3 selected)`}
+                </button>
+              </div>
+            </div>
             <div className="space-y-2">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                 {FIELD_VALUES.genres
@@ -500,47 +525,46 @@ function RecommendationsContent() {
               {FIELD_VALUES.genres.length > 10 && (
                 <button
                   onClick={() => setShowAllGenres(!showAllGenres)}
-                  className="w-full p-2 text-text/70 md:hover:text-text transition-colors duration-200"
+                  className="w-full p-2 text-text/70 md:hover:underline transition-colors duration-200"
                 >
                   {showAllGenres ? "Show less" : "Show more"}
                 </button>
               )}
             </div>
-            <div className="space-y-2">
-              <button
-                onClick={() => {
-                  setStep(3);
-                }}
-                disabled={selectedGenres.length === 0}
-                className={`w-full p-3 ${
-                  selectedGenres.length === 0
-                    ? "bg-accent/30 cursor-not-allowed"
-                    : "bg-accent/50 hover:bg-accent"
-                } text-text border border-border transition-colors duration-200`}
-              >
-                {selectedGenres.length === 0
-                  ? "0/3 selected"
-                  : `Next (${selectedGenres.length}/3 selected)`}
-              </button>
-              <button
-                onClick={() => setStep(step - 1)}
-                className="w-full p-3 bg-background text-text/70 border border-border md:hover:bg-accent/30 transition-colors duration-200"
-              >
-                Back
-              </button>
-            </div>
           </div>
         );
 
       case 3:
-        console.log("First 12 people:", recommenders?.slice(0, 12));
         if (!recommenders) return null;
 
         return (
           <div className="space-y-4">
-            <h2 className="text-xl font-base">
-              Whose reading tastes do you admire?
-            </h2>
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-0">
+              <h2 className="text-xl font-base">
+                Whose reading tastes do you admire?
+              </h2>
+              <div className="flex justify-between md:justify-end gap-4">
+                <button
+                  onClick={() => setStep(step - 1)}
+                  className="text-text/70 md:hover:underline transition-colors duration-200"
+                >
+                  Back
+                </button>
+                <button
+                  onClick={() => setStep(4)}
+                  disabled={!selectedPeopleIds.length}
+                  className={
+                    !selectedPeopleIds.length
+                      ? "cursor-not-allowed"
+                      : "md:hover:underline"
+                  }
+                >
+                  {selectedPeopleIds.length === 0
+                    ? "0/3 selected"
+                    : `Next (${selectedPeopleIds.length}/3 selected)`}
+                </button>
+              </div>
+            </div>
             <div className="space-y-2">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-4">
                 {recommenders &&
@@ -596,39 +620,42 @@ function RecommendationsContent() {
                 selectedIndex={selectedIndex}
               />
             </div>
-            <div className="space-y-2">
-              <button
-                onClick={() => setStep(4)}
-                disabled={!selectedPeopleIds.length}
-                className={`w-full p-3 ${
-                  !selectedPeopleIds.length
-                    ? "bg-accent/30 cursor-not-allowed"
-                    : "bg-accent/50 hover:bg-accent"
-                } text-text border border-border transition-colors duration-200`}
-              >
-                {selectedPeopleIds.length === 0
-                  ? "0/3 selected"
-                  : `Next (${selectedPeopleIds.length}/3 selected)`}
-              </button>
-              <button
-                onClick={() => setStep(step - 1)}
-                className="w-full p-3 bg-background text-text/70 border border-border md:hover:bg-accent/30 transition-colors duration-200"
-              >
-                Back
-              </button>
-            </div>
           </div>
         );
 
       case 4:
-        console.log("First 12 books:", books?.slice(0, 12));
         if (!books) return null;
 
         return (
           <div className="space-y-4">
-            <h2 className="text-xl font-base">
-              What books are exemplary of your reading taste?
-            </h2>
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-0">
+              <h2 className="text-xl font-base">
+                What&apos;s on your bookshelf?
+              </h2>
+              <div className="flex justify-between md:justify-end gap-4">
+                <button
+                  onClick={() => setStep(step - 1)}
+                  className="text-text/70 md:hover:underline transition-colors duration-200"
+                >
+                  Back
+                </button>
+                <button
+                  onClick={getRecommendations}
+                  disabled={loading || !selectedBookIds.length}
+                  className={
+                    loading || !selectedBookIds.length
+                      ? "cursor-not-allowed"
+                      : "md:hover:underline"
+                  }
+                >
+                  {loading
+                    ? "Thinking..."
+                    : selectedBookIds.length === 0
+                      ? "0/3 selected"
+                      : `Next (${selectedBookIds.length}/3 selected)`}
+                </button>
+              </div>
+            </div>
             <div className="space-y-2">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-4">
                 {books &&
@@ -683,36 +710,71 @@ function RecommendationsContent() {
                 selectedIndex={selectedIndex}
               />
             </div>
-            <div className="space-y-2">
-              <button
-                onClick={getRecommendations}
-                disabled={loading || !selectedBookIds.length}
-                className={`w-full p-3 ${
-                  loading || !selectedBookIds.length
-                    ? "bg-accent/30 cursor-not-allowed"
-                    : "bg-accent/50 hover:bg-accent"
-                } text-text border border-border transition-colors duration-200`}
-              >
-                {loading
-                  ? "Getting Recommendations..."
-                  : selectedBookIds.length === 0
-                    ? "0/3 selected"
-                    : `Get Recommendations (${selectedBookIds.length}/3 selected)`}
-              </button>
-              <button
-                onClick={() => setStep(step - 1)}
-                className="w-full p-3 bg-background text-text/70 border border-border md:hover:bg-accent/30 transition-colors duration-200"
-              >
-                Back
-              </button>
-            </div>
           </div>
         );
 
       case 5:
         return (
-          <div>
-            <div className="space-y-4">
+          <div className="space-y-4">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-0">
+              <div className="flex items-center gap-2">
+                <h2 className="text-xl font-base">
+                  Personalized Recommendations
+                </h2>
+                <button
+                  onClick={() => {
+                    setStep(1);
+                    setUserType(null);
+                    setSelectedGenres([]);
+                    setSelectedPeopleIds([]);
+                    setSelectedBookIds([]);
+                    setRecommendations([]);
+                    setCurrentCardIndex(0);
+                    localStorage.removeItem("userType");
+                    localStorage.removeItem("selectedGenres");
+                    localStorage.removeItem("selectedPeopleIds");
+                    localStorage.removeItem("selectedBookIds");
+                    localStorage.removeItem("recommendations");
+                    localStorage.removeItem("currentCardIndex");
+                  }}
+                  className="text-text/70 md:hover:text-text transition-colors duration-200"
+                  title="Redo"
+                >
+                  <ArrowLeftRight size={18} />
+                </button>
+              </div>
+              <div className="flex justify-between md:justify-end gap-4">
+                <button
+                  onClick={() =>
+                    setCurrentCardIndex((prev) => Math.max(0, prev - 1))
+                  }
+                  disabled={currentCardIndex === 0}
+                  className={`${
+                    currentCardIndex === 0
+                      ? "cursor-not-allowed"
+                      : "md:hover:underline"
+                  } text-text/70 transition-colors duration-200`}
+                >
+                  Back
+                </button>
+                <button
+                  onClick={() =>
+                    setCurrentCardIndex((prev) =>
+                      Math.min(recommendations.length - 1, prev + 1)
+                    )
+                  }
+                  disabled={currentCardIndex === recommendations.length - 1}
+                  className={`${
+                    currentCardIndex === recommendations.length - 1
+                      ? "cursor-not-allowed"
+                      : "md:hover:underline"
+                  } text-text/70 transition-colors duration-200`}
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+            <div className="space-y-2">
               {recommendations.length > 0 && (
                 <>
                   <div className="flex flex-col space-y-4">
@@ -836,38 +898,6 @@ function RecommendationsContent() {
                         </div>
                       </div>
                     </div>
-                    <div className="flex justify-between space-x-2">
-                      <button
-                        onClick={() =>
-                          setCurrentCardIndex((prev) => Math.max(0, prev - 1))
-                        }
-                        disabled={currentCardIndex === 0}
-                        className={`flex-1 p-3 border border-border transition-colors duration-200 ${
-                          currentCardIndex === 0
-                            ? "bg-accent/30 cursor-not-allowed"
-                            : "bg-accent/50 hover:bg-accent"
-                        } text-text`}
-                      >
-                        Previous
-                      </button>
-                      <button
-                        onClick={() =>
-                          setCurrentCardIndex((prev) =>
-                            Math.min(recommendations.length - 1, prev + 1)
-                          )
-                        }
-                        disabled={
-                          currentCardIndex === recommendations.length - 1
-                        }
-                        className={`flex-1 p-3 border border-border transition-colors duration-200 ${
-                          currentCardIndex === recommendations.length - 1
-                            ? "bg-accent/30 cursor-not-allowed"
-                            : "bg-accent/50 hover:bg-accent"
-                        } text-text`}
-                      >
-                        Next
-                      </button>
-                    </div>
                     <div className="text-center text-text/70">
                       {currentCardIndex + 1} of {recommendations.length}
                     </div>
@@ -875,27 +905,6 @@ function RecommendationsContent() {
                 </>
               )}
             </div>
-            <button
-              onClick={() => {
-                // Clear all form state and localStorage
-                setStep(1);
-                setUserType(null);
-                setSelectedGenres([]);
-                setSelectedPeopleIds([]);
-                setSelectedBookIds([]);
-                setRecommendations([]);
-                setCurrentCardIndex(0);
-                localStorage.removeItem("userType");
-                localStorage.removeItem("selectedGenres");
-                localStorage.removeItem("selectedPeopleIds");
-                localStorage.removeItem("selectedBookIds");
-                localStorage.removeItem("recommendations");
-                localStorage.removeItem("currentCardIndex");
-              }}
-              className="w-full p-2 text-text/70 md:hover:text-text transition-colors duration-200"
-            >
-              Redo Recommendations
-            </button>
           </div>
         );
 
@@ -904,19 +913,5 @@ function RecommendationsContent() {
     }
   };
 
-  return (
-    <div>
-      <div className="space-x-2">
-        {[1, 2, 3, 4].map((i) => (
-          <span
-            key={i}
-            className={`inline-block w-2 h-2 rounded-full ${
-              i === step ? "bg-text" : "bg-text/30"
-            }`}
-          />
-        ))}
-      </div>
-      {renderStep()}
-    </div>
-  );
+  return renderStep();
 }
