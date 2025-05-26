@@ -108,8 +108,6 @@ function RecommendationsContent() {
   const [loading, setLoading] = useState(false);
   const [userType, setUserType] = useState<string | null>(null);
   const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
-  const [showAllGenres, setShowAllGenres] = useState(false);
-  const [showAllTypes, setShowAllTypes] = useState(false);
   const [selectedPeopleIds, setSelectedPeopleIds] = useState<string[]>([]);
   const [selectedBookIds, setSelectedBookIds] = useState<string[]>([]);
   const [extraGridItems, setExtraGridItems] = useState<string[]>([]);
@@ -231,8 +229,8 @@ function RecommendationsContent() {
   }, []);
 
   const gridItems = useCallback(
-    (items: any[], type: "people" | "books") => {
-      const baseItems = items.slice(0, 10);
+    (items: any[]) => {
+      const baseItems = items.slice(0, 18);
       const extraItems = items.filter((item) =>
         extraGridItems.includes(item.id)
       );
@@ -256,9 +254,7 @@ function RecommendationsContent() {
       const lowerQuery = query.toLowerCase();
 
       if (step === 3 && recommenders) {
-        const gridPeopleIds = gridItems(recommenders, "people").map(
-          (p) => p.id
-        );
+        const gridPeopleIds = gridItems(recommenders).map((p) => p.id);
         const results = Array.from(
           new Map(
             recommenders
@@ -277,7 +273,7 @@ function RecommendationsContent() {
         );
         setSearchResults(results);
       } else if (step === 4 && books) {
-        const gridBookIds = gridItems(books, "books").map((b) => b.id);
+        const gridBookIds = gridItems(books).map((b) => b.id);
         const results = Array.from(
           new Map(
             books
@@ -311,12 +307,12 @@ function RecommendationsContent() {
     setSearchQuery(""); // Close dropdown
 
     if (step === 3 && recommenders) {
-      const gridPeople = gridItems(recommenders, "people");
-      const isInFirstTen = gridPeople
-        .slice(0, 10)
+      const gridPeople = gridItems(recommenders);
+      const suggestedPeople = gridPeople
+        .slice(0, 18)
         .some((p) => p.id === result.id);
 
-      if (!isInFirstTen && !extraGridItems.includes(result.id)) {
+      if (!suggestedPeople && !extraGridItems.includes(result.id)) {
         setExtraGridItems((prev) => [...prev, result.id]);
       }
 
@@ -330,12 +326,12 @@ function RecommendationsContent() {
         handlePersonSelect(person);
       }
     } else if (step === 4 && books) {
-      const gridBooks = gridItems(books, "books");
-      const isInFirstTen = gridBooks
-        .slice(0, 10)
+      const gridBooks = gridItems(books);
+      const suggestedBooks = gridBooks
+        .slice(0, 18)
         .some((b) => b.id === result.id);
 
-      if (!isInFirstTen && !extraGridItems.includes(result.id)) {
+      if (!suggestedBooks && !extraGridItems.includes(result.id)) {
         setExtraGridItems((prev) => [...prev, result.id]);
       }
 
@@ -380,13 +376,6 @@ function RecommendationsContent() {
       console.error("User type is required");
       return;
     }
-
-    console.log("Getting recommendations for:", {
-      userType,
-      selectedGenres,
-      selectedPeopleIds,
-      selectedBookIds,
-    });
 
     setLoading(true);
     try {
@@ -447,9 +436,7 @@ function RecommendationsContent() {
             </div>
             <div className="space-y-2">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                {FIELD_VALUES.type
-                  .slice(0, showAllTypes ? undefined : 10)
-                  .map((type) => (
+                {FIELD_VALUES.type.map((type) => (
                     <div
                       key={type}
                       onClick={() => setUserType(type)}
@@ -463,14 +450,6 @@ function RecommendationsContent() {
                     </div>
                   ))}
               </div>
-              {FIELD_VALUES.type.length > 10 && (
-                <button
-                  onClick={() => setShowAllTypes(!showAllTypes)}
-                  className="w-full p-2 text-muted-foreground md:hover:underline transition-colors duration-200"
-                >
-                  {showAllTypes ? "Show less" : "Show more"}
-                </button>
-              )}
             </div>
           </div>
         );
@@ -506,9 +485,7 @@ function RecommendationsContent() {
             </div>
             <div className="space-y-2">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                {FIELD_VALUES.genres
-                  .slice(0, showAllGenres ? undefined : 10)
-                  .map((genre) => (
+                {FIELD_VALUES.genres.map((genre) => (
                     <div
                       key={genre}
                       onClick={() => handleGenreToggle(genre)}
@@ -522,14 +499,6 @@ function RecommendationsContent() {
                     </div>
                   ))}
               </div>
-              {FIELD_VALUES.genres.length > 10 && (
-                <button
-                  onClick={() => setShowAllGenres(!showAllGenres)}
-                  className="w-full p-2 text-muted-foreground md:hover:underline transition-colors duration-200"
-                >
-                  {showAllGenres ? "Show less" : "Show more"}
-                </button>
-              )}
             </div>
           </div>
         );
@@ -568,7 +537,7 @@ function RecommendationsContent() {
             <div className="space-y-2">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-4">
                 {recommenders &&
-                  gridItems(recommenders, "people").map((person) => (
+                  gridItems(recommenders).map((person) => (
                     <div
                       key={person.id}
                       onClick={() => handlePersonSelect(person)}
@@ -659,7 +628,7 @@ function RecommendationsContent() {
             <div className="space-y-2">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-4">
                 {books &&
-                  gridItems(books, "books").map((book) => (
+                  gridItems(books).map((book) => (
                     <div
                       key={book.id}
                       onClick={() => handleBookSelect(book)}
@@ -669,7 +638,7 @@ function RecommendationsContent() {
                           : "bg-background hover:bg-accent/50"
                       }`}
                     >
-                      {book.title} by {book.author}
+                      {book.title}
                     </div>
                   ))}
               </div>
