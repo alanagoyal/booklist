@@ -437,11 +437,11 @@ function RecommendationsContent() {
                 <button
                   onClick={() => setStep(2)}
                   disabled={!userType}
-                  className={
+                  className={`w-[135px] text-right ${
                     !userType ? "cursor-not-allowed text-muted-foreground" : "md:hover:underline text-text"
-                  }
+                  }`}
                 >
-                  {userType ? "Next (1/1 selected)" : "0/1 selected"}
+                  {userType ? "Next (1/1 selected)" : "Next (0/1 selected)"}
                 </button>
               </div>
             </div>
@@ -492,14 +492,14 @@ function RecommendationsContent() {
                     setStep(3);
                   }}
                   disabled={selectedGenres.length === 0}
-                  className={
+                  className={`w-[135px] text-right ${
                     selectedGenres.length === 0
                       ? "cursor-not-allowed text-muted-foreground"
                       : "md:hover:underline text-text"
-                  }
+                  }`}
                 >
                   {selectedGenres.length === 0
-                    ? "0/3 selected"
+                    ? "Next (0/3 selected)"
                     : `Next (${selectedGenres.length}/3 selected)`}
                 </button>
               </div>
@@ -553,14 +553,14 @@ function RecommendationsContent() {
                 <button
                   onClick={() => setStep(4)}
                   disabled={!selectedPeopleIds.length}
-                  className={
+                  className={`w-[135px] text-right ${
                     !selectedPeopleIds.length
                       ? "cursor-not-allowed text-muted-foreground"
                       : "md:hover:underline text-text"
-                  }
+                  }`}
                 >
                   {selectedPeopleIds.length === 0
-                    ? "0/3 selected"
+                    ? "Next (0/3 selected)"
                     : `Next (${selectedPeopleIds.length}/3 selected)`}
                 </button>
               </div>
@@ -642,16 +642,16 @@ function RecommendationsContent() {
                 <button
                   onClick={getRecommendations}
                   disabled={!selectedBookIds.length}
-                  className={
+                  className={`w-[135px] text-right ${
                     !selectedBookIds.length
                       ? "cursor-not-allowed text-muted-foreground"
                       : "md:hover:underline text-text"
-                  }
+                  }`}
                 >
                   {loading
                     ? "Thinking..."
                     : selectedBookIds.length === 0
-                      ? "0/3 selected"
+                      ? "Next (0/3 selected)"
                       : `Next (${selectedBookIds.length}/3 selected)`}
                 </button>
               </div>
