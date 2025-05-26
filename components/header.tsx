@@ -89,7 +89,7 @@ function HeaderContent() {
             className={`h-full flex items-center px-1 transition-colors duration-200 border-b-2 ${
               isHomePage && view === "books"
                 ? "text-text border-text"
-                : "text-text/70 md:hover:text-text border-transparent"
+                : "text-muted-foreground md:hover:text-text border-transparent"
             }`}
           >
             Books
@@ -99,7 +99,7 @@ function HeaderContent() {
             className={`h-full flex items-center px-1 transition-colors duration-200 border-b-2 ${
               isHomePage && view === "people"
                 ? "text-text border-text"
-                : "text-text/70 md:hover:text-text border-transparent"
+                : "text-muted-foreground md:hover:text-text border-transparent"
             }`}
           >
             People
@@ -109,7 +109,7 @@ function HeaderContent() {
             className={`h-full flex items-center px-1 transition-colors duration-200 border-b-2 ${
               pathname === "/recommendations"
                 ? "text-text border-text"
-                : "text-text/70 md:hover:text-text border-transparent"
+                : "text-muted-foreground md:hover:text-text border-transparent"
             }`}
           >
             Recommendations
@@ -119,7 +119,7 @@ function HeaderContent() {
             className={`h-full flex items-center px-1 transition-colors duration-200 border-b-2 ${
               pathname === "/insights"
                 ? "text-text border-text"
-                : "text-text/70 md:hover:text-text border-transparent"
+                : "text-muted-foreground md:hover:text-text border-transparent"
             }`}
           >
             Insights
@@ -129,7 +129,7 @@ function HeaderContent() {
             className={`h-full flex items-center px-1 transition-colors duration-200 border-b-2 ${
               pathname === "/about"
                 ? "text-text border-text"
-                : "text-text/70 md:hover:text-text border-transparent"
+                : "text-muted-foreground md:hover:text-text border-transparent"
             }`}
           >
             About
@@ -138,7 +138,7 @@ function HeaderContent() {
       </div>
       <div className="ml-auto flex gap-2">
         <div className="hidden md:flex items-center gap-2 pt-2 px-2 text-sm">
-          <ThemeToggle className="h-full p-2 md:hover:text-text text-text/70" />
+          <ThemeToggle className="h-full p-2 md:hover:text-text text-muted-foreground" />
         </div>
         <div className="md:hidden px-2 pt-1 relative">
           <button
@@ -146,7 +146,7 @@ function HeaderContent() {
               e.stopPropagation();
               setIsMenuOpen(!isMenuOpen);
             }}
-            className="h-10 w-10 flex items-center justify-center text-text/70"
+            className="h-10 w-10 flex items-center justify-center text-muted-foreground"
             aria-label="Menu"
           >
             <Menu size={24} />
@@ -158,7 +158,7 @@ function HeaderContent() {
             >
               <Link
                 href={getViewHref("books")}
-                className="w-full px-4 py-2 flex items-center text-left text-text/70"
+                className="w-full px-4 py-2 flex items-center text-left text-muted-foreground"
                 onClick={(e) => {
                   e.preventDefault();
                   setIsMenuOpen(false);
@@ -176,7 +176,7 @@ function HeaderContent() {
               </Link>
               <Link
                 href={getViewHref("people")}
-                className="w-full px-4 py-2 flex items-center text-left text-text/70"
+                className="w-full px-4 py-2 flex items-center text-left text-muted-foreground"
                 onClick={(e) => {
                   e.preventDefault();
                   setIsMenuOpen(false);
@@ -194,7 +194,7 @@ function HeaderContent() {
               </Link>
               <Link
                 href={`/recommendations?${currentParams}`}
-                className="w-full px-4 py-2 flex items-center text-left text-text/70"
+                className="w-full px-4 py-2 flex items-center text-left text-muted-foreground"
                 onClick={(e) => {
                   e.preventDefault();
                   setIsMenuOpen(false);
@@ -209,7 +209,7 @@ function HeaderContent() {
               </Link>
               <Link
                 href="/insights"
-                className="w-full px-4 py-2 flex items-center text-left text-text/70"
+                className="w-full px-4 py-2 flex items-center text-left text-muted-foreground"
                 onClick={(e) => {
                   e.preventDefault();
                   setIsMenuOpen(false);
@@ -224,7 +224,7 @@ function HeaderContent() {
               </Link>
               <Link
                 href="/about"
-                className="w-full px-4 py-2 flex items-center text-left text-text/70"
+                className="w-full px-4 py-2 flex items-center text-left text-muted-foreground"
                 onClick={(e) => {
                   e.preventDefault();
                   setIsMenuOpen(false);
@@ -238,7 +238,7 @@ function HeaderContent() {
                 </span>
               </Link>
               <ThemeToggle
-                className="w-full px-4 py-2 flex items-center text-left text-text/70 transition-colors duration-200"
+                className="w-full px-4 py-2 flex items-center text-left text-muted-foreground transition-colors duration-200"
                 onClick={() => {
                   setIsMenuOpen(false);
                 }}

@@ -38,7 +38,7 @@ export const countManager = {
 // Loading state component following our established styling patterns
 export function LoadingState() {
   return (
-    <div className="fixed bottom-5 right-5 text-text/70 whitespace-pre-line transition-all duration-200 bg-background/80 backdrop-blur-sm p-2 selection:bg-main selection:text-mtext">
+    <div className="fixed bottom-5 right-5 text-muted-foreground whitespace-pre-line transition-all duration-200 bg-background/80 backdrop-blur-sm p-2 selection:bg-main selection:text-mtext">
       Loading...
     </div>
   );
@@ -80,7 +80,7 @@ export function Counter({ total, viewMode = 'books' }: CounterProps) {
       : `${filteredCount} of ${total} people`;
 
   return createPortal(
-    <div className="fixed bottom-5 right-5 text-text/70 text-xs whitespace-pre-line transition-all duration-200 bg-background/80 backdrop-blur-sm p-2 selection:bg-main selection:text-mtext md:hover:bg-accent/50">
+    <div className="fixed bottom-5 right-5 text-muted-foreground text-xs whitespace-pre-line transition-all duration-200 bg-background/80 backdrop-blur-sm p-2 selection:bg-main selection:text-mtext md:hover:bg-accent/50">
       {text}
     </div>,
     document.body

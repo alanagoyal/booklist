@@ -44,13 +44,13 @@ export function ColumnFilter({
               onChange(field, "");
               internalRef.current?.focus();
             }}
-            className="text-text/70 transition-colors duration-200 md:hover:text-text shrink-0"
+            className="text-muted-foreground transition-colors duration-200 md:hover:text-text shrink-0"
           >
             <X className="w-3 h-3" />
           </button>
         ) : enumValues ? (
           <button 
-            className="inline-flex items-center justify-center rounded-full text-text/70 md:hover:text-text transition-colors duration-200 cursor-help shrink-0"
+            className="inline-flex items-center justify-center rounded-full text-muted-foreground md:hover:text-text transition-colors duration-200 cursor-help shrink-0"
             title={`${enumValues.join(", ")}`}
             onClick={(e) => e.stopPropagation()}
           >

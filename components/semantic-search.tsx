@@ -231,7 +231,7 @@ export function SearchBox({
   return (
     <div className="flex items-center h-10 w-full">
       <div className="flex items-center h-10 px-3 pb-1 border-b border-border">
-        <Search className="w-4 h-4 text-text/70" />
+        <Search className="w-4 h-4 text-muted-foreground" />
       </div>
       <div className="flex-1 flex items-center">
         <input
@@ -268,7 +268,7 @@ export function SearchBox({
           ) : value ? (
             <button
               onClick={handleClear}
-              className="text-text/70 transition-colors duration-200 md:hover:text-text"
+              className="text-muted-foreground transition-colors duration-200 md:hover:text-text"
               disabled={false}
             >
               <X className="w-4 h-4" />

@@ -58,11 +58,11 @@ function RecommenderCell({
                 e.stopPropagation();
                 handleRecommenderClick(firstRecommender.id);
               }}
-              className="text-text md:hover:text-text/70 md:hover:underline transition-colors duration-200 text-left w-full whitespace-pre-line"
+              className="text-text md:hover:text-muted-foreground md:hover:underline transition-colors duration-200 text-left w-full whitespace-pre-line"
             >
               {truncateText(firstRecommender.full_name, 35, moreCount)}
               {moreCount > 0 && (
-                <span className="text-text/70"> + {moreCount} more</span>
+                <span className="text-muted-foreground"> + {moreCount} more</span>
               )}
             </button>
           )}
@@ -73,7 +73,7 @@ function RecommenderCell({
               formatPercentile(original.recommendation_percentile) +
               " percentile"
             }
-            className="inline-flex items-center justify-center rounded-full text-text/70 md:hover:text-text transition-colors duration-200 cursor-help shrink-0"
+            className="inline-flex items-center justify-center rounded-full text-muted-foreground md:hover:text-text transition-colors duration-200 cursor-help shrink-0"
             onClick={(e) => {
               e.stopPropagation();
             }}

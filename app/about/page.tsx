@@ -11,7 +11,7 @@ export default async function AboutPage() {
         {aboutPost ? (
           <MarkdownRenderer content={aboutPost.content} />
         ) : (
-          <div className="text-text/70">About content not available.</div>
+          <div className="text-muted-foreground">About content not available.</div>
         )}
       </div>
     </div>

@@ -35,9 +35,9 @@ export default function MarkdownRenderer({ content, className = '' }: MarkdownRe
           li: ({ node, ...props }) => <li className="my-1" {...props} />,
           blockquote: ({ node, ...props }) => <blockquote className="border-l-4 border-border pl-4 my-4 italic" {...props} />,
           hr: ({ node, ...props }) => <hr className="my-8 border-t border-border" {...props} />,
-          aside: ({ node, ...props }) => <aside className="bg-background-2 p-4 my-4 text-text/70" {...props} />,
+          aside: ({ node, ...props }) => <aside className="bg-background-2 p-4 my-4 text-muted-foreground" {...props} />,
           details: ({ node, ...props }) => <details className="my-4" {...props} />,
-          summary: ({ node, ...props }) => <summary className="cursor-pointer font-medium text-text/70 hover:text-text transition-colors duration-200" {...props} />,
+          summary: ({ node, ...props }) => <summary className="cursor-pointer font-medium text-muted-foreground hover:text-text transition-colors duration-200" {...props} />,
         }}
       >
         {content}

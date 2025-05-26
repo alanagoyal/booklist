@@ -24,7 +24,7 @@ export function SearchInput({ value, onChange, onClear, onKeyDown, placeholder =
       {value && (
         <button
           onClick={onClear}
-          className="px-3 text-text/70 transition-colors duration-200 md:hover:text-text"
+          className="px-3 text-muted-foreground transition-colors duration-200 md:hover:text-text"
         >
           <X className="w-4 h-4" />
         </button>
