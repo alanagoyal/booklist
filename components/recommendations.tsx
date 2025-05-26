@@ -71,9 +71,9 @@ function SearchDropdown({
   return (
     <div className="absolute z-10 w-full border-x border-b border-border bg-background max-h-60 overflow-auto">
       {loading ? (
-        <div className="p-3 text-text/70">Searching...</div>
+        <div className="p-3 text-muted-foreground">Searching...</div>
       ) : sortedResults.length === 0 ? (
-        <div className="p-3 text-text/70">No results found</div>
+        <div className="p-3 text-muted-foreground">No results found</div>
       ) : (
         sortedResults.map((result, index) => (
           <div
@@ -438,7 +438,7 @@ function RecommendationsContent() {
                   onClick={() => setStep(2)}
                   disabled={!userType}
                   className={
-                    !userType ? "cursor-not-allowed" : "md:hover:underline"
+                    !userType ? "cursor-not-allowed text-muted-foreground" : "md:hover:underline text-text"
                   }
                 >
                   {userType ? "Next (1/1 selected)" : "0/1 selected"}
@@ -466,7 +466,7 @@ function RecommendationsContent() {
               {FIELD_VALUES.type.length > 10 && (
                 <button
                   onClick={() => setShowAllTypes(!showAllTypes)}
-                  className="w-full p-2 text-text/70 md:hover:underline transition-colors duration-200"
+                  className="w-full p-2 text-muted-foreground md:hover:underline transition-colors duration-200"
                 >
                   {showAllTypes ? "Show less" : "Show more"}
                 </button>
@@ -483,7 +483,7 @@ function RecommendationsContent() {
               <div className="flex justify-between md:justify-end gap-4">
                 <button
                   onClick={() => setStep(step - 1)}
-                  className="bg-background text-text/70 md:hover:underline transition-colors duration-200"
+                  className="bg-background text-text md:hover:underline transition-colors duration-200"
                 >
                   Back
                 </button>
@@ -494,8 +494,8 @@ function RecommendationsContent() {
                   disabled={selectedGenres.length === 0}
                   className={
                     selectedGenres.length === 0
-                      ? "cursor-not-allowed"
-                      : "md:hover:underline"
+                      ? "cursor-not-allowed text-muted-foreground"
+                      : "md:hover:underline text-text"
                   }
                 >
                   {selectedGenres.length === 0
@@ -525,7 +525,7 @@ function RecommendationsContent() {
               {FIELD_VALUES.genres.length > 10 && (
                 <button
                   onClick={() => setShowAllGenres(!showAllGenres)}
-                  className="w-full p-2 text-text/70 md:hover:underline transition-colors duration-200"
+                  className="w-full p-2 text-muted-foreground md:hover:underline transition-colors duration-200"
                 >
                   {showAllGenres ? "Show less" : "Show more"}
                 </button>
@@ -546,7 +546,7 @@ function RecommendationsContent() {
               <div className="flex justify-between md:justify-end gap-4">
                 <button
                   onClick={() => setStep(step - 1)}
-                  className="text-text/70 md:hover:underline transition-colors duration-200"
+                  className="text-text md:hover:underline transition-colors duration-200"
                 >
                   Back
                 </button>
@@ -555,8 +555,8 @@ function RecommendationsContent() {
                   disabled={!selectedPeopleIds.length}
                   className={
                     !selectedPeopleIds.length
-                      ? "cursor-not-allowed"
-                      : "md:hover:underline"
+                      ? "cursor-not-allowed text-muted-foreground"
+                      : "md:hover:underline text-text"
                   }
                 >
                   {selectedPeopleIds.length === 0
@@ -635,17 +635,17 @@ function RecommendationsContent() {
               <div className="flex justify-between md:justify-end gap-4">
                 <button
                   onClick={() => setStep(step - 1)}
-                  className="text-text/70 md:hover:underline transition-colors duration-200"
+                  className="text-text md:hover:underline transition-colors duration-200"
                 >
                   Back
                 </button>
                 <button
                   onClick={getRecommendations}
-                  disabled={loading || !selectedBookIds.length}
+                  disabled={!selectedBookIds.length}
                   className={
-                    loading || !selectedBookIds.length
-                      ? "cursor-not-allowed"
-                      : "md:hover:underline"
+                    !selectedBookIds.length
+                      ? "cursor-not-allowed text-muted-foreground"
+                      : "md:hover:underline text-text"
                   }
                 >
                   {loading
@@ -737,7 +737,7 @@ function RecommendationsContent() {
                     localStorage.removeItem("recommendations");
                     localStorage.removeItem("currentCardIndex");
                   }}
-                  className="text-text/70 md:hover:text-text transition-colors duration-200"
+                  className="text-muted-foreground md:hover:text-text transition-colors duration-200"
                   title="Redo"
                 >
                   <ArrowLeftRight size={18} />
@@ -751,9 +751,9 @@ function RecommendationsContent() {
                   disabled={currentCardIndex === 0}
                   className={`${
                     currentCardIndex === 0
-                      ? "cursor-not-allowed"
-                      : "md:hover:underline"
-                  } text-text/70 transition-colors duration-200`}
+                      ? "cursor-not-allowed text-muted-foreground"
+                      : "md:hover:underline text-text"
+                  } transition-colors duration-200`}
                 >
                   Back
                 </button>
@@ -766,9 +766,9 @@ function RecommendationsContent() {
                   disabled={currentCardIndex === recommendations.length - 1}
                   className={`${
                     currentCardIndex === recommendations.length - 1
-                      ? "cursor-not-allowed"
-                      : "md:hover:underline"
-                  } text-text/70 transition-colors duration-200`}
+                      ? "cursor-not-allowed text-muted-foreground"
+                      : "md:hover:underline text-text"
+                  } transition-colors duration-200`}
                 >
                   Next
                 </button>
@@ -792,7 +792,7 @@ function RecommendationsContent() {
                           >
                             {recommendations[currentCardIndex].title}
                           </h1>
-                          <p className="text-text/70 text-lg">
+                          <p className="text-muted-foreground text-lg">
                             {recommendations[currentCardIndex].author}
                           </p>
 
@@ -800,7 +800,7 @@ function RecommendationsContent() {
                           <div className="flex justify-between items-center">
                             {recommendations[currentCardIndex].genres && (
                               <div className="flex items-center gap-2 text-text">
-                                <Tag className="w-4 h-4 text-text/70" />
+                                <Tag className="w-4 h-4 text-muted-foreground" />
                                 <span>
                                   {Array.isArray(
                                     recommendations[currentCardIndex].genres
@@ -814,7 +814,7 @@ function RecommendationsContent() {
                             )}
                             {recommendations[currentCardIndex].amazon_url && (
                               <div className="flex items-center gap-2">
-                                <Link className="w-4 h-4 text-text/70" />
+                                <Link className="w-4 h-4 text-muted-foreground" />
                                 <a
                                   href={
                                     recommendations[currentCardIndex].amazon_url
@@ -850,7 +850,7 @@ function RecommendationsContent() {
                               {recommendations[currentCardIndex].match_reasons
                                 .similar_to_favorites && (
                                 <div className="flex items-start gap-3 bg-accent/50 p-2">
-                                  <BookOpen className="w-5 h-5 mt-0.5 text-text/70 shrink-0" />
+                                  <BookOpen className="w-5 h-5 mt-0.5 text-muted-foreground shrink-0" />
                                   <span className="text-text">
                                     Similar to your favorite books
                                   </span>
@@ -859,7 +859,7 @@ function RecommendationsContent() {
                               {recommendations[currentCardIndex].match_reasons
                                 .recommended_by_inspiration && (
                                 <div className="flex items-start gap-3 bg-accent/50 p-2">
-                                  <User className="w-5 h-5 mt-0.5 text-text/70 shrink-0" />
+                                  <User className="w-5 h-5 mt-0.5 text-muted-foreground shrink-0" />
                                   <span className="text-text">
                                     Recommended by people who inspire you
                                   </span>
@@ -868,7 +868,7 @@ function RecommendationsContent() {
                               {recommendations[currentCardIndex].match_reasons
                                 .recommended_by_similar_people && (
                                 <div className="flex items-start gap-3 bg-accent/50 p-2">
-                                  <User className="w-5 h-5 mt-0.5 text-text/70 shrink-0" />
+                                  <User className="w-5 h-5 mt-0.5 text-muted-foreground shrink-0" />
                                   <span className="text-text">
                                     Recommended by people similar to your
                                     inspirations
@@ -878,7 +878,7 @@ function RecommendationsContent() {
                               {recommendations[currentCardIndex].match_reasons
                                 .genre_match && (
                                 <div className="flex items-start gap-3 bg-accent/50 p-2">
-                                  <Tag className="w-5 h-5 mt-0.5 text-text/70 shrink-0" />
+                                  <Tag className="w-5 h-5 mt-0.5 text-muted-foreground shrink-0" />
                                   <span className="text-text">
                                     Matches your preferred genres
                                   </span>
@@ -887,7 +887,7 @@ function RecommendationsContent() {
                               {recommendations[currentCardIndex].match_reasons
                                 .recommended_by_similar_type && (
                                 <div className="flex items-start gap-3 bg-accent/50 p-2">
-                                  <User className="w-5 h-5 mt-0.5 text-text/70 shrink-0" />
+                                  <User className="w-5 h-5 mt-0.5 text-muted-foreground shrink-0" />
                                   <span className="text-text">
                                     Popular among {userType}s
                                   </span>
@@ -898,7 +898,7 @@ function RecommendationsContent() {
                         </div>
                       </div>
                     </div>
-                    <div className="text-center text-text/70">
+                    <div className="text-center text-muted-foreground">
                       {currentCardIndex + 1} of {recommendations.length}
                     </div>
                   </div>
