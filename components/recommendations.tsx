@@ -433,7 +433,7 @@ function RecommendationsContent() {
           <div className="space-y-4">
             <h2 className="text-xl font-base">What is your profession?</h2>
             <div className="space-y-2">
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                 {FIELD_VALUES.type
                   .slice(0, showAllTypes ? undefined : 10)
                   .map((type) => (
@@ -480,7 +480,7 @@ function RecommendationsContent() {
           <div className="space-y-4">
             <h2 className="text-xl font-base">What genres interest you?</h2>
             <div className="space-y-2">
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                 {FIELD_VALUES.genres
                   .slice(0, showAllGenres ? undefined : 10)
                   .map((genre) => (
@@ -542,7 +542,7 @@ function RecommendationsContent() {
               Whose reading tastes do you admire?
             </h2>
             <div className="space-y-2">
-              <div className="grid grid-cols-2 gap-2 mt-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-4">
                 {recommenders &&
                   gridItems(recommenders, "people").map((person) => (
                     <div
@@ -630,7 +630,7 @@ function RecommendationsContent() {
               What books are exemplary of your reading taste?
             </h2>
             <div className="space-y-2">
-              <div className="grid grid-cols-2 gap-2 mt-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-4">
                 {books &&
                   gridItems(books, "books").map((book) => (
                     <div
@@ -711,39 +711,13 @@ function RecommendationsContent() {
 
       case 5:
         return (
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <h2 className="text-xl font-base">
-                Your Personalized Recommendations
-              </h2>
-              <button
-                onClick={() => {
-                  // Clear all form state and localStorage
-                  setStep(1);
-                  setUserType(null);
-                  setSelectedGenres([]);
-                  setSelectedPeopleIds([]);
-                  setSelectedBookIds([]);
-                  setRecommendations([]);
-                  setCurrentCardIndex(0);
-                  localStorage.removeItem("userType");
-                  localStorage.removeItem("selectedGenres");
-                  localStorage.removeItem("selectedPeopleIds");
-                  localStorage.removeItem("selectedBookIds");
-                  localStorage.removeItem("recommendations");
-                  localStorage.removeItem("currentCardIndex");
-                }}
-                className="p-2 text-text/70 md:hover:text-text transition-colors duration-200"
-              >
-                Redo Recommendations
-              </button>
-            </div>
+          <div>
             <div className="space-y-4">
               {recommendations.length > 0 && (
                 <>
                   <div className="flex flex-col space-y-4">
                     <div className="bg-background border border-border">
-                      <div className="h-[500px] overflow-y-auto p-8">
+                      <div className="h-[500px] sm:h-[450px] overflow-y-auto p-4 sm:p-8">
                         <div className="space-y-4">
                           {/* Title and Author */}
                           <h1
@@ -901,6 +875,27 @@ function RecommendationsContent() {
                 </>
               )}
             </div>
+            <button
+              onClick={() => {
+                // Clear all form state and localStorage
+                setStep(1);
+                setUserType(null);
+                setSelectedGenres([]);
+                setSelectedPeopleIds([]);
+                setSelectedBookIds([]);
+                setRecommendations([]);
+                setCurrentCardIndex(0);
+                localStorage.removeItem("userType");
+                localStorage.removeItem("selectedGenres");
+                localStorage.removeItem("selectedPeopleIds");
+                localStorage.removeItem("selectedBookIds");
+                localStorage.removeItem("recommendations");
+                localStorage.removeItem("currentCardIndex");
+              }}
+              className="w-full p-2 text-text/70 md:hover:text-text transition-colors duration-200"
+            >
+              Redo Recommendations
+            </button>
           </div>
         );
 

@@ -18,7 +18,7 @@ export function SearchInput({ value, onChange, onClear, onKeyDown, placeholder =
         placeholder={placeholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="flex-1 p-3 bg-background text-text focus:outline-none"
+        className="flex-1 p-3 bg-background text-text text-base focus:outline-none"
         onKeyDown={onKeyDown}
       />
       {value && (
