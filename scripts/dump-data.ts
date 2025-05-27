@@ -243,7 +243,7 @@ async function dumpData() {
     // Fetch recommenders with their recommendations
     const { data: recommenders, error: recommendersError } = await supabase
       .rpc("get_recommender_with_books")
-      .order("full_name");
+      .order("_book_count", { ascending: false });
 
     if (recommendersError) {
       console.error("Error fetching recommenders:", recommendersError);
