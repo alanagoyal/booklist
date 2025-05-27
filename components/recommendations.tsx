@@ -448,7 +448,7 @@ function RecommendationsContent() {
     switch (step) {
       case 1:
         return (
-          <div className="space-y-4">
+          <>
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-0">
               <h2 className="text-xl font-base">What is your profession?</h2>
               <div className="flex justify-end gap-4">
@@ -482,12 +482,12 @@ function RecommendationsContent() {
                 ))}
               </div>
             </div>
-          </div>
+          </>
         );
 
       case 2:
         return (
-          <div className="space-y-4">
+          <>
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-0">
               <h2 className="text-xl font-base">What genres interest you?</h2>
               <div className="flex justify-between md:justify-end gap-4">
@@ -531,14 +531,14 @@ function RecommendationsContent() {
                 ))}
               </div>
             </div>
-          </div>
+          </>
         );
 
       case 3:
         if (!recommenders) return null;
 
         return (
-          <div className="space-y-4">
+          <>
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-0">
               <h2 className="text-xl font-base">
                 Whose reading tastes do you admire?
@@ -620,14 +620,14 @@ function RecommendationsContent() {
                 selectedIndex={selectedIndex}
               />
             </div>
-          </div>
+          </>
         );
 
       case 4:
         if (!books) return null;
 
         return (
-          <div className="space-y-4">
+          <>
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-0">
               <h2 className="text-xl font-base">
                 What&apos;s on your bookshelf?
@@ -710,15 +710,15 @@ function RecommendationsContent() {
                 selectedIndex={selectedIndex}
               />
             </div>
-          </div>
+          </>
         );
 
       case 5:
         return (
-          <div className="space-y-4">
+          <>
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-base">
-                We Found The Following For You
+                We found the following for you
               </h2>
               <span
                 onClick={() => {
@@ -747,7 +747,7 @@ function RecommendationsContent() {
               userType={userType}
               onBookClick={handleBookClick}
             />
-          </div>
+          </>
         );
 
       default:
@@ -755,5 +755,18 @@ function RecommendationsContent() {
     }
   };
 
-  return renderStep();
+  const totalSteps = 5;
+  const currentProgress = step ? (step / totalSteps) * 100 : 0;
+
+  return (
+    <div className="space-y-4">
+      <div className="w-full h-2 bg-accent/30 border border-border">
+        <div 
+          className={`h-full bg-accent transition-all duration-200 ${currentProgress < 100 ? 'border-r' : ''} border-border`} 
+          style={{ width: `${currentProgress}%` }}
+        />
+      </div>
+      {renderStep()}
+    </div>
+  );
 }
