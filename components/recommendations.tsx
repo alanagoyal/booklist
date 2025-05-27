@@ -762,7 +762,7 @@ function RecommendationsContent() {
                 <>
                   <div className="flex flex-col space-y-4">
                     <div className="bg-background border border-border">
-                      <div className="h-[500px] sm:h-[450px] overflow-y-auto p-4 sm:p-8">
+                      <div className="h-[525px] sm:h-[475px] overflow-y-auto p-4 sm:p-8">
                         <div className="space-y-4">
                           {/* Title and Author */}
                           <h1
