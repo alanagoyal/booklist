@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect, Suspense } from "react";
+import { useState, useCallback, useEffect, Suspense, useMemo } from "react";
 import { SearchInput } from "./search-input";
 import { supabase } from "@/utils/supabase/client";
 import { FIELD_VALUES } from "@/utils/constants";
@@ -239,67 +239,81 @@ function RecommendationsContent() {
     [extraGridItems]
   );
 
+  const memoizedGridIds = useMemo(() => {
+    if (!recommenders || !books) return { people: new Set(), books: new Set() };
+    return {
+      people: new Set(gridItems(recommenders).map(p => p.id)),
+      books: new Set(gridItems(books).map(b => b.id))
+    };
+  }, [recommenders, books, gridItems]);
+
+  const memoizedSearchData = useMemo(() => {
+    if (!recommenders || !books) return { people: [], books: [] };
+    
+    return {
+      people: recommenders.map((person: FormattedRecommender) => ({
+        id: person.id,
+        searchText: `${person.full_name} ${person.type || ''}`.toLowerCase(),
+        name: `${person.full_name}${person.type ? ` (${person.type})` : ""}`
+      })),
+      books: books.map((book: Book) => ({
+        id: book.id,
+        searchText: `${book.title} ${book.author}`.toLowerCase(),
+        name: `${book.title} by ${book.author}`
+      }))
+    };
+  }, [recommenders, books]);
+
   const handleSearch = useCallback(
     (query: string) => {
       setSearchQuery(query);
       setIsSearching(true);
       setSelectedIndex(-1);
 
-      if (!query.trim()) {
+      const trimmedQuery = query.trim();
+      if (!trimmedQuery) {
         setSearchResults([]);
         setIsSearching(false);
         return;
       }
 
-      const lowerQuery = query.toLowerCase();
+      const lowerQuery = trimmedQuery.toLowerCase();
 
-      if (step === 3 && recommenders) {
-        const gridPeopleIds = gridItems(recommenders).map((p) => p.id);
-        const results = Array.from(
-          new Map(
-            recommenders
-              .filter(
-                (person) =>
-                  person.full_name.toLowerCase().includes(lowerQuery) ||
-                  (person.type?.toLowerCase() || "").includes(lowerQuery)
-              )
-              .map((person) => ({
-                id: person.id,
-                name: `${person.full_name}${person.type ? ` (${person.type})` : ""}`,
-                isInGrid: gridPeopleIds.includes(person.id),
-              }))
-              .map((result) => [result.id, result])
-          ).values()
-        );
+      if (step === 3) {
+        const results = memoizedSearchData.people.reduce((acc: SearchResult[], person) => {
+          if (person.searchText.includes(lowerQuery)) {
+            acc.push({
+              id: person.id,
+              name: person.name,
+              isInGrid: memoizedGridIds.people.has(person.id)
+            });
+          }
+          return acc;
+        }, [] as SearchResult[]);
+        
         setSearchResults(results);
-      } else if (step === 4 && books) {
-        const gridBookIds = gridItems(books).map((b) => b.id);
-        const results = Array.from(
-          new Map(
-            books
-              .filter(
-                (book) =>
-                  book.title.toLowerCase().includes(lowerQuery) ||
-                  book.author.toLowerCase().includes(lowerQuery)
-              )
-              .map((book) => ({
-                id: book.id,
-                name: `${book.title} by ${book.author}`,
-                isInGrid: gridBookIds.includes(book.id),
-              }))
-              .map((result) => [result.id, result])
-          ).values()
-        );
+      } else if (step === 4) {
+        const results = memoizedSearchData.books.reduce((acc: SearchResult[], book) => {
+          if (book.searchText.includes(lowerQuery)) {
+            acc.push({
+              id: book.id,
+              name: book.name,
+              isInGrid: memoizedGridIds.books.has(book.id)
+            });
+          }
+          return acc;
+        }, [] as SearchResult[]);
+        
         setSearchResults(results);
       }
 
       setIsSearching(false);
     },
-    [step, books, recommenders, gridItems]
+    [step, memoizedSearchData, memoizedGridIds]
   );
 
   useEffect(() => {
-    const timer = setTimeout(() => handleSearch(searchQuery), 300);
+    const timer = setTimeout(() => handleSearch(searchQuery), 500);
     return () => clearTimeout(timer);
   }, [searchQuery, handleSearch]);
 
@@ -435,7 +449,7 @@ function RecommendationsContent() {
               </div>
             </div>
             <div className="space-y-2">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-base">
                 {FIELD_VALUES.type.map((type) => (
                     <div
                       key={type}
@@ -484,7 +498,7 @@ function RecommendationsContent() {
               </div>
             </div>
             <div className="space-y-2">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-base">
                 {FIELD_VALUES.genres.map((genre) => (
                     <div
                       key={genre}
@@ -535,7 +549,7 @@ function RecommendationsContent() {
               </div>
             </div>
             <div className="space-y-2">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-4 text-base">
                 {recommenders &&
                   gridItems(recommenders).map((person) => (
                     <div
@@ -626,7 +640,7 @@ function RecommendationsContent() {
               </div>
             </div>
             <div className="space-y-2">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-4 text-base">
                 {books &&
                   gridItems(books).map((book) => (
                     <div
