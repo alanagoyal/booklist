@@ -566,6 +566,42 @@ function RecommendationsContent() {
               </div>
             </div>
             <div className="space-y-2">
+              <div className="relative">
+                <SearchInput
+                  value={searchQuery}
+                  onChange={handleSearch}
+                  onClear={() => {
+                    setSearchQuery("");
+                    setSearchResults([]);
+                    setIsSearching(false);
+                    setSelectedIndex(-1);
+                  }}
+                  placeholder="Search for more people..."
+                  onKeyDown={(e) => {
+                    if (searchResults.length === 0) return;
+
+                    if (e.key === "ArrowDown") {
+                      e.preventDefault();
+                      setSelectedIndex((prev) =>
+                        prev < searchResults.length - 1 ? prev + 1 : prev
+                      );
+                    } else if (e.key === "ArrowUp") {
+                      e.preventDefault();
+                      setSelectedIndex((prev) => (prev > 0 ? prev - 1 : prev));
+                    } else if (e.key === "Enter" && selectedIndex >= 0) {
+                      e.preventDefault();
+                      handleSearchResultSelect(searchResults[selectedIndex]);
+                    }
+                  }}
+                />
+                <SearchDropdown
+                  results={searchResults}
+                  onSelect={handleSearchResultSelect}
+                  isOpen={searchQuery.length > 0}
+                  loading={isSearching}
+                  selectedIndex={selectedIndex}
+                />
+              </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-4 text-base">
                 {recommenders &&
                   gridItems(recommenders).map((person) => (
@@ -583,42 +619,6 @@ function RecommendationsContent() {
                     </div>
                   ))}
               </div>
-            </div>
-            <div className="relative">
-              <SearchInput
-                value={searchQuery}
-                onChange={handleSearch}
-                onClear={() => {
-                  setSearchQuery("");
-                  setSearchResults([]);
-                  setIsSearching(false);
-                  setSelectedIndex(-1);
-                }}
-                placeholder="Search for more people..."
-                onKeyDown={(e) => {
-                  if (searchResults.length === 0) return;
-
-                  if (e.key === "ArrowDown") {
-                    e.preventDefault();
-                    setSelectedIndex((prev) =>
-                      prev < searchResults.length - 1 ? prev + 1 : prev
-                    );
-                  } else if (e.key === "ArrowUp") {
-                    e.preventDefault();
-                    setSelectedIndex((prev) => (prev > 0 ? prev - 1 : prev));
-                  } else if (e.key === "Enter" && selectedIndex >= 0) {
-                    e.preventDefault();
-                    handleSearchResultSelect(searchResults[selectedIndex]);
-                  }
-                }}
-              />
-              <SearchDropdown
-                results={searchResults}
-                onSelect={handleSearchResultSelect}
-                isOpen={searchQuery.length > 0}
-                loading={isSearching}
-                selectedIndex={selectedIndex}
-              />
             </div>
           </>
         );
@@ -657,6 +657,42 @@ function RecommendationsContent() {
               </div>
             </div>
             <div className="space-y-2">
+              <div className="relative">
+                <SearchInput
+                  value={searchQuery}
+                  onChange={handleSearch}
+                  onClear={() => {
+                    setSearchQuery("");
+                    setSearchResults([]);
+                    setIsSearching(false);
+                    setSelectedIndex(-1);
+                  }}
+                  placeholder="Search for more books..."
+                  onKeyDown={(e) => {
+                    if (searchResults.length === 0) return;
+
+                    if (e.key === "ArrowDown") {
+                      e.preventDefault();
+                      setSelectedIndex((prev) =>
+                        prev < searchResults.length - 1 ? prev + 1 : prev
+                      );
+                    } else if (e.key === "ArrowUp") {
+                      e.preventDefault();
+                      setSelectedIndex((prev) => (prev > 0 ? prev - 1 : prev));
+                    } else if (e.key === "Enter" && selectedIndex >= 0) {
+                      e.preventDefault();
+                      handleSearchResultSelect(searchResults[selectedIndex]);
+                    }
+                  }}
+                />
+                <SearchDropdown
+                  results={searchResults}
+                  onSelect={handleSearchResultSelect}
+                  isOpen={searchQuery.length > 0}
+                  loading={isSearching}
+                  selectedIndex={selectedIndex}
+                />
+              </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-4 text-base">
                 {books &&
                   gridItems(books).map((book) => (
@@ -673,42 +709,6 @@ function RecommendationsContent() {
                     </div>
                   ))}
               </div>
-            </div>
-            <div className="relative">
-              <SearchInput
-                value={searchQuery}
-                onChange={handleSearch}
-                onClear={() => {
-                  setSearchQuery("");
-                  setSearchResults([]);
-                  setIsSearching(false);
-                  setSelectedIndex(-1);
-                }}
-                placeholder="Search for more books..."
-                onKeyDown={(e) => {
-                  if (searchResults.length === 0) return;
-
-                  if (e.key === "ArrowDown") {
-                    e.preventDefault();
-                    setSelectedIndex((prev) =>
-                      prev < searchResults.length - 1 ? prev + 1 : prev
-                    );
-                  } else if (e.key === "ArrowUp") {
-                    e.preventDefault();
-                    setSelectedIndex((prev) => (prev > 0 ? prev - 1 : prev));
-                  } else if (e.key === "Enter" && selectedIndex >= 0) {
-                    e.preventDefault();
-                    handleSearchResultSelect(searchResults[selectedIndex]);
-                  }
-                }}
-              />
-              <SearchDropdown
-                results={searchResults}
-                onSelect={handleSearchResultSelect}
-                isOpen={searchQuery.length > 0}
-                loading={isSearching}
-                selectedIndex={selectedIndex}
-              />
             </div>
           </>
         );
@@ -761,8 +761,8 @@ function RecommendationsContent() {
   return (
     <div className="space-y-4">
       <div className="w-full h-2 bg-accent/30 border border-border">
-        <div 
-          className={`h-full bg-accent transition-all duration-200 ${currentProgress < 100 ? 'border-r' : ''} border-border`} 
+        <div
+          className={`h-full bg-accent transition-all duration-200 ${currentProgress < 100 ? "border-r" : ""} border-border`}
           style={{ width: `${currentProgress}%` }}
         />
       </div>
