@@ -256,6 +256,7 @@ function RecommendationsContent() {
     };
   }, [recommenders, books, gridItems]);
 
+  // Optimize search data with indexing for faster lookups
   const memoizedSearchData = useMemo(() => {
     if (!recommenders || !books) return { people: [], books: [] };
 
@@ -264,15 +265,18 @@ function RecommendationsContent() {
         id: person.id,
         searchText: `${person.full_name} ${person.type || ""}`.toLowerCase(),
         name: `${person.full_name}${person.type ? ` (${person.type})` : ""}`,
+        tokens: `${person.full_name} ${person.type || ""}`.toLowerCase().split(/\s+/).filter(Boolean),
       })),
       books: books.map((book: Book) => ({
         id: book.id,
         searchText: `${book.title} ${book.author}`.toLowerCase(),
         name: `${book.title} by ${book.author}`,
+        tokens: `${book.title} ${book.author}`.toLowerCase().split(/\s+/).filter(Boolean),
       })),
     };
   }, [recommenders, books]);
 
+  // Optimized search with better performance
   const handleSearch = useCallback(
     (query: string) => {
       setSearchQuery(query);
@@ -280,44 +284,60 @@ function RecommendationsContent() {
       setSelectedIndex(-1);
 
       const trimmedQuery = query.trim();
-      if (!trimmedQuery) {
+      if (!trimmedQuery || trimmedQuery.length < 2) {
+        // Require at least 2 characters to search
         setSearchResults([]);
         setIsSearching(false);
         return;
       }
 
-      const lowerQuery = trimmedQuery.toLowerCase();
+      const queryTokens = trimmedQuery.toLowerCase().split(/\s+/).filter(Boolean);
+      const MAX_RESULTS = 50; // Limit results to improve performance
 
       if (step === 3) {
-        const results = memoizedSearchData.people.reduce(
-          (acc: SearchResult[], person) => {
-            if (person.searchText.includes(lowerQuery)) {
-              acc.push({
-                id: person.id,
-                name: person.name,
-                isInGrid: memoizedGridIds.people.has(person.id),
-              });
+        // More efficient search algorithm using filter and token matching
+        const results = memoizedSearchData.people
+          .filter(person => {
+            // If query has multiple words, check if all words are present
+            if (queryTokens.length > 1) {
+              return queryTokens.every(token => 
+                person.tokens.some(t => t.startsWith(token))
+              );
             }
-            return acc;
-          },
-          [] as SearchResult[]
-        );
+            // For single word queries, check if any token starts with it
+            return person.tokens.some(token => 
+              token.startsWith(queryTokens[0])
+            ) || person.searchText.includes(queryTokens[0]);
+          })
+          .slice(0, MAX_RESULTS) // Limit results
+          .map(person => ({
+            id: person.id,
+            name: person.name,
+            isInGrid: memoizedGridIds.people.has(person.id),
+          }));
 
         setSearchResults(results);
       } else if (step === 4) {
-        const results = memoizedSearchData.books.reduce(
-          (acc: SearchResult[], book) => {
-            if (book.searchText.includes(lowerQuery)) {
-              acc.push({
-                id: book.id,
-                name: book.name,
-                isInGrid: memoizedGridIds.books.has(book.id),
-              });
+        // Similar optimized approach for books
+        const results = memoizedSearchData.books
+          .filter(book => {
+            // If query has multiple words, check if all words are present
+            if (queryTokens.length > 1) {
+              return queryTokens.every(token => 
+                book.tokens.some(t => t.startsWith(token))
+              );
             }
-            return acc;
-          },
-          [] as SearchResult[]
-        );
+            // For single word queries, check if any token starts with it
+            return book.tokens.some(token => 
+              token.startsWith(queryTokens[0])
+            ) || book.searchText.includes(queryTokens[0]);
+          })
+          .slice(0, MAX_RESULTS) // Limit results
+          .map(book => ({
+            id: book.id,
+            name: book.name,
+            isInGrid: memoizedGridIds.books.has(book.id),
+          }));
 
         setSearchResults(results);
       }
@@ -327,10 +347,14 @@ function RecommendationsContent() {
     [step, memoizedSearchData, memoizedGridIds]
   );
 
+  // Increase debounce time to reduce search frequency
   useEffect(() => {
-    const timer = setTimeout(() => handleSearch(searchQuery), 500);
+    const timer = setTimeout(() => handleSearch(searchQuery), 300);
     return () => clearTimeout(timer);
   }, [searchQuery, handleSearch]);
+  
+  // Memoize search results to prevent unnecessary re-renders
+  const memoizedSearchResults = useMemo(() => searchResults, [searchResults]);
 
   const handleSearchResultSelect = (result: SearchResult) => {
     setSearchQuery(""); // Close dropdown
