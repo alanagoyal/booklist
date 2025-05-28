@@ -32,7 +32,7 @@ export function CardStack({ recommendations, userType, onBookClick }: CardStackP
   };
 
   return (
-    <div className="relative h-[500px] w-full">
+    <div className="relative h-[525px] sm:h-[500px] w-full">
       {recommendations.map((book, index) => {
         // Calculate relative position from current index
         const position = (index - currentIndex + recommendations.length) % recommendations.length;

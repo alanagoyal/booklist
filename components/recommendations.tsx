@@ -736,7 +736,7 @@ function RecommendationsContent() {
                   localStorage.removeItem("recommendations");
                   localStorage.removeItem("currentCardIndex");
                 }}
-                className="text-muted-foreground md:hover:text-text transition-colors duration-200 cursor-pointer flex items-center gap-1"
+                className="text-muted-foreground md:hover:text-text transition-colors duration-200 cursor-pointer flex items-center gap-1 p-2"
                 title="Redo"
               >
                 Redo <ArrowLeftRight size={18} className="inline" />
