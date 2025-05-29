@@ -8,15 +8,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import type { Book, FormattedRecommender } from "@/types";
 import useSWR from "swr";
 import fetcher, { fetchRecommenders } from "../utils/fetcher";
-import {
-  ArrowLeftRight,
-  BookOpen,
-  Link,
-  Tag,
-  Undo,
-  Undo2,
-  User,
-} from "lucide-react";
+import { ArrowLeftRight } from "lucide-react";
 import { CardStack } from "./card-stack";
 
 interface SearchResult {
@@ -266,13 +258,19 @@ function RecommendationsContent() {
         id: person.id,
         searchText: `${person.full_name} ${person.type || ""}`.toLowerCase(),
         name: `${person.full_name}${person.type ? ` (${person.type})` : ""}`,
-        tokens: `${person.full_name} ${person.type || ""}`.toLowerCase().split(/\s+/).filter(Boolean),
+        tokens: `${person.full_name} ${person.type || ""}`
+          .toLowerCase()
+          .split(/\s+/)
+          .filter(Boolean),
       })),
       books: books.map((book: Book) => ({
         id: book.id,
         searchText: `${book.title} ${book.author}`.toLowerCase(),
         name: `${book.title} by ${book.author}`,
-        tokens: `${book.title} ${book.author}`.toLowerCase().split(/\s+/).filter(Boolean),
+        tokens: `${book.title} ${book.author}`
+          .toLowerCase()
+          .split(/\s+/)
+          .filter(Boolean),
       })),
     };
   }, [recommenders, books]);
@@ -292,26 +290,30 @@ function RecommendationsContent() {
         return;
       }
 
-      const queryTokens = trimmedQuery.toLowerCase().split(/\s+/).filter(Boolean);
+      const queryTokens = trimmedQuery
+        .toLowerCase()
+        .split(/\s+/)
+        .filter(Boolean);
       const MAX_RESULTS = 50; // Limit results to improve performance
 
       if (step === 3) {
         // More efficient search algorithm using filter and token matching
         const results = memoizedSearchData.people
-          .filter(person => {
+          .filter((person) => {
             // If query has multiple words, check if all words are present
             if (queryTokens.length > 1) {
-              return queryTokens.every(token => 
-                person.tokens.some(t => t.startsWith(token))
+              return queryTokens.every((token) =>
+                person.tokens.some((t) => t.startsWith(token))
               );
             }
             // For single word queries, check if any token starts with it
-            return person.tokens.some(token => 
-              token.startsWith(queryTokens[0])
-            ) || person.searchText.includes(queryTokens[0]);
+            return (
+              person.tokens.some((token) => token.startsWith(queryTokens[0])) ||
+              person.searchText.includes(queryTokens[0])
+            );
           })
           .slice(0, MAX_RESULTS) // Limit results
-          .map(person => ({
+          .map((person) => ({
             id: person.id,
             name: person.name,
             isInGrid: memoizedGridIds.people.has(person.id),
@@ -321,20 +323,21 @@ function RecommendationsContent() {
       } else if (step === 4) {
         // Similar optimized approach for books
         const results = memoizedSearchData.books
-          .filter(book => {
+          .filter((book) => {
             // If query has multiple words, check if all words are present
             if (queryTokens.length > 1) {
-              return queryTokens.every(token => 
-                book.tokens.some(t => t.startsWith(token))
+              return queryTokens.every((token) =>
+                book.tokens.some((t) => t.startsWith(token))
               );
             }
             // For single word queries, check if any token starts with it
-            return book.tokens.some(token => 
-              token.startsWith(queryTokens[0])
-            ) || book.searchText.includes(queryTokens[0]);
+            return (
+              book.tokens.some((token) => token.startsWith(queryTokens[0])) ||
+              book.searchText.includes(queryTokens[0])
+            );
           })
           .slice(0, MAX_RESULTS) // Limit results
-          .map(book => ({
+          .map((book) => ({
             id: book.id,
             name: book.name,
             isInGrid: memoizedGridIds.books.has(book.id),
@@ -353,7 +356,7 @@ function RecommendationsContent() {
     const timer = setTimeout(() => handleSearch(searchQuery), 300);
     return () => clearTimeout(timer);
   }, [searchQuery, handleSearch]);
-  
+
   // Memoize search results to prevent unnecessary re-renders
   const memoizedSearchResults = useMemo(() => searchResults, [searchResults]);
 
@@ -361,6 +364,11 @@ function RecommendationsContent() {
     setSearchQuery(""); // Close dropdown
 
     if (step === 3 && recommenders) {
+      // Don't proceed if we already have 3 people selected and this one isn't already selected
+      if (selectedPeopleIds.length >= 3 && !selectedPeopleIds.includes(result.id)) {
+        return;
+      }
+      
       const gridPeople = gridItems(recommenders);
       const suggestedPeople = gridPeople
         .slice(0, 18)
@@ -380,6 +388,11 @@ function RecommendationsContent() {
         handlePersonSelect(person);
       }
     } else if (step === 4 && books) {
+      // Don't proceed if we already have 3 books selected and this one isn't already selected
+      if (selectedBookIds.length >= 3 && !selectedBookIds.includes(result.id)) {
+        return;
+      }
+      
       const gridBooks = gridItems(books);
       const suggestedBooks = gridBooks
         .slice(0, 18)
@@ -495,8 +508,8 @@ function RecommendationsContent() {
                 {FIELD_VALUES.type.map((type) => (
                   <div
                     key={type}
-                    onClick={() => setUserType(type)}
-                    className={`p-3 cursor-pointer border border-border transition-colors duration-200 whitespace-pre-line line-clamp-2 ${
+                    onClick={() => userType === null || userType === type ? setUserType(type) : null}
+                    className={`p-3 ${userType !== null && userType !== type ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'} border border-border transition-colors duration-200 whitespace-pre-line line-clamp-2 ${
                       type === userType
                         ? "bg-accent/70 hover:bg-accent"
                         : "bg-background hover:bg-accent/50"
@@ -544,8 +557,8 @@ function RecommendationsContent() {
                 {FIELD_VALUES.genres.map((genre) => (
                   <div
                     key={genre}
-                    onClick={() => handleGenreToggle(genre)}
-                    className={`p-3 cursor-pointer border border-border transition-colors duration-200 whitespace-pre-line line-clamp-2 ${
+                    onClick={() => selectedGenres.length < 3 || selectedGenres.includes(genre) ? handleGenreToggle(genre) : null}
+                    className={`p-3 ${selectedGenres.length >= 3 && !selectedGenres.includes(genre) ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'} border border-border transition-colors duration-200 whitespace-pre-line line-clamp-2 ${
                       selectedGenres.includes(genre)
                         ? "bg-accent/70 hover:bg-accent"
                         : "bg-background hover:bg-accent/50"
@@ -602,8 +615,9 @@ function RecommendationsContent() {
                     setSelectedIndex(-1);
                   }}
                   placeholder="Search for more people..."
+                  disabled={selectedPeopleIds.length >= 3}
                   onKeyDown={(e) => {
-                    if (searchResults.length === 0) return;
+                    if (searchResults.length === 0 || selectedPeopleIds.length >= 3) return;
 
                     // Create sorted results array to match what's displayed in the dropdown
                     const sortedResults = [...searchResults].sort((a, b) => {
@@ -619,7 +633,11 @@ function RecommendationsContent() {
                     } else if (e.key === "ArrowUp") {
                       e.preventDefault();
                       setSelectedIndex((prev) => (prev > 0 ? prev - 1 : prev));
-                    } else if (e.key === "Enter" && selectedIndex >= 0 && selectedIndex < sortedResults.length) {
+                    } else if (
+                      e.key === "Enter" &&
+                      selectedIndex >= 0 &&
+                      selectedIndex < sortedResults.length
+                    ) {
                       e.preventDefault();
                       handleSearchResultSelect(sortedResults[selectedIndex]);
                     }
@@ -638,8 +656,8 @@ function RecommendationsContent() {
                   gridItems(recommenders).map((person) => (
                     <div
                       key={person.id}
-                      onClick={() => handlePersonSelect(person)}
-                      className={`p-3 cursor-pointer border border-border transition-colors duration-200 whitespace-pre-line line-clamp-2 ${
+                      onClick={() => selectedPeopleIds.length < 3 || selectedPeopleIds.includes(person.id) ? handlePersonSelect(person) : null}
+                      className={`p-3 ${selectedPeopleIds.length >= 3 && !selectedPeopleIds.includes(person.id) ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'} border border-border transition-colors duration-200 whitespace-pre-line line-clamp-2 ${
                         selectedPeopleIds.includes(person.id)
                           ? "bg-accent/70 hover:bg-accent"
                           : "bg-background hover:bg-accent/50"
@@ -699,8 +717,9 @@ function RecommendationsContent() {
                     setSelectedIndex(-1);
                   }}
                   placeholder="Search for more books..."
+                  disabled={selectedBookIds.length >= 3}
                   onKeyDown={(e) => {
-                    if (searchResults.length === 0) return;
+                    if (searchResults.length === 0 || selectedBookIds.length >= 3) return;
 
                     // Create sorted results array to match what's displayed in the dropdown
                     const sortedResults = [...searchResults].sort((a, b) => {
@@ -716,7 +735,11 @@ function RecommendationsContent() {
                     } else if (e.key === "ArrowUp") {
                       e.preventDefault();
                       setSelectedIndex((prev) => (prev > 0 ? prev - 1 : prev));
-                    } else if (e.key === "Enter" && selectedIndex >= 0 && selectedIndex < sortedResults.length) {
+                    } else if (
+                      e.key === "Enter" &&
+                      selectedIndex >= 0 &&
+                      selectedIndex < sortedResults.length
+                    ) {
                       e.preventDefault();
                       handleSearchResultSelect(sortedResults[selectedIndex]);
                     }
@@ -735,8 +758,8 @@ function RecommendationsContent() {
                   gridItems(books).map((book) => (
                     <div
                       key={book.id}
-                      onClick={() => handleBookSelect(book)}
-                      className={`p-3 cursor-pointer border border-border transition-colors duration-200 whitespace-pre-line line-clamp-2 ${
+                      onClick={() => selectedBookIds.length < 3 || selectedBookIds.includes(book.id) ? handleBookSelect(book) : null}
+                      className={`p-3 ${selectedBookIds.length >= 3 && !selectedBookIds.includes(book.id) ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'} border border-border transition-colors duration-200 whitespace-pre-line line-clamp-2 ${
                         selectedBookIds.includes(book.id)
                           ? "bg-accent/70 hover:bg-accent"
                           : "bg-background hover:bg-accent/50"
