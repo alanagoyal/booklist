@@ -126,6 +126,7 @@ function RecommendationsContent() {
     const savedGenres = localStorage.getItem("selectedGenres");
     const savedPeopleIds = localStorage.getItem("selectedPeopleIds");
     const savedBookIds = localStorage.getItem("selectedBookIds");
+    const savedExtraGridItems = localStorage.getItem("extraGridItems");
     const savedRecommendations = localStorage.getItem("recommendations");
     const savedCardIndex = localStorage.getItem("currentCardIndex");
 
@@ -134,6 +135,7 @@ function RecommendationsContent() {
     if (savedGenres) setSelectedGenres(JSON.parse(savedGenres));
     if (savedPeopleIds) setSelectedPeopleIds(JSON.parse(savedPeopleIds));
     if (savedBookIds) setSelectedBookIds(JSON.parse(savedBookIds));
+    if (savedExtraGridItems) setExtraGridItems(JSON.parse(savedExtraGridItems));
     if (savedCardIndex) setCurrentCardIndex(parseInt(savedCardIndex));
 
     // Check for recommendations last
@@ -188,6 +190,12 @@ function RecommendationsContent() {
       localStorage.removeItem("selectedBookIds");
     }
 
+    if (extraGridItems.length) {
+      localStorage.setItem("extraGridItems", JSON.stringify(extraGridItems));
+    } else {
+      localStorage.removeItem("extraGridItems");
+    }
+
     if (recommendations.length) {
       localStorage.setItem("recommendations", JSON.stringify(recommendations));
       localStorage.setItem("currentCardIndex", currentCardIndex.toString());
@@ -200,6 +208,7 @@ function RecommendationsContent() {
     selectedGenres,
     selectedPeopleIds,
     selectedBookIds,
+    extraGridItems,
     recommendations,
     currentCardIndex,
     isInitialized,
@@ -789,12 +798,14 @@ function RecommendationsContent() {
                   setSelectedBookIds([]);
                   setRecommendations([]);
                   setCurrentCardIndex(0);
+                  setExtraGridItems([]);
                   localStorage.removeItem("userType");
                   localStorage.removeItem("selectedGenres");
                   localStorage.removeItem("selectedPeopleIds");
                   localStorage.removeItem("selectedBookIds");
                   localStorage.removeItem("recommendations");
                   localStorage.removeItem("currentCardIndex");
+                  localStorage.removeItem("extraGridItems");
                 }}
                 className="text-muted-foreground md:hover:text-text transition-colors duration-200 cursor-pointer flex items-center gap-1 p-2"
                 title="Redo"
