@@ -35,6 +35,30 @@ export const countManager = {
   }
 };
 
+// Color legend data with percentile ranges
+const legendData = [
+  { bucket: 0, range: '0-50th percentile', color: 'bg-[hsl(151,80%,95%)] dark:bg-[hsl(160,84%,5%)]' },
+  { bucket: 1, range: '50-80th percentile', color: 'bg-[hsl(151,80%,90%)] dark:bg-[hsl(160,84%,9%)]' },
+  { bucket: 2, range: '80-90th percentile', color: 'bg-[hsl(151,80%,85%)] dark:bg-[hsl(160,84%,13%)]' },
+  { bucket: 3, range: '90-95th percentile', color: 'bg-[hsl(151,80%,80%)] dark:bg-[hsl(160,84%,17%)]' },
+  { bucket: 4, range: '95-98th percentile', color: 'bg-[hsl(151,80%,75%)] dark:bg-[hsl(160,84%,21%)]' },
+  { bucket: 5, range: '98-99th percentile', color: 'bg-[hsl(151,80%,70%)] dark:bg-[hsl(160,84%,25%)]' },
+];
+
+// Color legend component
+function ColorLegend() {
+  return (
+    <div className="flex flex-col gap-1 text-xs">
+      {legendData.map(({ bucket, range, color }) => (
+        <div key={bucket} className="flex items-center gap-1">
+          <div className={`w-3 h-3 ${color} border border-border`} />
+          <span className="text-text/70">{range}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 // Loading state component following our established styling patterns
 export function LoadingState() {
   return (
@@ -80,9 +104,17 @@ export function Counter({ total, viewMode = 'books' }: CounterProps) {
       : `${filteredCount} of ${total} people`;
 
   return createPortal(
-    <div className="fixed bottom-5 right-5 text-muted-foreground text-xs whitespace-pre-line transition-all duration-200 bg-background/80 backdrop-blur-sm p-2 selection:bg-main selection:text-mtext md:hover:bg-accent/50">
-      {text}
-    </div>,
+    <>
+      {/* Count in bottom-left corner */}
+      <div className="fixed bottom-5 left-5 text-xs whitespace-pre-line transition-all duration-200 bg-background/80 backdrop-blur-sm p-2 selection:bg-main selection:text-mtext md:hover:bg-accent/50">
+        <div className="text-text/70">{text}</div>
+      </div>
+      
+      {/* Legend in bottom-right corner */}
+      <div className="fixed bottom-5 right-5 text-xs transition-all duration-200 bg-background/80 backdrop-blur-sm p-2 selection:bg-main selection:text-mtext md:hover:bg-accent/50">
+        <ColorLegend />
+      </div>
+    </>,
     document.body
   );
 }
