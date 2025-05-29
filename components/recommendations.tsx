@@ -498,19 +498,6 @@ function RecommendationsContent() {
           <>
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-0">
               <h2 className="text-xl font-base">What is your profession?</h2>
-              <div className="flex justify-end gap-4">
-                <button
-                  onClick={() => setStep(2)}
-                  disabled={!userType}
-                  className={`w-[135px] text-right ${
-                    !userType
-                      ? "cursor-not-allowed text-muted-foreground"
-                      : "md:hover:underline text-text"
-                  }`}
-                >
-                  {userType ? "Next (1/1 selected)" : "Next (0/1 selected)"}
-                </button>
-              </div>
             </div>
             <div className="space-y-2">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-base">
@@ -537,29 +524,6 @@ function RecommendationsContent() {
           <>
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-0">
               <h2 className="text-xl font-base">What genres interest you?</h2>
-              <div className="flex justify-between md:justify-end gap-4">
-                <button
-                  onClick={() => setStep(step - 1)}
-                  className="bg-background text-text md:hover:underline transition-colors duration-200"
-                >
-                  Back
-                </button>
-                <button
-                  onClick={() => {
-                    setStep(3);
-                  }}
-                  disabled={selectedGenres.length === 0}
-                  className={`w-[135px] text-right ${
-                    selectedGenres.length === 0
-                      ? "cursor-not-allowed text-muted-foreground"
-                      : "md:hover:underline text-text"
-                  }`}
-                >
-                  {selectedGenres.length === 0
-                    ? "Next (0/3 selected)"
-                    : `Next (${selectedGenres.length}/3 selected)`}
-                </button>
-              </div>
             </div>
             <div className="space-y-2">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-base">
@@ -590,27 +554,6 @@ function RecommendationsContent() {
               <h2 className="text-xl font-base">
                 Whose reading tastes do you admire?
               </h2>
-              <div className="flex justify-between md:justify-end gap-4">
-                <button
-                  onClick={() => setStep(step - 1)}
-                  className="text-text md:hover:underline transition-colors duration-200"
-                >
-                  Back
-                </button>
-                <button
-                  onClick={() => setStep(4)}
-                  disabled={!selectedPeopleIds.length}
-                  className={`w-[135px] text-right ${
-                    !selectedPeopleIds.length
-                      ? "cursor-not-allowed text-muted-foreground"
-                      : "md:hover:underline text-text"
-                  }`}
-                >
-                  {selectedPeopleIds.length === 0
-                    ? "Next (0/3 selected)"
-                    : `Next (${selectedPeopleIds.length}/3 selected)`}
-                </button>
-              </div>
             </div>
             <div className="space-y-2">
               <div className="relative">
@@ -692,29 +635,6 @@ function RecommendationsContent() {
               <h2 className="text-xl font-base">
                 What&apos;s on your bookshelf?
               </h2>
-              <div className="flex justify-between md:justify-end gap-4">
-                <button
-                  onClick={() => setStep(step - 1)}
-                  className="text-text md:hover:underline transition-colors duration-200"
-                >
-                  Back
-                </button>
-                <button
-                  onClick={getRecommendations}
-                  disabled={!selectedBookIds.length}
-                  className={`w-[135px] text-right ${
-                    !selectedBookIds.length
-                      ? "cursor-not-allowed text-muted-foreground"
-                      : "md:hover:underline text-text"
-                  }`}
-                >
-                  {loading
-                    ? "Thinking..."
-                    : selectedBookIds.length === 0
-                      ? "Next (0/3 selected)"
-                      : `Next (${selectedBookIds.length}/3 selected)`}
-                </button>
-              </div>
             </div>
             <div className="space-y-2">
               <div className="relative">
@@ -793,29 +713,6 @@ function RecommendationsContent() {
               <h2 className="text-xl font-base">
                 We found the following for you
               </h2>
-              <span
-                onClick={() => {
-                  setStep(1);
-                  setUserType(null);
-                  setSelectedGenres([]);
-                  setSelectedPeopleIds([]);
-                  setSelectedBookIds([]);
-                  setRecommendations([]);
-                  setCurrentCardIndex(0);
-                  setExtraGridItems([]);
-                  localStorage.removeItem("userType");
-                  localStorage.removeItem("selectedGenres");
-                  localStorage.removeItem("selectedPeopleIds");
-                  localStorage.removeItem("selectedBookIds");
-                  localStorage.removeItem("recommendations");
-                  localStorage.removeItem("currentCardIndex");
-                  localStorage.removeItem("extraGridItems");
-                }}
-                className="text-muted-foreground md:hover:text-text transition-colors duration-200 cursor-pointer flex items-center gap-1 p-2"
-                title="Redo"
-              >
-                Redo <ArrowLeftRight size={18} className="inline" />
-              </span>
             </div>
             <CardStack
               recommendations={recommendations}
@@ -823,6 +720,142 @@ function RecommendationsContent() {
               onBookClick={handleBookClick}
             />
           </>
+        );
+
+      default:
+        return null;
+    }
+  };
+
+  const renderNavigationButtons = () => {
+    if (!isInitialized || step === undefined) {
+      return null;
+    }
+
+    switch (step) {
+      case 1:
+        return (
+          <div className="flex justify-end gap-4 h-10">
+            <button
+              onClick={() => setStep(2)}
+              disabled={!userType}
+              className={`w-[135px] text-right h-10 ${
+                !userType
+                  ? "cursor-not-allowed text-muted-foreground"
+                  : "md:hover:underline text-text"
+              }`}
+            >
+              {userType ? "Next (1/1 selected)" : "Next (0/1 selected)"}
+            </button>
+          </div>
+        );
+
+      case 2:
+        return (
+          <div className="flex justify-between gap-4 h-10">
+            <button
+              onClick={() => setStep(step - 1)}
+              className="bg-background text-text md:hover:underline transition-colors duration-200 h-10"
+            >
+              Back
+            </button>
+            <button
+              onClick={() => {
+                setStep(3);
+              }}
+              disabled={selectedGenres.length === 0}
+              className={`w-[135px] text-right h-10 ${
+                selectedGenres.length === 0
+                  ? "cursor-not-allowed text-muted-foreground"
+                  : "md:hover:underline text-text"
+              }`}
+            >
+              {selectedGenres.length === 0
+                ? "Next (0/3 selected)"
+                : `Next (${selectedGenres.length}/3 selected)`}
+            </button>
+          </div>
+        );
+
+      case 3:
+        return (
+          <div className="flex justify-between gap-4 h-10">
+            <button
+              onClick={() => setStep(step - 1)}
+              className="text-text md:hover:underline transition-colors duration-200 h-10"
+            >
+              Back
+            </button>
+            <button
+              onClick={() => setStep(4)}
+              disabled={!selectedPeopleIds.length}
+              className={`w-[135px] text-right h-10 ${
+                !selectedPeopleIds.length
+                  ? "cursor-not-allowed text-muted-foreground"
+                  : "md:hover:underline text-text"
+              }`}
+            >
+              {selectedPeopleIds.length === 0
+                ? "Next (0/3 selected)"
+                : `Next (${selectedPeopleIds.length}/3 selected)`}
+            </button>
+          </div>
+        );
+
+      case 4:
+        return (
+          <div className="flex justify-between gap-4 h-10">
+            <button
+              onClick={() => setStep(step - 1)}
+              className="text-text md:hover:underline transition-colors duration-200 h-10"
+            >
+              Back
+            </button>
+            <button
+              onClick={getRecommendations}
+              disabled={!selectedBookIds.length}
+              className={`w-[135px] text-right h-10 ${
+                !selectedBookIds.length
+                  ? "cursor-not-allowed text-muted-foreground"
+                  : "md:hover:underline text-text"
+              }`}
+            >
+              {loading
+                ? "Thinking..."
+                : selectedBookIds.length === 0
+                  ? "Next (0/3 selected)"
+                  : `Next (${selectedBookIds.length}/3 selected)`}
+            </button>
+          </div>
+        );
+
+      case 5:
+        return (
+          <div className="flex justify-end gap-4 h-10">
+            <button
+              onClick={() => {
+                setStep(1);
+                setUserType(null);
+                setSelectedGenres([]);
+                setSelectedPeopleIds([]);
+                setSelectedBookIds([]);
+                setRecommendations([]);
+                setCurrentCardIndex(0);
+                setExtraGridItems([]);
+                localStorage.removeItem("userType");
+                localStorage.removeItem("selectedGenres");
+                localStorage.removeItem("selectedPeopleIds");
+                localStorage.removeItem("selectedBookIds");
+                localStorage.removeItem("recommendations");
+                localStorage.removeItem("currentCardIndex");
+                localStorage.removeItem("extraGridItems");
+              }}
+              className="text-muted-foreground md:hover:text-text transition-colors duration-200 cursor-pointer flex items-center gap-1 h-10"
+              title="Redo"
+            >
+              Redo <ArrowLeftRight size={18} className="inline" />
+            </button>
+          </div>
         );
 
       default:
@@ -843,6 +876,7 @@ function RecommendationsContent() {
 
   return (
     <div className="space-y-4">
+      {renderNavigationButtons()}
       <div className="w-full h-2 bg-accent/30 border border-border">
         <div
           className={`h-full bg-accent transition-all duration-200 ${currentProgress < 100 ? "border-r" : ""} border-border`}
