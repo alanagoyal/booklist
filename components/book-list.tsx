@@ -259,7 +259,7 @@ export function BookList({
             key={`tab-${view.id}-${index}`}
             className={`hidden md:block fixed ${
               hoveredTabId === view.id ? "bg-accent" : "bg-background"
-            } border-border border border-b-0 px-3 py-2 text-text/70 truncate h-[32px] w-[150px] text-sm text-right whitespace-nowrap cursor-pointer ${
+            } border-border border border-b-0 px-3 py-2 text-text truncate h-[32px] w-[150px] text-sm text-right whitespace-nowrap cursor-pointer ${
               isNavigating ? "" : "transition-colors duration-300 ease-in-out"
             }`}
             style={{

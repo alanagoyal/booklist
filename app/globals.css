@@ -19,7 +19,7 @@
     --border: 0 0% 0%; /* Black with opacity via border-border/20 */
     --grid-border: 151 40% 85%; /* Light emerald for grid lines */
     --muted: 151 40% 96%;
-    --muted-foreground: 160 84% 25%;
+    --muted-foreground: 160 40% 35%; /* Reduced saturation, adjusted lightness for subtlety */
     
     /* Card and popover */
     --card: 151 80% 98%;
@@ -64,7 +64,7 @@
     --border: 0 0% 100%; /* White with opacity via border-border/20 */
     --grid-border: 160 40% 15%; /* Dark emerald for grid lines */
     --muted: 160 40% 10%;
-    --muted-foreground: 151 40% 70%;
+    --muted-foreground: 151 35% 75%; /* Increased lightness, reduced saturation for softer look */
     
     /* Card and popover */
     --card: 160 84% 7%;
@@ -126,5 +126,10 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+  
+  /* Remove focus outlines on container divs while preserving accessibility */
+  div:focus:not([role="button"]):not([role="textbox"]):not([role="checkbox"]):not([role="radio"]):not([role="combobox"]):not([role="listbox"]):not([role="menu"]) {
+    outline: none;
   }
 }

@@ -38,7 +38,7 @@ function HeaderContent() {
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
       if (!isMenuOpen) return;
-      
+
       const target = e.target as HTMLElement;
       if (!menuRef.current?.contains(target)) {
         e.preventDefault();
@@ -86,40 +86,50 @@ function HeaderContent() {
         <div className="hidden md:flex h-[48px] text-sm pt-2 space-x-3">
           <Link
             href={getViewHref("books")}
-            className={`h-full flex items-center px-1 transition-colors duration-200 border-b-2 ${
+            className={`h-full flex items-center px-1 transition-colors duration-200 border-b-2 text-text ${
               isHomePage && view === "books"
-                ? "text-text border-text"
-                : "text-text/70 md:hover:text-text border-transparent"
+                ? "border-text"
+                : "border-transparent"
             }`}
           >
             Books
           </Link>
           <Link
             href={getViewHref("people")}
-            className={`h-full flex items-center px-1 transition-colors duration-200 border-b-2 ${
+            className={`h-full flex items-center px-1 transition-colors duration-200 border-b-2 text-text ${
               isHomePage && view === "people"
-                ? "text-text border-text"
-                : "text-text/70 md:hover:text-text border-transparent"
+                ? "border-text"
+                : "border-transparent"
             }`}
           >
             People
           </Link>
           <Link
+            href={`/recommendations?${searchParams.toString()}`}
+            className={`h-full flex items-center px-1 transition-colors duration-200 border-b-2 text-text ${
+              pathname === "/recommendations"
+                ? "border-text"
+                : "border-transparent"
+            }`}
+          >
+            Recommendations
+          </Link>
+          <Link
             href={`/insights?${searchParams.toString()}`}
-            className={`h-full flex items-center px-1 transition-colors duration-200 border-b-2 ${
+            className={`h-full flex items-center px-1 transition-colors duration-200 border-b-2 text-text ${
               pathname === "/insights"
-                ? "text-text border-text"
-                : "text-text/70 md:hover:text-text border-transparent"
+                ? "border-text"
+                : "border-transparent"
             }`}
           >
             Insights
           </Link>
           <Link
             href={`/about?${searchParams.toString()}`}
-            className={`h-full flex items-center px-1 transition-colors duration-200 border-b-2 ${
+            className={`h-full flex items-center px-1 transition-colors duration-200 border-b-2 text-text ${
               pathname === "/about"
-                ? "text-text border-text"
-                : "text-text/70 md:hover:text-text border-transparent"
+                ? "border-text"
+                : "border-transparent"
             }`}
           >
             About
@@ -128,7 +138,7 @@ function HeaderContent() {
       </div>
       <div className="ml-auto flex gap-2">
         <div className="hidden md:flex items-center gap-2 pt-2 px-2 text-sm">
-          <ThemeToggle className="h-full p-2 md:hover:text-text text-text/70" />
+          <ThemeToggle className="h-full p-2 text-text" />
         </div>
         <div className="md:hidden px-2 pt-1 relative">
           <button
@@ -136,16 +146,19 @@ function HeaderContent() {
               e.stopPropagation();
               setIsMenuOpen(!isMenuOpen);
             }}
-            className="h-10 w-10 flex items-center justify-center text-text/70"
+            className="h-10 w-10 flex items-center justify-center text-text"
             aria-label="Menu"
           >
             <Menu size={24} />
           </button>
           {isMenuOpen && (
-            <div ref={menuRef} className="absolute right-0 top-12 w-56 bg-background border-l border-b border-border z-50">
+            <div
+              ref={menuRef}
+              className="absolute right-0 top-12 w-56 bg-background border-l border-b border-border z-50"
+            >
               <Link
                 href={getViewHref("books")}
-                className="w-full px-4 py-2 flex items-center text-left text-text/70"
+                className="w-full px-4 py-2 flex items-center text-left text-text"
                 onClick={(e) => {
                   e.preventDefault();
                   setIsMenuOpen(false);
@@ -163,7 +176,7 @@ function HeaderContent() {
               </Link>
               <Link
                 href={getViewHref("people")}
-                className="w-full px-4 py-2 flex items-center text-left text-text/70"
+                className="w-full px-4 py-2 flex items-center text-left text-text"
                 onClick={(e) => {
                   e.preventDefault();
                   setIsMenuOpen(false);
@@ -180,8 +193,23 @@ function HeaderContent() {
                 </span>
               </Link>
               <Link
+                href={`/recommendations?${currentParams}`}
+                className="w-full px-4 py-2 flex items-center text-left text-text"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setIsMenuOpen(false);
+                  router.push(`/recommendations?${currentParams}`);
+                }}
+              >
+                <span
+                  className={`transition-all duration-200 ${pathname === "/recommendations" ? "border-b-2 border-text text-text" : ""}`}
+                >
+                  Recommendations
+                </span>
+              </Link>
+              <Link
                 href="/insights"
-                className="w-full px-4 py-2 flex items-center text-left text-text/70"
+                className="w-full px-4 py-2 flex items-center text-left text-text"
                 onClick={(e) => {
                   e.preventDefault();
                   setIsMenuOpen(false);
@@ -196,7 +224,7 @@ function HeaderContent() {
               </Link>
               <Link
                 href="/about"
-                className="w-full px-4 py-2 flex items-center text-left text-text/70"
+                className="w-full px-4 py-2 flex items-center text-left text-text"
                 onClick={(e) => {
                   e.preventDefault();
                   setIsMenuOpen(false);
@@ -210,7 +238,7 @@ function HeaderContent() {
                 </span>
               </Link>
               <ThemeToggle
-                className="w-full px-4 py-2 flex items-center text-left text-text/70 transition-colors duration-200"
+                className="w-full px-4 py-2 flex items-center text-left text-text transition-colors duration-200"
                 onClick={() => {
                   setIsMenuOpen(false);
                 }}

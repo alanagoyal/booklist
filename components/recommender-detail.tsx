@@ -52,13 +52,13 @@ export default function RecommenderDetail({
           <div className="sticky top-0 bg-background pt-8 px-12 md:pt-16">
             <button
               onClick={onClose}
-              className="absolute top-8 left-4 md:hidden text-text/70 transition-colors duration-200 md:hover:text-text"
+              className="absolute top-8 left-4 md:hidden text-muted-foreground transition-colors duration-200 md:hover:text-text"
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
             <button
               onClick={onClose}
-              className="absolute top-4 right-4 hidden md:block text-text/70 transition-colors duration-200 md:hover:text-text"
+              className="absolute top-4 right-4 hidden md:block text-muted-foreground transition-colors duration-200 md:hover:text-text"
             >
               <X className="w-5 h-5" />
             </button>
@@ -67,7 +67,7 @@ export default function RecommenderDetail({
                 <h1 className="text-2xl font-base text-text">
                   {recommender?.full_name}
                 </h1>
-                <p className="text-text/70 text-lg">
+                <p className="text-muted-foreground text-lg">
                   {recommender?.recommendations?.length || 0} recommendation
                   {(recommender?.recommendations?.length || 0) === 1 ? "" : "s"}
                 </p>
@@ -77,13 +77,13 @@ export default function RecommenderDetail({
               <div className="flex justify-between items-center pt-4">
                 {recommender?.type && (
                   <div className="flex items-center gap-2 text-text">
-                    <Tag className="w-4 h-4 text-text/70" />
+                    <Tag className="w-4 h-4 text-muted-foreground" />
                     <span>{recommender.type}</span>
                   </div>
                 )}
                 {recommender?.url && (
                   <div className="flex items-center gap-2">
-                    <Link className="w-4 h-4 text-text/70" />
+                    <Link className="w-4 h-4 text-muted-foreground" />
                     <a
                       href={recommender.url}
                       target="_blank"
@@ -124,7 +124,7 @@ export default function RecommenderDetail({
                           handleEntityClick(book.id);
                         }}
                       >
-                        <BookOpen className="w-5 h-5 mt-0.5 text-text/70 shrink-0" />
+                        <BookOpen className="w-5 h-5 mt-0.5 text-muted-foreground shrink-0" />
                         <div className="space-y-1 min-w-0 flex-1">
                           <div className="flex items-baseline gap-2">
                             <span className="text-text">
@@ -145,7 +145,7 @@ export default function RecommenderDetail({
                             </span>
                           </div>
                           {book.genre && (
-                            <div className="text-sm text-text/70">
+                            <div className="text-sm text-muted-foreground">
                               {book.genre.join(", ")}
                             </div>
                           )}
@@ -158,7 +158,7 @@ export default function RecommenderDetail({
                     onClick={() =>
                       setShowAllRecommendations(!showAllRecommendations)
                     }
-                    className="w-full p-2 text-text/70 transition-colors duration-200 md:hover:text-text md:hover:underline"
+                    className="w-full p-2 text-muted-foreground transition-colors duration-200 md:hover:text-text md:hover:underline"
                   >
                     {showAllRecommendations
                       ? "Show less"
@@ -216,14 +216,14 @@ export default function RecommenderDetail({
                             handleEntityClick(person.id);
                           }}
                         >
-                          <User className="w-5 h-5 mt-0.5 text-text/70 shrink-0" />
+                          <User className="w-5 h-5 mt-0.5 text-muted-foreground shrink-0" />
                           <div className="space-y-1 min-w-0 flex-1">
                             <div className="flex items-baseline gap-2">
                               <span className="text-text">
                                 {person.full_name} ({person.type})
                               </span>
                             </div>
-                            <div className="text-sm text-text/70 space-y-0.5">
+                            <div className="text-sm text-muted-foreground space-y-0.5">
                               {person._shared_count !== undefined && (
                                 <div>{person._shared_count} shared recommendation{person._shared_count === 1 ? "" : "s"}</div>
                               )}

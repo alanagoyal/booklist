@@ -42,3 +42,6 @@ next-env.d.ts
 
 # generated data
 /public/data/*.json
+
+# supabase
+supabase/seed.sql

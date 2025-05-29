@@ -10,7 +10,7 @@ import React, {
 import { ChevronDown, Check, ArrowUp, ArrowDown, X, ListFilter } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { SearchBox } from "./search-box";
+import { SearchBox } from "./semantic-search";
 import { countManager } from "@/components/counter";
 import { ColumnFilter } from "./column-filter";
 
@@ -439,12 +439,12 @@ export function DataGrid<T extends Record<string, any>>({
               }}
             >
               <div className="flex items-center gap-2">
-                <ArrowUp className="w-3 h-3 text-text/70" />
+                <ArrowUp className="w-3 h-3 text-muted-foreground" />
                 <span>Sort ascending</span>
               </div>
               {sortConfig.field === String(column.field) &&
                 sortConfig.direction === "asc" && (
-                  <Check className="w-3 h-3 text-text/70" />
+                  <Check className="w-3 h-3 text-muted-foreground" />
                 )}
             </button>
             <button
@@ -455,12 +455,12 @@ export function DataGrid<T extends Record<string, any>>({
               }}
             >
               <div className="flex items-center gap-2">
-                <ArrowDown className="w-3 h-3 text-text/70" />
+                <ArrowDown className="w-3 h-3 text-muted-foreground" />
                 <span>Sort descending</span>
               </div>
               {sortConfig.field === String(column.field) &&
                 sortConfig.direction === "desc" && (
-                  <Check className="w-3 h-3 text-text/70" />
+                  <Check className="w-3 h-3 text-muted-foreground" />
                 )}
             </button>
             <ColumnFilter
@@ -499,19 +499,19 @@ export function DataGrid<T extends Record<string, any>>({
             <span className="font-base text-text">{column.header}</span>
             <div className="flex items-center gap-1">
               {debouncedFilters[String(column.field)] && (
-                <ListFilter className="w-3 h-3 text-text/70 md:group-hover:hidden" />
+                <ListFilter className="w-3 h-3 text-muted-foreground md:group-hover:hidden" />
               )}
               <div>
                 {sortConfig.field === String(column.field) && (
                   <div className="md:group-hover:hidden">
                     {sortConfig.direction === "asc" ? (
-                      <ArrowUp className="w-4 h-4 text-text/70 p-0.5" />
+                      <ArrowUp className="w-4 h-4 text-muted-foreground p-0.5" />
                     ) : (
-                      <ArrowDown className="w-4 h-4 text-text/70 p-0.5" />
+                      <ArrowDown className="w-4 h-4 text-muted-foreground p-0.5" />
                     )}
                   </div>
                 )}
-                <ChevronDown className="w-4 h-4 text-text/70 transition-colors duration-200 rounded p-0.5 md:group-hover:bg-accent/50 hidden md:group-hover:block" />
+                <ChevronDown className="w-4 h-4 text-muted-foreground transition-colors duration-200 rounded p-0.5 md:group-hover:bg-accent/50 hidden md:group-hover:block" />
               </div>
             </div>
           </div>
@@ -594,7 +594,7 @@ export function DataGrid<T extends Record<string, any>>({
           </div>
           {showNoResultsMessage ? (
             <div className="fixed left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 text-center px-4">
-              <div className="text-text/70">No matching results found</div>
+              <div className="text-muted-foreground">No matching results found</div>
             </div>
           ) : (
             <div

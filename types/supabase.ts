@@ -395,6 +395,29 @@ export type Database = {
           embedding: string
         }[]
       }
+      get_personalized_recommendations: {
+        Args: {
+          p_user_type: string;
+          p_genres: string[];
+          p_inspiration_ids: string[];
+          p_favorite_book_ids: string[];
+          p_limit?: number;
+        };
+        Returns: {
+          id: string;
+          title: string;
+          author: string;
+          description: string | null;
+          score: number;
+          match_reasons: {
+            similar_to_favorites: boolean;
+            recommended_by_inspiration: boolean;
+            recommended_by_similar_people: boolean;
+            genre_match: boolean;
+            recommended_by_similar_type: boolean;
+          };
+        }[];
+      }
       get_random_book: {
         Args: Record<PropertyKey, never>
         Returns: {

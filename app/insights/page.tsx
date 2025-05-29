@@ -14,7 +14,7 @@ export default async function InsightsPage() {
         {insightsPost ? (
           <MarkdownRenderer content={insightsPost.content} />
         ) : (
-          <div className="text-text/70">No insights available.</div>
+          <div className="text-muted-foreground">No insights available.</div>
         )}
       </div>
     </div>

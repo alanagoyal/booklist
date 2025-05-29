@@ -2,54 +2,7 @@
 
 import { useRef } from "react";
 import { Filter, X } from "lucide-react";
-
-// Define the possible enum values
-const FIELD_VALUES = {
-  type: [
-    "Anthropologist",
-    "Architect",
-    "Art Critic",
-    "Author or Publisher",
-    "Biographer",
-    "Chef or Food Writer",
-    "Economist",
-    "Engineer or Technologist",
-    "Entertainer",
-    "Entrepreneur",
-    "Executive",
-    "Historian or Philosopher",
-    "Investor",
-    "Journalist",
-    "Librarian or Teacher",
-    "Musician or Filmmaker",
-    "Product Manager or Designer",
-    "Scientist"
-  ],
-  genres: [
-    "Biography",
-    "Business",
-    "Children",
-    "Classic",
-    "Economics",
-    "Fantasy",
-    "Fiction",
-    "Historical",
-    "History",
-    "Horror",
-    "Memoir",
-    "Misc",
-    "Mystery",
-    "Nonfiction",
-    "Philosophy",
-    "Poetry",
-    "Politics",
-    "Romance",
-    "Science",
-    "Science Fiction",
-    "Self-Help",
-    "Young Adult"
-  ]
-};
+import { FIELD_VALUES } from "@/utils/constants";
 
 interface ColumnFilterProps {
   field: string;
@@ -91,13 +44,13 @@ export function ColumnFilter({
               onChange(field, "");
               internalRef.current?.focus();
             }}
-            className="text-text/70 transition-colors duration-200 md:hover:text-text shrink-0"
+            className="text-muted-foreground transition-colors duration-200 md:hover:text-text shrink-0"
           >
             <X className="w-3 h-3" />
           </button>
         ) : enumValues ? (
           <button 
-            className="inline-flex items-center justify-center rounded-full text-text/70 md:hover:text-text transition-colors duration-200 cursor-help shrink-0"
+            className="inline-flex items-center justify-center rounded-full text-muted-foreground md:hover:text-text transition-colors duration-200 cursor-help shrink-0"
             title={`${enumValues.join(", ")}`}
             onClick={(e) => e.stopPropagation()}
           >

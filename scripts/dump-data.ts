@@ -218,6 +218,36 @@ async function dumpData() {
         mkdirSync(dataDir, { recursive: true });
       }
 
+      // Check for duplicate IDs in essentialBooks before writing
+      const bookIds = essentialBooks.map(book => book.id);
+      const seenIds = new Set<string>();
+      const duplicateBookIdsFound: string[] = [];
+      bookIds.forEach(id => {
+        if (seenIds.has(id)) {
+          duplicateBookIdsFound.push(id);
+        } else {
+          seenIds.add(id);
+        }
+      });
+
+      if (duplicateBookIdsFound.length > 0) {
+        const uniqueDuplicateIds = [...new Set(duplicateBookIdsFound)];
+        console.warn(
+          `\n⚠️ WARNING: Found ${uniqueDuplicateIds.length} duplicate book ID(s) in essentialBooks data:`
+        );
+        uniqueDuplicateIds.forEach(id => {
+          const duplicates = essentialBooks.filter(book => book.id === id);
+          console.warn(`  - ID: ${id} (appears ${duplicates.length} times)`);
+          // Optionally, log the full duplicate objects for more detail
+          // console.warn(duplicates);
+        });
+        console.warn(
+          "Please investigate and fix the duplicate IDs in the data source (Supabase) or the get_books_with_counts RPC.\n"
+        );
+        // Optionally, throw an error to stop the script if duplicates are critical
+        // throw new Error("Duplicate book IDs found. Halting script.");
+      }
+
       // Write essential data first
       writeFileSync(
         join(process.cwd(), "public", "data", "books-essential.json"),
@@ -243,7 +273,7 @@ async function dumpData() {
     // Fetch recommenders with their recommendations
     const { data: recommenders, error: recommendersError } = await supabase
       .rpc("get_recommender_with_books")
-      .order("full_name");
+      .order("_book_count", { ascending: false });
 
     if (recommendersError) {
       console.error("Error fetching recommenders:", recommendersError);
