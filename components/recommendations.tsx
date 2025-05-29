@@ -72,6 +72,7 @@ function SearchDropdown({
 }: SearchDropdownProps) {
   if (!isOpen) return null;
 
+  // We need to export the sorted results so the parent component can use them
   const sortedResults = [...results].sort((a, b) => {
     if (a.isInGrid === b.isInGrid) return 0;
     return a.isInGrid ? 1 : -1;
@@ -604,17 +605,23 @@ function RecommendationsContent() {
                   onKeyDown={(e) => {
                     if (searchResults.length === 0) return;
 
+                    // Create sorted results array to match what's displayed in the dropdown
+                    const sortedResults = [...searchResults].sort((a, b) => {
+                      if (a.isInGrid === b.isInGrid) return 0;
+                      return a.isInGrid ? 1 : -1;
+                    });
+
                     if (e.key === "ArrowDown") {
                       e.preventDefault();
                       setSelectedIndex((prev) =>
-                        prev < searchResults.length - 1 ? prev + 1 : prev
+                        prev < sortedResults.length - 1 ? prev + 1 : prev
                       );
                     } else if (e.key === "ArrowUp") {
                       e.preventDefault();
                       setSelectedIndex((prev) => (prev > 0 ? prev - 1 : prev));
-                    } else if (e.key === "Enter" && selectedIndex >= 0) {
+                    } else if (e.key === "Enter" && selectedIndex >= 0 && selectedIndex < sortedResults.length) {
                       e.preventDefault();
-                      handleSearchResultSelect(searchResults[selectedIndex]);
+                      handleSearchResultSelect(sortedResults[selectedIndex]);
                     }
                   }}
                 />
@@ -695,17 +702,23 @@ function RecommendationsContent() {
                   onKeyDown={(e) => {
                     if (searchResults.length === 0) return;
 
+                    // Create sorted results array to match what's displayed in the dropdown
+                    const sortedResults = [...searchResults].sort((a, b) => {
+                      if (a.isInGrid === b.isInGrid) return 0;
+                      return a.isInGrid ? 1 : -1;
+                    });
+
                     if (e.key === "ArrowDown") {
                       e.preventDefault();
                       setSelectedIndex((prev) =>
-                        prev < searchResults.length - 1 ? prev + 1 : prev
+                        prev < sortedResults.length - 1 ? prev + 1 : prev
                       );
                     } else if (e.key === "ArrowUp") {
                       e.preventDefault();
                       setSelectedIndex((prev) => (prev > 0 ? prev - 1 : prev));
-                    } else if (e.key === "Enter" && selectedIndex >= 0) {
+                    } else if (e.key === "Enter" && selectedIndex >= 0 && selectedIndex < sortedResults.length) {
                       e.preventDefault();
-                      handleSearchResultSelect(searchResults[selectedIndex]);
+                      handleSearchResultSelect(sortedResults[selectedIndex]);
                     }
                   }}
                 />
