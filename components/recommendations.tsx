@@ -245,7 +245,7 @@ function RecommendationsContent() {
       const extraItems = items.filter((item) =>
         extraGridItems.includes(item.id)
       );
-      return [...baseItems, ...extraItems];
+      return [...extraItems, ...baseItems];
     },
     [extraGridItems]
   );
