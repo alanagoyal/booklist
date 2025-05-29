@@ -217,58 +217,67 @@ export function DataGrid<T extends Record<string, any>>({
     countManager.updateCount(viewMode, filteredData.length);
   }, [filteredData.length, viewMode]);
 
-  // Initialize filters from URL params
+  // Initialize filters from URL on mount only
   useEffect(() => {
     const params = new URLSearchParams(searchParams?.toString() ?? "");
     const newFilters: Record<string, string> = {};
     
-    // Get list of valid filter fields from columns
-    const validFilterFields = columns.map((col) => String(col.field));
-    
-    // Add special cases for description fields
-    validFilterFields.push("book_description", "recommender_description");
-    
-    // Check each param for filter values
-    params.forEach((value, key) => {
-      // Handle description fields specially
-      if (key === "book_description" || key === "recommender_description") {
-        newFilters[key] = value;
-      }
-      // For other fields, check if they match a column field directly
-      else if (validFilterFields.includes(key) && value) {
-        newFilters[key] = value;
+    // Get filter values from URL parameters
+    columns.forEach((column) => {
+      const field = String(column.field);
+      const value = params.get(field);
+      if (value) {
+        newFilters[field] = value;
       }
     });
     
+    // Handle description fields
+    const bookDesc = params.get("book_description");
+    const recommenderDesc = params.get("recommender_description");
+    if (bookDesc) newFilters["book_description"] = bookDesc;
+    if (recommenderDesc) newFilters["recommender_description"] = recommenderDesc;
+    
     setFilters(newFilters);
     setDebouncedFilters(newFilters);
-  }, [searchParams, viewMode, columns]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only run on mount - intentionally omitting dependencies to avoid re-initializing filters
 
-  // Debounce filter updates
+  // Fast debounce for UI responsiveness
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      if (JSON.stringify(filters) !== JSON.stringify(debouncedFilters)) {
-        const params = new URLSearchParams(searchParams?.toString() ?? "");
-        
-        // Remove all existing filter params
-        const validFilterFields = columns.map((col) => String(col.field));
-        validFilterFields.push("book_description", "recommender_description");
-        validFilterFields.forEach(field => params.delete(field));
-        
-        // Add new filter params
-        Object.entries(filters).forEach(([field, value]) => {
-          if (value) {
-            params.set(field, value);
-          }
-        });
-        
-        router.push(`?${params.toString()}`);
-        setDebouncedFilters(filters);
-      }
-    }, 300); // 300ms debounce delay
+      setDebouncedFilters(filters);
+    }, 150); // Fast update for UI
 
     return () => clearTimeout(timeoutId);
-  }, [filters, debouncedFilters, searchParams, viewMode, router, columns]);
+  }, [filters]);
+
+  // Slower debounce for URL syncing (shareable links)
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      const params = new URLSearchParams(searchParams?.toString() ?? "");
+      
+      // Remove all existing filter params
+      const validFilterFields = columns.map((col) => String(col.field));
+      validFilterFields.push("book_description", "recommender_description");
+      validFilterFields.forEach(field => params.delete(field));
+      
+      // Add new filter params
+      Object.entries(filters).forEach(([field, value]) => {
+        if (value) {
+          params.set(field, value);
+        }
+      });
+      
+      // Only update URL if it actually changed
+      const newUrl = `?${params.toString()}`;
+      const currentUrl = `?${searchParams?.toString() ?? ""}`;
+      if (newUrl !== currentUrl) {
+        router.push(newUrl);
+      }
+    }, 1000); // Slower update for URL (1 second)
+
+    return () => clearTimeout(timeoutId);
+  }, [filters, searchParams, router, columns]);
 
   // Handle filter input changes
   const handleFilterChange = useCallback((field: string, value: string) => {
