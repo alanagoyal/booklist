@@ -78,7 +78,7 @@ function SearchDropdown({
   });
 
   return (
-    <div className="absolute z-10 w-full border-x border-b border-border bg-background max-h-60 overflow-auto">
+    <div className="absolute z-10 w-full border-x border-b border-border bg-background max-h-60 overflow-auto text-base">
       {loading ? (
         <div className="p-3 text-muted-foreground">Searching...</div>
       ) : sortedResults.length === 0 ? (
