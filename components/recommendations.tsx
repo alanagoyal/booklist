@@ -83,8 +83,8 @@ function SearchDropdown({
             onClick={() => onSelect(result)}
             className={`p-3 cursor-pointer transition-colors duration-200 ${
               index === selectedIndex
-                ? "bg-accent/70 hover:bg-accent"
-                : "bg-background hover:bg-accent/50"
+                ? "bg-accent/70 md:hover:bg-accent"
+                : "bg-background md:hover:bg-accent/50"
             }`}
           >
             <div className="text-text whitespace-pre-line line-clamp-2">
@@ -507,8 +507,8 @@ function RecommendationsContent() {
                     onClick={() => (userType === null || userType === type) ? setUserType(userType === type ? null : type) : null}
                     className={`p-3 ${(userType !== null && userType !== type) ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'} border border-border transition-colors duration-200 whitespace-pre-line line-clamp-2 ${
                       type === userType
-                        ? "bg-accent/70 hover:bg-accent"
-                        : "bg-background hover:bg-accent/50"
+                        ? "bg-accent/70 md:hover:bg-accent"
+                        : "bg-background md:hover:bg-accent/50"
                     }`}
                   >
                     {type}
@@ -533,8 +533,8 @@ function RecommendationsContent() {
                     onClick={() => selectedGenres.length < 3 || selectedGenres.includes(genre) ? handleGenreToggle(genre) : null}
                     className={`p-3 ${selectedGenres.length >= 3 && !selectedGenres.includes(genre) ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'} border border-border transition-colors duration-200 whitespace-pre-line line-clamp-2 ${
                       selectedGenres.includes(genre)
-                        ? "bg-accent/70 hover:bg-accent"
-                        : "bg-background hover:bg-accent/50"
+                        ? "bg-accent/70 md:hover:bg-accent"
+                        : "bg-background md:hover:bg-accent/50"
                     }`}
                   >
                     {genre}
@@ -613,8 +613,8 @@ function RecommendationsContent() {
                       onClick={() => selectedPeopleIds.length < 3 || selectedPeopleIds.includes(person.id) ? handlePersonSelect(person) : null}
                       className={`p-3 ${selectedPeopleIds.length >= 3 && !selectedPeopleIds.includes(person.id) ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'} border border-border transition-colors duration-200 whitespace-pre-line line-clamp-2 ${
                         selectedPeopleIds.includes(person.id)
-                          ? "bg-accent/70 hover:bg-accent"
-                          : "bg-background hover:bg-accent/50"
+                          ? "bg-accent/70 md:hover:bg-accent"
+                          : "bg-background md:hover:bg-accent/50"
                       }`}
                     >
                       {person.full_name}
@@ -694,8 +694,8 @@ function RecommendationsContent() {
                       onClick={() => selectedBookIds.length < 3 || selectedBookIds.includes(book.id) ? handleBookSelect(book) : null}
                       className={`p-3 ${selectedBookIds.length >= 3 && !selectedBookIds.includes(book.id) ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'} border border-border transition-colors duration-200 whitespace-pre-line line-clamp-2 ${
                         selectedBookIds.includes(book.id)
-                          ? "bg-accent/70 hover:bg-accent"
-                          : "bg-background hover:bg-accent/50"
+                          ? "bg-accent/70 md:hover:bg-accent"
+                          : "bg-background md:hover:bg-accent/50"
                       }`}
                     >
                       {book.title}
