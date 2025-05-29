@@ -1,5 +1,5 @@
-create extension if not exists vector;
 create extension if not exists "pg_trgm" with schema "public" version '1.6';
+create extension if not exists "vector" with schema "public";
 
 create table "public"."books" (
     "id" uuid not null default uuid_generate_v4(),
@@ -69,6 +69,10 @@ CREATE INDEX books_description_embedding_idx ON public.books USING ivfflat (desc
 CREATE UNIQUE INDEX books_pkey ON public.books USING btree (id);
 
 CREATE INDEX books_title_embedding_idx ON public.books USING ivfflat (title_embedding vector_cosine_ops);
+
+CREATE INDEX idx_books_genre ON public.books USING gin (genre);
+
+CREATE INDEX idx_people_type ON public.people USING btree (type);
 
 CREATE INDEX idx_recommendations_book_id ON public.recommendations USING btree (book_id);
 
@@ -393,7 +397,8 @@ AS $function$
 BEGIN
   RETURN QUERY
   WITH book_counts AS (
-    SELECT 
+    -- Calculate recommendation count and percentile for each book
+    SELECT
       books.id,
       books.title,
       books.author,
@@ -401,8 +406,8 @@ BEGIN
       books.genre,
       books.amazon_url,
       books.similar_books,
-      books.recommendation_percentile,
-      COUNT(DISTINCT r.person_id)::int as recommendation_count
+      COUNT(DISTINCT r.person_id)::int as recommendation_count,
+      books.recommendation_percentile -- Use the precalculated percentile
     FROM books
     LEFT JOIN recommendations r ON books.id = r.book_id
     GROUP BY books.id, books.title, books.author, books.description, books.genre, books.amazon_url, books.similar_books, books.recommendation_percentile
@@ -418,7 +423,7 @@ BEGIN
     bc.recommendation_count,
     bc.recommendation_percentile
   FROM book_counts bc
-  ORDER BY bc.recommendation_count DESC
+  ORDER BY bc.recommendation_count DESC, bc.id ASC -- Corrected ORDER BY
   LIMIT p_limit
   OFFSET p_offset;
 END;
@@ -561,7 +566,7 @@ AS $function$
   from recommendations r
   join people p on p.id = r.person_id
   join books b on b.id = r.book_id
-  group by p.id, p.full_name
+  group by p.id
   order by genre_count desc
   limit limit_arg
 $function$
@@ -700,6 +705,204 @@ AS $function$
   where id in (
     select book_id from recommendations where person_id = person_id_arg
   )
+$function$
+;
+
+CREATE OR REPLACE FUNCTION public.get_personalized_recommendations(p_user_type text, p_genres text[], p_inspiration_ids uuid[], p_favorite_book_ids uuid[], p_limit integer DEFAULT 10)
+ RETURNS TABLE(id uuid, title text, author text, description text, genres text[], amazon_url text, score double precision, match_reasons jsonb)
+ LANGUAGE plpgsql
+AS $function$
+BEGIN
+    RETURN QUERY
+    WITH
+    -- -----------------------------------------------------------------------
+    -- 1. Books recommended directly by inspiration people
+    inspiration_recs AS (
+        SELECT 
+            b.id    AS book_id,
+            b.title AS title,
+            b.author AS author,
+            b.description AS description,
+            b.genre AS genres,
+            b.amazon_url AS amazon_url,
+            1.0      AS score,
+            true     AS from_inspiration,
+            false    AS from_similar_people,
+            false    AS from_similar_books,
+            false    AS from_genre_match,
+            false    AS from_type_match
+        FROM recommendations r
+        JOIN books b ON b.id = r.book_id
+        WHERE r.person_id = ANY(p_inspiration_ids)
+    ),
+
+    -- -----------------------------------------------------------------------
+    -- 2. Find people similar to inspirations (k-NN per inspiration)
+    similar_people AS (
+        SELECT DISTINCT sim.id
+        FROM (
+            SELECT p_sim.id
+            FROM people insp,
+            LATERAL (
+                SELECT p.id
+                FROM people p
+                WHERE p.id <> insp.id
+                  AND p.type = insp.type
+                ORDER BY p.description_embedding <=> insp.description_embedding
+                LIMIT 5
+            ) p_sim
+            WHERE insp.id = ANY(p_inspiration_ids)
+        ) sim
+    ),
+
+    similar_people_recs AS (
+        SELECT 
+            b.id    AS book_id,
+            b.title AS title,
+            b.author AS author,
+            b.description AS description,
+            b.genre AS genres,
+            b.amazon_url AS amazon_url,
+            0.5      AS score,
+            false    AS from_inspiration,
+            true     AS from_similar_people,
+            false    AS from_similar_books,
+            false    AS from_genre_match,
+            false    AS from_type_match
+        FROM similar_people sp
+        JOIN recommendations r ON r.person_id = sp.id
+        JOIN books b ON b.id = r.book_id
+    ),
+
+    -- -----------------------------------------------------------------------
+    -- 3. Books similar to the user's favourite books (k-NN per favourite)
+    similar_books AS (
+        SELECT 
+            b2.id      AS book_id,
+            b2.title,
+            b2.author,
+            b2.description,
+            b2.genres,
+            b2.amazon_url,
+            0.8 * (1 - (b2.description_embedding <=> b2.fav_embedding)) AS score,
+            false    AS from_inspiration,
+            false    AS from_similar_people,
+            true     AS from_similar_books,
+            false    AS from_genre_match,
+            false    AS from_type_match
+        FROM (
+            SELECT 
+                b2.id,
+                b2.title,
+                b2.author,
+                b2.description,
+                b2.genre AS genres,
+                b2.amazon_url,
+                b2.description_embedding,
+                fav.description_embedding as fav_embedding
+            FROM books fav,
+            LATERAL (
+                SELECT 
+                    b2.id,
+                    b2.title,
+                    b2.author,
+                    b2.description,
+                    b2.genre,
+                    b2.amazon_url,
+                    b2.description_embedding
+                FROM books b2
+                WHERE b2.id <> fav.id
+                  AND b2.id <> ALL(p_favorite_book_ids)
+                ORDER BY b2.description_embedding <=> fav.description_embedding
+                LIMIT 5
+            ) b2
+            WHERE fav.id = ANY(p_favorite_book_ids)
+        ) b2
+    ),
+
+    -- -----------------------------------------------------------------------
+    -- 4. Genre matches (using freshly added GIN index)
+    genre_matches AS (
+        SELECT 
+            b.id    AS book_id,
+            b.title AS title,
+            b.author AS author,
+            b.description AS description,
+            b.genre AS genres,
+            b.amazon_url AS amazon_url,
+            0.6 * (
+                array_length(ARRAY(
+                    SELECT UNNEST(b.genre)
+                    INTERSECT
+                    SELECT UNNEST(p_genres)
+                ), 1)::float / GREATEST(array_length(p_genres, 1), 1)
+            )        AS score,
+            false    AS from_inspiration,
+            false    AS from_similar_people,
+            false    AS from_similar_books,
+            true     AS from_genre_match,
+            false    AS from_type_match
+        FROM books b
+        WHERE p_genres IS NOT NULL
+          AND b.genre && p_genres
+    ),
+
+    -- -----------------------------------------------------------------------
+    -- 5. Books recommended by people of the same type as the user
+    type_matches AS (
+        SELECT 
+            b.id    AS book_id,
+            b.title AS title,
+            b.author AS author,
+            b.description AS description,
+            b.genre AS genres,
+            b.amazon_url AS amazon_url,
+            0.4      AS score,
+            false    AS from_inspiration,
+            false    AS from_similar_people,
+            false    AS from_similar_books,
+            false    AS from_genre_match,
+            true     AS from_type_match
+        FROM people p
+        JOIN recommendations r ON r.person_id = p.id
+        JOIN books b ON b.id = r.book_id
+        WHERE p.type = p_user_type
+    ),
+
+    -- -----------------------------------------------------------------------
+    all_candidates AS (
+        SELECT * FROM inspiration_recs
+        UNION ALL
+        SELECT * FROM similar_people_recs
+        UNION ALL
+        SELECT * FROM similar_books
+        UNION ALL
+        SELECT * FROM genre_matches
+        UNION ALL
+        SELECT * FROM type_matches
+    )
+
+    SELECT 
+        ac.book_id                      AS id,
+        MAX(ac.title)                   AS title,
+        MAX(ac.author)                  AS author,
+        MAX(ac.description)             AS description,
+        MAX(ac.genres)                  AS genres,
+        MAX(ac.amazon_url)              AS amazon_url,
+        SUM(ac.score)::float            AS score,
+        jsonb_build_object(
+            'recommended_by_inspiration', bool_or(ac.from_inspiration),
+            'recommended_by_similar_people', bool_or(ac.from_similar_people),
+            'similar_to_favorites', bool_or(ac.from_similar_books),
+            'genre_match', bool_or(ac.from_genre_match),
+            'recommended_by_similar_type', bool_or(ac.from_type_match)
+        ) AS match_reasons
+    FROM all_candidates ac
+    WHERE ac.book_id <> ALL(p_favorite_book_ids)
+    GROUP BY ac.book_id
+    ORDER BY score DESC
+    LIMIT p_limit;
+END;
 $function$
 ;
 
@@ -1033,12 +1236,12 @@ begin
     top_related as (
       -- Get top 3 related recommenders for each recommender
       select 
-        tr.recommender1,
-        tr.recommender2,
-        tr.shared_count,
-        tr.shared_books,
-        row_number() over (partition by tr.recommender1 order by tr.shared_count desc) as rn
-      from shared_books tr
+        recommender1,
+        recommender2,
+        shared_count,
+        shared_books,
+        row_number() over (partition by recommender1 order by shared_count desc) as rn
+      from shared_books
     )
     select 
       tr.recommender1 as recommender_id,
@@ -1826,3 +2029,5 @@ with check (false);
 
 
 create extension if not exists "vector" with schema "extensions";
+
+
