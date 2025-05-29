@@ -850,7 +850,7 @@ function RecommendationsContent() {
                 localStorage.removeItem("currentCardIndex");
                 localStorage.removeItem("extraGridItems");
               }}
-              className="text-muted-foreground md:hover:text-text transition-colors duration-200 cursor-pointer flex items-center gap-1 h-10"
+              className="text-text md:hover:underline transition-colors duration-200 cursor-pointer flex items-center gap-1 h-10"
               title="Redo"
             >
               Redo <ArrowLeftRight size={18} className="inline" />
