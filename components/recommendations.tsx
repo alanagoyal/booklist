@@ -517,8 +517,8 @@ function RecommendationsContent() {
                 {FIELD_VALUES.type.map((type) => (
                   <div
                     key={type}
-                    onClick={() => userType === null || userType === type ? setUserType(type) : null}
-                    className={`p-3 ${userType !== null && userType !== type ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'} border border-border transition-colors duration-200 whitespace-pre-line line-clamp-2 ${
+                    onClick={() => (userType === null || userType === type) ? setUserType(userType === type ? null : type) : null}
+                    className={`p-3 ${(userType !== null && userType !== type) ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'} border border-border transition-colors duration-200 whitespace-pre-line line-clamp-2 ${
                       type === userType
                         ? "bg-accent/70 hover:bg-accent"
                         : "bg-background hover:bg-accent/50"
