@@ -615,6 +615,7 @@ function RecommendationsContent() {
             <div className="space-y-2">
               <div className="relative">
                 <SearchInput
+                  key={step}
                   value={searchQuery}
                   onChange={handleSearch}
                   onClear={() => {
@@ -625,6 +626,7 @@ function RecommendationsContent() {
                   }}
                   placeholder="Search for more people..."
                   disabled={selectedPeopleIds.length >= 3}
+                  autoFocus={true}
                   onKeyDown={(e) => {
                     if (searchResults.length === 0 || selectedPeopleIds.length >= 3) return;
 
@@ -717,6 +719,7 @@ function RecommendationsContent() {
             <div className="space-y-2">
               <div className="relative">
                 <SearchInput
+                  key={step}
                   value={searchQuery}
                   onChange={handleSearch}
                   onClear={() => {
@@ -727,6 +730,7 @@ function RecommendationsContent() {
                   }}
                   placeholder="Search for more books..."
                   disabled={selectedBookIds.length >= 3}
+                  autoFocus={true}
                   onKeyDown={(e) => {
                     if (searchResults.length === 0 || selectedBookIds.length >= 3) return;
 
@@ -828,6 +832,14 @@ function RecommendationsContent() {
 
   const totalSteps = 5;
   const currentProgress = step ? (step / totalSteps) * 100 : 0;
+
+  // Clear search query when step changes
+  useEffect(() => {
+    setSearchQuery("");
+    setSearchResults([]);
+    setIsSearching(false);
+    setSelectedIndex(-1);
+  }, [step]);
 
   return (
     <div className="space-y-4">

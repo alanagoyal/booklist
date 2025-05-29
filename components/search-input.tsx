@@ -1,6 +1,7 @@
 "use client";
 
 import { X } from "lucide-react";
+import { useEffect, useRef } from "react";
 
 interface SearchInputProps {
   value: string;
@@ -9,12 +10,22 @@ interface SearchInputProps {
   placeholder?: string;
   onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   disabled?: boolean;
+  autoFocus?: boolean;
 }
 
-export function SearchInput({ value, onChange, onClear, onKeyDown, placeholder = "Search...", disabled = false }: SearchInputProps) {
+export function SearchInput({ value, onChange, onClear, onKeyDown, placeholder = "Search...", disabled = false, autoFocus = false }: SearchInputProps) {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (autoFocus && !disabled && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [autoFocus, disabled]);
+
   return (
     <div className="flex items-center w-full bg-background border border-border">
       <input
+        ref={inputRef}
         type="text"
         placeholder={placeholder}
         value={value}
