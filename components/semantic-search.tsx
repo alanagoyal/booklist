@@ -238,7 +238,7 @@ export function SearchBox({
           ref={inputRef}
           type="text"
           placeholder={currentText}
-          className="flex-1 h-10 focus:outline-none bg-background border-b border-border text-text text-base sm:text-sm selection:bg-main selection:text-mtext focus:outline-none rounded-none"
+          className="flex-1 h-10 focus:outline-none bg-background border-b border-border text-text selection:bg-main selection:text-mtext focus:outline-none rounded-none"
           value={value}
           onChange={(e) => {
             const newValue = e.target.value;

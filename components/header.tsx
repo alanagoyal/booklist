@@ -140,7 +140,7 @@ function HeaderContent() {
         <div className="hidden md:flex items-center gap-2 pt-2 px-2 text-sm">
           <ThemeToggle className="h-full p-2 text-text" />
         </div>
-        <div className="md:hidden px-2 pt-1 relative">
+        <div className="md:hidden px-2 pt-1 relative text-base">
           <button
             onClick={(e) => {
               e.stopPropagation();
