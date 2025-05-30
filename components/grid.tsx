@@ -575,7 +575,7 @@ export function DataGrid<T extends Record<string, any>>({
   }, []);
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full text-base sm:text-sm">
       {/* Search box */}
       <SearchBox
         initialValue={initialSearchValue}
