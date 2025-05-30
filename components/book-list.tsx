@@ -201,7 +201,7 @@ export function BookList({
         return (
           <div
             key={`${view.id}-${index}`}
-            className="absolute inset-0"
+            className="absolute inset-0 text-base sm:text-sm"
             style={{
               transform: `translateX(${isMobile ? 0 : index * 8}px)`,
               zIndex: 20 + index,
