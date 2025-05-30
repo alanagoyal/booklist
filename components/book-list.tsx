@@ -155,12 +155,42 @@ export function BookList({
         return {
           view,
           index,
+          visibleIndex: positionIndex, // Add visibleIndex for horizontal positioning
           shouldShow,
           position: finalPosition,
           zIndex: 50 + index,
         };
       }
     );
+  }, [viewHistory, tabConfig]);
+
+  // Calculate visible detail views (same logic as tabs)
+  const visibleDetailViews = useMemo(() => {
+    if (viewHistory.length === 0) return [];
+
+    const availableHeight =
+      window.innerHeight - tabConfig.baseTopOffset - tabConfig.bottomMargin;
+    const maxVisibleTabs = Math.max(
+      1,
+      Math.floor(availableHeight / tabConfig.height)
+    );
+
+    // For detail views, we need to consider all views including the current one
+    const allViews = viewHistory;
+    const startIndex = Math.max(0, allViews.length - maxVisibleTabs - 1); // -1 because we include the current view
+
+    return allViews.map((view, index) => {
+      const shouldShow = index >= startIndex;
+      const visibleIndex = index - startIndex; // This will be the horizontal offset index
+      
+      return {
+        view,
+        originalIndex: index,
+        visibleIndex,
+        shouldShow,
+        isLast: index === allViews.length - 1,
+      };
+    }).filter(item => item.shouldShow);
   }, [viewHistory, tabConfig]);
 
   return (
@@ -182,8 +212,7 @@ export function BookList({
       />
 
       {/* Render detail views */}
-      {viewHistory.map((view, index) => {
-        const isLast = index === viewHistory.length - 1;
+      {visibleDetailViews.map(({ view, originalIndex, visibleIndex, isLast }) => {
         const selectedRecommender =
           view.type === "recommender"
             ? initialRecommenders.find((r) => r.id === view.actualId)
@@ -200,12 +229,12 @@ export function BookList({
 
         return (
           <div
-            key={`${view.id}-${index}`}
+            key={`${view.id}-${originalIndex}`}
             className="absolute inset-0"
             style={{
-              transform: `translateX(${isMobile ? 0 : index * 8}px)`,
-              zIndex: 20 + index,
-              width: `calc(100% - ${isMobile ? 0 : index * 8}px)`,
+              transform: `translateX(${isMobile ? 0 : visibleIndex * 8}px)`,
+              zIndex: 20 + originalIndex,
+              width: `calc(100% - ${isMobile ? 0 : visibleIndex * 8}px)`,
             }}
           >
             {selectedBook && (
@@ -214,7 +243,7 @@ export function BookList({
                 onClose={isLast ? handleClose : () => {}}
                 onBackdropClick={isLast ? handleCloseAll : () => {}}
                 isHovered={isHovered}
-                isTopIndex={index === viewHistory.length - 1}
+                isTopIndex={originalIndex === viewHistory.length - 1}
                 isNavigating={isNavigating}
               />
             )}
@@ -224,7 +253,7 @@ export function BookList({
                 onClose={isLast ? handleClose : () => {}}
                 onBackdropClick={isLast ? handleCloseAll : () => {}}
                 isHovered={isHovered}
-                isTopIndex={index === viewHistory.length - 1}
+                isTopIndex={originalIndex === viewHistory.length - 1}
                 isNavigating={isNavigating}
               />
             )}
@@ -233,7 +262,7 @@ export function BookList({
       })}
 
       {/* Render tabs */}
-      {tabPositions.map(({ view, index, shouldShow, position, zIndex }) => {
+      {tabPositions.map(({ view, index, visibleIndex, shouldShow, position, zIndex }) => {
         if (!shouldShow) return null;
 
         const selectedRecommender =
@@ -264,7 +293,7 @@ export function BookList({
             }`}
             style={{
               top: `${position}px`,
-              left: `calc(50% + ${index * tabConfig.horizontalOffset}px)`,
+              left: `calc(50% + ${visibleIndex * tabConfig.horizontalOffset}px)`,
               transform: "translateX(-100%) translateX(-31px) rotate(-90deg)",
               transformOrigin: "top right",
               zIndex,
