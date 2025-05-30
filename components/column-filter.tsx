@@ -36,7 +36,7 @@ export function ColumnFilter({
           value={value}
           onChange={(e) => onChange(field, e.target.value)}
           placeholder={`Filter by ${header.toLowerCase()}`}
-          className="flex-1 min-w-0 bg-background text-text text-sm focus:outline-none selection:bg-main selection:text-mtext"
+          className="flex-1 min-w-0 bg-background text-text text-base sm:text-sm focus:outline-none selection:bg-main selection:text-mtext"
         />
         {value ? (
           <button
