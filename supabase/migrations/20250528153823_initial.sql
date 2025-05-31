@@ -1050,7 +1050,7 @@ AS $function$BEGIN
 END;$function$
 ;
 
-CREATE OR REPLACE FUNCTION public.get_recommender_with_books()
+CREATE OR REPLACE FUNCTION public.get_recommender_with_books(p_limit integer DEFAULT 1000, p_offset integer DEFAULT 0)
  RETURNS TABLE(id uuid, full_name text, type text, url text, description text, recommendations jsonb, related_recommenders jsonb, similar_people jsonb, _book_count bigint, recommendation_percentile numeric)
  LANGUAGE plpgsql
  SECURITY DEFINER
@@ -1110,7 +1110,9 @@ begin
       rb.recommendation_percentile
     from recommender_base rb
     left join related r on r.recommender_id = rb.id
-    order by rb.full_name;
+    order by rb.book_count desc, rb.full_name
+    limit p_limit
+    offset p_offset;
 end;
 $function$
 ;
@@ -1236,12 +1238,12 @@ begin
     top_related as (
       -- Get top 3 related recommenders for each recommender
       select 
-        recommender1,
-        recommender2,
-        shared_count,
-        shared_books,
-        row_number() over (partition by recommender1 order by shared_count desc) as rn
-      from shared_books
+        tr.recommender1,
+        tr.recommender2,
+        tr.shared_count,
+        tr.shared_books,
+        row_number() over (partition by tr.recommender1 order by tr.shared_count desc) as rn
+      from shared_books tr
     )
     select 
       tr.recommender1 as recommender_id,
@@ -2029,5 +2031,3 @@ with check (false);
 
 
 create extension if not exists "vector" with schema "extensions";
-
-

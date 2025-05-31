@@ -17,6 +17,40 @@ import {
 // Load environment variables from .env.local
 config({ path: join(process.cwd(), ".env.local") });
 
+// Generic pagination function for RPC calls
+async function fetchAllWithPagination<T>(
+  supabase: any,
+  rpcName: string,
+  additionalParams: Record<string, any> = {},
+  pageSize: number = 1000
+): Promise<T[]> {
+  let allData: T[] = [];
+  let page = 0;
+  let hasMore = true;
+
+  while (hasMore) {
+    const { data, error } = await supabase.rpc(rpcName, {
+      p_limit: pageSize,
+      p_offset: page * pageSize,
+      ...additionalParams
+    });
+
+    if (error) {
+      console.error(`Error fetching ${rpcName}:`, error);
+      break;
+    }
+
+    if (!data || data.length === 0) {
+      hasMore = false;
+    } else {
+      allData.push(...data);
+      page++;
+    }
+  }
+
+  return allData;
+}
+
 // Calculate bucket (0-5) based on percentile ranges
 function calculateBucket(percentile: number | null, bucketCount = 6): number {
   if (percentile === null || percentile === undefined) return 0;
@@ -64,34 +98,15 @@ async function dumpData() {
 
   try {
     // Fetch books with pagination
-    const pageSize = 1000;
-    let allBooks: any[] = [];
-    let page = 0;
-    let hasMore = true;
-
-    while (hasMore) {
-      const { data: books, error: booksError } = await supabase.rpc(
-        "get_books_with_counts",
-        { p_limit: pageSize, p_offset: page * pageSize }
-      );
-
-      if (booksError) {
-        console.error("Error fetching books:", booksError);
-        break;
-      }
-
-      if (!books || books.length === 0) {
-        hasMore = false;
-      } else {
-        allBooks.push(...books);
-        page++;
-      }
-    }
+    const allBooks = await fetchAllWithPagination(
+      supabase,
+      "get_books_with_counts"
+    );
 
     // Only fetch recommendations and related books if we have books
     if (allBooks.length > 0) {
       // Add bucket to each book
-      allBooks = allBooks.map(book => {
+      const booksWithBuckets = allBooks.map((book: any) => {
         // Ensure recommendation_percentile is a number between 0 and 1
         const percentile = book.recommendation_percentile;
         
@@ -105,7 +120,7 @@ async function dumpData() {
       // Get recommendations for all books
       const { data: recommendationsData, error: recommendationsError } = await supabase.rpc(
         "get_book_recommendations",
-        { book_ids: allBooks.map(b => b.id) }
+        { book_ids: booksWithBuckets.map((b: any) => b.id) }
       );
 
       if (recommendationsError) {
@@ -115,15 +130,15 @@ async function dumpData() {
       // Get related books for all books
       const { data: relatedBooksData, error: relatedError } = await supabase.rpc(
         "get_related_books",
-        { book_ids: allBooks.map(b => b.id) }
+        { book_ids: booksWithBuckets.map((b: any) => b.id) }
       );
 
       if (relatedError) {
         console.error("Error fetching related books:", relatedError);
       }
-
+      
       // Combine all data
-      const formattedBooks: FormattedBook[] = allBooks.map(book => ({
+      const formattedBooks: FormattedBook[] = booksWithBuckets.map((book: any) => ({
         id: book.id,
         title: book.title,
         author: book.author,
@@ -271,18 +286,17 @@ async function dumpData() {
     }
 
     // Fetch recommenders with their recommendations
-    const { data: recommenders, error: recommendersError } = await supabase
-      .rpc("get_recommender_with_books")
-      .order("_book_count", { ascending: false });
+    const allRecommenders = await fetchAllWithPagination(
+      supabase,
+      "get_recommender_with_books"
+    );
 
-    if (recommendersError) {
-      console.error("Error fetching recommenders:", recommendersError);
-    } else if (recommenders) {
+    if (allRecommenders.length > 0) {
       // Get all book counts for bucket calculation
-      const allBookCounts = recommenders.map((recommender: any) => recommender._book_count);
+      const allBookCounts = allRecommenders.map((recommender: any) => recommender._book_count);
       
       // Add bucket to each recommender
-      const recommendersWithBuckets = recommenders.map((recommender: any) => {
+      const recommendersWithBuckets = allRecommenders.map((recommender: any) => {
         // Ensure recommendation_percentile is a number between 0 and 1
         const percentile = recommender.recommendation_percentile;
         const validPercentile = typeof percentile === 'number' && !isNaN(percentile) ? percentile : null;
