@@ -115,16 +115,6 @@ function HeaderContent() {
             Recommendations
           </Link>
           <Link
-            href={`/insights?${searchParams.toString()}`}
-            className={`h-full flex items-center px-1 transition-colors duration-200 border-b-2 text-text ${
-              pathname === "/insights"
-                ? "border-text"
-                : "border-transparent"
-            }`}
-          >
-            Insights
-          </Link>
-          <Link
             href={`/about?${searchParams.toString()}`}
             className={`h-full flex items-center px-1 transition-colors duration-200 border-b-2 text-text ${
               pathname === "/about"
@@ -205,21 +195,6 @@ function HeaderContent() {
                   className={`transition-all duration-200 ${pathname === "/recommendations" ? "border-b-2 border-text text-text" : ""}`}
                 >
                   Recommendations
-                </span>
-              </Link>
-              <Link
-                href="/insights"
-                className="w-full px-4 py-2 flex items-center text-left text-text"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setIsMenuOpen(false);
-                  router.push(`/insights?${currentParams}`);
-                }}
-              >
-                <span
-                  className={`transition-all duration-200 ${pathname === "/insights" ? "border-b-2 border-text text-text" : ""}`}
-                >
-                  Insights
                 </span>
               </Link>
               <Link
