@@ -43,6 +43,7 @@ export function DataGrid<T extends Record<string, any>>({
   // State
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [isDropdownClosing, setIsDropdownClosing] = useState(false);
+  const [isSearchClosing, setIsSearchClosing] = useState(false);
   const [isMobileView, setIsMobileView] = useState(false);
   const [searchResults, setSearchResults] = useState<Set<string>>(new Set());
   const [isSearching, setIsSearching] = useState(false);
@@ -388,22 +389,20 @@ export function DataGrid<T extends Record<string, any>>({
     (e: React.MouseEvent, row: T) => {
       const target = e.target as HTMLElement;
 
-      // Don't trigger row click if:
-      // 1. Clicking inside a dropdown menu or dropdown trigger
-      // 2. Clicking on interactive elements
-      // 3. A dropdown is open or closing
+      // Don't trigger row click if clicking on interactive elements
       if (
         target.closest("[data-dropdown]") ||
         target.closest("a, button, input") ||
         openDropdown ||
-        isDropdownClosing
+        isDropdownClosing ||
+        isSearchClosing
       ) {
         return;
       }
 
       onRowClick?.(row);
     },
-    [onRowClick, openDropdown, isDropdownClosing]
+    [onRowClick, openDropdown, isDropdownClosing, isSearchClosing]
   );
 
   // Dropdown handlers
@@ -583,6 +582,7 @@ export function DataGrid<T extends Record<string, any>>({
         viewMode={viewMode}
         isMobileView={isMobileView}
         setIsSearching={setIsSearching}
+        setIsSearchClosing={setIsSearchClosing}
       />
       {/* Scrollable grid content */}
       <div

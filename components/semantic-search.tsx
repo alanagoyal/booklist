@@ -10,6 +10,7 @@ type SearchBoxProps = {
   initialValue?: string;
   onSearchResults: (results: Set<string>) => void;
   setIsSearching: (isSearching: boolean) => void;
+  setIsSearchClosing: (isSearchClosing: boolean) => void;
   viewMode: "books" | "people";
   isMobileView: boolean;
 };
@@ -52,6 +53,7 @@ export function SearchBox({
   initialValue = "",
   onSearchResults,
   setIsSearching,
+  setIsSearchClosing,
   viewMode,
   isMobileView,
 }: SearchBoxProps) {
@@ -269,7 +271,14 @@ export function SearchBox({
             debouncedSearchAndUpdate(newValue);
           }}
           onFocus={() => setIsFocused(true)}
-          onBlur={() => setIsFocused(false)}
+          onBlur={() => {
+            setIsFocused(false);
+            setIsSearchClosing(true);
+            // Reset after transition duration
+            setTimeout(() => {
+              setIsSearchClosing(false);
+            }, 200); // Match transition-all duration-200
+          }}
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey) {
               e.preventDefault();
