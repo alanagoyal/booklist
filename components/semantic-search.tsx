@@ -10,7 +10,6 @@ type SearchBoxProps = {
   initialValue?: string;
   onSearchResults: (results: Set<string>) => void;
   setIsSearching: (isSearching: boolean) => void;
-  setIsSearchClosing: (isSearchClosing: boolean) => void;
   viewMode: "books" | "people";
   isMobileView: boolean;
 };
@@ -53,7 +52,6 @@ export function SearchBox({
   initialValue = "",
   onSearchResults,
   setIsSearching,
-  setIsSearchClosing,
   viewMode,
   isMobileView,
 }: SearchBoxProps) {
@@ -257,13 +255,6 @@ export function SearchBox({
               e.preventDefault();
               debouncedSearchAndUpdate(value);
             }
-          }}
-          onBlur={() => {
-            setIsSearchClosing(true);
-            // Reset after transition duration
-            setTimeout(() => {
-              setIsSearchClosing(false);
-            }, 200); // Match transition-all duration-200
           }}
           disabled={false}
           autoComplete="off"
