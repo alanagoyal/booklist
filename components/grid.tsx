@@ -7,7 +7,14 @@ import React, {
   useCallback,
   useMemo,
 } from "react";
-import { ChevronDown, Check, ArrowUp, ArrowDown, X, ListFilter } from "lucide-react";
+import {
+  ChevronDown,
+  Check,
+  ArrowUp,
+  ArrowDown,
+  X,
+  ListFilter,
+} from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { SearchBox } from "./semantic-search";
@@ -47,16 +54,24 @@ export function DataGrid<T extends Record<string, any>>({
   const [searchResults, setSearchResults] = useState<Set<string>>(new Set());
   const [isSearching, setIsSearching] = useState(false);
   const [filters, setFilters] = useState<Record<string, string>>({});
-  const [debouncedFilters, setDebouncedFilters] = useState<Record<string, string>>({});
+  const [debouncedFilters, setDebouncedFilters] = useState<
+    Record<string, string>
+  >({});
 
   // Get current view and sort configs directly from URL
   const viewMode = (searchParams.get("view") as "books" | "people") || "books";
   const directionParam = searchParams?.get(`${viewMode}_dir`);
 
   // Search state derived values
-  const searchQuery = useMemo(() => searchParams?.get(`${viewMode}_search`)?.trim() || "", [searchParams, viewMode]);
+  const searchQuery = useMemo(
+    () => searchParams?.get(`${viewMode}_search`)?.trim() || "",
+    [searchParams, viewMode]
+  );
   const hasSearchQuery = useMemo(() => Boolean(searchQuery), [searchQuery]);
-  const hasNoSearchResults = useMemo(() => searchResults.size === 0, [searchResults]);
+  const hasNoSearchResults = useMemo(
+    () => searchResults.size === 0,
+    [searchResults]
+  );
 
   const sortConfig = useMemo(
     () => ({
@@ -75,7 +90,9 @@ export function DataGrid<T extends Record<string, any>>({
   const gridRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
   const dropdownRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
-  const filterInputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
+  const filterInputRefs = useRef<{ [key: string]: HTMLInputElement | null }>(
+    {}
+  );
   const resizeTimeout = useRef<number | null>(null);
   const parentRef = useRef<HTMLDivElement>(null);
 
@@ -95,12 +112,15 @@ export function DataGrid<T extends Record<string, any>>({
     }
 
     // Then apply column filters
-    const activeFilters = Object.entries(debouncedFilters).filter(([field, value]) => {
-      // Only include filters relevant to current view
-      if (field === "book_description" && viewMode !== "books") return false;
-      if (field === "recommender_description" && viewMode !== "people") return false;
-      return Boolean(value);
-    });
+    const activeFilters = Object.entries(debouncedFilters).filter(
+      ([field, value]) => {
+        // Only include filters relevant to current view
+        if (field === "book_description" && viewMode !== "books") return false;
+        if (field === "recommender_description" && viewMode !== "people")
+          return false;
+        return Boolean(value);
+      }
+    );
 
     if (activeFilters.length > 0) {
       filtered = filtered.filter((item) => {
@@ -109,8 +129,10 @@ export function DataGrid<T extends Record<string, any>>({
           if (!value) return true;
 
           // Special handling for description fields
-          if ((field === "book_description" && viewMode === "books") || 
-              (field === "recommender_description" && viewMode === "people")) {
+          if (
+            (field === "book_description" && viewMode === "books") ||
+            (field === "recommender_description" && viewMode === "people")
+          ) {
             return String(item.description || "")
               .toLowerCase()
               .includes(value);
@@ -143,20 +165,32 @@ export function DataGrid<T extends Record<string, any>>({
         });
       });
     }
-    
-    return filtered;
-  }, [data, searchResults, hasSearchQuery, hasNoSearchResults, debouncedFilters, viewMode]);
 
-  const hasNoFilteredResults = useMemo(() => filteredData.length === 0, [filteredData]);
+    return filtered;
+  }, [
+    data,
+    searchResults,
+    hasSearchQuery,
+    hasNoSearchResults,
+    debouncedFilters,
+    viewMode,
+  ]);
+
+  const hasNoFilteredResults = useMemo(
+    () => filteredData.length === 0,
+    [filteredData]
+  );
   const showNoResultsMessage = useMemo(
-    () => (!isSearching && ((hasSearchQuery && hasNoSearchResults) || hasNoFilteredResults)),
+    () =>
+      !isSearching &&
+      ((hasSearchQuery && hasNoSearchResults) || hasNoFilteredResults),
     [isSearching, hasSearchQuery, hasNoSearchResults, hasNoFilteredResults]
   );
 
   // Sort data after filtering
   const sortedData = useMemo(() => {
     const sorted = [...filteredData];
-    
+
     if (sortConfig.field) {
       sorted.sort((a, b) => {
         // Handle recommender sorting
@@ -164,14 +198,18 @@ export function DataGrid<T extends Record<string, any>>({
           // Sort by number of recommenders (popularity)
           const aRecs = (a as any).recommendations?.length || 0;
           const bRecs = (b as any).recommendations?.length || 0;
-          return sortConfig.direction === "desc" ? bRecs - aRecs : aRecs - bRecs;
+          return sortConfig.direction === "desc"
+            ? bRecs - aRecs
+            : aRecs - bRecs;
         }
 
         // Handle recommendations sorting
         if (sortConfig.field === "recommendations") {
           const aCount = (a as any).recommendations?.length || 0;
           const bCount = (b as any).recommendations?.length || 0;
-          return sortConfig.direction === "desc" ? bCount - aCount : aCount - bCount;
+          return sortConfig.direction === "desc"
+            ? bCount - aCount
+            : aCount - bCount;
         }
 
         // Handle numeric fields
@@ -182,7 +220,10 @@ export function DataGrid<T extends Record<string, any>>({
         }
 
         // Special handling for description fields
-        if (sortConfig.field === "book_description" || sortConfig.field === "recommender_description") {
+        if (
+          sortConfig.field === "book_description" ||
+          sortConfig.field === "recommender_description"
+        ) {
           const aValue = String(a.description || "").toLowerCase();
           const bValue = String(b.description || "").toLowerCase();
           return sortConfig.direction === "asc"
@@ -202,7 +243,7 @@ export function DataGrid<T extends Record<string, any>>({
         // Convert to strings and compare
         const aString = String(aValue).toLowerCase();
         const bString = String(bValue).toLowerCase();
-        
+
         return sortConfig.direction === "asc"
           ? aString.localeCompare(bString)
           : bString.localeCompare(aString);
@@ -221,7 +262,7 @@ export function DataGrid<T extends Record<string, any>>({
   useEffect(() => {
     const params = new URLSearchParams(searchParams?.toString() ?? "");
     const newFilters: Record<string, string> = {};
-    
+
     // Get filter values from URL parameters
     columns.forEach((column) => {
       const field = String(column.field);
@@ -230,13 +271,14 @@ export function DataGrid<T extends Record<string, any>>({
         newFilters[field] = value;
       }
     });
-    
+
     // Handle description fields
     const bookDesc = params.get("book_description");
     const recommenderDesc = params.get("recommender_description");
     if (bookDesc) newFilters["book_description"] = bookDesc;
-    if (recommenderDesc) newFilters["recommender_description"] = recommenderDesc;
-    
+    if (recommenderDesc)
+      newFilters["recommender_description"] = recommenderDesc;
+
     setFilters(newFilters);
     setDebouncedFilters(newFilters);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -255,19 +297,19 @@ export function DataGrid<T extends Record<string, any>>({
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       const params = new URLSearchParams(searchParams?.toString() ?? "");
-      
+
       // Remove all existing filter params
       const validFilterFields = columns.map((col) => String(col.field));
       validFilterFields.push("book_description", "recommender_description");
-      validFilterFields.forEach(field => params.delete(field));
-      
+      validFilterFields.forEach((field) => params.delete(field));
+
       // Add new filter params
       Object.entries(filters).forEach(([field, value]) => {
         if (value) {
           params.set(field, value);
         }
       });
-      
+
       // Only update URL if it actually changed
       const newUrl = `?${params.toString()}`;
       const currentUrl = `?${searchParams?.toString() ?? ""}`;
@@ -280,17 +322,23 @@ export function DataGrid<T extends Record<string, any>>({
   }, [filters, searchParams, router, columns]);
 
   // Handle filter input changes
-  const handleFilterChange = useCallback((field: string, value: string) => {
-    // Map description field to the correct URL parameter
-    const urlField = field === "description" 
-      ? viewMode === "books" ? "book_description" : "recommender_description"
-      : field;
-      
-    setFilters(prev => ({
-      ...prev,
-      [urlField]: value
-    }));
-  }, [viewMode]);
+  const handleFilterChange = useCallback(
+    (field: string, value: string) => {
+      // Map description field to the correct URL parameter
+      const urlField =
+        field === "description"
+          ? viewMode === "books"
+            ? "book_description"
+            : "recommender_description"
+          : field;
+
+      setFilters((prev) => ({
+        ...prev,
+        [urlField]: value,
+      }));
+    },
+    [viewMode]
+  );
 
   // Sort handlers
   const handleSort = useCallback(
@@ -388,10 +436,7 @@ export function DataGrid<T extends Record<string, any>>({
     (e: React.MouseEvent, row: T) => {
       const target = e.target as HTMLElement;
 
-      // Don't trigger row click if:
-      // 1. Clicking inside a dropdown menu or dropdown trigger
-      // 2. Clicking on interactive elements
-      // 3. A dropdown is open or closing
+      // Don't trigger row click if clicking on interactive elements
       if (
         target.closest("[data-dropdown]") ||
         target.closest("a, button, input") ||
@@ -477,13 +522,22 @@ export function DataGrid<T extends Record<string, any>>({
               header={column.header}
               value={filters[String(column.field)] || ""}
               onChange={handleFilterChange}
-              inputRef={(el) => (filterInputRefs.current[String(column.field)] = el)}
+              inputRef={(el) =>
+                (filterInputRefs.current[String(column.field)] = el)
+              }
             />
           </div>
         </div>
       );
     },
-    [openDropdown, isDropdownClosing, sortConfig, handleSort, filters, handleFilterChange]
+    [
+      openDropdown,
+      isDropdownClosing,
+      sortConfig,
+      handleSort,
+      filters,
+      handleFilterChange,
+    ]
   );
 
   // Header
@@ -603,7 +657,9 @@ export function DataGrid<T extends Record<string, any>>({
           </div>
           {showNoResultsMessage ? (
             <div className="fixed left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 text-center px-4">
-              <div className="text-muted-foreground">No matching results found</div>
+              <div className="text-muted-foreground">
+                No matching results found
+              </div>
             </div>
           ) : (
             <div
