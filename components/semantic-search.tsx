@@ -64,7 +64,6 @@ export function SearchBox({
   // State
   const [value, setValue] = useState(initialValue);
   const [isPending, setIsPending] = useState(false);
-  const [isFocused, setIsFocused] = useState(false);
 
   // Refs
   const inputRef = useRef<HTMLInputElement>(null);
@@ -192,32 +191,15 @@ export function SearchBox({
   const [isTyping, setIsTyping] = useState(true);
   const [currentText, setCurrentText] = useState("");
 
-  // Get the appropriate placeholders based on view mode and device
-  const placeholders = useMemo(() => {
-    return viewMode === "books"
-      ? isMobileView
-        ? booksPlaceholdersMobile
-        : booksPlaceholders
-      : isMobileView
-        ? peoplePlaceholdersMobile
-        : peoplePlaceholders;
-  }, [viewMode, isMobileView]);
-
-  // Static placeholder to use when focused or has value
-  const staticPlaceholder = useMemo(() => {
-    return viewMode === "books" 
-      ? "Search books" 
-      : "Search people";
-  }, [viewMode]);
-
-  // Only run animation when input is empty and not focused
-  const shouldAnimate = !value && !isFocused;
-
   useEffect(() => {
-    // Skip animation if we shouldn't animate
-    if (!shouldAnimate) {
-      return;
-    }
+    const placeholders =
+      viewMode === "books"
+        ? isMobileView
+          ? booksPlaceholdersMobile
+          : booksPlaceholders
+        : isMobileView
+          ? peoplePlaceholdersMobile
+          : peoplePlaceholders;
 
     const currentPlaceholder = placeholders[placeholderIndex];
 
@@ -246,7 +228,7 @@ export function SearchBox({
         return undefined;
       }
     }
-  }, [currentText, isTyping, placeholderIndex, placeholders, shouldAnimate]);
+  }, [currentText, isTyping, placeholderIndex, viewMode, isMobileView]);
 
   return (
     <div className="flex items-center h-10 w-full">
@@ -257,7 +239,7 @@ export function SearchBox({
         <input
           ref={inputRef}
           type="text"
-          placeholder={shouldAnimate ? currentText : staticPlaceholder}
+          placeholder={currentText}
           className="flex-1 h-10 focus:outline-none bg-background border-b border-border text-text selection:bg-main selection:text-mtext focus:outline-none rounded-none"
           value={value}
           onChange={(e) => {
@@ -270,25 +252,24 @@ export function SearchBox({
             }
             debouncedSearchAndUpdate(newValue);
           }}
-          onFocus={() => setIsFocused(true)}
-          onBlur={() => {
-            setIsFocused(false);
-            setIsSearchClosing(true);
-            // Reset after transition duration
-            setTimeout(() => {
-              setIsSearchClosing(false);
-            }, 200); // Match transition-all duration-200
-          }}
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey) {
               e.preventDefault();
               debouncedSearchAndUpdate(value);
             }
           }}
+          onBlur={() => {
+            setIsSearchClosing(true);
+            // Reset after transition duration
+            setTimeout(() => {
+              setIsSearchClosing(false);
+            }, 200); // Match transition-all duration-200
+          }}
           disabled={false}
           autoComplete="off"
           autoCorrect="off"
           spellCheck="false"
+          autoFocus
         />
         <div className="flex items-center h-10 px-3 border-b border-border">
           {isPending ? (
