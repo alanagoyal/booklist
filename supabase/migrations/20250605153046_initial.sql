@@ -20,19 +20,6 @@ create table "public"."books" (
 
 alter table "public"."books" enable row level security;
 
-create table "public"."pending_contributions" (
-    "id" uuid not null default gen_random_uuid(),
-    "person_name" text not null,
-    "person_url" text,
-    "books" jsonb not null,
-    "created_at" timestamp with time zone default now(),
-    "status" text default 'pending'::text,
-    "approval_token" uuid default gen_random_uuid()
-);
-
-
-alter table "public"."pending_contributions" enable row level security;
-
 create table "public"."people" (
     "id" uuid not null default uuid_generate_v4(),
     "full_name" text not null,
@@ -70,15 +57,23 @@ CREATE UNIQUE INDEX books_pkey ON public.books USING btree (id);
 
 CREATE INDEX books_title_embedding_idx ON public.books USING ivfflat (title_embedding vector_cosine_ops);
 
+CREATE INDEX idx_books_author_lower ON public.books USING btree (lower(author));
+
 CREATE INDEX idx_books_genre ON public.books USING gin (genre);
 
+CREATE INDEX idx_books_title_lower ON public.books USING btree (lower(title));
+
+CREATE INDEX idx_books_with_description ON public.books USING btree (id) WHERE ((description IS NOT NULL) AND (description <> ''::text));
+
+CREATE INDEX idx_people_fullname_lower ON public.people USING btree (lower(full_name));
+
 CREATE INDEX idx_people_type ON public.people USING btree (type);
+
+CREATE INDEX idx_people_with_description ON public.people USING btree (id) WHERE ((description IS NOT NULL) AND (description <> ''::text));
 
 CREATE INDEX idx_recommendations_book_id ON public.recommendations USING btree (book_id);
 
 CREATE INDEX idx_recommendations_person_id ON public.recommendations USING btree (person_id);
-
-CREATE UNIQUE INDEX pending_contributions_pkey ON public.pending_contributions USING btree (id);
 
 CREATE UNIQUE INDEX people_pkey ON public.people USING btree (id);
 
@@ -89,8 +84,6 @@ CREATE UNIQUE INDEX unique_person_book ON public.recommendations USING btree (pe
 CREATE UNIQUE INDEX unique_title_author ON public.books USING btree (title, author);
 
 alter table "public"."books" add constraint "books_pkey" PRIMARY KEY using index "books_pkey";
-
-alter table "public"."pending_contributions" add constraint "pending_contributions_pkey" PRIMARY KEY using index "pending_contributions_pkey";
 
 alter table "public"."people" add constraint "people_pkey" PRIMARY KEY using index "people_pkey";
 
@@ -397,8 +390,7 @@ AS $function$
 BEGIN
   RETURN QUERY
   WITH book_counts AS (
-    -- Calculate recommendation count and percentile for each book
-    SELECT
+    SELECT 
       books.id,
       books.title,
       books.author,
@@ -406,8 +398,8 @@ BEGIN
       books.genre,
       books.amazon_url,
       books.similar_books,
-      COUNT(DISTINCT r.person_id)::int as recommendation_count,
-      books.recommendation_percentile -- Use the precalculated percentile
+      books.recommendation_percentile,
+      COUNT(DISTINCT r.person_id)::int as recommendation_count
     FROM books
     LEFT JOIN recommendations r ON books.id = r.book_id
     GROUP BY books.id, books.title, books.author, books.description, books.genre, books.amazon_url, books.similar_books, books.recommendation_percentile
@@ -423,7 +415,7 @@ BEGIN
     bc.recommendation_count,
     bc.recommendation_percentile
   FROM book_counts bc
-  ORDER BY bc.recommendation_count DESC, bc.id ASC -- Corrected ORDER BY
+  ORDER BY bc.recommendation_count DESC, bc.id -- Added stable secondary sort by ID
   LIMIT p_limit
   OFFSET p_offset;
 END;
@@ -1238,12 +1230,12 @@ begin
     top_related as (
       -- Get top 3 related recommenders for each recommender
       select 
-        tr.recommender1,
-        tr.recommender2,
-        tr.shared_count,
-        tr.shared_books,
-        row_number() over (partition by tr.recommender1 order by tr.shared_count desc) as rn
-      from shared_books tr
+        recommender1,
+        recommender2,
+        shared_count,
+        shared_books,
+        row_number() over (partition by recommender1 order by shared_count desc) as rn
+      from shared_books
     )
     select 
       tr.recommender1 as recommender_id,
@@ -1537,180 +1529,6 @@ AS $function$
 $function$
 ;
 
-CREATE OR REPLACE FUNCTION public.hybrid_search_books(query_input text, embedding_input vector)
- RETURNS TABLE(id uuid, title text, author text, description text, similarity_score double precision)
- LANGUAGE sql
-AS $function$
-with input as (
-  select
-    query_input as query,
-    embedding_input as embedding
-),
-semantic_matches as (
-  select
-    b.id,
-    b.title,
-    b.author,
-    b.description,
-    1 - (b.description_embedding <=> i.embedding) as similarity_score
-  from books b, input i
-),
-exact_matches as (
-  select
-    b.id,
-    b.title,
-    b.author,
-    b.description,
-    1.1 as similarity_score
-  from books b, input i
-  where
-    b.title ilike '%' || i.query || '%'
-    or b.author ilike '%' || i.query || '%'
-    or b.description ilike '%' || i.query || '%'
-)
-select *
-from (
-  select * from semantic_matches
-  union
-  select * from exact_matches
-) combined
-order by similarity_score desc
-limit 20;
-$function$
-;
-
-CREATE OR REPLACE FUNCTION public.hybrid_search_books(query_input text, embedding_input vector, min_similarity double precision DEFAULT 0.75)
- RETURNS TABLE(id uuid, title text, author text, description text, genre text[], similarity_score double precision)
- LANGUAGE sql
-AS $function$
-with input as (
-  select
-    query_input as query,
-    embedding_input as embedding
-),
-semantic_matches as (
-  select
-    b.id,
-    b.title,
-    b.author,
-    b.description,
-    b.genre,
-    1 - (b.description_embedding <=> i.embedding) as similarity_score
-  from books b, input i
-),
-exact_matches as (
-  select
-    b.id,
-    b.title,
-    b.author,
-    b.description,
-    b.genre,
-    1.1 as similarity_score
-  from books b, input i
-  where
-    b.title ilike '%' || i.query || '%'
-    or b.author ilike '%' || i.query || '%'
-    or b.description ilike '%' || i.query || '%'
-    or i.query ilike any(b.genre) -- <== correct array match
-)
-select *
-from (
-  select * from semantic_matches
-  union
-  select * from exact_matches
-) combined
-where similarity_score >= min_similarity
-order by similarity_score desc;
-$function$
-;
-
-CREATE OR REPLACE FUNCTION public.hybrid_search_people(query_input text, embedding_input vector)
- RETURNS TABLE(id uuid, full_name text, type text, description text, url text, similarity_score double precision)
- LANGUAGE sql
-AS $function$
-with input as (
-  select
-    query_input as query,
-    embedding_input as embedding
-),
-semantic_matches as (
-  select
-    p.id,
-    p.full_name,
-    p.type,
-    p.description,
-    p.url,
-    1 - (p.description_embedding <=> i.embedding) as similarity_score
-  from people p, input i
-),
-exact_matches as (
-  select
-    p.id,
-    p.full_name,
-    p.type,
-    p.description,
-    p.url,
-    1.1 as similarity_score
-  from people p, input i
-  where
-    p.full_name ilike '%' || i.query || '%'
-    or p.description ilike '%' || i.query || '%'
-)
-select *
-from (
-  select * from semantic_matches
-  union
-  select * from exact_matches
-) combined
-order by similarity_score desc
-limit 20;
-$function$
-;
-
-CREATE OR REPLACE FUNCTION public.hybrid_search_people(query_input text, embedding_input vector, min_similarity double precision DEFAULT 0.75)
- RETURNS TABLE(id uuid, full_name text, type text, description text, url text, similarity_score double precision)
- LANGUAGE sql
-AS $function$
-with input as (
-  select
-    query_input as query,
-    embedding_input as embedding
-),
-semantic_matches as (
-  select
-    p.id,
-    p.full_name,
-    p.type,
-    p.description,
-    p.url,
-    1 - (p.description_embedding <=> i.embedding) as similarity_score
-  from people p, input i
-),
-exact_matches as (
-  select
-    p.id,
-    p.full_name,
-    p.type,
-    p.description,
-    p.url,
-    1.1 as similarity_score
-  from people p, input i
-  where
-    p.full_name ilike '%' || i.query || '%'
-    or p.description ilike '%' || i.query || '%'
-    or p.type ilike '%' || i.query || '%' -- <== added type field match
-)
-select *
-from (
-  select * from semantic_matches
-  union
-  select * from exact_matches
-) combined
-where similarity_score >= min_similarity
-order by similarity_score desc;
-$function$
-;
-
 CREATE OR REPLACE FUNCTION public.match_documents(query_embedding vector)
  RETURNS TABLE(id uuid, similarity double precision)
  LANGUAGE plpgsql
@@ -1723,6 +1541,50 @@ BEGIN
   FROM books
   WHERE 1 - (books.description_embedding <=> query_embedding) > 0.78
   ORDER BY similarity DESC;
+END;
+$function$
+;
+
+CREATE OR REPLACE FUNCTION public.semantic_search_books(embedding_input vector, match_count integer DEFAULT 500, min_similarity double precision DEFAULT 0.8)
+ RETURNS TABLE(id uuid, title text, author text, description text, genre text[], similarity double precision)
+ LANGUAGE plpgsql
+AS $function$
+BEGIN
+  RETURN QUERY
+  SELECT 
+    b.id,
+    b.title,
+    b.author,
+    b.description,
+    b.genre,
+    1 - (b.description_embedding <=> embedding_input) as similarity
+  FROM books b
+  WHERE b.description_embedding IS NOT NULL
+    AND 1 - (b.description_embedding <=> embedding_input) >= min_similarity
+  ORDER BY b.description_embedding <=> embedding_input
+  LIMIT match_count;
+END;
+$function$
+;
+
+CREATE OR REPLACE FUNCTION public.semantic_search_people(embedding_input vector, match_count integer DEFAULT 500, min_similarity double precision DEFAULT 0.8)
+ RETURNS TABLE(id uuid, full_name text, type text, description text, url text, similarity double precision)
+ LANGUAGE plpgsql
+AS $function$
+BEGIN
+  RETURN QUERY
+  SELECT 
+    p.id,
+    p.full_name,
+    p.type,
+    p.description,
+    p.url,
+    1 - (p.description_embedding <=> embedding_input) as similarity
+  FROM people p
+  WHERE p.description_embedding IS NOT NULL
+    AND 1 - (p.description_embedding <=> embedding_input) >= min_similarity
+  ORDER BY p.description_embedding <=> embedding_input
+  LIMIT match_count;
 END;
 $function$
 ;
@@ -1779,48 +1641,6 @@ grant trigger on table "public"."books" to "service_role";
 grant truncate on table "public"."books" to "service_role";
 
 grant update on table "public"."books" to "service_role";
-
-grant delete on table "public"."pending_contributions" to "anon";
-
-grant insert on table "public"."pending_contributions" to "anon";
-
-grant references on table "public"."pending_contributions" to "anon";
-
-grant select on table "public"."pending_contributions" to "anon";
-
-grant trigger on table "public"."pending_contributions" to "anon";
-
-grant truncate on table "public"."pending_contributions" to "anon";
-
-grant update on table "public"."pending_contributions" to "anon";
-
-grant delete on table "public"."pending_contributions" to "authenticated";
-
-grant insert on table "public"."pending_contributions" to "authenticated";
-
-grant references on table "public"."pending_contributions" to "authenticated";
-
-grant select on table "public"."pending_contributions" to "authenticated";
-
-grant trigger on table "public"."pending_contributions" to "authenticated";
-
-grant truncate on table "public"."pending_contributions" to "authenticated";
-
-grant update on table "public"."pending_contributions" to "authenticated";
-
-grant delete on table "public"."pending_contributions" to "service_role";
-
-grant insert on table "public"."pending_contributions" to "service_role";
-
-grant references on table "public"."pending_contributions" to "service_role";
-
-grant select on table "public"."pending_contributions" to "service_role";
-
-grant trigger on table "public"."pending_contributions" to "service_role";
-
-grant truncate on table "public"."pending_contributions" to "service_role";
-
-grant update on table "public"."pending_contributions" to "service_role";
 
 grant delete on table "public"."people" to "anon";
 
@@ -1931,39 +1751,6 @@ to authenticated, anon
 with check (true);
 
 
-create policy "Enable delete for service role"
-on "public"."pending_contributions"
-as permissive
-for delete
-to service_role
-using (true);
-
-
-create policy "Enable insert to all"
-on "public"."pending_contributions"
-as permissive
-for insert
-to public
-with check (true);
-
-
-create policy "Enable read for service role"
-on "public"."pending_contributions"
-as permissive
-for select
-to service_role
-using (true);
-
-
-create policy "Enable update for service role"
-on "public"."pending_contributions"
-as permissive
-for update
-to service_role
-using (true)
-with check (true);
-
-
 create policy "Allow inserts for anon + auth on people"
 on "public"."people"
 as permissive
@@ -2031,3 +1818,5 @@ with check (false);
 
 
 create extension if not exists "vector" with schema "extensions";
+
+
