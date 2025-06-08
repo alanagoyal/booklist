@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { Counter } from "@/components/counter";
 import { FormattedBook, FormattedRecommender } from "@/types";
-import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import BookDetail from "@/components/book-detail";
 import RecommenderDetail from "@/components/recommender-detail";
 import BookGrid from "./book-grid";
@@ -18,7 +18,6 @@ export function BookList({
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const pathname = usePathname();
   const viewMode = (searchParams.get("view") as "books" | "people") || "books";
   const [filteredCount, setFilteredCount] = useState(initialBooks.length);
   const [viewHistory, setViewHistory] = useState<
@@ -76,27 +75,27 @@ export function BookList({
       // If there's only one view, remove it completely
       const params = new URLSearchParams(searchParams.toString());
       params.delete("key");
-      router.push(`${pathname}?${params.toString()}`, { scroll: false });
+      router.push(`?${params.toString()}`, { scroll: false });
       setViewHistory([]);
     } else {
       // If there are multiple views, just remove the topmost one
       const previousView = viewHistory[viewHistory.length - 2]; // Get second-to-last view
       const params = new URLSearchParams(searchParams.toString());
       params.set("key", previousView.id);
-      router.push(`${pathname}?${params.toString()}`, { scroll: false });
+      router.push(`?${params.toString()}`, { scroll: false });
 
       // Update state to remove only the last view
       setViewHistory((prev) => prev.slice(0, -1));
     }
-  }, [router, searchParams, viewHistory, pathname]);
+  }, [router, searchParams, viewHistory]);
 
   // Handle closing all detail views
   const handleCloseAll = useCallback(() => {
     const params = new URLSearchParams(searchParams.toString());
     params.delete("key");
-    router.push(`${pathname}?${params.toString()}`, { scroll: false });
+    router.push(`?${params.toString()}`, { scroll: false });
     setViewHistory([]);
-  }, [router, searchParams, pathname]);
+  }, [router, searchParams]);
 
   // Handle tab click
   const handleTabClick = useCallback(
@@ -108,7 +107,7 @@ export function BookList({
       // Update URL and history
       const params = new URLSearchParams(searchParams.toString());
       params.set("key", view.id);
-      router.push(`${pathname}?${params.toString()}`, { scroll: false });
+      router.push(`?${params.toString()}`, { scroll: false });
       setViewHistory(viewHistory.slice(0, viewHistory.indexOf(view) + 1));
 
       // Reset navigating state after a short delay
@@ -116,7 +115,7 @@ export function BookList({
         setIsNavigating(false);
       }, 50);
     },
-    [router, searchParams, viewHistory, pathname]
+    [router, searchParams, viewHistory]
   );
 
   // Calculate tab positions
