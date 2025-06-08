@@ -1,6 +1,6 @@
 import { FormattedRecommender } from "@/types";
 import { X, BookOpen, Tag, ChevronLeft, User, Link } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useState } from "react";
 
 type RecommenderDetailProps = {
@@ -22,6 +22,7 @@ export default function RecommenderDetail({
 }: RecommenderDetailProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const pathname = usePathname();
   const [showAllRecommendations, setShowAllRecommendations] = useState(false);
 
   const handleBackdropClick = (e: React.MouseEvent) => {
@@ -33,7 +34,7 @@ export default function RecommenderDetail({
   const handleEntityClick = (id: string) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set("key", `${id}--${Date.now()}`);
-    router.push(`?${params.toString()}`, { scroll: false });
+    router.push(`${pathname}?${params.toString()}`, { scroll: false });
   };
 
   return (

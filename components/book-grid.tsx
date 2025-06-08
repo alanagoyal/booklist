@@ -3,7 +3,7 @@
 import { Fragment, useCallback } from "react";
 import { DataGrid } from "@/components/grid";
 import { FormattedBook } from "@/types";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { truncateText } from "@/utils/text";
 import { formatPercentile } from "../utils/format";
 import { InfoIcon } from './icons';
@@ -31,14 +31,15 @@ function RecommenderCell({
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const pathname = usePathname();
 
   const handleRecommenderClick = useCallback(
     (id: string) => {
       const params = new URLSearchParams(searchParams.toString());
       params.set("key", `${id}--${Date.now()}`);
-      router.push(`?${params.toString()}`, { scroll: false });
+      router.push(`${pathname}?${params.toString()}`, { scroll: false });
     },
-    [searchParams, router]
+    [searchParams, router, pathname]
   );
 
   const firstRecommender = original.recommendations?.[0]?.recommender;
@@ -118,13 +119,15 @@ export default function BookGrid({ data, isMobile }: BookGridProps) {
   const searchParams = useSearchParams();
 
   // Row click handler
+  const pathname = usePathname();
+  
   const handleRowClick = useCallback(
     (book: FormattedBook) => {
       const params = new URLSearchParams(searchParams.toString());
       params.set("key", `${book.id || book.title}--${Date.now()}`);
-      router.push(`?${params.toString()}`, { scroll: false });
+      router.push(`${pathname}?${params.toString()}`, { scroll: false });
     },
-    [searchParams, router]
+    [searchParams, router, pathname]
   );
 
   // Columns

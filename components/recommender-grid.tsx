@@ -3,7 +3,7 @@
 import { useCallback } from "react";
 import { DataGrid } from "@/components/grid";
 import { FormattedRecommender } from "@/types";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { truncateText } from "@/utils/text";
 import { formatPercentile } from "@/utils/format";
 import { InfoIcon } from './icons'
@@ -84,13 +84,15 @@ export default function RecommenderGrid({
   const searchParams = useSearchParams();
 
   // Row click handler
+  const pathname = usePathname();
+  
   const handleRowClick = useCallback(
     (recommender: FormattedRecommender) => {
       const params = new URLSearchParams(searchParams.toString());
       params.set("key", `${recommender.id}--${Date.now()}`);
-      router.push(`?${params.toString()}`, { scroll: false });
+      router.push(`${pathname}?${params.toString()}`, { scroll: false });
     },
-    [searchParams, router]
+    [searchParams, router, pathname]
   );
 
   // Columns
