@@ -9,15 +9,15 @@ const fetcher = (url: string) => fetch(url).then(r => r.json());
 
 export default function Home() {
   const { data: essentialBooks } = useSWR<EssentialBook[]>(
-    "/data/books-essential.json",
+    "/booklist/data/books-essential.json",
     fetcher
   );
   const { data: recommenders } = useSWR<FormattedRecommender[]>(
-    "/data/recommenders.json",
+    "/booklist/data/recommenders.json",
     fetcher
   );
   const { data: extendedData } = useSWR<ExtendedBook[]>(
-    essentialBooks ? "/data/books-extended.json" : null,
+    essentialBooks ? "/booklist/data/books-extended.json" : null,
     fetcher
   );
 

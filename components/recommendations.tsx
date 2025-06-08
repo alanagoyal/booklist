@@ -216,11 +216,11 @@ function RecommendationsContent() {
 
   // Only fetch data when needed
   const { data: books } = useSWR<Book[]>(
-    step !== undefined ? "/data/books-essential.json" : null,
+    step !== undefined ? "/booklist/data/books-essential.json" : null,
     fetcher
   );
   const { data: recommenders } = useSWR<FormattedRecommender[]>(
-    step !== undefined ? "/data/recommenders.json" : null,
+    step !== undefined ? "/booklist/data/recommenders.json" : null,
     fetchRecommenders
   );
 
