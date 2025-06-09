@@ -19,7 +19,6 @@ export function BookList({
   const router = useRouter();
   const searchParams = useSearchParams();
   const viewMode = (searchParams.get("view") as "books" | "people") || "books";
-  const [filteredCount, setFilteredCount] = useState(initialBooks.length);
   const [viewHistory, setViewHistory] = useState<
     Array<{ id: string; actualId: string; type: "book" | "recommender" }>
   >([]);
