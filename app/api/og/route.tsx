@@ -8,7 +8,7 @@ export async function GET() {
   }
   try {
     const fontData = await fetch(
-      new URL('/fonts/SpecialElite-Regular.ttf', process.env.NEXT_PUBLIC_VERCEL_URL)
+      new URL('/booklist/fonts/SpecialElite-Regular.ttf', process.env.NEXT_PUBLIC_VERCEL_URL)
     ).then((res) => res.arrayBuffer());
 
     return new ImageResponse(
