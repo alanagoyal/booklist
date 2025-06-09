@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     url: siteConfig.url,
     images: [
       {
-        url: "/api/og",
+        url: "/booklist/api/og",
         width: 1200,
         height: 630,
       },
@@ -42,7 +42,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: siteConfig.title,
     description: siteConfig.description,
-    images: ["/api/og"],
+    images: ["/booklist/api/og"],
   },
 };
 
