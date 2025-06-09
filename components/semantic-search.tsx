@@ -110,7 +110,7 @@ export function SearchBox({
           setIsSearching(true);
           try {
             const embedding = await generateEmbedding(searchValue);
-            const response = await fetch("/api/search", {
+            const response = await fetch("/booklist/api/search", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ 
