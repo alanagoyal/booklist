@@ -1,7 +1,7 @@
 import { X, BookOpen, Tag, ChevronLeft, User, Link } from "lucide-react";
 import { FormattedBook } from "@/types";
 import { useCallback, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useEntityClick } from "../utils/use-entity-click";
 
 type BookDetailProps = {
   book: FormattedBook;
@@ -21,9 +21,6 @@ export default function BookDetail({
   isNavigating = false
 }: BookDetailProps) {
   const [showAllRecommenders, setShowAllRecommenders] = useState(false);
-  const router = useRouter();
-  const searchParams = useSearchParams();
-
   const handleBackdropClick = useCallback(
     (e: React.MouseEvent) => {
       if (e.target === e.currentTarget) {
@@ -33,11 +30,7 @@ export default function BookDetail({
     [onBackdropClick]
   );
 
-  const handleEntityClick = (id: string) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("key", `${id}--${Date.now()}`);
-    router.push(`?${params.toString()}`, { scroll: false });
-  };
+  const handleEntityClick = useEntityClick();
 
   return (
     <div

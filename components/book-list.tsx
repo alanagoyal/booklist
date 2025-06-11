@@ -8,6 +8,7 @@ import BookDetail from "@/components/book-detail";
 import RecommenderDetail from "@/components/recommender-detail";
 import BookGrid from "./book-grid";
 import RecommenderGrid from "./recommender-grid";
+import { useDetailViewClick } from "@/utils/use-entity-click";
 
 export function BookList({
   initialBooks,
@@ -96,25 +97,12 @@ export function BookList({
     setViewHistory([]);
   }, [router, searchParams]);
 
-  // Handle tab click
-  const handleTabClick = useCallback(
-    (view: (typeof viewHistory)[0]) => {
-      // Set navigating state to prevent transitions
-      setIsNavigating(true);
-      setHoveredTabId(null);
-
-      // Update URL and history
-      const params = new URLSearchParams(searchParams.toString());
-      params.set("key", view.id);
-      router.push(`?${params.toString()}`, { scroll: false });
-      setViewHistory(viewHistory.slice(0, viewHistory.indexOf(view) + 1));
-
-      // Reset navigating state after a short delay
-      setTimeout(() => {
-        setIsNavigating(false);
-      }, 50);
-    },
-    [router, searchParams, viewHistory]
+  // Handle tab click using the utility hook
+  const handleTabClick = useDetailViewClick(
+    setViewHistory,
+    viewHistory,
+    setIsNavigating,
+    setHoveredTabId
   );
 
   // Calculate tab positions

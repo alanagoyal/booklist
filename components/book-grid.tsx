@@ -1,9 +1,9 @@
 "use client";
 
 import { Fragment, useCallback } from "react";
+import { useEntityClick } from "../utils/use-entity-click";
 import { DataGrid } from "@/components/grid";
 import { FormattedBook } from "@/types";
-import { useRouter, useSearchParams } from "next/navigation";
 import { truncateText } from "@/utils/text";
 import { formatPercentile } from "../utils/format";
 import { InfoIcon } from './icons';
@@ -29,17 +29,7 @@ function RecommenderCell({
   original: FormattedBook;
   isMobile: boolean;
 }) {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-
-  const handleRecommenderClick = useCallback(
-    (id: string) => {
-      const params = new URLSearchParams(searchParams.toString());
-      params.set("key", `${id}--${Date.now()}`);
-      router.push(`?${params.toString()}`, { scroll: false });
-    },
-    [searchParams, router]
-  );
+  const handleRecommenderClick = useEntityClick();
 
   const firstRecommender = original.recommendations?.[0]?.recommender;
   const moreCount =
@@ -113,18 +103,11 @@ interface BookGridProps {
 }
 
 export default function BookGrid({ data, isMobile }: BookGridProps) {
-  // Hooks
-  const router = useRouter();
-  const searchParams = useSearchParams();
-
   // Row click handler
+  const handleEntityClick = useEntityClick();
   const handleRowClick = useCallback(
-    (book: FormattedBook) => {
-      const params = new URLSearchParams(searchParams.toString());
-      params.set("key", `${book.id || book.title}--${Date.now()}`);
-      router.push(`?${params.toString()}`, { scroll: false });
-    },
-    [searchParams, router]
+    (book: FormattedBook) => handleEntityClick(book.id || book.title),
+    [handleEntityClick]
   );
 
   // Columns

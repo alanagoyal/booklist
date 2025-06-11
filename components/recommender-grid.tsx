@@ -1,9 +1,9 @@
 "use client";
 
 import { useCallback } from "react";
+import { useEntityClick } from "../utils/use-entity-click";
 import { DataGrid } from "@/components/grid";
 import { FormattedRecommender } from "@/types";
-import { useRouter, useSearchParams } from "next/navigation";
 import { truncateText } from "@/utils/text";
 import { formatPercentile } from "@/utils/format";
 import { InfoIcon } from './icons'
@@ -21,17 +21,7 @@ function RecommendationCell({
   original: FormattedRecommender;
   isMobile: boolean;
 }) {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-
-  const handleBookClick = useCallback(
-    (id: string) => {
-      const params = new URLSearchParams(searchParams.toString());
-      params.set("key", `${id}--${Date.now()}`);
-      router.push(`?${params.toString()}`, { scroll: false });
-    },
-    [searchParams, router]
-  );
+  const handleBookClick = useEntityClick();
 
   const firstBook = original.recommendations[0];
   const moreCount =
@@ -79,18 +69,11 @@ export default function RecommenderGrid({
   data,
   isMobile,
 }: RecommenderGridProps) {
-  // Hooks
-  const router = useRouter();
-  const searchParams = useSearchParams();
-
   // Row click handler
+  const handleEntityClick = useEntityClick();
   const handleRowClick = useCallback(
-    (recommender: FormattedRecommender) => {
-      const params = new URLSearchParams(searchParams.toString());
-      params.set("key", `${recommender.id}--${Date.now()}`);
-      router.push(`?${params.toString()}`, { scroll: false });
-    },
-    [searchParams, router]
+    (recommender: FormattedRecommender) => handleEntityClick(recommender.id),
+    [handleEntityClick]
   );
 
   // Columns
