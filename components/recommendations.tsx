@@ -8,7 +8,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import type { Book, FormattedRecommender } from "@/types";
 import useSWR from "swr";
 import fetcher, { fetchRecommenders } from "../utils/fetcher";
-import { ArrowLeftRight } from "lucide-react";
+import { ArrowLeft, ArrowLeftRight } from "lucide-react";
 import { CardStack } from "./card-stack";
 
 interface SearchResult {
@@ -852,7 +852,7 @@ function RecommendationsContent() {
               }}
               className="text-text md:hover:underline transition-colors duration-200 cursor-pointer flex items-center gap-1 h-10"
             >
-              Redo <ArrowLeftRight size={18} className="inline" />
+              Start Over
             </button>
           </div>
         );
