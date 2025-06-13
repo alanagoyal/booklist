@@ -895,6 +895,16 @@ function RecommendationsContent() {
   const totalSteps = 5;
   const currentProgress = step ? (step / totalSteps) * 100 : 0;
 
+  // Render progress bar displaying completion percentage
+  const renderProgressBar = () => (
+    <div className="w-full h-2 bg-accent/30 border border-border">
+      <div
+        className={`h-full bg-accent transition-all duration-200 ${currentProgress < 100 ? "border-r" : ""} border-border`}
+        style={{ width: `${currentProgress}%` }}
+      />
+    </div>
+  );
+
   // Clear search query when step changes
   useEffect(() => {
     setSearchQuery("");
@@ -913,12 +923,7 @@ function RecommendationsContent() {
       {/* On small screens, place navigation buttons below the heading */}
       <div className="md:hidden mb-4">{renderNavigationButtons()}</div>
       <div className="space-y-4">
-        <div className="w-full h-2 bg-accent/30 border border-border">
-          <div
-            className={`h-full bg-accent transition-all duration-200 ${currentProgress < 100 ? "border-r" : ""} border-border`}
-            style={{ width: `${currentProgress}%` }}
-          />
-        </div>
+        {renderProgressBar()}
         {renderStep()}
       </div>
     </div>
