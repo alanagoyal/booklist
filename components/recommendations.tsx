@@ -769,10 +769,10 @@ function RecommendationsContent() {
             <button
               onClick={() => setStep(2)}
               disabled={!userType}
-              className={`w-[135px] text-right h-10 ${
+              className={`w-48 text-center px-4 py-2 border border-border bg-background text-text transition-colors duration-200 ${
                 !userType
-                  ? "cursor-not-allowed text-muted-foreground"
-                  : "md:hover:underline text-text"
+                  ? "cursor-not-allowed opacity-60"
+                  : "md:hover:bg-accent/50 text-text"
               }`}
             >
               {userType ? "Next (1/1 selected)" : "Next (0/1 selected)"}
@@ -785,7 +785,7 @@ function RecommendationsContent() {
           <div className="flex justify-between gap-4 h-10">
             <button
               onClick={() => setStep(step - 1)}
-              className="bg-background text-text md:hover:underline transition-colors duration-200 h-10"
+              className="bg-background text-text px-4 py-2 border border-border text-center transition-colors duration-200 md:hover:bg-accent/50"
             >
               Back
             </button>
@@ -794,10 +794,10 @@ function RecommendationsContent() {
                 setStep(3);
               }}
               disabled={selectedGenres.length === 0}
-              className={`w-[135px] text-right h-10 ${
+              className={`w-48 text-center px-4 py-2 border border-border bg-background text-text transition-colors duration-200 ${
                 selectedGenres.length === 0
-                  ? "cursor-not-allowed text-muted-foreground"
-                  : "md:hover:underline text-text"
+                  ? "cursor-not-allowed opacity-60"
+                  : "md:hover:bg-accent/50 text-text"
               }`}
             >
               {selectedGenres.length === 0
@@ -812,17 +812,17 @@ function RecommendationsContent() {
           <div className="flex justify-between gap-4 h-10">
             <button
               onClick={() => setStep(step - 1)}
-              className="text-text md:hover:underline transition-colors duration-200 h-10"
+              className="bg-background text-text px-4 py-2 border border-border text-center transition-colors duration-200 md:hover:bg-accent/50"
             >
               Back
             </button>
             <button
               onClick={() => setStep(4)}
               disabled={!selectedPeopleIds.length}
-              className={`w-[135px] text-right h-10 ${
+              className={`w-48 text-center px-4 py-2 border border-border bg-background text-text transition-colors duration-200 ${
                 !selectedPeopleIds.length
-                  ? "cursor-not-allowed text-muted-foreground"
-                  : "md:hover:underline text-text"
+                  ? "cursor-not-allowed opacity-60"
+                  : "md:hover:bg-accent/50 text-text"
               }`}
             >
               {selectedPeopleIds.length === 0
@@ -837,17 +837,17 @@ function RecommendationsContent() {
           <div className="flex justify-between gap-4 h-10">
             <button
               onClick={() => setStep(step - 1)}
-              className="text-text md:hover:underline transition-colors duration-200 h-10"
+              className="bg-background text-text px-4 py-2 border border-border text-center transition-colors duration-200 md:hover:bg-accent/50"
             >
               Back
             </button>
             <button
               onClick={getRecommendations}
               disabled={!selectedBookIds.length}
-              className={`w-[135px] text-right h-10 ${
+              className={`w-48 text-center px-4 py-2 border border-border bg-background text-text transition-colors duration-200 ${
                 !selectedBookIds.length
-                  ? "cursor-not-allowed text-muted-foreground"
-                  : "md:hover:underline text-text"
+                  ? "cursor-not-allowed opacity-60"
+                  : "md:hover:bg-accent/50 text-text"
               }`}
             >
               {loading
@@ -880,7 +880,7 @@ function RecommendationsContent() {
                 localStorage.removeItem("currentCardIndex");
                 localStorage.removeItem("extraGridItems");
               }}
-              className="text-text md:hover:underline transition-colors duration-200 cursor-pointer flex items-center gap-1 h-10"
+              className="bg-background text-text px-4 py-2 border border-border text-center transition-colors duration-200 md:hover:bg-accent/50 cursor-pointer flex items-center gap-1"
             >
               Start Over
             </button>
