@@ -374,10 +374,13 @@ function RecommendationsContent() {
 
     if (step === 3 && recommenders) {
       // Don't proceed if we already have 3 people selected and this one isn't already selected
-      if (selectedPeopleIds.length >= 3 && !selectedPeopleIds.includes(result.id)) {
+      if (
+        selectedPeopleIds.length >= 3 &&
+        !selectedPeopleIds.includes(result.id)
+      ) {
         return;
       }
-      
+
       const gridPeople = gridItems(recommenders);
       const suggestedPeople = gridPeople
         .slice(0, 18)
@@ -401,7 +404,7 @@ function RecommendationsContent() {
       if (selectedBookIds.length >= 3 && !selectedBookIds.includes(result.id)) {
         return;
       }
-      
+
       const gridBooks = gridItems(books);
       const suggestedBooks = gridBooks
         .slice(0, 18)
@@ -504,8 +507,12 @@ function RecommendationsContent() {
                 {FIELD_VALUES.type.map((type) => (
                   <div
                     key={type}
-                    onClick={() => (userType === null || userType === type) ? setUserType(userType === type ? null : type) : null}
-                    className={`p-3 ${(userType !== null && userType !== type) ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'} border border-border transition-colors duration-200 whitespace-pre-line line-clamp-2 ${
+                    onClick={() =>
+                      userType === null || userType === type
+                        ? setUserType(userType === type ? null : type)
+                        : null
+                    }
+                    className={`p-3 ${userType !== null && userType !== type ? "cursor-not-allowed opacity-60" : "cursor-pointer"} border border-border transition-colors duration-200 whitespace-pre-line line-clamp-2 ${
                       type === userType
                         ? "bg-accent/70 md:hover:bg-accent"
                         : "bg-background md:hover:bg-accent/50"
@@ -530,8 +537,13 @@ function RecommendationsContent() {
                 {FIELD_VALUES.genres.map((genre) => (
                   <div
                     key={genre}
-                    onClick={() => selectedGenres.length < 3 || selectedGenres.includes(genre) ? handleGenreToggle(genre) : null}
-                    className={`p-3 ${selectedGenres.length >= 3 && !selectedGenres.includes(genre) ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'} border border-border transition-colors duration-200 whitespace-pre-line line-clamp-2 ${
+                    onClick={() =>
+                      selectedGenres.length < 3 ||
+                      selectedGenres.includes(genre)
+                        ? handleGenreToggle(genre)
+                        : null
+                    }
+                    className={`p-3 ${selectedGenres.length >= 3 && !selectedGenres.includes(genre) ? "cursor-not-allowed opacity-60" : "cursor-pointer"} border border-border transition-colors duration-200 whitespace-pre-line line-clamp-2 ${
                       selectedGenres.includes(genre)
                         ? "bg-accent/70 md:hover:bg-accent"
                         : "bg-background md:hover:bg-accent/50"
@@ -571,7 +583,11 @@ function RecommendationsContent() {
                   disabled={selectedPeopleIds.length >= 3}
                   autoFocus={true}
                   onKeyDown={(e) => {
-                    if (searchResults.length === 0 || selectedPeopleIds.length >= 3) return;
+                    if (
+                      searchResults.length === 0 ||
+                      selectedPeopleIds.length >= 3
+                    )
+                      return;
 
                     // Create sorted results array to match what's displayed in the dropdown
                     const sortedResults = [...searchResults].sort((a, b) => {
@@ -610,8 +626,13 @@ function RecommendationsContent() {
                   gridItems(recommenders).map((person) => (
                     <div
                       key={person.id}
-                      onClick={() => selectedPeopleIds.length < 3 || selectedPeopleIds.includes(person.id) ? handlePersonSelect(person) : null}
-                      className={`p-3 ${selectedPeopleIds.length >= 3 && !selectedPeopleIds.includes(person.id) ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'} border border-border transition-colors duration-200 whitespace-pre-line line-clamp-2 ${
+                      onClick={() =>
+                        selectedPeopleIds.length < 3 ||
+                        selectedPeopleIds.includes(person.id)
+                          ? handlePersonSelect(person)
+                          : null
+                      }
+                      className={`p-3 ${selectedPeopleIds.length >= 3 && !selectedPeopleIds.includes(person.id) ? "cursor-not-allowed opacity-60" : "cursor-pointer"} border border-border transition-colors duration-200 whitespace-pre-line line-clamp-2 ${
                         selectedPeopleIds.includes(person.id)
                           ? "bg-accent/70 md:hover:bg-accent"
                           : "bg-background md:hover:bg-accent/50"
@@ -652,7 +673,11 @@ function RecommendationsContent() {
                   disabled={selectedBookIds.length >= 3}
                   autoFocus={true}
                   onKeyDown={(e) => {
-                    if (searchResults.length === 0 || selectedBookIds.length >= 3) return;
+                    if (
+                      searchResults.length === 0 ||
+                      selectedBookIds.length >= 3
+                    )
+                      return;
 
                     // Create sorted results array to match what's displayed in the dropdown
                     const sortedResults = [...searchResults].sort((a, b) => {
@@ -691,8 +716,13 @@ function RecommendationsContent() {
                   gridItems(books).map((book) => (
                     <div
                       key={book.id}
-                      onClick={() => selectedBookIds.length < 3 || selectedBookIds.includes(book.id) ? handleBookSelect(book) : null}
-                      className={`p-3 ${selectedBookIds.length >= 3 && !selectedBookIds.includes(book.id) ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'} border border-border transition-colors duration-200 whitespace-pre-line line-clamp-2 ${
+                      onClick={() =>
+                        selectedBookIds.length < 3 ||
+                        selectedBookIds.includes(book.id)
+                          ? handleBookSelect(book)
+                          : null
+                      }
+                      className={`p-3 ${selectedBookIds.length >= 3 && !selectedBookIds.includes(book.id) ? "cursor-not-allowed opacity-60" : "cursor-pointer"} border border-border transition-colors duration-200 whitespace-pre-line line-clamp-2 ${
                         selectedBookIds.includes(book.id)
                           ? "bg-accent/70 md:hover:bg-accent"
                           : "bg-background md:hover:bg-accent/50"
@@ -874,15 +904,20 @@ function RecommendationsContent() {
   }, [step]);
 
   return (
-    <div className="space-y-4">
-      {renderNavigationButtons()}
-      <div className="w-full h-2 bg-accent/30 border border-border">
-        <div
-          className={`h-full bg-accent transition-all duration-200 ${currentProgress < 100 ? "border-r" : ""} border-border`}
-          style={{ width: `${currentProgress}%` }}
-        />
+    <div className="max-w-3xl mx-auto p-4">
+      <div className="flex items-center justify-between mt-8 mb-4">
+        <h1 className="text-3xl leading-none font-bold">Recommendations</h1>
+        {renderNavigationButtons()}
       </div>
-      {renderStep()}
+      <div className="space-y-4">
+        <div className="w-full h-2 bg-accent/30 border border-border">
+          <div
+            className={`h-full bg-accent transition-all duration-200 ${currentProgress < 100 ? "border-r" : ""} border-border`}
+            style={{ width: `${currentProgress}%` }}
+          />
+        </div>
+        {renderStep()}
+      </div>
     </div>
   );
 }
