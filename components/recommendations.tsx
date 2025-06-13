@@ -907,8 +907,11 @@ function RecommendationsContent() {
     <div className="max-w-3xl mx-auto p-4">
       <div className="flex items-center justify-between mt-8 mb-4">
         <h1 className="text-3xl leading-none font-bold">Recommendations</h1>
-        {renderNavigationButtons()}
+        {/* Show navigation buttons inline on medium and larger screens */}
+        <div className="hidden md:block">{renderNavigationButtons()}</div>
       </div>
+      {/* On small screens, place navigation buttons below the heading */}
+      <div className="md:hidden mb-4">{renderNavigationButtons()}</div>
       <div className="space-y-4">
         <div className="w-full h-2 bg-accent/30 border border-border">
           <div
