@@ -83,7 +83,7 @@ function SearchDropdown({
             onClick={() => onSelect(result)}
             className={`p-3 cursor-pointer transition-colors duration-200 ${
               index === selectedIndex
-                ? "bg-accent/70 md:hover:bg-accent"
+                ? "bg-[hsl(151,80%,70%)] md:hover:bg-[hsl(151,80%,72%)] dark:bg-[hsl(160,84%,25%)] dark:md:hover:bg-[hsl(160,84%,27%)]"
                 : "bg-background md:hover:bg-accent/50"
             }`}
           >
@@ -514,7 +514,7 @@ function RecommendationsContent() {
                     }
                     className={`p-3 ${userType !== null && userType !== type ? "cursor-not-allowed opacity-60" : "cursor-pointer"} border border-border transition-colors duration-200 whitespace-pre-line line-clamp-2 ${
                       type === userType
-                        ? "bg-accent/70 md:hover:bg-accent"
+                        ? "bg-[hsl(151,80%,70%)] md:hover:bg-[hsl(151,80%,72%)] dark:bg-[hsl(160,84%,25%)] dark:md:hover:bg-[hsl(160,84%,27%)]"
                         : "bg-background md:hover:bg-accent/50"
                     }`}
                   >
@@ -545,7 +545,7 @@ function RecommendationsContent() {
                     }
                     className={`p-3 ${selectedGenres.length >= 3 && !selectedGenres.includes(genre) ? "cursor-not-allowed opacity-60" : "cursor-pointer"} border border-border transition-colors duration-200 whitespace-pre-line line-clamp-2 ${
                       selectedGenres.includes(genre)
-                        ? "bg-accent/70 md:hover:bg-accent"
+                        ? "bg-[hsl(151,80%,70%)] md:hover:bg-[hsl(151,80%,72%)] dark:bg-[hsl(160,84%,25%)] dark:md:hover:bg-[hsl(160,84%,27%)]"
                         : "bg-background md:hover:bg-accent/50"
                     }`}
                   >
@@ -634,7 +634,7 @@ function RecommendationsContent() {
                       }
                       className={`p-3 ${selectedPeopleIds.length >= 3 && !selectedPeopleIds.includes(person.id) ? "cursor-not-allowed opacity-60" : "cursor-pointer"} border border-border transition-colors duration-200 whitespace-pre-line line-clamp-2 ${
                         selectedPeopleIds.includes(person.id)
-                          ? "bg-accent/70 md:hover:bg-accent"
+                          ? "bg-[hsl(151,80%,70%)] md:hover:bg-[hsl(151,80%,72%)] dark:bg-[hsl(160,84%,25%)] dark:md:hover:bg-[hsl(160,84%,27%)]"
                           : "bg-background md:hover:bg-accent/50"
                       }`}
                     >
@@ -724,7 +724,7 @@ function RecommendationsContent() {
                       }
                       className={`p-3 ${selectedBookIds.length >= 3 && !selectedBookIds.includes(book.id) ? "cursor-not-allowed opacity-60" : "cursor-pointer"} border border-border transition-colors duration-200 whitespace-pre-line line-clamp-2 ${
                         selectedBookIds.includes(book.id)
-                          ? "bg-accent/70 md:hover:bg-accent"
+                          ? "bg-[hsl(151,80%,70%)] md:hover:bg-[hsl(151,80%,72%)] dark:bg-[hsl(160,84%,25%)] dark:md:hover:bg-[hsl(160,84%,27%)]"
                           : "bg-background md:hover:bg-accent/50"
                       }`}
                     >
@@ -899,7 +899,7 @@ function RecommendationsContent() {
   const renderProgressBar = () => (
     <div className="mb-8 w-full h-2 bg-accent/30 border border-border">
       <div
-        className={`h-full bg-accent transition-all duration-200 ${currentProgress < 100 ? "border-r" : ""} border-border`}
+        className={`h-full bg-[hsl(151,80%,70%)] hover:bg-[hsl(151,80%,72%)] dark:bg-[hsl(160,84%,25%)] dark:hover:bg-[hsl(160,84%,27%)] transition-all duration-200 ${currentProgress < 100 ? "border-r" : ""} border-border`}
         style={{ width: `${currentProgress}%` }}
       />
     </div>
