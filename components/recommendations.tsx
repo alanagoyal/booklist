@@ -897,7 +897,7 @@ function RecommendationsContent() {
 
   // Render progress bar displaying completion percentage
   const renderProgressBar = () => (
-    <div className="w-full h-2 bg-accent/30 border border-border">
+    <div className="mb-8 w-full h-2 bg-accent/30 border border-border">
       <div
         className={`h-full bg-accent transition-all duration-200 ${currentProgress < 100 ? "border-r" : ""} border-border`}
         style={{ width: `${currentProgress}%` }}
