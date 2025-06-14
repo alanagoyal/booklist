@@ -739,7 +739,7 @@ function RecommendationsContent() {
       case 5:
         return (
           <>
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-base">
                 We found the following for you
               </h2>
