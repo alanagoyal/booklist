@@ -112,7 +112,8 @@ function RecommendationsContent() {
   const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
   const [selectedPeopleIds, setSelectedPeopleIds] = useState<string[]>([]);
   const [selectedBookIds, setSelectedBookIds] = useState<string[]>([]);
-  const [extraGridItems, setExtraGridItems] = useState<string[]>([]);
+  const [selectedPeople, setSelectedPeople] = useState<FormattedRecommender[]>([]);
+  const [selectedBooks, setSelectedBooks] = useState<Book[]>([]);
   const [recommendations, setRecommendations] = useState<RecommendedBook[]>([]);
   const [isInitialized, setIsInitialized] = useState(false);
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
@@ -126,30 +127,75 @@ function RecommendationsContent() {
     const savedGenres = localStorage.getItem("selectedGenres");
     const savedPeopleIds = localStorage.getItem("selectedPeopleIds");
     const savedBookIds = localStorage.getItem("selectedBookIds");
-    const savedExtraGridItems = localStorage.getItem("extraGridItems");
+    const savedPeople = localStorage.getItem("selectedPeople");
+    const savedBooks = localStorage.getItem("selectedBooks");
     const savedRecommendations = localStorage.getItem("recommendations");
     const savedCardIndex = localStorage.getItem("currentCardIndex");
 
-    // Initialize state from localStorage
     if (savedUserType) setUserType(savedUserType);
     if (savedGenres) setSelectedGenres(JSON.parse(savedGenres));
     if (savedPeopleIds) setSelectedPeopleIds(JSON.parse(savedPeopleIds));
     if (savedBookIds) setSelectedBookIds(JSON.parse(savedBookIds));
-    if (savedExtraGridItems) setExtraGridItems(JSON.parse(savedExtraGridItems));
+    if (savedPeople) setSelectedPeople(JSON.parse(savedPeople));
+    if (savedBooks) setSelectedBooks(JSON.parse(savedBooks));
+    if (savedRecommendations) setRecommendations(JSON.parse(savedRecommendations));
     if (savedCardIndex) setCurrentCardIndex(parseInt(savedCardIndex));
 
-    // Check for recommendations last
-    if (savedRecommendations) {
-      setRecommendations(JSON.parse(savedRecommendations));
-      setStep(5);
-    } else {
-      // If no recommendations, check URL for step
-      const urlStep = searchParams.get("step");
-      setStep(urlStep ? parseInt(urlStep) : 1);
-    }
+    // Get step from URL or default to 1
+    const stepParam = searchParams.get("step");
+    const initialStep = stepParam ? parseInt(stepParam) : 1;
+    setStep(initialStep);
 
     setIsInitialized(true);
   }, [searchParams, isInitialized]);
+
+  // Save state to localStorage whenever it changes
+  useEffect(() => {
+    if (!isInitialized) return;
+    if (userType) localStorage.setItem("userType", userType);
+    else localStorage.removeItem("userType");
+  }, [userType, isInitialized]);
+
+  useEffect(() => {
+    if (!isInitialized) return;
+    if (selectedGenres.length > 0) localStorage.setItem("selectedGenres", JSON.stringify(selectedGenres));
+    else localStorage.removeItem("selectedGenres");
+  }, [selectedGenres, isInitialized]);
+
+  useEffect(() => {
+    if (!isInitialized) return;
+    if (selectedPeopleIds.length > 0) localStorage.setItem("selectedPeopleIds", JSON.stringify(selectedPeopleIds));
+    else localStorage.removeItem("selectedPeopleIds");
+  }, [selectedPeopleIds, isInitialized]);
+
+  useEffect(() => {
+    if (!isInitialized) return;
+    if (selectedBookIds.length > 0) localStorage.setItem("selectedBookIds", JSON.stringify(selectedBookIds));
+    else localStorage.removeItem("selectedBookIds");
+  }, [selectedBookIds, isInitialized]);
+
+  useEffect(() => {
+    if (!isInitialized) return;
+    if (selectedPeople.length > 0) localStorage.setItem("selectedPeople", JSON.stringify(selectedPeople));
+    else localStorage.removeItem("selectedPeople");
+  }, [selectedPeople, isInitialized]);
+
+  useEffect(() => {
+    if (!isInitialized) return;
+    if (selectedBooks.length > 0) localStorage.setItem("selectedBooks", JSON.stringify(selectedBooks));
+    else localStorage.removeItem("selectedBooks");
+  }, [selectedBooks, isInitialized]);
+
+  useEffect(() => {
+    if (!isInitialized) return;
+    if (recommendations.length > 0) localStorage.setItem("recommendations", JSON.stringify(recommendations));
+    else localStorage.removeItem("recommendations");
+  }, [recommendations, isInitialized]);
+
+  useEffect(() => {
+    if (!isInitialized) return;
+    localStorage.setItem("currentCardIndex", currentCardIndex.toString());
+  }, [currentCardIndex, isInitialized]);
 
   // Update URL when step changes
   useEffect(() => {
@@ -158,61 +204,6 @@ function RecommendationsContent() {
     params.set("step", step.toString());
     router.replace(`?${params.toString()}`);
   }, [step, router, isInitialized]);
-
-  // Save form state to localStorage
-  useEffect(() => {
-    if (!isInitialized) return;
-
-    if (userType) {
-      localStorage.setItem("userType", userType);
-    } else {
-      localStorage.removeItem("userType");
-    }
-
-    if (selectedGenres.length) {
-      localStorage.setItem("selectedGenres", JSON.stringify(selectedGenres));
-    } else {
-      localStorage.removeItem("selectedGenres");
-    }
-
-    if (selectedPeopleIds.length) {
-      localStorage.setItem(
-        "selectedPeopleIds",
-        JSON.stringify(selectedPeopleIds)
-      );
-    } else {
-      localStorage.removeItem("selectedPeopleIds");
-    }
-
-    if (selectedBookIds.length) {
-      localStorage.setItem("selectedBookIds", JSON.stringify(selectedBookIds));
-    } else {
-      localStorage.removeItem("selectedBookIds");
-    }
-
-    if (extraGridItems.length) {
-      localStorage.setItem("extraGridItems", JSON.stringify(extraGridItems));
-    } else {
-      localStorage.removeItem("extraGridItems");
-    }
-
-    if (recommendations.length) {
-      localStorage.setItem("recommendations", JSON.stringify(recommendations));
-      localStorage.setItem("currentCardIndex", currentCardIndex.toString());
-    } else {
-      localStorage.removeItem("recommendations");
-      localStorage.removeItem("currentCardIndex");
-    }
-  }, [
-    userType,
-    selectedGenres,
-    selectedPeopleIds,
-    selectedBookIds,
-    extraGridItems,
-    recommendations,
-    currentCardIndex,
-    isInitialized,
-  ]);
 
   // Only fetch data when needed
   const { data: books } = useSWR<Book[]>(
@@ -239,24 +230,39 @@ function RecommendationsContent() {
     });
   }, []);
 
-  const gridItems = useCallback(
-    (items: any[]) => {
-      const baseItems = items.slice(0, 18);
-      const extraItems = items.filter((item) =>
-        extraGridItems.includes(item.id)
-      );
-      return [...extraItems, ...baseItems];
-    },
-    [extraGridItems]
-  );
+  // Create grid items with proper deduplication
+  const getGridPeople = useCallback(() => {
+    if (!recommenders) return [];
+    
+    // Get first 18 suggested people
+    const suggested = recommenders.slice(0, 18);
+    const suggestedIds = new Set(suggested.map(p => p.id));
+    
+    // Add any selected people that aren't in suggestions
+    const additionalSelected = selectedPeople.filter(p => !suggestedIds.has(p.id));
+    
+    return [...additionalSelected, ...suggested];
+  }, [recommenders, selectedPeople]);
+
+  const getGridBooks = useCallback(() => {
+    if (!books) return [];
+    
+    // Get first 18 suggested books
+    const suggested = books.slice(0, 18);
+    const suggestedIds = new Set(suggested.map(b => b.id));
+    
+    // Add any selected books that aren't in suggestions
+    const additionalSelected = selectedBooks.filter(b => !suggestedIds.has(b.id));
+    
+    return [...additionalSelected, ...suggested];
+  }, [books, selectedBooks]);
 
   const memoizedGridIds = useMemo(() => {
-    if (!recommenders || !books) return { people: new Set(), books: new Set() };
     return {
-      people: new Set(gridItems(recommenders).map((p) => p.id)),
-      books: new Set(gridItems(books).map((b) => b.id)),
+      people: new Set(getGridPeople().map((p) => p.id)),
+      books: new Set(getGridBooks().map((b) => b.id)),
     };
-  }, [recommenders, books, gridItems]);
+  }, [getGridPeople, getGridBooks]);
 
   // Optimize search data with indexing for faster lookups
   const memoizedSearchData = useMemo(() => {
@@ -378,15 +384,6 @@ function RecommendationsContent() {
         return;
       }
 
-      const gridPeople = gridItems(recommenders);
-      const suggestedPeople = gridPeople
-        .slice(0, 18)
-        .some((p) => p.id === result.id);
-
-      if (!suggestedPeople && !extraGridItems.includes(result.id)) {
-        setExtraGridItems((prev) => [...prev, result.id]);
-      }
-
       // Select the person if not already selected
       const person = recommenders.find((p) => p.id === result.id);
       if (
@@ -400,15 +397,6 @@ function RecommendationsContent() {
       // Don't proceed if we already have 3 books selected and this one isn't already selected
       if (selectedBookIds.length >= 3 && !selectedBookIds.includes(result.id)) {
         return;
-      }
-
-      const gridBooks = gridItems(books);
-      const suggestedBooks = gridBooks
-        .slice(0, 18)
-        .some((b) => b.id === result.id);
-
-      if (!suggestedBooks && !extraGridItems.includes(result.id)) {
-        setExtraGridItems((prev) => [...prev, result.id]);
       }
 
       // Select the book if not already selected
@@ -426,10 +414,25 @@ function RecommendationsContent() {
   const handlePersonSelect = (person: FormattedRecommender): void => {
     setSelectedPeopleIds((prev) => {
       const isSelected = prev.includes(person.id);
+
       if (isSelected) {
-        return prev.filter((id) => id !== person.id);
+        const next = prev.filter((id) => id !== person.id);
+        return next;
       } else if (prev.length < 3) {
-        return [...prev, person.id];
+        const next = [...prev, person.id];
+        return next;
+      }
+      return prev;
+    });
+    setSelectedPeople((prev) => {
+      const isSelected = prev.some((p) => p.id === person.id);
+
+      if (isSelected) {
+        const next = prev.filter((p) => p.id !== person.id);
+        return next;
+      } else if (prev.length < 3) {
+        const next = [...prev, person];
+        return next;
       }
       return prev;
     });
@@ -438,10 +441,25 @@ function RecommendationsContent() {
   const handleBookSelect = (book: Book): void => {
     setSelectedBookIds((prev) => {
       const isSelected = prev.includes(book.id);
+
       if (isSelected) {
-        return prev.filter((id) => id !== book.id);
+        const next = prev.filter((id) => id !== book.id);
+        return next;
       } else if (prev.length < 3) {
-        return [...prev, book.id];
+        const next = [...prev, book.id];
+        return next;
+      }
+      return prev;
+    });
+    setSelectedBooks((prev) => {
+      const isSelected = prev.some((b) => b.id === book.id);
+
+      if (isSelected) {
+        const next = prev.filter((b) => b.id !== book.id);
+        return next;
+      } else if (prev.length < 3) {
+        const next = [...prev, book];
+        return next;
       }
       return prev;
     });
@@ -620,7 +638,7 @@ function RecommendationsContent() {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-4 text-base">
                 {recommenders &&
-                  gridItems(recommenders).map((person) => (
+                  getGridPeople().map((person) => (
                     <div
                       key={person.id}
                       onClick={() =>
@@ -710,7 +728,7 @@ function RecommendationsContent() {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-4 text-base">
                 {books &&
-                  gridItems(books).map((book) => (
+                  getGridBooks().map((book) => (
                     <div
                       key={book.id}
                       onClick={() =>
@@ -868,14 +886,16 @@ function RecommendationsContent() {
                 setSelectedBookIds([]);
                 setRecommendations([]);
                 setCurrentCardIndex(0);
-                setExtraGridItems([]);
+                setSelectedPeople([]);
+                setSelectedBooks([]);
                 localStorage.removeItem("userType");
                 localStorage.removeItem("selectedGenres");
                 localStorage.removeItem("selectedPeopleIds");
                 localStorage.removeItem("selectedBookIds");
                 localStorage.removeItem("recommendations");
                 localStorage.removeItem("currentCardIndex");
-                localStorage.removeItem("extraGridItems");
+                localStorage.removeItem("selectedPeople");
+                localStorage.removeItem("selectedBooks");
               }}
               className="bg-background text-text px-4 py-2 border border-border text-center transition-colors duration-200 md:hover:bg-accent/50 cursor-pointer flex items-center gap-1"
             >
