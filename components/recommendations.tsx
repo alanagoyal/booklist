@@ -896,14 +896,20 @@ function RecommendationsContent() {
   const currentProgress = step ? (step / totalSteps) * 100 : 0;
 
   // Render progress bar displaying completion percentage
-  const renderProgressBar = () => (
-    <div className="mb-8 w-full h-2 bg-accent/30 border border-border">
-      <div
-        className={`h-full bg-[hsl(151,80%,70%)] hover:bg-[hsl(151,80%,72%)] dark:bg-[hsl(160,84%,25%)] dark:hover:bg-[hsl(160,84%,27%)] transition-all duration-200 ${currentProgress < 100 ? "border-r" : ""} border-border`}
-        style={{ width: `${currentProgress}%` }}
-      />
-    </div>
-  );
+  const renderProgressBar = () => {
+    if (!isInitialized || step === undefined) {
+      return null;
+    }
+    
+    return (
+      <div className="mb-8 w-full h-2 bg-accent/30 border border-border">
+        <div
+          className={`h-full bg-[hsl(151,80%,70%)] hover:bg-[hsl(151,80%,72%)] dark:bg-[hsl(160,84%,25%)] dark:hover:bg-[hsl(160,84%,27%)] transition-all duration-200 ${currentProgress < 100 ? "border-r" : ""} border-border`}
+          style={{ width: `${currentProgress}%` }}
+        />
+      </div>
+    );
+  };
 
   // Clear search query when step changes
   useEffect(() => {
