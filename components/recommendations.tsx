@@ -366,9 +366,6 @@ function RecommendationsContent() {
     return () => clearTimeout(timer);
   }, [searchQuery, handleSearch]);
 
-  // Memoize search results to prevent unnecessary re-renders
-  const memoizedSearchResults = useMemo(() => searchResults, [searchResults]);
-
   const handleSearchResultSelect = (result: SearchResult) => {
     setSearchQuery(""); // Close dropdown
 
