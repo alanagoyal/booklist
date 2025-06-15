@@ -8,7 +8,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import type { Book, FormattedRecommender } from "@/types";
 import useSWR from "swr";
 import fetcher, { fetchRecommenders } from "../utils/fetcher";
-import { ArrowLeft, ArrowLeftRight } from "lucide-react";
 import { CardStack } from "./card-stack";
 
 interface SearchResult {
@@ -83,7 +82,7 @@ function SearchDropdown({
             onClick={() => onSelect(result)}
             className={`p-3 cursor-pointer transition-colors duration-200 ${
               index === selectedIndex
-                ? "bg-accent/70 md:hover:bg-accent"
+                ? "bg-[hsl(151,80%,70%)] md:hover:bg-[hsl(151,80%,72%)] dark:bg-[hsl(160,84%,25%)] dark:md:hover:bg-[hsl(160,84%,27%)]"
                 : "bg-background md:hover:bg-accent/50"
             }`}
           >
@@ -112,7 +111,8 @@ function RecommendationsContent() {
   const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
   const [selectedPeopleIds, setSelectedPeopleIds] = useState<string[]>([]);
   const [selectedBookIds, setSelectedBookIds] = useState<string[]>([]);
-  const [extraGridItems, setExtraGridItems] = useState<string[]>([]);
+  const [selectedPeople, setSelectedPeople] = useState<FormattedRecommender[]>([]);
+  const [selectedBooks, setSelectedBooks] = useState<Book[]>([]);
   const [recommendations, setRecommendations] = useState<RecommendedBook[]>([]);
   const [isInitialized, setIsInitialized] = useState(false);
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
@@ -126,30 +126,75 @@ function RecommendationsContent() {
     const savedGenres = localStorage.getItem("selectedGenres");
     const savedPeopleIds = localStorage.getItem("selectedPeopleIds");
     const savedBookIds = localStorage.getItem("selectedBookIds");
-    const savedExtraGridItems = localStorage.getItem("extraGridItems");
+    const savedPeople = localStorage.getItem("selectedPeople");
+    const savedBooks = localStorage.getItem("selectedBooks");
     const savedRecommendations = localStorage.getItem("recommendations");
     const savedCardIndex = localStorage.getItem("currentCardIndex");
 
-    // Initialize state from localStorage
     if (savedUserType) setUserType(savedUserType);
     if (savedGenres) setSelectedGenres(JSON.parse(savedGenres));
     if (savedPeopleIds) setSelectedPeopleIds(JSON.parse(savedPeopleIds));
     if (savedBookIds) setSelectedBookIds(JSON.parse(savedBookIds));
-    if (savedExtraGridItems) setExtraGridItems(JSON.parse(savedExtraGridItems));
+    if (savedPeople) setSelectedPeople(JSON.parse(savedPeople));
+    if (savedBooks) setSelectedBooks(JSON.parse(savedBooks));
+    if (savedRecommendations) setRecommendations(JSON.parse(savedRecommendations));
     if (savedCardIndex) setCurrentCardIndex(parseInt(savedCardIndex));
 
-    // Check for recommendations last
-    if (savedRecommendations) {
-      setRecommendations(JSON.parse(savedRecommendations));
-      setStep(5);
-    } else {
-      // If no recommendations, check URL for step
-      const urlStep = searchParams.get("step");
-      setStep(urlStep ? parseInt(urlStep) : 1);
-    }
+    // Get step from URL or default to 1
+    const stepParam = searchParams.get("step");
+    const initialStep = stepParam ? parseInt(stepParam) : 1;
+    setStep(initialStep);
 
     setIsInitialized(true);
   }, [searchParams, isInitialized]);
+
+  // Save state to localStorage whenever it changes
+  useEffect(() => {
+    if (!isInitialized) return;
+    if (userType) localStorage.setItem("userType", userType);
+    else localStorage.removeItem("userType");
+  }, [userType, isInitialized]);
+
+  useEffect(() => {
+    if (!isInitialized) return;
+    if (selectedGenres.length > 0) localStorage.setItem("selectedGenres", JSON.stringify(selectedGenres));
+    else localStorage.removeItem("selectedGenres");
+  }, [selectedGenres, isInitialized]);
+
+  useEffect(() => {
+    if (!isInitialized) return;
+    if (selectedPeopleIds.length > 0) localStorage.setItem("selectedPeopleIds", JSON.stringify(selectedPeopleIds));
+    else localStorage.removeItem("selectedPeopleIds");
+  }, [selectedPeopleIds, isInitialized]);
+
+  useEffect(() => {
+    if (!isInitialized) return;
+    if (selectedBookIds.length > 0) localStorage.setItem("selectedBookIds", JSON.stringify(selectedBookIds));
+    else localStorage.removeItem("selectedBookIds");
+  }, [selectedBookIds, isInitialized]);
+
+  useEffect(() => {
+    if (!isInitialized) return;
+    if (selectedPeople.length > 0) localStorage.setItem("selectedPeople", JSON.stringify(selectedPeople));
+    else localStorage.removeItem("selectedPeople");
+  }, [selectedPeople, isInitialized]);
+
+  useEffect(() => {
+    if (!isInitialized) return;
+    if (selectedBooks.length > 0) localStorage.setItem("selectedBooks", JSON.stringify(selectedBooks));
+    else localStorage.removeItem("selectedBooks");
+  }, [selectedBooks, isInitialized]);
+
+  useEffect(() => {
+    if (!isInitialized) return;
+    if (recommendations.length > 0) localStorage.setItem("recommendations", JSON.stringify(recommendations));
+    else localStorage.removeItem("recommendations");
+  }, [recommendations, isInitialized]);
+
+  useEffect(() => {
+    if (!isInitialized) return;
+    localStorage.setItem("currentCardIndex", currentCardIndex.toString());
+  }, [currentCardIndex, isInitialized]);
 
   // Update URL when step changes
   useEffect(() => {
@@ -158,61 +203,6 @@ function RecommendationsContent() {
     params.set("step", step.toString());
     router.replace(`?${params.toString()}`);
   }, [step, router, isInitialized]);
-
-  // Save form state to localStorage
-  useEffect(() => {
-    if (!isInitialized) return;
-
-    if (userType) {
-      localStorage.setItem("userType", userType);
-    } else {
-      localStorage.removeItem("userType");
-    }
-
-    if (selectedGenres.length) {
-      localStorage.setItem("selectedGenres", JSON.stringify(selectedGenres));
-    } else {
-      localStorage.removeItem("selectedGenres");
-    }
-
-    if (selectedPeopleIds.length) {
-      localStorage.setItem(
-        "selectedPeopleIds",
-        JSON.stringify(selectedPeopleIds)
-      );
-    } else {
-      localStorage.removeItem("selectedPeopleIds");
-    }
-
-    if (selectedBookIds.length) {
-      localStorage.setItem("selectedBookIds", JSON.stringify(selectedBookIds));
-    } else {
-      localStorage.removeItem("selectedBookIds");
-    }
-
-    if (extraGridItems.length) {
-      localStorage.setItem("extraGridItems", JSON.stringify(extraGridItems));
-    } else {
-      localStorage.removeItem("extraGridItems");
-    }
-
-    if (recommendations.length) {
-      localStorage.setItem("recommendations", JSON.stringify(recommendations));
-      localStorage.setItem("currentCardIndex", currentCardIndex.toString());
-    } else {
-      localStorage.removeItem("recommendations");
-      localStorage.removeItem("currentCardIndex");
-    }
-  }, [
-    userType,
-    selectedGenres,
-    selectedPeopleIds,
-    selectedBookIds,
-    extraGridItems,
-    recommendations,
-    currentCardIndex,
-    isInitialized,
-  ]);
 
   // Only fetch data when needed
   const { data: books } = useSWR<Book[]>(
@@ -239,24 +229,39 @@ function RecommendationsContent() {
     });
   }, []);
 
-  const gridItems = useCallback(
-    (items: any[]) => {
-      const baseItems = items.slice(0, 18);
-      const extraItems = items.filter((item) =>
-        extraGridItems.includes(item.id)
-      );
-      return [...extraItems, ...baseItems];
-    },
-    [extraGridItems]
-  );
+  // Create grid items with proper deduplication
+  const getGridPeople = useCallback(() => {
+    if (!recommenders) return [];
+    
+    // Get first 18 suggested people
+    const suggested = recommenders.slice(0, 18);
+    const suggestedIds = new Set(suggested.map(p => p.id));
+    
+    // Add any selected people that aren't in suggestions
+    const additionalSelected = selectedPeople.filter(p => !suggestedIds.has(p.id));
+    
+    return [...additionalSelected, ...suggested];
+  }, [recommenders, selectedPeople]);
+
+  const getGridBooks = useCallback(() => {
+    if (!books) return [];
+    
+    // Get first 18 suggested books
+    const suggested = books.slice(0, 18);
+    const suggestedIds = new Set(suggested.map(b => b.id));
+    
+    // Add any selected books that aren't in suggestions
+    const additionalSelected = selectedBooks.filter(b => !suggestedIds.has(b.id));
+    
+    return [...additionalSelected, ...suggested];
+  }, [books, selectedBooks]);
 
   const memoizedGridIds = useMemo(() => {
-    if (!recommenders || !books) return { people: new Set(), books: new Set() };
     return {
-      people: new Set(gridItems(recommenders).map((p) => p.id)),
-      books: new Set(gridItems(books).map((b) => b.id)),
+      people: new Set(getGridPeople().map((p) => p.id)),
+      books: new Set(getGridBooks().map((b) => b.id)),
     };
-  }, [recommenders, books, gridItems]);
+  }, [getGridPeople, getGridBooks]);
 
   // Optimize search data with indexing for faster lookups
   const memoizedSearchData = useMemo(() => {
@@ -366,25 +371,16 @@ function RecommendationsContent() {
     return () => clearTimeout(timer);
   }, [searchQuery, handleSearch]);
 
-  // Memoize search results to prevent unnecessary re-renders
-  const memoizedSearchResults = useMemo(() => searchResults, [searchResults]);
-
   const handleSearchResultSelect = (result: SearchResult) => {
     setSearchQuery(""); // Close dropdown
 
     if (step === 3 && recommenders) {
       // Don't proceed if we already have 3 people selected and this one isn't already selected
-      if (selectedPeopleIds.length >= 3 && !selectedPeopleIds.includes(result.id)) {
+      if (
+        selectedPeopleIds.length >= 3 &&
+        !selectedPeopleIds.includes(result.id)
+      ) {
         return;
-      }
-      
-      const gridPeople = gridItems(recommenders);
-      const suggestedPeople = gridPeople
-        .slice(0, 18)
-        .some((p) => p.id === result.id);
-
-      if (!suggestedPeople && !extraGridItems.includes(result.id)) {
-        setExtraGridItems((prev) => [...prev, result.id]);
       }
 
       // Select the person if not already selected
@@ -400,15 +396,6 @@ function RecommendationsContent() {
       // Don't proceed if we already have 3 books selected and this one isn't already selected
       if (selectedBookIds.length >= 3 && !selectedBookIds.includes(result.id)) {
         return;
-      }
-      
-      const gridBooks = gridItems(books);
-      const suggestedBooks = gridBooks
-        .slice(0, 18)
-        .some((b) => b.id === result.id);
-
-      if (!suggestedBooks && !extraGridItems.includes(result.id)) {
-        setExtraGridItems((prev) => [...prev, result.id]);
       }
 
       // Select the book if not already selected
@@ -426,10 +413,25 @@ function RecommendationsContent() {
   const handlePersonSelect = (person: FormattedRecommender): void => {
     setSelectedPeopleIds((prev) => {
       const isSelected = prev.includes(person.id);
+
       if (isSelected) {
-        return prev.filter((id) => id !== person.id);
+        const next = prev.filter((id) => id !== person.id);
+        return next;
       } else if (prev.length < 3) {
-        return [...prev, person.id];
+        const next = [...prev, person.id];
+        return next;
+      }
+      return prev;
+    });
+    setSelectedPeople((prev) => {
+      const isSelected = prev.some((p) => p.id === person.id);
+
+      if (isSelected) {
+        const next = prev.filter((p) => p.id !== person.id);
+        return next;
+      } else if (prev.length < 3) {
+        const next = [...prev, person];
+        return next;
       }
       return prev;
     });
@@ -438,10 +440,25 @@ function RecommendationsContent() {
   const handleBookSelect = (book: Book): void => {
     setSelectedBookIds((prev) => {
       const isSelected = prev.includes(book.id);
+
       if (isSelected) {
-        return prev.filter((id) => id !== book.id);
+        const next = prev.filter((id) => id !== book.id);
+        return next;
       } else if (prev.length < 3) {
-        return [...prev, book.id];
+        const next = [...prev, book.id];
+        return next;
+      }
+      return prev;
+    });
+    setSelectedBooks((prev) => {
+      const isSelected = prev.some((b) => b.id === book.id);
+
+      if (isSelected) {
+        const next = prev.filter((b) => b.id !== book.id);
+        return next;
+      } else if (prev.length < 3) {
+        const next = [...prev, book];
+        return next;
       }
       return prev;
     });
@@ -504,10 +521,14 @@ function RecommendationsContent() {
                 {FIELD_VALUES.type.map((type) => (
                   <div
                     key={type}
-                    onClick={() => (userType === null || userType === type) ? setUserType(userType === type ? null : type) : null}
-                    className={`p-3 ${(userType !== null && userType !== type) ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'} border border-border transition-colors duration-200 whitespace-pre-line line-clamp-2 ${
+                    onClick={() =>
+                      userType === null || userType === type
+                        ? setUserType(userType === type ? null : type)
+                        : null
+                    }
+                    className={`p-3 ${userType !== null && userType !== type ? "cursor-not-allowed opacity-60" : "cursor-pointer"} border border-border transition-colors duration-200 whitespace-pre-line line-clamp-2 ${
                       type === userType
-                        ? "bg-accent/70 md:hover:bg-accent"
+                        ? "bg-[hsl(151,80%,70%)] md:hover:bg-[hsl(151,80%,72%)] dark:bg-[hsl(160,84%,25%)] dark:md:hover:bg-[hsl(160,84%,27%)]"
                         : "bg-background md:hover:bg-accent/50"
                     }`}
                   >
@@ -530,10 +551,15 @@ function RecommendationsContent() {
                 {FIELD_VALUES.genres.map((genre) => (
                   <div
                     key={genre}
-                    onClick={() => selectedGenres.length < 3 || selectedGenres.includes(genre) ? handleGenreToggle(genre) : null}
-                    className={`p-3 ${selectedGenres.length >= 3 && !selectedGenres.includes(genre) ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'} border border-border transition-colors duration-200 whitespace-pre-line line-clamp-2 ${
+                    onClick={() =>
+                      selectedGenres.length < 3 ||
                       selectedGenres.includes(genre)
-                        ? "bg-accent/70 md:hover:bg-accent"
+                        ? handleGenreToggle(genre)
+                        : null
+                    }
+                    className={`p-3 ${selectedGenres.length >= 3 && !selectedGenres.includes(genre) ? "cursor-not-allowed opacity-60" : "cursor-pointer"} border border-border transition-colors duration-200 whitespace-pre-line line-clamp-2 ${
+                      selectedGenres.includes(genre)
+                        ? "bg-[hsl(151,80%,70%)] md:hover:bg-[hsl(151,80%,72%)] dark:bg-[hsl(160,84%,25%)] dark:md:hover:bg-[hsl(160,84%,27%)]"
                         : "bg-background md:hover:bg-accent/50"
                     }`}
                   >
@@ -571,7 +597,11 @@ function RecommendationsContent() {
                   disabled={selectedPeopleIds.length >= 3}
                   autoFocus={true}
                   onKeyDown={(e) => {
-                    if (searchResults.length === 0 || selectedPeopleIds.length >= 3) return;
+                    if (
+                      searchResults.length === 0 ||
+                      selectedPeopleIds.length >= 3
+                    )
+                      return;
 
                     // Create sorted results array to match what's displayed in the dropdown
                     const sortedResults = [...searchResults].sort((a, b) => {
@@ -607,13 +637,18 @@ function RecommendationsContent() {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-4 text-base">
                 {recommenders &&
-                  gridItems(recommenders).map((person) => (
+                  getGridPeople().map((person) => (
                     <div
                       key={person.id}
-                      onClick={() => selectedPeopleIds.length < 3 || selectedPeopleIds.includes(person.id) ? handlePersonSelect(person) : null}
-                      className={`p-3 ${selectedPeopleIds.length >= 3 && !selectedPeopleIds.includes(person.id) ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'} border border-border transition-colors duration-200 whitespace-pre-line line-clamp-2 ${
+                      onClick={() =>
+                        selectedPeopleIds.length < 3 ||
                         selectedPeopleIds.includes(person.id)
-                          ? "bg-accent/70 md:hover:bg-accent"
+                          ? handlePersonSelect(person)
+                          : null
+                      }
+                      className={`p-3 ${selectedPeopleIds.length >= 3 && !selectedPeopleIds.includes(person.id) ? "cursor-not-allowed opacity-60" : "cursor-pointer"} border border-border transition-colors duration-200 whitespace-pre-line line-clamp-2 ${
+                        selectedPeopleIds.includes(person.id)
+                          ? "bg-[hsl(151,80%,70%)] md:hover:bg-[hsl(151,80%,72%)] dark:bg-[hsl(160,84%,25%)] dark:md:hover:bg-[hsl(160,84%,27%)]"
                           : "bg-background md:hover:bg-accent/50"
                       }`}
                     >
@@ -652,7 +687,11 @@ function RecommendationsContent() {
                   disabled={selectedBookIds.length >= 3}
                   autoFocus={true}
                   onKeyDown={(e) => {
-                    if (searchResults.length === 0 || selectedBookIds.length >= 3) return;
+                    if (
+                      searchResults.length === 0 ||
+                      selectedBookIds.length >= 3
+                    )
+                      return;
 
                     // Create sorted results array to match what's displayed in the dropdown
                     const sortedResults = [...searchResults].sort((a, b) => {
@@ -688,13 +727,18 @@ function RecommendationsContent() {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-4 text-base">
                 {books &&
-                  gridItems(books).map((book) => (
+                  getGridBooks().map((book) => (
                     <div
                       key={book.id}
-                      onClick={() => selectedBookIds.length < 3 || selectedBookIds.includes(book.id) ? handleBookSelect(book) : null}
-                      className={`p-3 ${selectedBookIds.length >= 3 && !selectedBookIds.includes(book.id) ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'} border border-border transition-colors duration-200 whitespace-pre-line line-clamp-2 ${
+                      onClick={() =>
+                        selectedBookIds.length < 3 ||
                         selectedBookIds.includes(book.id)
-                          ? "bg-accent/70 md:hover:bg-accent"
+                          ? handleBookSelect(book)
+                          : null
+                      }
+                      className={`p-3 ${selectedBookIds.length >= 3 && !selectedBookIds.includes(book.id) ? "cursor-not-allowed opacity-60" : "cursor-pointer"} border border-border transition-colors duration-200 whitespace-pre-line line-clamp-2 ${
+                        selectedBookIds.includes(book.id)
+                          ? "bg-[hsl(151,80%,70%)] md:hover:bg-[hsl(151,80%,72%)] dark:bg-[hsl(160,84%,25%)] dark:md:hover:bg-[hsl(160,84%,27%)]"
                           : "bg-background md:hover:bg-accent/50"
                       }`}
                     >
@@ -709,7 +753,7 @@ function RecommendationsContent() {
       case 5:
         return (
           <>
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-base">
                 We found the following for you
               </h2>
@@ -735,14 +779,14 @@ function RecommendationsContent() {
     switch (step) {
       case 1:
         return (
-          <div className="flex justify-end gap-4 h-10">
+          <div className="flex justify-end gap-4 h-[30px] items-center">
             <button
               onClick={() => setStep(2)}
               disabled={!userType}
-              className={`w-[135px] text-right h-10 ${
+              className={`w-48 text-center px-4 py-2 border border-border bg-background text-text transition-colors duration-200 ${
                 !userType
-                  ? "cursor-not-allowed text-muted-foreground"
-                  : "md:hover:underline text-text"
+                  ? "cursor-not-allowed opacity-60"
+                  : "md:hover:bg-accent/50 text-text"
               }`}
             >
               {userType ? "Next (1/1 selected)" : "Next (0/1 selected)"}
@@ -752,10 +796,10 @@ function RecommendationsContent() {
 
       case 2:
         return (
-          <div className="flex justify-between gap-4 h-10">
+          <div className="flex justify-between gap-4 h-[30px] items-center">
             <button
               onClick={() => setStep(step - 1)}
-              className="bg-background text-text md:hover:underline transition-colors duration-200 h-10"
+              className="bg-background text-text px-4 py-2 border border-border text-center transition-colors duration-200 md:hover:bg-accent/50"
             >
               Back
             </button>
@@ -764,10 +808,10 @@ function RecommendationsContent() {
                 setStep(3);
               }}
               disabled={selectedGenres.length === 0}
-              className={`w-[135px] text-right h-10 ${
+              className={`w-48 text-center px-4 py-2 border border-border bg-background text-text transition-colors duration-200 ${
                 selectedGenres.length === 0
-                  ? "cursor-not-allowed text-muted-foreground"
-                  : "md:hover:underline text-text"
+                  ? "cursor-not-allowed opacity-60"
+                  : "md:hover:bg-accent/50 text-text"
               }`}
             >
               {selectedGenres.length === 0
@@ -779,20 +823,20 @@ function RecommendationsContent() {
 
       case 3:
         return (
-          <div className="flex justify-between gap-4 h-10">
+          <div className="flex justify-between gap-4 h-[30px] items-center">
             <button
               onClick={() => setStep(step - 1)}
-              className="text-text md:hover:underline transition-colors duration-200 h-10"
+              className="bg-background text-text px-4 py-2 border border-border text-center transition-colors duration-200 md:hover:bg-accent/50"
             >
               Back
             </button>
             <button
               onClick={() => setStep(4)}
               disabled={!selectedPeopleIds.length}
-              className={`w-[135px] text-right h-10 ${
+              className={`w-48 text-center px-4 py-2 border border-border bg-background text-text transition-colors duration-200 ${
                 !selectedPeopleIds.length
-                  ? "cursor-not-allowed text-muted-foreground"
-                  : "md:hover:underline text-text"
+                  ? "cursor-not-allowed opacity-60"
+                  : "md:hover:bg-accent/50 text-text"
               }`}
             >
               {selectedPeopleIds.length === 0
@@ -804,20 +848,20 @@ function RecommendationsContent() {
 
       case 4:
         return (
-          <div className="flex justify-between gap-4 h-10">
+          <div className="flex justify-between gap-4 h-[30px] items-center">
             <button
               onClick={() => setStep(step - 1)}
-              className="text-text md:hover:underline transition-colors duration-200 h-10"
+              className="bg-background text-text px-4 py-2 border border-border text-center transition-colors duration-200 md:hover:bg-accent/50"
             >
               Back
             </button>
             <button
               onClick={getRecommendations}
               disabled={!selectedBookIds.length}
-              className={`w-[135px] text-right h-10 ${
+              className={`w-48 text-center px-4 py-2 border border-border bg-background text-text transition-colors duration-200 ${
                 !selectedBookIds.length
-                  ? "cursor-not-allowed text-muted-foreground"
-                  : "md:hover:underline text-text"
+                  ? "cursor-not-allowed opacity-60"
+                  : "md:hover:bg-accent/50 text-text"
               }`}
             >
               {loading
@@ -831,7 +875,7 @@ function RecommendationsContent() {
 
       case 5:
         return (
-          <div className="flex justify-end gap-4 h-10">
+          <div className="flex justify-end gap-4 h-[30px] items-center">
             <button
               onClick={() => {
                 setStep(1);
@@ -841,16 +885,18 @@ function RecommendationsContent() {
                 setSelectedBookIds([]);
                 setRecommendations([]);
                 setCurrentCardIndex(0);
-                setExtraGridItems([]);
+                setSelectedPeople([]);
+                setSelectedBooks([]);
                 localStorage.removeItem("userType");
                 localStorage.removeItem("selectedGenres");
                 localStorage.removeItem("selectedPeopleIds");
                 localStorage.removeItem("selectedBookIds");
                 localStorage.removeItem("recommendations");
                 localStorage.removeItem("currentCardIndex");
-                localStorage.removeItem("extraGridItems");
+                localStorage.removeItem("selectedPeople");
+                localStorage.removeItem("selectedBooks");
               }}
-              className="text-text md:hover:underline transition-colors duration-200 cursor-pointer flex items-center gap-1 h-10"
+              className="bg-background text-text px-4 py-2 border border-border text-center transition-colors duration-200 md:hover:bg-accent/50 cursor-pointer flex items-center gap-1"
             >
               Start Over
             </button>
@@ -865,6 +911,22 @@ function RecommendationsContent() {
   const totalSteps = 5;
   const currentProgress = step ? (step / totalSteps) * 100 : 0;
 
+  // Render progress bar displaying completion percentage
+  const renderProgressBar = () => {
+    if (!isInitialized || step === undefined) {
+      return null;
+    }
+    
+    return (
+      <div className="mb-8 w-full h-2 bg-accent/30 border border-border">
+        <div
+          className={`h-full bg-[hsl(151,80%,70%)] hover:bg-[hsl(151,80%,72%)] dark:bg-[hsl(160,84%,25%)] dark:hover:bg-[hsl(160,84%,27%)] transition-all duration-200 ${currentProgress < 100 ? "border-r" : ""} border-border`}
+          style={{ width: `${currentProgress}%` }}
+        />
+      </div>
+    );
+  };
+
   // Clear search query when step changes
   useEffect(() => {
     setSearchQuery("");
@@ -874,15 +936,18 @@ function RecommendationsContent() {
   }, [step]);
 
   return (
-    <div className="space-y-4">
-      {renderNavigationButtons()}
-      <div className="w-full h-2 bg-accent/30 border border-border">
-        <div
-          className={`h-full bg-accent transition-all duration-200 ${currentProgress < 100 ? "border-r" : ""} border-border`}
-          style={{ width: `${currentProgress}%` }}
-        />
+    <div className="max-w-3xl mx-auto p-4">
+      <div className="flex items-center justify-between mt-8 mb-4">
+        <h1 className="text-3xl leading-none font-bold">Recommendations</h1>
+        {/* Show navigation buttons inline on medium and larger screens */}
+        <div className="hidden md:block">{renderNavigationButtons()}</div>
       </div>
-      {renderStep()}
+      {/* On small screens, place navigation buttons below the heading */}
+      <div className="md:hidden mb-4">{renderNavigationButtons()}</div>
+      <div className="space-y-4">
+        {renderProgressBar()}
+        {renderStep()}
+      </div>
     </div>
   );
 }
