@@ -765,7 +765,7 @@ function RecommendationsContent() {
     switch (step) {
       case 1:
         return (
-          <div className="flex justify-end gap-4 h-10">
+          <div className="flex justify-end gap-4 h-[30px] items-center">
             <button
               onClick={() => setStep(2)}
               disabled={!userType}
@@ -782,7 +782,7 @@ function RecommendationsContent() {
 
       case 2:
         return (
-          <div className="flex justify-between gap-4 h-10">
+          <div className="flex justify-between gap-4 h-[30px] items-center">
             <button
               onClick={() => setStep(step - 1)}
               className="bg-background text-text px-4 py-2 border border-border text-center transition-colors duration-200 md:hover:bg-accent/50"
@@ -809,7 +809,7 @@ function RecommendationsContent() {
 
       case 3:
         return (
-          <div className="flex justify-between gap-4 h-10">
+          <div className="flex justify-between gap-4 h-[30px] items-center">
             <button
               onClick={() => setStep(step - 1)}
               className="bg-background text-text px-4 py-2 border border-border text-center transition-colors duration-200 md:hover:bg-accent/50"
@@ -834,7 +834,7 @@ function RecommendationsContent() {
 
       case 4:
         return (
-          <div className="flex justify-between gap-4 h-10">
+          <div className="flex justify-between gap-4 h-[30px] items-center">
             <button
               onClick={() => setStep(step - 1)}
               className="bg-background text-text px-4 py-2 border border-border text-center transition-colors duration-200 md:hover:bg-accent/50"
@@ -861,7 +861,7 @@ function RecommendationsContent() {
 
       case 5:
         return (
-          <div className="flex justify-end gap-4 h-10">
+          <div className="flex justify-end gap-4 h-[30px] items-center">
             <button
               onClick={() => {
                 setStep(1);
