@@ -8,7 +8,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import type { Book, FormattedRecommender } from "@/types";
 import useSWR from "swr";
 import fetcher, { fetchRecommenders } from "../utils/fetcher";
-import { ArrowLeft, ArrowLeftRight } from "lucide-react";
 import { CardStack } from "./card-stack";
 
 interface SearchResult {
