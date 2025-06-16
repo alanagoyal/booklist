@@ -514,7 +514,7 @@ function RecommendationsContent() {
         return (
           <>
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-0">
-              <h2 className="text-xl font-base">What is your profession?</h2>
+              <h2 className="text-xl font-base flex items-center">What is your profession?<span className="text-sm text-muted-foreground ml-2 px-2">({userType ? 1 : 0}/1 selected)</span></h2>
             </div>
             <div className="space-y-2">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-base">
@@ -544,7 +544,7 @@ function RecommendationsContent() {
         return (
           <>
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-0">
-              <h2 className="text-xl font-base">What genres interest you?</h2>
+              <h2 className="text-xl font-base flex items-center">What genres interest you?<span className="text-sm text-muted-foreground ml-2 px-2">({selectedGenres.length}/3 selected)</span></h2>
             </div>
             <div className="space-y-2">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-base">
@@ -577,9 +577,7 @@ function RecommendationsContent() {
         return (
           <>
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-0">
-              <h2 className="text-xl font-base">
-                Whose reading tastes do you admire?
-              </h2>
+              <h2 className="text-xl font-base flex items-center">Whose reading tastes do you admire?<span className="text-sm text-muted-foreground ml-2 px-2">({selectedPeopleIds.length}/3 selected)</span></h2>
             </div>
             <div className="space-y-2">
               <div className="relative">
@@ -667,9 +665,7 @@ function RecommendationsContent() {
         return (
           <>
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-0">
-              <h2 className="text-xl font-base">
-                What&apos;s on your bookshelf?
-              </h2>
+              <h2 className="text-xl font-base flex items-center">What&apos;s on your bookshelf?<span className="text-sm text-muted-foreground ml-2 px-2">({selectedBookIds.length}/3 selected)</span></h2>
             </div>
             <div className="space-y-2">
               <div className="relative">
@@ -783,13 +779,13 @@ function RecommendationsContent() {
             <button
               onClick={() => setStep(2)}
               disabled={!userType}
-              className={`w-48 text-center px-4 py-2 border border-border bg-background text-text transition-colors duration-200 ${
+              className={`text-center px-4 py-2 border border-border bg-background text-text transition-colors duration-200 ${
                 !userType
                   ? "cursor-not-allowed opacity-60"
                   : "md:hover:bg-accent/50 text-text"
               }`}
             >
-              {userType ? "Next (1/1 selected)" : "Next (0/1 selected)"}
+              Next
             </button>
           </div>
         );
@@ -808,15 +804,13 @@ function RecommendationsContent() {
                 setStep(3);
               }}
               disabled={selectedGenres.length === 0}
-              className={`w-48 text-center px-4 py-2 border border-border bg-background text-text transition-colors duration-200 ${
+              className={`text-center px-4 py-2 border border-border bg-background text-text transition-colors duration-200 ${
                 selectedGenres.length === 0
                   ? "cursor-not-allowed opacity-60"
                   : "md:hover:bg-accent/50 text-text"
               }`}
             >
-              {selectedGenres.length === 0
-                ? "Next (0/3 selected)"
-                : `Next (${selectedGenres.length}/3 selected)`}
+              Next
             </button>
           </div>
         );
@@ -833,15 +827,13 @@ function RecommendationsContent() {
             <button
               onClick={() => setStep(4)}
               disabled={!selectedPeopleIds.length}
-              className={`w-48 text-center px-4 py-2 border border-border bg-background text-text transition-colors duration-200 ${
+              className={`text-center px-4 py-2 border border-border bg-background text-text transition-colors duration-200 ${
                 !selectedPeopleIds.length
                   ? "cursor-not-allowed opacity-60"
                   : "md:hover:bg-accent/50 text-text"
               }`}
             >
-              {selectedPeopleIds.length === 0
-                ? "Next (0/3 selected)"
-                : `Next (${selectedPeopleIds.length}/3 selected)`}
+              Next
             </button>
           </div>
         );
@@ -858,24 +850,20 @@ function RecommendationsContent() {
             <button
               onClick={getRecommendations}
               disabled={!selectedBookIds.length}
-              className={`w-48 text-center px-4 py-2 border border-border bg-background text-text transition-colors duration-200 ${
+              className={`text-center px-4 py-2 border border-border bg-background text-text transition-colors duration-200 ${
                 !selectedBookIds.length
                   ? "cursor-not-allowed opacity-60"
                   : "md:hover:bg-accent/50 text-text"
               }`}
             >
-              {loading
-                ? "Thinking..."
-                : selectedBookIds.length === 0
-                  ? "Next (0/3 selected)"
-                  : `Next (${selectedBookIds.length}/3 selected)`}
+              {loading ? "Thinking..." : "Next"}
             </button>
           </div>
         );
 
       case 5:
         return (
-          <div className="flex justify-end gap-4 h-[30px] items-center">
+          <div className="w-full mt-8 md:flex md:justify-end md:gap-4 md:h-[30px] md:items-center md:w-auto md:mt-0">
             <button
               onClick={() => {
                 setStep(1);
@@ -896,7 +884,7 @@ function RecommendationsContent() {
                 localStorage.removeItem("selectedPeople");
                 localStorage.removeItem("selectedBooks");
               }}
-              className="bg-background text-text px-4 py-2 border border-border text-center transition-colors duration-200 md:hover:bg-accent/50 cursor-pointer flex items-center gap-1"
+              className="w-full justify-center px-6 py-3 bg-background text-text border border-border text-center transition-colors duration-200 cursor-pointer flex items-center gap-1 md:w-auto md:justify-start md:px-4 md:py-2 md:hover:bg-accent/50"
             >
               Start Over
             </button>
@@ -918,7 +906,7 @@ function RecommendationsContent() {
     }
     
     return (
-      <div className="mb-8 w-full h-2 bg-accent/30 border border-border">
+      <div className="w-full h-2 bg-accent/30 border border-border md:mb-8">
         <div
           className={`h-full bg-[hsl(var(--background-l6))] hover:bg-[hsl(var(--background-l6-hover))] transition-all duration-200 ${currentProgress < 100 ? "border-r" : ""} border-border`}
           style={{ width: `${currentProgress}%` }}
@@ -942,11 +930,18 @@ function RecommendationsContent() {
         {/* Show navigation buttons inline on medium and larger screens */}
         <div className="hidden md:block">{renderNavigationButtons()}</div>
       </div>
-      {/* On small screens, place navigation buttons below the heading */}
-      <div className="md:hidden mb-4">{renderNavigationButtons()}</div>
-      <div className="space-y-4">
+      {/* On small screens, progress bar below the heading */}
+      <div className="md:hidden mb-4">
         {renderProgressBar()}
+      </div>
+      <div className="space-y-4">
+        {/* On larger screens, progress bar is here */}
+        <div className="hidden md:block">{renderProgressBar()}</div>
         {renderStep()}
+      </div>
+      {/* On small screens, navigation buttons below the content */}
+      <div className="md:hidden mt-4">
+        {renderNavigationButtons()}
       </div>
     </div>
   );
