@@ -37,12 +37,12 @@ export const countManager = {
 
 // Color legend data with percentile ranges
 const legendData = [
-  { bucket: 0, range: '0-50th percentile', color: 'bg-[hsl(151,80%,95%)] dark:bg-[hsl(160,84%,5%)]' },
-  { bucket: 1, range: '50-80th percentile', color: 'bg-[hsl(151,80%,90%)] dark:bg-[hsl(160,84%,9%)]' },
-  { bucket: 2, range: '80-90th percentile', color: 'bg-[hsl(151,80%,85%)] dark:bg-[hsl(160,84%,13%)]' },
-  { bucket: 3, range: '90-95th percentile', color: 'bg-[hsl(151,80%,80%)] dark:bg-[hsl(160,84%,17%)]' },
-  { bucket: 4, range: '95-98th percentile', color: 'bg-[hsl(151,80%,75%)] dark:bg-[hsl(160,84%,21%)]' },
-  { bucket: 5, range: '98-99th percentile', color: 'bg-[hsl(151,80%,70%)] dark:bg-[hsl(160,84%,25%)]' },
+  { bucket: 0, range: '0-50th percentile', color: 'bg-[hsl(var(--background-l1))]' },
+  { bucket: 1, range: '50-80th percentile', color: 'bg-[hsl(var(--background-l2))]' },
+  { bucket: 2, range: '80-90th percentile', color: 'bg-[hsl(var(--background-l3))]' },
+  { bucket: 3, range: '90-95th percentile', color: 'bg-[hsl(var(--background-l4))]' },
+  { bucket: 4, range: '95-98th percentile', color: 'bg-[hsl(var(--background-l5))]' },
+  { bucket: 5, range: '98-99th percentile', color: 'bg-[hsl(var(--background-l6))]' },
 ];
 
 // Color legend component
