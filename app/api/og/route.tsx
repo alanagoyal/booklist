@@ -15,7 +15,7 @@ export async function GET() {
       (
         <div
           style={{
-            background: 'hsl(151,80%,70%)',
+            background: 'hsl(151,80%,70%)', // Using level 6 light mode color for consistent OG image
             width: '100%',
             height: '100%',
             display: 'flex',
