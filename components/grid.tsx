@@ -183,7 +183,9 @@ export function DataGrid<T extends Record<string, any>>({
   const showNoResultsMessage = useMemo(
     () =>
       !isSearching &&
-      ((hasSearchQuery && hasNoSearchResults) || hasNoFilteredResults),
+      hasSearchQuery &&
+      hasNoSearchResults &&
+      hasNoFilteredResults,
     [isSearching, hasSearchQuery, hasNoSearchResults, hasNoFilteredResults]
   );
 
