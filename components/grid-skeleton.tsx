@@ -59,19 +59,19 @@ export function GridSkeleton({ rowCount = 30, columnCount = 5 }: GridSkeletonPro
               const getBgClass = (bucket: number) => {
                 switch (bucket) {
                   case 0:
-                    return "bg-[hsl(151,80%,95%)] dark:bg-[hsl(160,84%,5%)]";
+                    return "bg-[hsl(var(--background-l1))] dark:bg-[hsl(var(--background-l1))]";
                   case 1:
-                    return "bg-[hsl(151,80%,90%)] dark:bg-[hsl(160,84%,9%)]";
+                    return "bg-[hsl(var(--background-l2))] dark:bg-[hsl(var(--background-l2))]";
                   case 2:
-                    return "bg-[hsl(151,80%,85%)] dark:bg-[hsl(160,84%,13%)]";
+                    return "bg-[hsl(var(--background-l3))] dark:bg-[hsl(var(--background-l3))]";
                   case 3:
-                    return "bg-[hsl(151,80%,80%)] dark:bg-[hsl(160,84%,17%)]";
+                    return "bg-[hsl(var(--background-l4))] dark:bg-[hsl(var(--background-l4))]";
                   case 4:
-                    return "bg-[hsl(151,80%,75%)] dark:bg-[hsl(160,84%,21%)]";
+                    return "bg-[hsl(var(--background-l5))] dark:bg-[hsl(var(--background-l5))]";
                   case 5:
-                    return "bg-[hsl(151,80%,70%)] dark:bg-[hsl(160,84%,25%)]";
+                    return "bg-[hsl(var(--background-l6))] dark:bg-[hsl(var(--background-l6))]";
                   default:
-                    return "bg-[hsl(151,80%,95%)] dark:bg-[hsl(160,84%,5%)]";
+                    return "bg-[hsl(var(--background-l1))] dark:bg-[hsl(var(--background-l1))]";
                 }
               };
               

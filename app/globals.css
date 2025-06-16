@@ -15,6 +15,22 @@
     --background: 151 80% 95%; /* Lightest emerald */
     --foreground: 160 84% 10%; /* Dark green for contrast */
     
+    /* Background intensity levels */
+    --background-l1: 151 80% 95%;
+    --background-l2: 151 80% 90%;
+    --background-l3: 151 80% 85%;
+    --background-l4: 151 80% 80%;
+    --background-l5: 151 80% 75%;
+    --background-l6: 151 80% 70%;
+    
+    /* Background hover states */
+    --background-l1-hover: 151 80% 92%;
+    --background-l2-hover: 151 80% 88%;
+    --background-l3-hover: 151 80% 84%;
+    --background-l4-hover: 151 80% 80%;
+    --background-l5-hover: 151 80% 76%;
+    --background-l6-hover: 151 80% 72%;
+    
     /* Border and muted tones */
     --border: 0 0% 0%; /* Black with opacity via border-border/20 */
     --grid-border: 151 40% 85%; /* Light emerald for grid lines */
@@ -59,6 +75,22 @@
     /* Dark mode - deeper emerald tones */
     --background: 160 84% 5%; /* Dark emerald background */
     --foreground: 151 80% 90%; /* Light text for contrast */
+    
+    /* Background intensity levels */
+    --background-l1: 160 84% 5%;
+    --background-l2: 160 84% 9%;
+    --background-l3: 160 84% 13%;
+    --background-l4: 160 84% 17%;
+    --background-l5: 160 84% 21%;
+    --background-l6: 160 84% 25%;
+    
+    /* Background hover states */
+    --background-l1-hover: 160 84% 7%;
+    --background-l2-hover: 160 84% 11%;
+    --background-l3-hover: 160 84% 15%;
+    --background-l4-hover: 160 84% 19%;
+    --background-l5-hover: 160 84% 23%;
+    --background-l6-hover: 160 84% 27%;
     
     /* Border and muted tones */
     --border: 0 0% 100%; /* White with opacity via border-border/20 */
