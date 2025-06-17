@@ -38,6 +38,22 @@ interface RecommendedBook extends Book {
   };
 }
 
+// Step configuration
+interface StepConfig {
+  title: string;
+  maxSelections: number;
+  minSelections: number;
+  hasSearch: boolean;
+  searchPlaceholder?: string;
+  getItems?: () => any[];
+  getSelectedIds: () => string[];
+  isSelected: (id: string) => boolean;
+  onSelect: (item: any) => void;
+  getDisplayText: (item: any) => string;
+  canProceed: () => boolean;
+  nextAction?: () => void;
+}
+
 export function Recommendations() {
   return (
     <Suspense>
@@ -63,7 +79,6 @@ function SearchDropdown({
 }: SearchDropdownProps) {
   if (!isOpen) return null;
 
-  // We need to export the sorted results so the parent component can use them
   const sortedResults = [...results].sort((a, b) => {
     if (a.isInGrid === b.isInGrid) return 0;
     return a.isInGrid ? 1 : -1;
@@ -96,6 +111,109 @@ function SearchDropdown({
   );
 }
 
+// Reusable grid item component
+interface GridItemProps {
+  item: any;
+  isSelected: boolean;
+  isDisabled: boolean;
+  onClick: () => void;
+  getDisplayText: (item: any) => string;
+}
+
+function GridItem({
+  item,
+  isSelected,
+  isDisabled,
+  onClick,
+  getDisplayText,
+}: GridItemProps) {
+  return (
+    <div
+      onClick={isDisabled ? undefined : onClick}
+      className={`p-3 ${
+        isDisabled ? "cursor-not-allowed opacity-60" : "cursor-pointer"
+      } border border-border transition-colors duration-200 whitespace-pre-line line-clamp-2 ${
+        isSelected
+          ? "bg-[hsl(var(--background-l3))] md:hover:bg-[hsl(var(--background-l3-hover))]"
+          : "bg-background md:hover:bg-accent/50"
+      }`}
+    >
+      {getDisplayText(item)}
+    </div>
+  );
+}
+
+// Reusable searchable grid component
+interface SearchableGridProps {
+  config: StepConfig;
+  searchQuery: string;
+  searchResults: SearchResult[];
+  isSearching: boolean;
+  selectedIndex: number;
+  onSearch: (query: string) => void;
+  onSearchClear: () => void;
+  onSearchResultSelect: (result: SearchResult) => void;
+  onKeyDown: (e: React.KeyboardEvent) => void;
+}
+
+function SearchableGrid({
+  config,
+  searchQuery,
+  searchResults,
+  isSearching,
+  selectedIndex,
+  onSearch,
+  onSearchClear,
+  onSearchResultSelect,
+  onKeyDown,
+}: SearchableGridProps) {
+  const items = config.getItems?.() || [];
+  const selectedIds = config.getSelectedIds();
+
+  return (
+    <div className="space-y-2">
+      {config.hasSearch && (
+        <div className="relative">
+          <SearchInput
+            key={`search-${config.title}`}
+            value={searchQuery}
+            onChange={onSearch}
+            onClear={onSearchClear}
+            placeholder={config.searchPlaceholder}
+            disabled={selectedIds.length >= config.maxSelections}
+            autoFocus={true}
+            onKeyDown={onKeyDown}
+          />
+          <SearchDropdown
+            results={searchResults}
+            onSelect={onSearchResultSelect}
+            isOpen={searchQuery.length > 0}
+            loading={isSearching}
+            selectedIndex={selectedIndex}
+          />
+        </div>
+      )}
+      <div
+        className={`grid grid-cols-1 md:grid-cols-2 gap-2 ${config.hasSearch ? "mt-4" : ""} text-base`}
+      >
+        {items.map((item) => (
+          <GridItem
+            key={item.id}
+            item={item}
+            isSelected={config.isSelected(item.id)}
+            isDisabled={
+              selectedIds.length >= config.maxSelections &&
+              !config.isSelected(item.id)
+            }
+            onClick={() => config.onSelect(item)}
+            getDisplayText={config.getDisplayText}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function RecommendationsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -111,7 +229,9 @@ function RecommendationsContent() {
   const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
   const [selectedPeopleIds, setSelectedPeopleIds] = useState<string[]>([]);
   const [selectedBookIds, setSelectedBookIds] = useState<string[]>([]);
-  const [selectedPeople, setSelectedPeople] = useState<FormattedRecommender[]>([]);
+  const [selectedPeople, setSelectedPeople] = useState<FormattedRecommender[]>(
+    []
+  );
   const [selectedBooks, setSelectedBooks] = useState<Book[]>([]);
   const [recommendations, setRecommendations] = useState<RecommendedBook[]>([]);
   const [isInitialized, setIsInitialized] = useState(false);
@@ -137,7 +257,8 @@ function RecommendationsContent() {
     if (savedBookIds) setSelectedBookIds(JSON.parse(savedBookIds));
     if (savedPeople) setSelectedPeople(JSON.parse(savedPeople));
     if (savedBooks) setSelectedBooks(JSON.parse(savedBooks));
-    if (savedRecommendations) setRecommendations(JSON.parse(savedRecommendations));
+    if (savedRecommendations)
+      setRecommendations(JSON.parse(savedRecommendations));
     if (savedCardIndex) setCurrentCardIndex(parseInt(savedCardIndex));
 
     // Get step from URL or default to 1
@@ -157,37 +278,46 @@ function RecommendationsContent() {
 
   useEffect(() => {
     if (!isInitialized) return;
-    if (selectedGenres.length > 0) localStorage.setItem("selectedGenres", JSON.stringify(selectedGenres));
+    if (selectedGenres.length > 0)
+      localStorage.setItem("selectedGenres", JSON.stringify(selectedGenres));
     else localStorage.removeItem("selectedGenres");
   }, [selectedGenres, isInitialized]);
 
   useEffect(() => {
     if (!isInitialized) return;
-    if (selectedPeopleIds.length > 0) localStorage.setItem("selectedPeopleIds", JSON.stringify(selectedPeopleIds));
+    if (selectedPeopleIds.length > 0)
+      localStorage.setItem(
+        "selectedPeopleIds",
+        JSON.stringify(selectedPeopleIds)
+      );
     else localStorage.removeItem("selectedPeopleIds");
   }, [selectedPeopleIds, isInitialized]);
 
   useEffect(() => {
     if (!isInitialized) return;
-    if (selectedBookIds.length > 0) localStorage.setItem("selectedBookIds", JSON.stringify(selectedBookIds));
+    if (selectedBookIds.length > 0)
+      localStorage.setItem("selectedBookIds", JSON.stringify(selectedBookIds));
     else localStorage.removeItem("selectedBookIds");
   }, [selectedBookIds, isInitialized]);
 
   useEffect(() => {
     if (!isInitialized) return;
-    if (selectedPeople.length > 0) localStorage.setItem("selectedPeople", JSON.stringify(selectedPeople));
+    if (selectedPeople.length > 0)
+      localStorage.setItem("selectedPeople", JSON.stringify(selectedPeople));
     else localStorage.removeItem("selectedPeople");
   }, [selectedPeople, isInitialized]);
 
   useEffect(() => {
     if (!isInitialized) return;
-    if (selectedBooks.length > 0) localStorage.setItem("selectedBooks", JSON.stringify(selectedBooks));
+    if (selectedBooks.length > 0)
+      localStorage.setItem("selectedBooks", JSON.stringify(selectedBooks));
     else localStorage.removeItem("selectedBooks");
   }, [selectedBooks, isInitialized]);
 
   useEffect(() => {
     if (!isInitialized) return;
-    if (recommendations.length > 0) localStorage.setItem("recommendations", JSON.stringify(recommendations));
+    if (recommendations.length > 0)
+      localStorage.setItem("recommendations", JSON.stringify(recommendations));
     else localStorage.removeItem("recommendations");
   }, [recommendations, isInitialized]);
 
@@ -232,27 +362,31 @@ function RecommendationsContent() {
   // Create grid items with proper deduplication
   const getGridPeople = useCallback(() => {
     if (!recommenders) return [];
-    
+
     // Get first 18 suggested people
     const suggested = recommenders.slice(0, 18);
-    const suggestedIds = new Set(suggested.map(p => p.id));
-    
+    const suggestedIds = new Set(suggested.map((p) => p.id));
+
     // Add any selected people that aren't in suggestions
-    const additionalSelected = selectedPeople.filter(p => !suggestedIds.has(p.id));
-    
+    const additionalSelected = selectedPeople.filter(
+      (p) => !suggestedIds.has(p.id)
+    );
+
     return [...additionalSelected, ...suggested];
   }, [recommenders, selectedPeople]);
 
   const getGridBooks = useCallback(() => {
     if (!books) return [];
-    
+
     // Get first 18 suggested books
     const suggested = books.slice(0, 18);
-    const suggestedIds = new Set(suggested.map(b => b.id));
-    
+    const suggestedIds = new Set(suggested.map((b) => b.id));
+
     // Add any selected books that aren't in suggestions
-    const additionalSelected = selectedBooks.filter(b => !suggestedIds.has(b.id));
-    
+    const additionalSelected = selectedBooks.filter(
+      (b) => !suggestedIds.has(b.id)
+    );
+
     return [...additionalSelected, ...suggested];
   }, [books, selectedBooks]);
 
@@ -503,267 +637,218 @@ function RecommendationsContent() {
     [searchParams, router]
   );
 
+  // Step configurations
+  const stepConfigs: Record<number, StepConfig> = {
+    1: {
+      title: "What is your profession?",
+      maxSelections: 1,
+      minSelections: 1,
+      hasSearch: false,
+      getItems: () => FIELD_VALUES.type.map((type) => ({ id: type, type })),
+      getSelectedIds: () => (userType ? [userType] : []),
+      isSelected: (id: string) => userType === id,
+      onSelect: (item: any) => {
+        const newType = userType === item.id ? null : item.id;
+        setUserType(newType);
+      },
+      getDisplayText: (item: any) => item.id,
+      canProceed: () => !!userType,
+    },
+    2: {
+      title: "What genres interest you?",
+      maxSelections: 3,
+      minSelections: 1,
+      hasSearch: false,
+      getItems: () =>
+        FIELD_VALUES.genres.map((genre) => ({ id: genre, genre })),
+      getSelectedIds: () => selectedGenres,
+      isSelected: (id: string) => selectedGenres.includes(id),
+      onSelect: (item: any) => handleGenreToggle(item.id),
+      getDisplayText: (item: any) => item.id,
+      canProceed: () => selectedGenres.length > 0,
+    },
+    3: {
+      title: "Whose reading tastes do you admire?",
+      maxSelections: 3,
+      minSelections: 1,
+      hasSearch: true,
+      searchPlaceholder: "Search for more people...",
+      getItems: () => getGridPeople(),
+      getSelectedIds: () => selectedPeopleIds,
+      isSelected: (id: string) => selectedPeopleIds.includes(id),
+      onSelect: handlePersonSelect,
+      getDisplayText: (person: FormattedRecommender) =>
+        `${person.full_name}${person.type ? ` (${person.type})` : ""}`,
+      canProceed: () => selectedPeopleIds.length > 0,
+    },
+    4: {
+      title: "What's on your bookshelf?",
+      maxSelections: 3,
+      minSelections: 1,
+      hasSearch: true,
+      searchPlaceholder: "Search for more books...",
+      getItems: () => getGridBooks(),
+      getSelectedIds: () => selectedBookIds,
+      isSelected: (id: string) => selectedBookIds.includes(id),
+      onSelect: handleBookSelect,
+      getDisplayText: (book: Book) => book.title,
+      canProceed: () => selectedBookIds.length > 0,
+      nextAction: getRecommendations,
+    },
+  };
+
+  // Navigation button configuration
+  const getNavigationConfig = (currentStep: number) => {
+    const config = stepConfigs[currentStep];
+    const hasBack = currentStep > 1;
+    const hasNext = currentStep < 5;
+
+    const scrollToTop = () => {
+      // Find the scrollable container (the page content div with overflow-y-auto)
+      const scrollContainer = document.querySelector('.overflow-y-auto');
+      if (scrollContainer) {
+        scrollContainer.scrollTo(0, 0);
+      } else {
+        // Fallback to window scroll if container not found
+        window.scrollTo(0, 0);
+      }
+    };
+
+    return {
+      hasBack,
+      hasNext,
+      canProceed: config?.canProceed() ?? false,
+      nextLabel:
+        currentStep === 4 ? (loading ? "Thinking..." : "Next") : "Next",
+      onBack: () => {
+        setStep(currentStep - 1);
+        scrollToTop();
+      },
+      onNext: () => {
+        if (config?.nextAction) {
+          config.nextAction();
+        } else {
+          setStep(currentStep + 1);
+        }
+        scrollToTop();
+      },
+    };
+  };
+
   const renderStep = () => {
     // Don't render anything until we've initialized
     if (!isInitialized || step === undefined) {
       return null;
     }
 
-    switch (step) {
-      case 1:
-        return (
-          <>
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-0">
-              <h2 className="text-xl font-base flex items-center">What is your profession?<span className="text-sm text-muted-foreground ml-2 px-2">({userType ? 1 : 0}/1 selected)</span></h2>
-            </div>
-            <div className="space-y-2">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-base">
-                {FIELD_VALUES.type.map((type) => (
-                  <div
-                    key={type}
-                    onClick={() =>
-                      userType === null || userType === type
-                        ? setUserType(userType === type ? null : type)
-                        : null
-                    }
-                    className={`p-3 ${userType !== null && userType !== type ? "cursor-not-allowed opacity-60" : "cursor-pointer"} border border-border transition-colors duration-200 whitespace-pre-line line-clamp-2 ${
-                      type === userType
-                        ? "bg-[hsl(var(--background-l3))] md:hover:bg-[hsl(var(--background-l3-hover))]"
-                        : "bg-background md:hover:bg-accent/50"
-                    }`}
-                  >
-                    {type}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </>
-        );
+    const config = stepConfigs[step];
 
-      case 2:
-        return (
-          <>
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-0">
-              <h2 className="text-xl font-base flex items-center">What genres interest you?<span className="text-sm text-muted-foreground ml-2 px-2">({selectedGenres.length}/3 selected)</span></h2>
-            </div>
-            <div className="space-y-2">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-base">
-                {FIELD_VALUES.genres.map((genre) => (
-                  <div
-                    key={genre}
-                    onClick={() =>
-                      selectedGenres.length < 3 ||
-                      selectedGenres.includes(genre)
-                        ? handleGenreToggle(genre)
-                        : null
-                    }
-                    className={`p-3 ${selectedGenres.length >= 3 && !selectedGenres.includes(genre) ? "cursor-not-allowed opacity-60" : "cursor-pointer"} border border-border transition-colors duration-200 whitespace-pre-line line-clamp-2 ${
-                      selectedGenres.includes(genre)
-                        ? "bg-[hsl(var(--background-l3))] md:hover:bg-[hsl(var(--background-l3-hover))]"
-                        : "bg-background md:hover:bg-accent/50"
-                    }`}
-                  >
-                    {genre}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </>
-        );
+    if (config) {
+      // Steps 1-4: Quiz steps
+      const selectedIds = config.getSelectedIds();
 
-      case 3:
-        if (!recommenders) return null;
+      return (
+        <>
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-0">
+            <h2 className="text-xl font-base flex items-center">
+              {config.title}
+              <span className="text-sm text-muted-foreground ml-2 px-2">
+                ({selectedIds.length}/{config.maxSelections} selected)
+              </span>
+            </h2>
+          </div>
 
-        return (
-          <>
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-0">
-              <h2 className="text-xl font-base flex items-center">Whose reading tastes do you admire?<span className="text-sm text-muted-foreground ml-2 px-2">({selectedPeopleIds.length}/3 selected)</span></h2>
-            </div>
-            <div className="space-y-2">
-              <div className="relative">
-                <SearchInput
-                  key={step}
-                  value={searchQuery}
-                  onChange={handleSearch}
-                  onClear={() => {
-                    setSearchQuery("");
-                    setSearchResults([]);
-                    setIsSearching(false);
-                    setSelectedIndex(-1);
-                  }}
-                  placeholder="Search for more people..."
-                  disabled={selectedPeopleIds.length >= 3}
-                  autoFocus={true}
-                  onKeyDown={(e) => {
-                    if (
-                      searchResults.length === 0 ||
-                      selectedPeopleIds.length >= 3
-                    )
-                      return;
-
-                    // Create sorted results array to match what's displayed in the dropdown
-                    const sortedResults = [...searchResults].sort((a, b) => {
-                      if (a.isInGrid === b.isInGrid) return 0;
-                      return a.isInGrid ? 1 : -1;
-                    });
-
-                    if (e.key === "ArrowDown") {
-                      e.preventDefault();
-                      setSelectedIndex((prev) =>
-                        prev < sortedResults.length - 1 ? prev + 1 : prev
-                      );
-                    } else if (e.key === "ArrowUp") {
-                      e.preventDefault();
-                      setSelectedIndex((prev) => (prev > 0 ? prev - 1 : prev));
-                    } else if (
-                      e.key === "Enter" &&
-                      selectedIndex >= 0 &&
-                      selectedIndex < sortedResults.length
-                    ) {
-                      e.preventDefault();
-                      handleSearchResultSelect(sortedResults[selectedIndex]);
-                    }
-                  }}
-                />
-                <SearchDropdown
-                  results={searchResults}
-                  onSelect={handleSearchResultSelect}
-                  isOpen={searchQuery.length > 0}
-                  loading={isSearching}
-                  selectedIndex={selectedIndex}
-                />
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-4 text-base">
-                {recommenders &&
-                  getGridPeople().map((person) => (
-                    <div
-                      key={person.id}
-                      onClick={() =>
-                        selectedPeopleIds.length < 3 ||
-                        selectedPeopleIds.includes(person.id)
-                          ? handlePersonSelect(person)
-                          : null
-                      }
-                      className={`p-3 ${selectedPeopleIds.length >= 3 && !selectedPeopleIds.includes(person.id) ? "cursor-not-allowed opacity-60" : "cursor-pointer"} border border-border transition-colors duration-200 whitespace-pre-line line-clamp-2 ${
-                        selectedPeopleIds.includes(person.id)
-                          ? "bg-[hsl(var(--background-l3))] md:hover:bg-[hsl(var(--background-l3-hover))]"
-                          : "bg-background md:hover:bg-accent/50"
-                      }`}
-                    >
-                      {person.full_name}
-                      {person.type ? ` (${person.type})` : ""}
-                    </div>
-                  ))}
-              </div>
-            </div>
-          </>
-        );
-
-      case 4:
-        if (!books) return null;
-
-        return (
-          <>
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-0">
-              <h2 className="text-xl font-base flex items-center">What&apos;s on your bookshelf?<span className="text-sm text-muted-foreground ml-2 px-2">({selectedBookIds.length}/3 selected)</span></h2>
-            </div>
-            <div className="space-y-2">
-              <div className="relative">
-                <SearchInput
-                  key={step}
-                  value={searchQuery}
-                  onChange={handleSearch}
-                  onClear={() => {
-                    setSearchQuery("");
-                    setSearchResults([]);
-                    setIsSearching(false);
-                    setSelectedIndex(-1);
-                  }}
-                  placeholder="Search for more books..."
-                  disabled={selectedBookIds.length >= 3}
-                  autoFocus={true}
-                  onKeyDown={(e) => {
-                    if (
-                      searchResults.length === 0 ||
-                      selectedBookIds.length >= 3
-                    )
-                      return;
-
-                    // Create sorted results array to match what's displayed in the dropdown
-                    const sortedResults = [...searchResults].sort((a, b) => {
-                      if (a.isInGrid === b.isInGrid) return 0;
-                      return a.isInGrid ? 1 : -1;
-                    });
-
-                    if (e.key === "ArrowDown") {
-                      e.preventDefault();
-                      setSelectedIndex((prev) =>
-                        prev < sortedResults.length - 1 ? prev + 1 : prev
-                      );
-                    } else if (e.key === "ArrowUp") {
-                      e.preventDefault();
-                      setSelectedIndex((prev) => (prev > 0 ? prev - 1 : prev));
-                    } else if (
-                      e.key === "Enter" &&
-                      selectedIndex >= 0 &&
-                      selectedIndex < sortedResults.length
-                    ) {
-                      e.preventDefault();
-                      handleSearchResultSelect(sortedResults[selectedIndex]);
-                    }
-                  }}
-                />
-                <SearchDropdown
-                  results={searchResults}
-                  onSelect={handleSearchResultSelect}
-                  isOpen={searchQuery.length > 0}
-                  loading={isSearching}
-                  selectedIndex={selectedIndex}
-                />
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-4 text-base">
-                {books &&
-                  getGridBooks().map((book) => (
-                    <div
-                      key={book.id}
-                      onClick={() =>
-                        selectedBookIds.length < 3 ||
-                        selectedBookIds.includes(book.id)
-                          ? handleBookSelect(book)
-                          : null
-                      }
-                      className={`p-3 ${selectedBookIds.length >= 3 && !selectedBookIds.includes(book.id) ? "cursor-not-allowed opacity-60" : "cursor-pointer"} border border-border transition-colors duration-200 whitespace-pre-line line-clamp-2 ${
-                        selectedBookIds.includes(book.id)
-                          ? "bg-[hsl(var(--background-l3))] md:hover:bg-[hsl(var(--background-l3-hover))]"
-                          : "bg-background md:hover:bg-accent/50"
-                      }`}
-                    >
-                      {book.title}
-                    </div>
-                  ))}
-              </div>
-            </div>
-          </>
-        );
-
-      case 5:
-        return (
-          <>
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-base">
-                We found the following for you
-              </h2>
-            </div>
-            <CardStack
-              recommendations={recommendations}
-              userType={userType}
-              onBookClick={handleBookClick}
+          {config.hasSearch ? (
+            <SearchableGrid
+              config={config}
+              searchQuery={searchQuery}
+              searchResults={searchResults}
+              isSearching={isSearching}
+              selectedIndex={selectedIndex}
+              onSearch={handleSearch}
+              onSearchClear={() => {
+                setSearchQuery("");
+                setSearchResults([]);
+                setIsSearching(false);
+                setSelectedIndex(-1);
+              }}
+              onSearchResultSelect={handleSearchResultSelect}
+              onKeyDown={handleSearchKeyDown}
             />
-          </>
-        );
+          ) : (
+            <div className="space-y-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-base">
+                {config
+                  .getItems?.()
+                  .map((item) => (
+                    <GridItem
+                      key={item.id}
+                      item={item}
+                      isSelected={config.isSelected(item.id)}
+                      isDisabled={
+                        selectedIds.length >= config.maxSelections &&
+                        !config.isSelected(item.id)
+                      }
+                      onClick={() => config.onSelect(item)}
+                      getDisplayText={config.getDisplayText}
+                    />
+                  ))}
+              </div>
+            </div>
+          )}
+        </>
+      );
+    }
 
-      default:
-        return null;
+    // Step 5: Results
+    if (step === 5) {
+      return (
+        <>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-base">
+              We found the following for you
+            </h2>
+          </div>
+          <CardStack
+            recommendations={recommendations}
+            userType={userType}
+            onBookClick={handleBookClick}
+          />
+        </>
+      );
+    }
+
+    return null;
+  };
+
+  const handleSearchKeyDown = (e: React.KeyboardEvent) => {
+    if (
+      searchResults.length === 0 ||
+      (step === 3 && selectedPeopleIds.length >= 3) ||
+      (step === 4 && selectedBookIds.length >= 3)
+    )
+      return;
+
+    const sortedResults = [...searchResults].sort((a, b) => {
+      if (a.isInGrid === b.isInGrid) return 0;
+      return a.isInGrid ? 1 : -1;
+    });
+
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setSelectedIndex((prev) =>
+        prev < sortedResults.length - 1 ? prev + 1 : prev
+      );
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setSelectedIndex((prev) => (prev > 0 ? prev - 1 : prev));
+    } else if (
+      e.key === "Enter" &&
+      selectedIndex >= 0 &&
+      selectedIndex < sortedResults.length
+    ) {
+      e.preventDefault();
+      handleSearchResultSelect(sortedResults[selectedIndex]);
     }
   };
 
@@ -772,128 +857,68 @@ function RecommendationsContent() {
       return null;
     }
 
-    switch (step) {
-      case 1:
-        return (
-          <div className="flex justify-end gap-4 h-[30px] items-center">
-            <button
-              onClick={() => setStep(2)}
-              disabled={!userType}
-              className={`text-center px-4 py-2 border border-border bg-background text-text transition-colors duration-200 ${
-                !userType
-                  ? "cursor-not-allowed opacity-60"
-                  : "md:hover:bg-accent/50 text-text"
-              }`}
-            >
-              Next
-            </button>
-          </div>
-        );
-
-      case 2:
-        return (
-          <div className="flex justify-between gap-4 h-[30px] items-center">
-            <button
-              onClick={() => setStep(step - 1)}
-              className="bg-background text-text px-4 py-2 border border-border text-center transition-colors duration-200 md:hover:bg-accent/50"
-            >
-              Back
-            </button>
-            <button
-              onClick={() => {
-                setStep(3);
-              }}
-              disabled={selectedGenres.length === 0}
-              className={`text-center px-4 py-2 border border-border bg-background text-text transition-colors duration-200 ${
-                selectedGenres.length === 0
-                  ? "cursor-not-allowed opacity-60"
-                  : "md:hover:bg-accent/50 text-text"
-              }`}
-            >
-              Next
-            </button>
-          </div>
-        );
-
-      case 3:
-        return (
-          <div className="flex justify-between gap-4 h-[30px] items-center">
-            <button
-              onClick={() => setStep(step - 1)}
-              className="bg-background text-text px-4 py-2 border border-border text-center transition-colors duration-200 md:hover:bg-accent/50"
-            >
-              Back
-            </button>
-            <button
-              onClick={() => setStep(4)}
-              disabled={!selectedPeopleIds.length}
-              className={`text-center px-4 py-2 border border-border bg-background text-text transition-colors duration-200 ${
-                !selectedPeopleIds.length
-                  ? "cursor-not-allowed opacity-60"
-                  : "md:hover:bg-accent/50 text-text"
-              }`}
-            >
-              Next
-            </button>
-          </div>
-        );
-
-      case 4:
-        return (
-          <div className="flex justify-between gap-4 h-[30px] items-center">
-            <button
-              onClick={() => setStep(step - 1)}
-              className="bg-background text-text px-4 py-2 border border-border text-center transition-colors duration-200 md:hover:bg-accent/50"
-            >
-              Back
-            </button>
-            <button
-              onClick={getRecommendations}
-              disabled={!selectedBookIds.length}
-              className={`text-center px-4 py-2 border border-border bg-background text-text transition-colors duration-200 ${
-                !selectedBookIds.length
-                  ? "cursor-not-allowed opacity-60"
-                  : "md:hover:bg-accent/50 text-text"
-              }`}
-            >
-              {loading ? "Thinking..." : "Next"}
-            </button>
-          </div>
-        );
-
-      case 5:
-        return (
-          <div className="w-full mt-8 md:flex md:justify-end md:gap-4 md:h-[30px] md:items-center md:w-auto md:mt-0">
-            <button
-              onClick={() => {
-                setStep(1);
-                setUserType(null);
-                setSelectedGenres([]);
-                setSelectedPeopleIds([]);
-                setSelectedBookIds([]);
-                setRecommendations([]);
-                setCurrentCardIndex(0);
-                setSelectedPeople([]);
-                setSelectedBooks([]);
-                localStorage.removeItem("userType");
-                localStorage.removeItem("selectedGenres");
-                localStorage.removeItem("selectedPeopleIds");
-                localStorage.removeItem("selectedBookIds");
-                localStorage.removeItem("recommendations");
-                localStorage.removeItem("currentCardIndex");
-                localStorage.removeItem("selectedPeople");
-                localStorage.removeItem("selectedBooks");
-              }}
-              className="w-full justify-center px-6 py-3 bg-background text-text border border-border text-center transition-colors duration-200 cursor-pointer flex items-center gap-1 md:w-auto md:justify-start md:px-4 md:py-2 md:hover:bg-accent/50"
-            >
-              Start Over
-            </button>
-          </div>
-        );
-
-      default:
-        return null;
+    if (step === 5) {
+      return (
+        <div className="w-full mt-8 md:flex md:justify-end md:gap-4 md:h-[30px] md:items-center md:w-auto md:mt-0">
+          <button
+            onClick={() => {
+              setStep(1);
+              setUserType(null);
+              setSelectedGenres([]);
+              setSelectedPeopleIds([]);
+              setSelectedBookIds([]);
+              setRecommendations([]);
+              setCurrentCardIndex(0);
+              setSelectedPeople([]);
+              setSelectedBooks([]);
+              localStorage.removeItem("userType");
+              localStorage.removeItem("selectedGenres");
+              localStorage.removeItem("selectedPeopleIds");
+              localStorage.removeItem("selectedBookIds");
+              localStorage.removeItem("recommendations");
+              localStorage.removeItem("currentCardIndex");
+              localStorage.removeItem("selectedPeople");
+              localStorage.removeItem("selectedBooks");
+            }}
+            className="w-full justify-center px-6 py-3 bg-background text-text border border-border text-center transition-colors duration-200 cursor-pointer flex items-center gap-1 md:w-auto md:justify-start md:px-4 md:py-2 md:hover:bg-accent/50"
+          >
+            Start Over
+          </button>
+        </div>
+      );
     }
+
+    const navConfig = getNavigationConfig(step);
+
+    return (
+      <div
+        className={`flex gap-4 h-[30px] items-center ${
+          navConfig.hasBack ? "justify-between" : "justify-end"
+        }`}
+      >
+        {navConfig.hasBack && (
+          <button
+            onClick={navConfig.onBack}
+            className="bg-background text-text px-4 py-2 border border-border text-center transition-colors duration-200 md:hover:bg-accent/50"
+          >
+            Back
+          </button>
+        )}
+        {navConfig.hasNext && (
+          <button
+            onClick={navConfig.onNext}
+            disabled={!navConfig.canProceed}
+            className={`text-center px-4 py-2 border border-border bg-background text-text transition-colors duration-200 ${
+              !navConfig.canProceed
+                ? "cursor-not-allowed opacity-60"
+                : "md:hover:bg-accent/50 text-text"
+            }`}
+          >
+            {navConfig.nextLabel}
+          </button>
+        )}
+      </div>
+    );
   };
 
   const totalSteps = 5;
@@ -904,7 +929,7 @@ function RecommendationsContent() {
     if (!isInitialized || step === undefined) {
       return null;
     }
-    
+
     return (
       <div className="w-full h-2 bg-accent/30 border border-border md:mb-8">
         <div
@@ -931,18 +956,14 @@ function RecommendationsContent() {
         <div className="hidden md:block">{renderNavigationButtons()}</div>
       </div>
       {/* On small screens, progress bar below the heading */}
-      <div className="md:hidden mb-4">
-        {renderProgressBar()}
-      </div>
+      <div className="md:hidden mb-4">{renderProgressBar()}</div>
       <div className="space-y-4">
         {/* On larger screens, progress bar is here */}
         <div className="hidden md:block">{renderProgressBar()}</div>
         {renderStep()}
       </div>
       {/* On small screens, navigation buttons below the content */}
-      <div className="md:hidden mt-4">
-        {renderNavigationButtons()}
-      </div>
+      <div className="md:hidden mt-4">{renderNavigationButtons()}</div>
     </div>
   );
 }
