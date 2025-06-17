@@ -25,11 +25,11 @@
     
     /* Background hover states */
     --background-l1-hover: 151 80% 92%;
-    --background-l2-hover: 151 80% 88%;
-    --background-l3-hover: 151 80% 84%;
-    --background-l4-hover: 151 80% 80%;
-    --background-l5-hover: 151 80% 76%;
-    --background-l6-hover: 151 80% 72%;
+    --background-l2-hover: 151 80% 87%;
+    --background-l3-hover: 151 80% 82%;
+    --background-l4-hover: 151 80% 77%;
+    --background-l5-hover: 151 80% 72%;
+    --background-l6-hover: 151 80% 67%;
     
     /* Border and muted tones */
     --border: 0 0% 0%; /* Black with opacity via border-border/20 */

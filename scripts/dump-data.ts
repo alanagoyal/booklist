@@ -76,17 +76,17 @@ function getBackgroundColor(bucket: number): string {
 
   switch (bucket) {
     case 0:
-      return "bg-[hsl(var(--background-l1))] hover:bg-[hsl(var(--background-l1-hover))]";
+      return "bg-[hsl(var(--background-l1))] md:hover:bg-[hsl(var(--background-l1-hover))]";
     case 1:
-      return "bg-[hsl(var(--background-l2))] hover:bg-[hsl(var(--background-l2-hover))]";
+      return "bg-[hsl(var(--background-l2))] md:hover:bg-[hsl(var(--background-l2-hover))]";
     case 2:
-      return "bg-[hsl(var(--background-l3))] hover:bg-[hsl(var(--background-l3-hover))]";
+      return "bg-[hsl(var(--background-l3))] md:hover:bg-[hsl(var(--background-l3-hover))]";
     case 3:
-      return "bg-[hsl(var(--background-l4))] hover:bg-[hsl(var(--background-l4-hover))]";
+      return "bg-[hsl(var(--background-l4))] md:hover:bg-[hsl(var(--background-l4-hover))]";
     case 4:
-      return "bg-[hsl(var(--background-l5))] hover:bg-[hsl(var(--background-l5-hover))]";
+      return "bg-[hsl(var(--background-l5))] md:hover:bg-[hsl(var(--background-l5-hover))]";
     case 5:
-      return "bg-[hsl(var(--background-l6))] hover:bg-[hsl(var(--background-l6-hover))]";
+      return "bg-[hsl(var(--background-l6))] md:hover:bg-[hsl(var(--background-l6-hover))]";
     default:
       return "";
   }
