@@ -637,7 +637,45 @@ function RecommendationsContent() {
     [searchParams, router]
   );
 
-  // Step configurations
+  // Scroll to top function
+  const scrollToTop = () => {
+    // Find the scrollable container (the page content div with overflow-y-auto)
+    const scrollContainer = document.querySelector('.overflow-y-auto');
+    if (scrollContainer) {
+      scrollContainer.scrollTo(0, 0);
+    } else {
+      // Fallback to window scroll if container not found
+      window.scrollTo(0, 0);
+    }
+  };
+
+  // Navigation button configuration
+  const getNavigationConfig = (currentStep: number) => {
+    const config = stepConfigs[currentStep];
+    const hasBack = currentStep > 1;
+    const hasNext = currentStep < 5;
+
+    return {
+      hasBack,
+      hasNext,
+      canProceed: config?.canProceed() ?? false,
+      nextLabel:
+        currentStep === 4 ? (loading ? "Thinking..." : "Next") : "Next",
+      onBack: () => {
+        setStep(currentStep - 1);
+        scrollToTop();
+      },
+      onNext: () => {
+        if (config?.nextAction) {
+          config.nextAction();
+        } else {
+          setStep(currentStep + 1);
+        }
+        scrollToTop();
+      },
+    };
+  };
+
   const stepConfigs: Record<number, StepConfig> = {
     1: {
       title: "What is your profession?",
@@ -697,42 +735,20 @@ function RecommendationsContent() {
     },
   };
 
-  // Navigation button configuration
-  const getNavigationConfig = (currentStep: number) => {
-    const config = stepConfigs[currentStep];
-    const hasBack = currentStep > 1;
-    const hasNext = currentStep < 5;
+  // Render progress bar displaying completion percentage
+  const renderProgressBar = () => {
+    if (!isInitialized || step === undefined) {
+      return null;
+    }
 
-    const scrollToTop = () => {
-      // Find the scrollable container (the page content div with overflow-y-auto)
-      const scrollContainer = document.querySelector('.overflow-y-auto');
-      if (scrollContainer) {
-        scrollContainer.scrollTo(0, 0);
-      } else {
-        // Fallback to window scroll if container not found
-        window.scrollTo(0, 0);
-      }
-    };
-
-    return {
-      hasBack,
-      hasNext,
-      canProceed: config?.canProceed() ?? false,
-      nextLabel:
-        currentStep === 4 ? (loading ? "Thinking..." : "Next") : "Next",
-      onBack: () => {
-        setStep(currentStep - 1);
-        scrollToTop();
-      },
-      onNext: () => {
-        if (config?.nextAction) {
-          config.nextAction();
-        } else {
-          setStep(currentStep + 1);
-        }
-        scrollToTop();
-      },
-    };
+    return (
+      <div className="w-full h-2 bg-accent/30 border border-border md:mb-8">
+        <div
+          className={`h-full bg-[hsl(var(--background-l3))] hover:bg-[hsl(var(--background-l3-hover))] transition-all duration-200 ${currentProgress < 100 ? "border-r" : ""} border-border`}
+          style={{ width: `${currentProgress}%` }}
+        />
+      </div>
+    );
   };
 
   const renderStep = () => {
@@ -879,6 +895,7 @@ function RecommendationsContent() {
               localStorage.removeItem("currentCardIndex");
               localStorage.removeItem("selectedPeople");
               localStorage.removeItem("selectedBooks");
+              scrollToTop();
             }}
             className="w-full justify-center px-6 py-3 bg-background text-text border border-border text-center transition-colors duration-200 cursor-pointer flex items-center gap-1 md:w-auto md:justify-start md:px-4 md:py-2 md:hover:bg-accent/50"
           >
@@ -923,22 +940,6 @@ function RecommendationsContent() {
 
   const totalSteps = 5;
   const currentProgress = step ? (step / totalSteps) * 100 : 0;
-
-  // Render progress bar displaying completion percentage
-  const renderProgressBar = () => {
-    if (!isInitialized || step === undefined) {
-      return null;
-    }
-
-    return (
-      <div className="w-full h-2 bg-accent/30 border border-border md:mb-8">
-        <div
-          className={`h-full bg-[hsl(var(--background-l3))] hover:bg-[hsl(var(--background-l3-hover))] transition-all duration-200 ${currentProgress < 100 ? "border-r" : ""} border-border`}
-          style={{ width: `${currentProgress}%` }}
-        />
-      </div>
-    );
-  };
 
   // Clear search query when step changes
   useEffect(() => {
