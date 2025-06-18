@@ -5,11 +5,11 @@ import { GridSkeleton } from "@/components/grid-skeleton";
 import type { EssentialBook, ExtendedBook, FormattedRecommender } from "@/types";
 import useSWR from "swr";
 import { useSearchParams } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
 
 const fetcher = (url: string) => fetch(url).then(r => r.json());
 
-export default function Home() {
+function HomeContent() {
   const searchParams = useSearchParams();
   const key = searchParams.get('key');
 
@@ -62,5 +62,13 @@ export default function Home() {
       initialBooks={books}
       initialRecommenders={recommenders}
     />
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={<GridSkeleton />}>
+      <HomeContent />
+    </Suspense>
   );
 }
