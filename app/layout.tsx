@@ -22,29 +22,42 @@ export const viewport = {
   initialScale: 1,
 };
 
-export const metadata: Metadata = {
-  title: siteConfig.title,
-  description: siteConfig.description,
-  openGraph: {
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined };
+}): Promise<Metadata> {
+  const key = searchParams.key;
+  
+  // Build OG image URL with key parameter when present
+  const ogImageUrl = key 
+    ? `/booklist/api/og?key=${encodeURIComponent(key as string)}`
+    : "/booklist/api/og";
+
+  return {
     title: siteConfig.title,
     description: siteConfig.description,
-    siteName: siteConfig.title,
-    url: siteConfig.url,
-    images: [
-      {
-        url: "/booklist/api/og",
-        width: 1200,
-        height: 630,
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: siteConfig.title,
-    description: siteConfig.description,
-    images: ["/booklist/api/og"],
-  },
-};
+    openGraph: {
+      title: siteConfig.title,
+      description: siteConfig.description,
+      siteName: siteConfig.title,
+      url: siteConfig.url,
+      images: [
+        {
+          url: ogImageUrl,
+          width: 1200,
+          height: 630,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: siteConfig.title,
+      description: siteConfig.description,
+      images: [ogImageUrl],
+    },
+  };
+}
 
 export default function RootLayout({
   children,
