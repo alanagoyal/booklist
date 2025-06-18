@@ -107,8 +107,17 @@ export function DataGrid<T extends Record<string, any>>({
     let filtered = data;
 
     // Apply search filter first
-    if (hasSearchQuery && !hasNoSearchResults) {
-      filtered = filtered.filter((item) => searchResults.has(item.id));
+    if (hasSearchQuery) {
+      if (isSearching) {
+        // While searching, show original data to avoid flashing blank
+        filtered = data;
+      } else if (hasNoSearchResults) {
+        // If search is complete but no results, show empty
+        filtered = [];
+      } else {
+        // If we have search results, filter to only those results
+        filtered = filtered.filter((item) => searchResults.has(item.id));
+      }
     }
 
     // Then apply column filters
@@ -174,6 +183,7 @@ export function DataGrid<T extends Record<string, any>>({
     hasNoSearchResults,
     debouncedFilters,
     viewMode,
+    isSearching,
   ]);
 
   const hasNoFilteredResults = useMemo(
