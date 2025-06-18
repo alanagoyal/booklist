@@ -25,9 +25,9 @@ export const viewport = {
 export async function generateMetadata({
   searchParams,
 }: {
-  searchParams: { [key: string]: string | string[] | undefined };
+  searchParams?: { [key: string]: string | string[] | undefined };
 }): Promise<Metadata> {
-  const key = searchParams.key;
+  const key = searchParams?.key;
   
   // Build OG image URL with key parameter when present
   const ogImageUrl = key 
