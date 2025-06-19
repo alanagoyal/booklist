@@ -270,6 +270,14 @@ async function dumpData() {
       );
       console.log(`✓ Wrote essential data for ${essentialBooks.length} books`);
 
+      // Write initial data (first 50 books for fast initial load)
+      const initialBooks = essentialBooks.slice(0, 50);
+      writeFileSync(
+        join(process.cwd(), "public", "data", "books-initial.json"),
+        JSON.stringify(initialBooks, null, 2)
+      );
+      console.log(`✓ Wrote initial data for ${initialBooks.length} books`);
+
       // Write extended data
       writeFileSync(
         join(process.cwd(), "public", "data", "books-extended.json"),
