@@ -14,15 +14,21 @@ export default function Home() {
     fetcher
   );
   
-  // Load recommenders in parallel
-  const { data: recommenders } = useSWR<FormattedRecommender[]>(
-    "/booklist/data/recommenders.json",
+  // Load initial 50 recommenders first for fast page load
+  const { data: initialRecommenders } = useSWR<FormattedRecommender[]>(
+    "/booklist/data/recommenders-initial.json",
     fetcher
   );
   
   // Load remaining books after initial load
   const { data: allEssentialBooks } = useSWR<EssentialBook[]>(
     initialBooks ? "/booklist/data/books-essential.json" : null,
+    fetcher
+  );
+  
+  // Load full recommenders after initial load
+  const { data: allRecommenders } = useSWR<FormattedRecommender[]>(
+    initialRecommenders ? "/booklist/data/recommenders.json" : null,
     fetcher
   );
   
@@ -35,6 +41,9 @@ export default function Home() {
   // Use initial books for immediate display, fall back to all books when available
   const essentialBooks = allEssentialBooks || initialBooks;
   
+  // Use initial recommenders for immediate display, fall back to all recommenders when available
+  const recommenders = allRecommenders || initialRecommenders;
+  
   const books = essentialBooks?.map(book => {
     const extended = extendedData?.find(e => e.id === book.id);
     return {
@@ -43,8 +52,8 @@ export default function Home() {
     };
   });
 
-  // Show skeleton only if we don't have initial books yet
-  if (!initialBooks) {
+  // Show skeleton only if we don't have initial data yet
+  if (!initialBooks || !initialRecommenders) {
     return <GridSkeleton />;
   }
 

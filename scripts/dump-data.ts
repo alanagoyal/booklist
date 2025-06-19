@@ -354,6 +354,14 @@ async function dumpData() {
         JSON.stringify(formattedRecommenders, null, 2)
       );
       console.log(`✓ Wrote ${formattedRecommenders.length} recommenders to public/data/recommenders.json`);
+
+      // Write initial recommenders data (first 50 recommenders for fast initial load)
+      const initialRecommenders = formattedRecommenders.slice(0, 50);
+      writeFileSync(
+        join(process.cwd(), "public", "data", "recommenders-initial.json"),
+        JSON.stringify(initialRecommenders, null, 2)
+      );
+      console.log(`✓ Wrote initial data for ${initialRecommenders.length} recommenders`);
     }
   } catch (error) {
     console.error("Error:", error);
