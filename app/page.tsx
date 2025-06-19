@@ -8,19 +8,33 @@ import useSWR from "swr";
 const fetcher = (url: string) => fetch(url).then(r => r.json());
 
 export default function Home() {
-  const { data: essentialBooks } = useSWR<EssentialBook[]>(
-    "/booklist/data/books-essential.json",
+  // Load initial 50 books first for fast page load
+  const { data: initialBooks } = useSWR<EssentialBook[]>(
+    "/booklist/data/books-initial.json",
     fetcher
   );
+  
+  // Load recommenders in parallel
   const { data: recommenders } = useSWR<FormattedRecommender[]>(
     "/booklist/data/recommenders.json",
     fetcher
   );
+  
+  // Load remaining books after initial load
+  const { data: allEssentialBooks } = useSWR<EssentialBook[]>(
+    initialBooks ? "/booklist/data/books-essential.json" : null,
+    fetcher
+  );
+  
+  // Load extended data after we have books
   const { data: extendedData } = useSWR<ExtendedBook[]>(
-    essentialBooks ? "/booklist/data/books-extended.json" : null,
+    initialBooks ? "/booklist/data/books-extended.json" : null,
     fetcher
   );
 
+  // Use initial books for immediate display, fall back to all books when available
+  const essentialBooks = allEssentialBooks || initialBooks;
+  
   const books = essentialBooks?.map(book => {
     const extended = extendedData?.find(e => e.id === book.id);
     return {
@@ -29,15 +43,15 @@ export default function Home() {
     };
   });
 
-  // Return a skeleton loader rather than a simple loading message
-  if (!books || !recommenders) {
+  // Show skeleton only if we don't have initial books yet
+  if (!initialBooks) {
     return <GridSkeleton />;
   }
 
   return (
     <BookList
-      initialBooks={books}
-      initialRecommenders={recommenders}
+      initialBooks={books || []}
+      initialRecommenders={recommenders || []}
     />
   );
 }
