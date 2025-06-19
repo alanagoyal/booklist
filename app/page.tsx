@@ -43,15 +43,15 @@ export default function Home() {
     };
   });
 
-  // Return a skeleton loader rather than a simple loading message
-  if (!books || !recommenders) {
+  // Show skeleton only if we don't have initial books yet
+  if (!initialBooks) {
     return <GridSkeleton />;
   }
 
   return (
     <BookList
-      initialBooks={books}
-      initialRecommenders={recommenders}
+      initialBooks={books || []}
+      initialRecommenders={recommenders || []}
     />
   );
 }
