@@ -171,7 +171,7 @@ export async function GET(request: NextRequest) {
             <div
               style={{
                 position: "absolute",
-                bottom: "100px",
+                bottom: "80px",
                 left: "40px",
                 display: "flex",
                 flexDirection: "column",
@@ -184,7 +184,7 @@ export async function GET(request: NextRequest) {
                 style={{
                   fontSize: 72,
                   fontWeight: "bold",
-                  marginBottom: 20,
+                  marginBottom: 80,
                   color: primaryTextColor,
                 }}
               >
@@ -194,7 +194,7 @@ export async function GET(request: NextRequest) {
               {/* Author */}
               <div
                 style={{
-                  fontSize: 48,
+                  fontSize: 42,
                   color: mutedTextColor,
                   marginBottom: 40,
                 }}
@@ -219,13 +219,13 @@ export async function GET(request: NextRequest) {
               {bookData.description && (
                 <div
                   style={{
-                    fontSize: 32,
+                    fontSize: 24,
                     color: primaryTextColor,
                     whiteSpace: "pre-wrap",
                     lineHeight: 1.4,
                   }}
                 >
-                  {truncateText(bookData.description, 150)}
+                  {truncateText(bookData.description, 200)}
                 </div>
               )}
             </div>
@@ -315,13 +315,13 @@ export async function GET(request: NextRequest) {
               {personData.description && (
                 <div
                   style={{
-                    fontSize: 32,
+                    fontSize: 24,
                     color: primaryTextColor,
                     whiteSpace: "pre-wrap",
                     lineHeight: 1.4,
                   }}
                 >
-                  {truncateText(personData.description, 150)}
+                  {truncateText(personData.description, 400)}
                 </div>
               )}
             </div>
