@@ -6,9 +6,10 @@ import HomeContent from "@/components/home-content";
 export async function generateMetadata({
   searchParams,
 }: {
-  searchParams: { key?: string };
+  searchParams: Promise<{ key?: string }>;
 }): Promise<Metadata> {
-  const key = searchParams.key;
+  const params = await searchParams;
+  const key = params.key;
   
   const ogImageUrl = key
     ? `/booklist/api/og?key=${encodeURIComponent(key)}`
