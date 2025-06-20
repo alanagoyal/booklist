@@ -10,57 +10,75 @@ import { useEffect, Suspense } from "react";
 const fetcher = (url: string) => fetch(url).then(r => r.json());
 
 function HomeContent() {
+  // read ?key search param so we can update OG image URLs
   const searchParams = useSearchParams();
-  const key = searchParams.get('key');
+  const key = searchParams.get("key");
 
-  const { data: essentialBooks } = useSWR<EssentialBook[]>(
-    "/booklist/data/books-essential.json",
+  // stage-1: load small initial datasets so view renders quickly
+  const { data: initialBooks } = useSWR<EssentialBook[]>(
+    "/booklist/data/books-initial.json",
     fetcher
   );
-  const { data: recommenders } = useSWR<FormattedRecommender[]>(
-    "/booklist/data/recommenders.json",
+  const { data: initialRecommenders } = useSWR<FormattedRecommender[]>(
+    "/booklist/data/recommenders-initial.json",
     fetcher
   );
+
+  // stage-2: load remaining essential data in the background
+  const { data: allEssentialBooks } = useSWR<EssentialBook[]>(
+    initialBooks ? "/booklist/data/books-essential.json" : null,
+    fetcher
+  );
+  const { data: allRecommenders } = useSWR<FormattedRecommender[]>(
+    initialRecommenders ? "/booklist/data/recommenders.json" : null,
+    fetcher
+  );
+
+  // stage-3: load extended book data after we have at least initial books
   const { data: extendedData } = useSWR<ExtendedBook[]>(
-    essentialBooks ? "/booklist/data/books-extended.json" : null,
+    initialBooks ? "/booklist/data/books-extended.json" : null,
     fetcher
   );
 
-  // Update OG image meta tags dynamically
+  // prefer the full datasets when they arrive, otherwise fall back to initial batches
+  const essentialBooks = allEssentialBooks || initialBooks;
+  const recommenders = allRecommenders || initialRecommenders;
+
+  // update open-graph + twitter card images when ?key changes
   useEffect(() => {
-    const ogImageUrl = key 
+    const ogImageUrl = key
       ? `/booklist/api/og?key=${encodeURIComponent(key)}`
       : "/booklist/api/og";
 
-    // Update existing meta tags
-    const ogImageMeta = document.querySelector('meta[property="og:image"]');
-    const twitterImageMeta = document.querySelector('meta[name="twitter:image"]');
-    
-    if (ogImageMeta) {
-      ogImageMeta.setAttribute('content', ogImageUrl);
-    }
-    if (twitterImageMeta) {
-      twitterImageMeta.setAttribute('content', ogImageUrl);
-    }
+    const ogImageMeta = document.querySelector(
+      'meta[property="og:image"]'
+    );
+    const twitterImageMeta = document.querySelector(
+      'meta[name="twitter:image"]'
+    );
+
+    if (ogImageMeta) ogImageMeta.setAttribute("content", ogImageUrl);
+    if (twitterImageMeta) twitterImageMeta.setAttribute("content", ogImageUrl);
   }, [key]);
 
-  const books = essentialBooks?.map(book => {
-    const extended = extendedData?.find(e => e.id === book.id);
+  // merge essential + extended data so BookList has consistent shape
+  const books = essentialBooks?.map((book) => {
+    const extended = extendedData?.find((e) => e.id === book.id);
     return {
       ...book,
-      ...(extended || { related_books: [], similar_books: [] })
+      ...(extended || { related_books: [], similar_books: [] }),
     };
   });
 
-  // Return a skeleton loader rather than a simple loading message
-  if (!books || !recommenders) {
+  // show skeleton only until stage-1 data arrives
+  if (!initialBooks || !initialRecommenders) {
     return <GridSkeleton />;
   }
 
   return (
     <BookList
-      initialBooks={books}
-      initialRecommenders={recommenders}
+      initialBooks={books || []}
+      initialRecommenders={recommenders || []}
     />
   );
 }

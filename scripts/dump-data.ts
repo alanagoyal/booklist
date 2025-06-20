@@ -270,6 +270,14 @@ async function dumpData() {
       );
       console.log(`✓ Wrote essential data for ${essentialBooks.length} books`);
 
+      // Write initial data (first 50 books for fast initial load)
+      const initialBooks = essentialBooks.slice(0, 50);
+      writeFileSync(
+        join(process.cwd(), "public", "data", "books-initial.json"),
+        JSON.stringify(initialBooks, null, 2)
+      );
+      console.log(`✓ Wrote initial data for ${initialBooks.length} books`);
+
       // Write extended data
       writeFileSync(
         join(process.cwd(), "public", "data", "books-extended.json"),
@@ -346,6 +354,14 @@ async function dumpData() {
         JSON.stringify(formattedRecommenders, null, 2)
       );
       console.log(`✓ Wrote ${formattedRecommenders.length} recommenders to public/data/recommenders.json`);
+
+      // Write initial recommenders data (first 50 recommenders for fast initial load)
+      const initialRecommenders = formattedRecommenders.slice(0, 50);
+      writeFileSync(
+        join(process.cwd(), "public", "data", "recommenders-initial.json"),
+        JSON.stringify(initialRecommenders, null, 2)
+      );
+      console.log(`✓ Wrote initial data for ${initialRecommenders.length} recommenders`);
     }
   } catch (error) {
     console.error("Error:", error);
