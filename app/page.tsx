@@ -14,10 +14,12 @@ export async function generateMetadata({
 
   // Get the base URL - this is crucial for OG images
   const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL
-    ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
+    ? `${process.env.NEXT_PUBLIC_VERCEL_URL}`
     : process.env.NODE_ENV === "production"
       ? siteConfig.url // Replace with your actual domain
       : "http://127.0.0.1:3000";
+
+  console.log("key", key);
 
   const ogImageUrl = key
     ? `${baseUrl}/booklist/api/og?key=${encodeURIComponent(key)}`
