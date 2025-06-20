@@ -22,18 +22,6 @@ export const viewport = {
   initialScale: 1,
 };
 
-export async function generateMetadata(): Promise<Metadata> {
-  return {
-    title: siteConfig.title,
-    description: siteConfig.description,
-    twitter: {
-      card: "summary_large_image",
-      title: siteConfig.title,
-      description: siteConfig.description,
-    },
-  };
-}
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -46,7 +34,14 @@ export default function RootLayout({
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-
+        <title>{siteConfig.title}</title>
+        <meta property="twitter:card" content="summary_large_image"></meta>
+        <meta property="twitter:title" content={siteConfig.title}></meta>
+        <meta property="twitter:description" content={siteConfig.title}></meta>
+        <meta property="og:site_name" content={siteConfig.title}></meta>
+        <meta property="og:description" content={siteConfig.title}></meta>
+        <meta property="og:title" content={siteConfig.title}></meta>
+        <meta property="og:url" content={siteConfig.url}></meta>
         {/* Error tracking script */}
         <Script id="error-detection" strategy="afterInteractive">
           {`
