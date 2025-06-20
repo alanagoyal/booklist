@@ -9,10 +9,10 @@ import Script from "next/script";
 // Font must be loaded at the module scope with a const assignment
 // Add error handling through optional fallback fonts
 const specialElite = localFont({
-  src: '../public/fonts/SpecialElite-Regular.ttf',
-  variable: '--font-special-elite',
-  display: 'block',
-  fallback: ['system-ui', 'Arial'],
+  src: "../public/fonts/SpecialElite-Regular.ttf",
+  variable: "--font-special-elite",
+  display: "block",
+  fallback: ["system-ui", "Arial"],
   adjustFontFallback: "Arial",
 });
 
@@ -22,39 +22,14 @@ export const viewport = {
   initialScale: 1,
 };
 
-export async function generateMetadata({
-  searchParams,
-}: {
-  searchParams?: { [key: string]: string | string[] | undefined };
-}): Promise<Metadata> {
-  const key = searchParams?.key;
-  
-  // Build OG image URL with key parameter when present
-  const ogImageUrl = key 
-    ? `/booklist/api/og?key=${encodeURIComponent(key as string)}`
-    : "/booklist/api/og";
-
+export async function generateMetadata(): Promise<Metadata> {
   return {
     title: siteConfig.title,
     description: siteConfig.description,
-    openGraph: {
-      title: siteConfig.title,
-      description: siteConfig.description,
-      siteName: siteConfig.title,
-      url: siteConfig.url,
-      images: [
-        {
-          url: ogImageUrl,
-          width: 1200,
-          height: 630,
-        },
-      ],
-    },
     twitter: {
       card: "summary_large_image",
       title: siteConfig.title,
       description: siteConfig.description,
-      images: [ogImageUrl],
     },
   };
 }
@@ -71,7 +46,7 @@ export default function RootLayout({
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        
+
         {/* Error tracking script */}
         <Script id="error-detection" strategy="afterInteractive">
           {`
@@ -92,9 +67,7 @@ export default function RootLayout({
           <div className="h-dvh w-full text-sm flex flex-col overflow-hidden">
             <div className="flex flex-col flex-1 m-4 border border-border overflow-hidden">
               <Header />
-              <main className="flex-1 overflow-hidden">
-                {children}
-              </main>
+              <main className="flex-1 overflow-hidden">{children}</main>
             </div>
           </div>
         </Providers>
