@@ -19,19 +19,34 @@ export async function GET() {
             width: '100%',
             height: '100%',
             display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
+            flexDirection: 'column',
+            alignItems: 'flex-start',
+            justifyContent: 'flex-end',
+            padding: '100px',
           }}
         >
           <div
             style={{
               fontFamily: 'Special Elite',
-              fontSize: 72,
+              fontSize: 112,
               color: 'white',
               letterSpacing: '-0.05em',
+              marginBottom: '20px',
             }}
           >
             Booklist.
+          </div>
+          <div
+            style={{
+              fontFamily: 'Special Elite',
+              fontSize: 28,
+              color: 'rgba(255, 255, 255, 0.9)',
+              letterSpacing: '-0.02em',
+              maxWidth: '600px',
+              lineHeight: 1.3,
+            }}
+          >
+            The most frequently recommended books on the internet.
           </div>
         </div>
       ),
