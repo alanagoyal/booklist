@@ -1,8 +1,6 @@
-import type { Metadata } from "next";
-import { siteConfig } from "@/config/site";
+import "./globals.css";
 import Providers from "./providers";
 import localFont from "next/font/local";
-import "./globals.css";
 import Header from "@/components/header";
 import Script from "next/script";
 
@@ -34,14 +32,6 @@ export default function RootLayout({
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <title>{siteConfig.title}</title>
-        <meta property="twitter:card" content="summary_large_image"></meta>
-        <meta property="twitter:title" content={siteConfig.title}></meta>
-        <meta property="twitter:description" content={siteConfig.title}></meta>
-        <meta property="og:site_name" content={siteConfig.title}></meta>
-        <meta property="og:description" content={siteConfig.title}></meta>
-        <meta property="og:title" content={siteConfig.title}></meta>
-        <meta property="og:url" content={siteConfig.url}></meta>
         {/* Error tracking script */}
         <Script id="error-detection" strategy="afterInteractive">
           {`
