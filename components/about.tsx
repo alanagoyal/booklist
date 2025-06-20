@@ -9,15 +9,15 @@ const About = () => {
           Booklist is a curated collection of{" "}
           <strong>the most frequently recommended books on the internet</strong>
           , meticulously compiled from trusted sources across a diverse range of
-          fields. We believe that great books have the power to influence,
-          inspire, and shape ideas, but it&apos;s easy to get trapped in the
-          echo chamber of our own fields. Our goal is to connect readers with
-          recommendations from some of the world&apos;s most insightful and
-          influential thinkers across a wide range of disciplines. Whether
-          you&apos;re exploring economics with prominent entrepreneurs,
-          philosophy with leading academics, or creative insights from
-          celebrated artists, Booklist brings together a rich tapestry of
-          perspectives to help you discover your next impactful read.
+          fields. Great books have the power to influence, inspire, and shape
+          ideas, but it&apos;s easy to get trapped in the echo chamber of our
+          own fields. Booklist aims to connect readers with recommendations from
+          some of the world&apos;s most insightful and influential thinkers
+          across a wide range of disciplines. Whether you&apos;re exploring
+          economics with prominent entrepreneurs, philosophy with leading
+          academics, or creative insights from celebrated artists, Booklist
+          brings together a rich tapestry of perspectives to help you discover
+          your next impactful read.
         </p>
 
         <h3 className="text-xl font-bold mt-8 mb-4">Sources</h3>
@@ -190,18 +190,18 @@ const About = () => {
 
         <h3 className="text-xl font-bold mt-8 mb-4">Goal</h3>
         <p>
-          We built Booklist not only to help you discover what to read next but
-          also to uncover insights hidden within the overlap of book
+          The goal of this project is not only to help you discover what to read
+          next but also to uncover insights hidden within the overlap of book
           recommendations. The books someone chooses to recommend say a lot
           about who they are, their interests, and their values. By analyzing
-          shared recommendations, we can identify similarities between different
-          types of people, revealing unexpected connections or highlighting
-          intriguing differences even within similar groups. The product is
-          designed to be a tool for discovery and exploration, encouraging you
-          to pull on threads of shared connections or go down rabbit holes to
-          chase your curiosities. Through this unique lens, Booklist offers a
-          deeper understanding of how literature shapes—and is shaped by—the
-          diverse perspectives around us.
+          shared recommendations, it&apos;s possible to identify similarities
+          between different types of people, revealing unexpected connections or
+          highlighting intriguing differences even within similar groups. The
+          product is designed to be a tool for discovery and exploration,
+          encouraging you to pull on threads of shared connections or go down
+          rabbit holes to chase your curiosities. Through this unique lens,
+          Booklist offers a deeper understanding of how literature shapes—and is
+          shaped by—the diverse perspectives around us.
         </p>
       </div>
     </div>
