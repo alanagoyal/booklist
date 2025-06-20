@@ -280,7 +280,7 @@ export async function GET(request: NextRequest) {
             <div
               style={{
                 position: "absolute",
-                bottom: "100px",
+                bottom: "80px",
                 left: "40px",
                 display: "flex",
                 flexDirection: "column",
@@ -293,7 +293,7 @@ export async function GET(request: NextRequest) {
                 style={{
                   fontSize: 72,
                   fontWeight: "bold",
-                  marginBottom: 20,
+                  marginBottom: 40,
                   color: primaryTextColor,
                 }}
               >
