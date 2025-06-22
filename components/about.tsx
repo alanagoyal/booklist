@@ -22,13 +22,13 @@ const About = () => {
 
         <h3 className="text-xl font-bold mt-8 mb-4">Sources</h3>
         <p>
-          The internet has no shortage of book recommendations, yet scattered
-          across countless websites, personal blogs, social media, and academic
-          sources, they can be hard to find. To create the ultimate reading
-          resource, we&apos;ve systematically scoured and aggregated
-          recommendations from some of the web&apos;s most authoritative and
-          popular platforms, including:
+          The internet has no shortage of book recommendations. In fact, there
+          are dozens of websites that compile expert book recommendations across
+          various genres and industries. Booklist aggregates these
+          recommendations into a single, fast, searchable platform.
         </p>
+        <br />
+        <p>Sources include:</p>
         <ul className="my-4 pl-6 space-y-1 list-disc">
           <li className="my-1">
             <a
