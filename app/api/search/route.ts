@@ -5,29 +5,30 @@ const supabase = createClient();
 
 export async function POST(req: NextRequest) {
   try {
-    const { embedding, viewMode } = await req.json();
+    const { query, embedding, viewMode } = await req.json();
 
-    if (!embedding || !Array.isArray(embedding)) {
+    if (!query || typeof query !== 'string') {
       return NextResponse.json(
-        { error: "Missing or invalid embedding" },
+        { error: "Missing or invalid query" },
         { status: 400 }
       );
     }
 
-    // Call the appropriate semantic search function
+    // Call the enhanced semantic search function that includes text matching
     const functionName =
       viewMode === "people"
         ? "semantic_search_people"
         : "semantic_search_books";
 
     const { data, error } = await supabase.rpc(functionName, {
-      embedding_input: embedding,
+      embedding_input: embedding || null,
+      search_query: query,
       match_count: 500,
-      min_similarity: 0.8, // Only return results with 80%+ similarity
+      min_similarity: 0.7, // Lowered from 0.8 for better coverage
     });
 
     if (error) {
-      console.error("Supabase error:", error);
+      console.error("Search error:", error);
       return NextResponse.json(
         {
           error: "Search failed",
