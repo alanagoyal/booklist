@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
       embedding_input: embedding || null,
       search_query: query,
       match_count: 500,
-      min_similarity: 0.7, // Lowered from 0.8 for better coverage
+      min_similarity: 0.8, // Back to original threshold
     });
 
     if (error) {
