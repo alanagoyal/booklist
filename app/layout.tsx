@@ -1,8 +1,8 @@
+import "./globals.css";
 import type { Metadata } from "next";
 import { siteConfig } from "@/config/site";
 import Providers from "./providers";
 import localFont from "next/font/local";
-import "./globals.css";
 import Header from "@/components/header";
 import Script from "next/script";
 
