@@ -1545,49 +1545,144 @@ END;
 $function$
 ;
 
-CREATE OR REPLACE FUNCTION public.semantic_search_books(embedding_input vector, match_count integer DEFAULT 500, min_similarity double precision DEFAULT 0.8)
+-- Enhance existing semantic search functions to include text matching
+-- This provides hybrid search: exact text matches + semantic similarity
+
+-- Enhanced semantic search for books (includes text matching)
+CREATE OR REPLACE FUNCTION public.semantic_search_books(
+  embedding_input vector, 
+  match_count integer DEFAULT 500, 
+  min_similarity double precision DEFAULT 0.8,
+  search_query text DEFAULT NULL
+)
  RETURNS TABLE(id uuid, title text, author text, description text, genre text[], similarity double precision)
  LANGUAGE plpgsql
 AS $function$
 BEGIN
   RETURN QUERY
+  WITH text_matches AS (
+    -- First, get exact text matches with perfect similarity
+    SELECT 
+      b.id,
+      b.title,
+      b.author,
+      b.description,
+      b.genre,
+      1.0 as similarity,
+      1 as priority -- Highest priority for text matches
+    FROM books b
+    WHERE search_query IS NOT NULL 
+      AND (
+        LOWER(b.title) LIKE LOWER('%' || search_query || '%')
+        OR LOWER(b.author) LIKE LOWER('%' || search_query || '%')
+      )
+  ),
+  semantic_matches AS (
+    -- Then get semantic matches
+    SELECT 
+      b.id,
+      b.title,
+      b.author,
+      b.description,
+      b.genre,
+      1 - (b.description_embedding <=> embedding_input) as similarity,
+      2 as priority -- Lower priority for semantic matches
+    FROM books b
+    WHERE b.description_embedding IS NOT NULL
+      AND 1 - (b.description_embedding <=> embedding_input) >= min_similarity
+      -- Exclude items already found by text search
+      AND NOT EXISTS (
+        SELECT 1 FROM text_matches tm WHERE tm.id = b.id
+      )
+  ),
+  combined AS (
+    SELECT * FROM text_matches
+    UNION ALL
+    SELECT * FROM semantic_matches
+  )
   SELECT 
-    b.id,
-    b.title,
-    b.author,
-    b.description,
-    b.genre,
-    1 - (b.description_embedding <=> embedding_input) as similarity
-  FROM books b
-  WHERE b.description_embedding IS NOT NULL
-    AND 1 - (b.description_embedding <=> embedding_input) >= min_similarity
-  ORDER BY b.description_embedding <=> embedding_input
+    c.id,
+    c.title,
+    c.author,
+    c.description,
+    c.genre,
+    c.similarity
+  FROM combined c
+  ORDER BY 
+    c.priority ASC,  -- Text matches first
+    c.similarity DESC, -- Then by similarity within each group
+    c.title ASC
   LIMIT match_count;
 END;
-$function$
-;
+$function$;
 
-CREATE OR REPLACE FUNCTION public.semantic_search_people(embedding_input vector, match_count integer DEFAULT 500, min_similarity double precision DEFAULT 0.8)
+-- Enhanced semantic search for people (includes text matching)
+CREATE OR REPLACE FUNCTION public.semantic_search_people(
+  embedding_input vector, 
+  match_count integer DEFAULT 500, 
+  min_similarity double precision DEFAULT 0.8,
+  search_query text DEFAULT NULL
+)
  RETURNS TABLE(id uuid, full_name text, type text, description text, url text, similarity double precision)
  LANGUAGE plpgsql
 AS $function$
 BEGIN
   RETURN QUERY
+  WITH text_matches AS (
+    -- First, get exact text matches with perfect similarity
+    SELECT 
+      p.id,
+      p.full_name,
+      p.type,
+      p.description,
+      p.url,
+      1.0 as similarity,
+      1 as priority -- Highest priority for text matches
+    FROM people p
+    WHERE search_query IS NOT NULL 
+      AND (
+        LOWER(p.full_name) LIKE LOWER('%' || search_query || '%')
+        OR LOWER(p.type) LIKE LOWER('%' || search_query || '%')
+      )
+  ),
+  semantic_matches AS (
+    -- Then get semantic matches
+    SELECT 
+      p.id,
+      p.full_name,
+      p.type,
+      p.description,
+      p.url,
+      1 - (p.description_embedding <=> embedding_input) as similarity,
+      2 as priority -- Lower priority for semantic matches
+    FROM people p
+    WHERE p.description_embedding IS NOT NULL
+      AND 1 - (p.description_embedding <=> embedding_input) >= min_similarity
+      -- Exclude items already found by text search
+      AND NOT EXISTS (
+        SELECT 1 FROM text_matches tm WHERE tm.id = p.id
+      )
+  ),
+  combined AS (
+    SELECT * FROM text_matches
+    UNION ALL
+    SELECT * FROM semantic_matches
+  )
   SELECT 
-    p.id,
-    p.full_name,
-    p.type,
-    p.description,
-    p.url,
-    1 - (p.description_embedding <=> embedding_input) as similarity
-  FROM people p
-  WHERE p.description_embedding IS NOT NULL
-    AND 1 - (p.description_embedding <=> embedding_input) >= min_similarity
-  ORDER BY p.description_embedding <=> embedding_input
+    c.id,
+    c.full_name,
+    c.type,
+    c.description,
+    c.url,
+    c.similarity
+  FROM combined c
+  ORDER BY 
+    c.priority ASC,  -- Text matches first
+    c.similarity DESC, -- Then by similarity within each group
+    c.full_name ASC
   LIMIT match_count;
 END;
-$function$
-;
+$function$;
 
 CREATE OR REPLACE FUNCTION public.update_updated_at_column()
  RETURNS trigger
