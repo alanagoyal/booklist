@@ -7,7 +7,7 @@ export async function POST(req: NextRequest) {
   try {
     const { query, embedding, viewMode } = await req.json();
 
-    if (!query || typeof query !== 'string') {
+    if (!query || typeof query !== "string") {
       return NextResponse.json(
         { error: "Missing or invalid query" },
         { status: 400 }
@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
       embedding_input: embedding || null,
       search_query: query,
       match_count: 500,
-      min_similarity: 0.8, // Back to original threshold
+      min_similarity: 0.85,
     });
 
     if (error) {
