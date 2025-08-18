@@ -190,13 +190,17 @@ export function DataGrid<T extends Record<string, any>>({
     () => filteredData.length === 0,
     [filteredData]
   );
+  const hasActiveFilters = useMemo(
+    () => Object.values(debouncedFilters).some(value => Boolean(value)),
+    [debouncedFilters]
+  );
+
   const showNoResultsMessage = useMemo(
     () =>
       !isSearching &&
-      hasSearchQuery &&
-      hasNoSearchResults &&
-      hasNoFilteredResults,
-    [isSearching, hasSearchQuery, hasNoSearchResults, hasNoFilteredResults]
+      hasNoFilteredResults &&
+      (hasSearchQuery || hasActiveFilters),
+    [isSearching, hasNoFilteredResults, hasSearchQuery, hasActiveFilters]
   );
 
   // Sort data after filtering
