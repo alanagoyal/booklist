@@ -118,7 +118,7 @@ export function SearchBox({
   const debouncedSearch = useMemo(
     () =>
       debounce(async (searchValue: string) => {
-        // Handle empty search
+        // Handle empty search - only clear if actually empty
         if (!searchValue.trim()) {
           onSearchResults(new Set());
           setIsSearching(false);
@@ -144,7 +144,9 @@ export function SearchBox({
         abortControllerRef.current = new AbortController();
         const { signal } = abortControllerRef.current;
 
+        // DON'T clear existing results here - keep them visible during search
         setIsSearching(true);
+        
         try {
           // Check for cached embedding first
           let embedding = getCachedEmbedding(searchValue);
@@ -175,13 +177,17 @@ export function SearchBox({
           if (!response.ok) throw new Error("Search failed");
           const results: Array<{ id: string }> = await response.json();
           const resultSet = new Set(results.map(item => item.id));
-          onSearchResults(resultSet);
-          setInCache(searchValue, resultSet);
+          
+          // Only update results if request wasn't cancelled
+          if (!signal.aborted) {
+            onSearchResults(resultSet);
+            setInCache(searchValue, resultSet);
+          }
         } catch (e) {
           // Don't log errors for aborted requests
           if (e instanceof Error && e.name === 'AbortError') return;
           console.error("Search error:", e);
-          onSearchResults(new Set());
+          // DON'T clear results on error - keep previous results visible
         } finally {
           // Only update state if request wasn't aborted
           if (!signal.aborted) {
@@ -315,7 +321,8 @@ export function SearchBox({
           onChange={(e) => {
             const newValue = e.target.value;
             setValue(newValue);
-            if (newValue.trim()) {
+            // Only set pending for non-empty searches that aren't cached
+            if (newValue.trim() && !getFromCache(newValue)) {
               setIsPending(true);
             } else {
               setIsPending(false);
