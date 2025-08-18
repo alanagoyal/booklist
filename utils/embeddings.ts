@@ -1,6 +1,6 @@
 
 // Client-side embedding generation via secure API endpoint
-export async function generateEmbedding(text: string): Promise<number[]> {
+export async function generateEmbedding(text: string, signal?: AbortSignal): Promise<number[]> {
   try {
     const response = await fetch('/booklist/api/embed', {
       method: 'POST',
@@ -8,6 +8,7 @@ export async function generateEmbedding(text: string): Promise<number[]> {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ text }),
+      signal, // Support abort signal
     });
 
     if (!response.ok) {

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useEffect, useMemo } from "react";
+import React, { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import { Search, X } from "lucide-react";
 import debounce from "lodash/debounce";
 import { generateEmbedding } from "@/utils/embeddings";
@@ -65,6 +65,8 @@ export function SearchBox({
 
   // Refs
   const inputRef = useRef<HTMLInputElement>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
+  const embeddingCacheRef = useRef<Map<string, { embedding: number[], timestamp: number }>>(new Map());
 
   // Cache helpers
   const getFromCache = (query: string): Set<string> | undefined => {
@@ -84,10 +86,47 @@ export function SearchBox({
     }
   };
 
+  // Embedding cache helpers (30 minute TTL)
+  const EMBEDDING_CACHE_TTL = useMemo(() => 30 * 60 * 1000, []); // 30 minutes
+  
+  const getCachedEmbedding = useCallback((query: string): number[] | null => {
+    const cached = embeddingCacheRef.current.get(query);
+    if (cached && Date.now() - cached.timestamp < EMBEDDING_CACHE_TTL) {
+      return cached.embedding;
+    }
+    if (cached) {
+      embeddingCacheRef.current.delete(query); // Remove expired cache
+    }
+    return null;
+  }, [EMBEDDING_CACHE_TTL]);
+
+  const setCachedEmbedding = useCallback((query: string, embedding: number[]) => {
+    embeddingCacheRef.current.set(query, {
+      embedding,
+      timestamp: Date.now()
+    });
+    // Keep cache size reasonable (max 100 entries)
+    if (embeddingCacheRef.current.size > 100) {
+      const firstKey = embeddingCacheRef.current.keys().next().value;
+      if (firstKey) {
+        embeddingCacheRef.current.delete(firstKey);
+      }
+    }
+  }, []);
+
   // Combined debounced search and URL update
   const debouncedSearchAndUpdate = useMemo(
     () =>
       debounce(async (searchValue: string) => {
+        // Cancel any ongoing request
+        if (abortControllerRef.current) {
+          abortControllerRef.current.abort();
+        }
+        
+        // Create new abort controller for this request
+        abortControllerRef.current = new AbortController();
+        const { signal } = abortControllerRef.current;
+
         // Update URL
         const current = new URLSearchParams(window.location.search);
         if (searchValue.trim()) {
@@ -109,7 +148,18 @@ export function SearchBox({
         if (searchValue.trim()) {
           setIsSearching(true);
           try {
-            const embedding = await generateEmbedding(searchValue);
+            // Check for cached embedding first
+            let embedding = getCachedEmbedding(searchValue);
+            
+            if (!embedding) {
+              // Generate new embedding if not cached
+              embedding = await generateEmbedding(searchValue, signal);
+              setCachedEmbedding(searchValue, embedding);
+            }
+
+            // Check if request was cancelled
+            if (signal.aborted) return;
+
             const response = await fetch("/booklist/api/search", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -118,26 +168,36 @@ export function SearchBox({
                 embedding,
                 viewMode
               }),
+              signal // Add abort signal to fetch
             });
+
+            // Check if request was cancelled after fetch
+            if (signal.aborted) return;
+
             if (!response.ok) throw new Error("Search failed");
             const results: Array<{ id: string }> = await response.json();
             const resultSet = new Set(results.map(item => item.id));
             onSearchResults(resultSet);
             setInCache(searchValue, resultSet);
           } catch (e) {
+            // Don't log errors for aborted requests
+            if (e instanceof Error && e.name === 'AbortError') return;
             console.error("Search error:", e);
             onSearchResults(new Set());
           } finally {
-            setIsSearching(false);
-            setIsPending(false);
+            // Only update state if request wasn't aborted
+            if (!signal.aborted) {
+              setIsSearching(false);
+              setIsPending(false);
+            }
           }
         } else {
           onSearchResults(new Set());
           setIsSearching(false);
           setIsPending(false);
         }
-      }, 500),
-    [viewMode, onSearchResults, setIsSearching, setIsPending]
+      }, 300), // Reduced from 500ms to 300ms for faster response
+    [viewMode, onSearchResults, setIsSearching, getCachedEmbedding, setCachedEmbedding]
   );
 
   // Handle initial value
@@ -157,6 +217,10 @@ export function SearchBox({
   useEffect(() => {
     return () => {
       debouncedSearchAndUpdate.cancel();
+      // Cancel any ongoing requests
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
     };
   }, [debouncedSearchAndUpdate]);
 
