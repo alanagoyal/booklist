@@ -114,10 +114,78 @@ export function SearchBox({
     }
   }, []);
 
-  // Combined debounced search and URL update
-  const debouncedSearchAndUpdate = useMemo(
+  // Instant text search (no debounce for immediate feedback)
+  const instantTextSearch = useCallback(async (searchValue: string) => {
+    if (!searchValue.trim()) {
+      onSearchResults(new Set());
+      setIsSearching(false);
+      setIsPending(false);
+      return;
+    }
+
+    // Check cache first
+    const cachedResults = getFromCache(searchValue);
+    if (cachedResults) {
+      onSearchResults(cachedResults);
+      setIsPending(false);
+      return;
+    }
+
+    // Cancel any ongoing request
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    
+    // Create new abort controller for this request
+    abortControllerRef.current = new AbortController();
+    const { signal } = abortControllerRef.current;
+
+    setIsSearching(true);
+    try {
+      // Text-only search for instant results (no embedding needed)
+      const response = await fetch("/booklist/api/search", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          query: searchValue,
+          embedding: null, // No embedding for instant text search
+          viewMode
+        }),
+        signal
+      });
+
+      if (signal.aborted) return;
+      
+      if (!response.ok) throw new Error("Search failed");
+      const results: Array<{ id: string }> = await response.json();
+      const resultSet = new Set(results.map(item => item.id));
+      onSearchResults(resultSet);
+      
+      // Don't cache text-only results, let semantic search override
+      setIsPending(false);
+    } catch (e) {
+      if (e instanceof Error && e.name === 'AbortError') return;
+      console.error("Text search error:", e);
+      onSearchResults(new Set());
+      setIsPending(false);
+    }
+  }, [viewMode, onSearchResults, setIsSearching]);
+
+  // Enhanced semantic search (debounced for performance)
+  const debouncedSemanticSearch = useMemo(
     () =>
       debounce(async (searchValue: string) => {
+        if (!searchValue.trim()) return;
+
+        // Check cache first
+        const cachedResults = getFromCache(searchValue);
+        if (cachedResults) {
+          onSearchResults(cachedResults);
+          setIsSearching(false);
+          setIsPending(false);
+          return;
+        }
+
         // Cancel any ongoing request
         if (abortControllerRef.current) {
           abortControllerRef.current.abort();
@@ -127,78 +195,71 @@ export function SearchBox({
         abortControllerRef.current = new AbortController();
         const { signal } = abortControllerRef.current;
 
-        // Update URL
-        const current = new URLSearchParams(window.location.search);
-        if (searchValue.trim()) {
-          current.set(`${viewMode}_search`, searchValue);
-        } else {
-          current.delete(`${viewMode}_search`);
-        }
-        window.history.replaceState({}, "", `?${current.toString()}`);
-
-        // Check cache first
-        const cachedResults = getFromCache(searchValue);
-        if (searchValue.trim() && cachedResults) {
-          onSearchResults(cachedResults);
-          setIsPending(false);
-          return;
-        }
-
-        // Perform search if there's a value
-        if (searchValue.trim()) {
-          setIsSearching(true);
-          try {
-            // Check for cached embedding first
-            let embedding = getCachedEmbedding(searchValue);
-            
-            if (!embedding) {
-              // Generate new embedding if not cached
-              embedding = await generateEmbedding(searchValue, signal);
-              setCachedEmbedding(searchValue, embedding);
-            }
-
-            // Check if request was cancelled
-            if (signal.aborted) return;
-
-            const response = await fetch("/booklist/api/search", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ 
-                query: searchValue,
-                embedding,
-                viewMode
-              }),
-              signal // Add abort signal to fetch
-            });
-
-            // Check if request was cancelled after fetch
-            if (signal.aborted) return;
-
-            if (!response.ok) throw new Error("Search failed");
-            const results: Array<{ id: string }> = await response.json();
-            const resultSet = new Set(results.map(item => item.id));
-            onSearchResults(resultSet);
-            setInCache(searchValue, resultSet);
-          } catch (e) {
-            // Don't log errors for aborted requests
-            if (e instanceof Error && e.name === 'AbortError') return;
-            console.error("Search error:", e);
-            onSearchResults(new Set());
-          } finally {
-            // Only update state if request wasn't aborted
-            if (!signal.aborted) {
-              setIsSearching(false);
-              setIsPending(false);
-            }
+        try {
+          // Check for cached embedding first
+          let embedding = getCachedEmbedding(searchValue);
+          
+          if (!embedding) {
+            // Generate new embedding if not cached
+            embedding = await generateEmbedding(searchValue, signal);
+            setCachedEmbedding(searchValue, embedding);
           }
-        } else {
-          onSearchResults(new Set());
-          setIsSearching(false);
-          setIsPending(false);
+
+          // Check if request was cancelled
+          if (signal.aborted) return;
+
+          const response = await fetch("/booklist/api/search", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ 
+              query: searchValue,
+              embedding,
+              viewMode
+            }),
+            signal
+          });
+
+          // Check if request was cancelled after fetch
+          if (signal.aborted) return;
+
+          if (!response.ok) throw new Error("Search failed");
+          const results: Array<{ id: string }> = await response.json();
+          const resultSet = new Set(results.map(item => item.id));
+          onSearchResults(resultSet);
+          setInCache(searchValue, resultSet);
+        } catch (e) {
+          // Don't log errors for aborted requests
+          if (e instanceof Error && e.name === 'AbortError') return;
+          console.error("Semantic search error:", e);
+          // Don't clear results here - keep text search results visible
+        } finally {
+          // Only update state if request wasn't aborted
+          if (!signal.aborted) {
+            setIsSearching(false);
+            setIsPending(false);
+          }
         }
-      }, 300), // Reduced from 500ms to 300ms for faster response
+      }, 150), // Fast debounce for semantic enhancement
     [viewMode, onSearchResults, setIsSearching, getCachedEmbedding, setCachedEmbedding]
   );
+
+  // Combined search function with progressive enhancement
+  const handleSearch = useCallback((searchValue: string) => {
+    // Update URL immediately
+    const current = new URLSearchParams(window.location.search);
+    if (searchValue.trim()) {
+      current.set(`${viewMode}_search`, searchValue);
+    } else {
+      current.delete(`${viewMode}_search`);
+    }
+    window.history.replaceState({}, "", `?${current.toString()}`);
+
+    // Instant text search for immediate feedback
+    instantTextSearch(searchValue);
+    
+    // Enhanced semantic search after short delay
+    debouncedSemanticSearch(searchValue);
+  }, [viewMode, instantTextSearch, debouncedSemanticSearch]);
 
   // Handle initial value
   useEffect(() => {
@@ -208,21 +269,21 @@ export function SearchBox({
         onSearchResults(cachedResults);
       } else {
         // If no cache, trigger a search
-        debouncedSearchAndUpdate(initialValue);
+        handleSearch(initialValue);
       }
     }
-  }, [initialValue, debouncedSearchAndUpdate, onSearchResults]);
+  }, [initialValue, handleSearch, onSearchResults]);
 
   // Cleanup on unmount
   useEffect(() => {
     return () => {
-      debouncedSearchAndUpdate.cancel();
+      debouncedSemanticSearch.cancel();
       // Cancel any ongoing requests
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
       }
     };
-  }, [debouncedSearchAndUpdate]);
+  }, [debouncedSemanticSearch]);
 
   const handleClear = () => {
     // Set isSearching temporarily to prevent "no results" flash
@@ -312,12 +373,12 @@ export function SearchBox({
             } else {
               setIsPending(false);
             }
-            debouncedSearchAndUpdate(newValue);
+            handleSearch(newValue);
           }}
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey) {
               e.preventDefault();
-              debouncedSearchAndUpdate(value);
+              handleSearch(value);
             }
           }}
           disabled={false}
