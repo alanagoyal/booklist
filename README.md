@@ -96,10 +96,13 @@ To run this project at the root path instead (e.g., `https://example.com/`):
    NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
    NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
    SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+   OPENAI_API_KEY=your_openai_api_key
    NEXT_PUBLIC_VERCEL_URL=https://your-domain.com
    ```
 
    **Supabase credentials**: Get these from your Supabase project settings at `https://app.supabase.com/project/_/settings/api`
+
+   **OPENAI_API_KEY**: Required for semantic search functionality. The app uses OpenAI's `text-embedding-ada-002` model to generate embeddings for similarity search. Get your API key from [OpenAI's platform](https://platform.openai.com/api-keys).
 
    **NEXT_PUBLIC_VERCEL_URL**: This is used for the OG image generation endpoint. Set it to your domain (e.g., `https://example.com` or `http://localhost:3000` for local development). When deploying to Vercel, this is set automatically.
 
