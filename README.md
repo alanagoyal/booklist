@@ -32,6 +32,42 @@ The application is built with Next.js and uses Supabase as its database:
    - Uses SWR for efficient client-side data fetching
    - Renders books and recommenders in a virtualized grid for performance
 
+## Important: Base Path Configuration
+
+This project is configured to be hosted at the `/booklist` path (e.g., `https://example.com/booklist`) rather than at the root. This is reflected in several places:
+
+- `next.config.ts` has `basePath: "/booklist"`
+- `config/site.ts` has `url: "https://basecase.vc/booklist"`
+- `app/api/og/route.tsx` references `/booklist/fonts/...`
+- Static data is loaded from `/booklist/data/...`
+
+### If You Want to Host at the Root Path
+
+To run this project at the root path instead (e.g., `https://example.com/`):
+
+1. **Remove the basePath** in `next.config.ts`:
+   ```diff
+   - basePath: "/booklist",
+   ```
+
+2. **Update the site URL** in `config/site.ts`:
+   ```diff
+   - url: "https://basecase.vc/booklist",
+   + url: "https://your-domain.com",
+   ```
+
+3. **Update the font path** in `app/api/og/route.tsx`:
+   ```diff
+   - new URL('/booklist/fonts/SpecialElite-Regular.ttf', process.env.NEXT_PUBLIC_VERCEL_URL)
+   + new URL('/fonts/SpecialElite-Regular.ttf', process.env.NEXT_PUBLIC_VERCEL_URL)
+   ```
+
+4. **Update data paths** in `app/page.tsx` (remove `/booklist` prefix from all JSON paths):
+   ```diff
+   - "/booklist/data/books-initial.json"
+   + "/data/books-initial.json"
+   ```
+
 ## Running Locally
 
 ### Prerequisites
@@ -60,9 +96,12 @@ The application is built with Next.js and uses Supabase as its database:
    NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
    NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
    SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+   NEXT_PUBLIC_VERCEL_URL=https://your-domain.com
    ```
 
-   Get these values from your Supabase project settings at `https://app.supabase.com/project/_/settings/api`
+   **Supabase credentials**: Get these from your Supabase project settings at `https://app.supabase.com/project/_/settings/api`
+
+   **NEXT_PUBLIC_VERCEL_URL**: This is used for the OG image generation endpoint. Set it to your domain (e.g., `https://example.com` or `http://localhost:3000` for local development). When deploying to Vercel, this is set automatically.
 
 4. **Set up the database**
 
