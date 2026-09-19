@@ -42,6 +42,8 @@ next-env.d.ts
 
 # generated data
 /public/data/*.json
+/book-genres-backup-*.json
+/book-genres-progress.jsonl
 
 # supabase
 supabase/seed.sql
