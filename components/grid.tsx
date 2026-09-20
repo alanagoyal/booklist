@@ -318,11 +318,17 @@ export function DataGrid<T extends Record<string, any> & { id: string }>({
         !target.closest("[data-dropdown]")
       ) {
         setOpenDropdown(null);
+        // A click on the grid dismisses the menu without opening a detail.
+        // Capture it before row and recommendation-button handlers run.
+        if (target.closest("[data-row-id]")) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
       }
     };
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener("click", handleClickOutside, true);
+    return () => document.removeEventListener("click", handleClickOutside, true);
   }, [openDropdown]);
 
   // Dropdown handlers

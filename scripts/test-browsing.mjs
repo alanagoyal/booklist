@@ -26,6 +26,43 @@ const people = JSON.parse(fs.readFileSync("public/data/recommenders.json"));
       "visible rows; full catalog height",
     );
     await nojs.close();
+    // Scroll the server-rendered list while its JavaScript is still in flight.
+    const early = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+    const earlyErrors = [];
+    early.on("pageerror", error => earlyErrors.push(error.message));
+    let releaseScripts;
+    const scriptsReady = new Promise(resolve => { releaseScripts = resolve; });
+    await early.route("**/*.js*", async route => {
+      await scriptsReady;
+      await route.continue();
+    });
+    try {
+      await early.goto(base, { waitUntil: "commit" });
+      await early.locator("[data-row-id]").first().waitFor();
+      const earlyScroller = early.locator("div.overflow-auto").filter({
+        has: early.locator('[data-dropdown="title"]'),
+      });
+      await earlyScroller.evaluate(element => { element.scrollTop = 600; });
+      releaseScripts();
+      await early.getByText(`${books.length} books`, { exact: true }).waitFor();
+      await early.waitForTimeout(250);
+      assert.equal(await earlyScroller.evaluate(element => element.scrollTop), 600,
+        "Hydration preserves scrolling through server-rendered rows");
+      await earlyScroller.evaluate(element => { element.scrollTop = 5000; });
+      await early.waitForTimeout(100);
+      const covered = await earlyScroller.evaluate(element => {
+        const viewport = element.getBoundingClientRect();
+        const rows = [...element.querySelectorAll("[data-row-id]")];
+        return rows[0].getBoundingClientRect().top <= viewport.top + 37 &&
+          rows.at(-1).getBoundingClientRect().bottom >= viewport.bottom;
+      });
+      assert.ok(covered, "Virtualization continues after an early scroll");
+      assert.deepEqual(earlyErrors, []);
+      console.log("PASS early scrolling survives hydration");
+    } finally {
+      releaseScripts();
+      await early.close();
+    }
     const page = await browser.newPage({
       viewport: { width: 1440, height: 900 },
     });
@@ -45,6 +82,27 @@ const people = JSON.parse(fs.readFileSync("public/data/recommenders.json"));
       0,
       "No duplicate catalog fetch or full snapshot fetch",
     );
+    // Dismiss with both a plain cell and an embedded recommendation button.
+    for (const target of [
+      scroller.locator("[data-row-id]").nth(8).locator(":scope > div").first(),
+      scroller.locator("[data-row-id]").nth(8).getByRole("button").first(),
+    ]) {
+      await page.locator('[data-dropdown="title"]').click();
+      await page.getByPlaceholder("Filter by title").waitFor();
+      await target.click();
+      await page.getByPlaceholder("Filter by title").waitFor({ state: "hidden" });
+      assert.equal(new URL(page.url()).searchParams.get("key"), null,
+        "Dismissing a menu must not open the underlying row or recommendation");
+      await target.click();
+      await page.locator("h1").waitFor();
+      assert.ok(new URL(page.url()).searchParams.get("key"),
+        "The next click still opens details");
+      await page.locator("button.absolute.top-4.right-4").click();
+      await page.locator("h1").waitFor({ state: "hidden" });
+    }
+    // Only count requests from the existing browsing checks below.
+    requests.length = 0;
+    console.log("PASS filter-menu dismissal does not open details");
     const initialHeight = await scroller.evaluate((e) => e.scrollHeight);
     for (const top of [5000, 100000, 500000, 600000, 50000, 0]) {
       await scroller.evaluate((e, top) => (e.scrollTop = top), top);

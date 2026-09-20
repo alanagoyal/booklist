@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useCallback, useLayoutEffect, type ReactNode } from "react";
+import { memo, useCallback, useLayoutEffect, useRef, type ReactNode } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 
 export type ColumnDef<T> = {
@@ -73,6 +73,7 @@ export const VirtualRows = memo(function VirtualRows<T extends RowData>({
   scrollElement,
   ...rowProps
 }: Props<T>) {
+  const previousRows = useRef(rows);
   const getItemKey = useCallback((index: number) => rows[index].id, [rows]);
   const virtualizer = useVirtualizer({
     count: rows.length,
@@ -81,13 +82,17 @@ export const VirtualRows = memo(function VirtualRows<T extends RowData>({
     estimateSize: () => ROW_HEIGHT,
     overscan: 12,
     scrollMargin: HEADER_HEIGHT,
+    // Fixed-height rows need no automatic scroll adjustments. Let the DOM
+    // keep its offset, including scrolling before hydration finishes.
+    scrollToFn: () => {},
     // Render real rows in the initial HTML and use the same initial window for
     // hydration. The virtualizer measures the actual viewport after mounting.
     initialRect: { width: 0, height: 800 },
   });
 
   useLayoutEffect(() => {
-    scrollElement?.scrollTo({ top: 0 });
+    if (previousRows.current !== rows) scrollElement?.scrollTo({ top: 0 });
+    previousRows.current = rows;
   }, [rows, scrollElement]);
 
   return (
