@@ -17,6 +17,7 @@ import {
   BROAD_SHELVES,
   JEV_MODEL,
   MAX_TAGS_PER_BOOK,
+  SHELF_CONFIDENCE_THRESHOLD,
   TAG_PROBABILITY_THRESHOLD,
   type BroadShelfKey,
 } from "@/config/book-genres";
@@ -275,6 +276,13 @@ export function resolveGenres(
   return genres.length > 0 ? genres : oldGenres;
 }
 
+export function shouldKeepExistingGenres(
+  shelf: BroadShelfKey,
+  shelfConfidence: number,
+): boolean {
+  return shelf === "other" || shelfConfidence < SHELF_CONFIDENCE_THRESHOLD;
+}
+
 async function classifyBook(client: TypeSafeClient, book: Book): Promise<Classification> {
   const response = await client.systemOne({
     model: JEV_MODEL,
@@ -300,7 +308,9 @@ async function classifyBook(client: TypeSafeClient, book: Book): Promise<Classif
   });
 
   return {
-    genres: resolveGenres(shelfAnswer.choice, tagScores, book.genre),
+    genres: shouldKeepExistingGenres(shelfAnswer.choice, shelfAnswer.confidence)
+      ? book.genre
+      : resolveGenres(shelfAnswer.choice, tagScores, book.genre),
     shelf: shelfAnswer.choice,
     shelfConfidence: shelfAnswer.confidence,
     tagScores,

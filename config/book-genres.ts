@@ -1,5 +1,6 @@
-export const BOOK_GENRE_CONFIG_VERSION = "2026-09-19-v1";
+export const BOOK_GENRE_CONFIG_VERSION = "2026-09-19-v2";
 export const JEV_MODEL = "jev-1.13.0";
+export const SHELF_CONFIDENCE_THRESHOLD = 0.75;
 export const TAG_PROBABILITY_THRESHOLD = 0.75;
 export const MAX_TAGS_PER_BOOK = 4;
 

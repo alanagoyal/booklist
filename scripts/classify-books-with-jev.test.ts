@@ -6,6 +6,7 @@ import {
   parseOptions,
   resolveGenres,
   selectDryRunSample,
+  shouldKeepExistingGenres,
 } from "./classify-books-with-jev";
 
 test("builds one shelf question and one question per optional tag", () => {
@@ -13,6 +14,12 @@ test("builds one shelf question and one question per optional tag", () => {
 
   assert.equal(questions.broad_shelf.type, "choice");
   assert.equal(Object.keys(questions).length, 22);
+});
+
+test("keeps existing genres when the broad shelf is uncertain", () => {
+  assert.equal(shouldKeepExistingGenres("fiction", 0.74), true);
+  assert.equal(shouldKeepExistingGenres("other", 0.99), true);
+  assert.equal(shouldKeepExistingGenres("nonfiction", 0.75), false);
 });
 
 test("keeps only tags above the threshold", () => {

@@ -22,7 +22,7 @@ book title + author + description
 - `scripts/classify-books-with-jev.ts` fetches books, calls Jev, prints a dry-run diff, saves rollback data, and updates `books.genre` only with explicit write flags.
 - `utils/constants.ts` uses the same label list for the UI filters.
 
-The Jev request contains one `Choice` for the broad shelf and one parallel `Noul` per optional tag. Tags with probability at least `0.75` are retained, capped at four in addition to the shelf.
+The Jev request contains one `Choice` for the broad shelf and one parallel `Noul` per optional tag. Tags with probability at least `0.75` are retained, capped at four in addition to the shelf. If the broad shelf confidence is below `0.75`, or Jev chooses `other`, the existing genres are kept instead of forcing a guess.
 
 ## rollout
 
