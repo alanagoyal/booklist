@@ -21,6 +21,8 @@ export default function BookDetail({
   isNavigating = false
 }: BookDetailProps) {
   const [showAllRecommenders, setShowAllRecommenders] = useState(false);
+  const relatedBooks = book.related_books;
+  const similarBooks = book.similar_books;
   const handleBackdropClick = useCallback(
     (e: React.MouseEvent) => {
       if (e.target === e.currentTarget) {
@@ -171,14 +173,14 @@ export default function BookDetail({
               )}
 
               {/* Similar books (combined) */}
-              {(book.related_books.length > 0 || book.similar_books.length > 0) && (
+              {(relatedBooks.length > 0 || similarBooks.length > 0) && (
                 <div className="space-y-2">
                   <h2 className="text-base text-text font-bold">
                     Similar Books
                   </h2>
                   <div className="space-y-4">
                     {Object.values(
-                      [...book.similar_books, ...book.related_books].reduce<Record<string, {
+                      [...similarBooks, ...relatedBooks].reduce<Record<string, {
                         id: string;
                         title: string;
                         author: string;

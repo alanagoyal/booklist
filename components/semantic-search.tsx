@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect, useMemo } from "react";
 import { Search, X } from "lucide-react";
 import debounce from "lodash/debounce";
 import { generateEmbedding } from "@/utils/embeddings";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 
 type SearchBoxProps = {
   initialValue?: string;
@@ -56,7 +56,6 @@ export function SearchBox({
   isMobileView,
 }: SearchBoxProps) {
   // Hooks
-  const router = useRouter();
   const searchParams = useSearchParams();
 
   // State
@@ -171,7 +170,7 @@ export function SearchBox({
     // Update URL
     const current = new URLSearchParams(searchParams.toString());
     current.delete(`${viewMode}_search`);
-    router.replace(`?${current.toString()}`, { scroll: false });
+    window.history.replaceState(null, "", `?${current}`);
     
     // Reset isSearching after URL update has time to process
     setTimeout(() => {

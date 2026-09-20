@@ -1,27 +1,23 @@
 "use client";
 
-import { useCallback } from "react";
-import { useEntityClick } from "../utils/use-entity-click";
+import { useCallback, useMemo, memo } from "react";
+import { openEntity } from "../utils/use-entity-click";
 import { DataGrid } from "@/components/grid";
-import { FormattedRecommender } from "@/types";
+import { PersonRow, rowClassName } from "@/utils/catalog";
 import { truncateText } from "@/utils/text";
 import { formatPercentile } from "@/utils/format";
 import { InfoIcon } from './icons'
 
 interface RecommenderGridProps {
-  data: FormattedRecommender[];
-  isMobile: boolean;
+  data: PersonRow[];
 }
 
 // Recommendation cell
 function RecommendationCell({
   original,
-  isMobile,
 }: {
-  original: FormattedRecommender;
-  isMobile: boolean;
+  original: PersonRow;
 }) {
-  const handleBookClick = useEntityClick();
 
   const firstBook = original.recommendations[0];
   const moreCount =
@@ -38,7 +34,7 @@ function RecommendationCell({
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                handleBookClick(firstBook.id);
+                openEntity(firstBook.id);
               }}
               className="text-text md:hover:text-muted-foreground md:hover:underline transition-colors duration-200 text-left w-full whitespace-pre-line"
             >
@@ -49,78 +45,74 @@ function RecommendationCell({
             </button>
           )}
         </span>
-        {!isMobile && (
-          <button
+        <button
             title={formatPercentile(original.recommendation_percentile) + " percentile"}
-            className="inline-flex items-center justify-center rounded-full text-muted-foreground md:hover:text-text transition-colors duration-200 cursor-help shrink-0"
+            className="hidden md:inline-flex items-center justify-center rounded-full text-muted-foreground md:hover:text-text transition-colors duration-200 cursor-help shrink-0"
             onClick={(e) => {
               e.stopPropagation();
             }}
           >
             <InfoIcon />
-          </button>
-        )}
+        </button>
       </span>
     </div>
   );
 }
 
-export default function RecommenderGrid({
+function RecommenderGrid({
   data,
-  isMobile,
 }: RecommenderGridProps) {
   // Row click handler
-  const handleEntityClick = useEntityClick();
   const handleRowClick = useCallback(
-    (recommender: FormattedRecommender) => handleEntityClick(recommender.id),
-    [handleEntityClick]
+    (recommender: PersonRow) => openEntity(recommender.id),
+    []
   );
 
   // Columns
-  const columns = [
+  const columns = useMemo(() => [
     {
-      field: "full_name" as keyof FormattedRecommender,
+      field: "full_name" as keyof PersonRow,
       header: "Name",
     },
     {
-      field: "recommendations" as keyof FormattedRecommender,
+      field: "recommendations" as keyof PersonRow,
       header: "Recommendations",
-      cell: (props: { row: { original: FormattedRecommender } }) => (
-        <RecommendationCell original={props.row.original} isMobile={isMobile} />
+      cell: (props: { row: { original: PersonRow } }) => (
+        <RecommendationCell original={props.row.original} />
       ),
     },
     {
-      field: "type" as keyof FormattedRecommender,
+      field: "type" as keyof PersonRow,
       header: "Type",
-      cell: (props: { row: { original: FormattedRecommender } }) => (
+      cell: (props: { row: { original: PersonRow } }) => (
         <div className="whitespace-pre-line line-clamp-2 text-text selection:bg-main selection:text-mtext transition-all duration-200">
           {props.row.original.type}
         </div>
       ),
     },
     {
-      field: "recommender_description" as keyof FormattedRecommender,
+      field: "recommender_description" as keyof PersonRow,
       header: "Description",
-      cell: (props: { row: { original: FormattedRecommender } }) => (
+      cell: (props: { row: { original: PersonRow } }) => (
         <div className="whitespace-pre-line line-clamp-2 text-text selection:bg-main selection:text-mtext transition-all duration-200">
           {props.row.original.description || ""}
         </div>
       ),
     },
     {
-      field: "_book_count" as keyof FormattedRecommender,
+      field: "_book_count" as keyof PersonRow,
       header: "Book Count",
     },
-  ];
+  ], []);
 
   return (
     <DataGrid
       data={data}
       columns={columns}
-      getRowClassName={(row: FormattedRecommender) =>
-        `cursor-pointer ${row._background_color || ""}`
-      }
+      getRowClassName={rowClassName}
       onRowClick={handleRowClick}
     />
   );
 }
+
+export default memo(RecommenderGrid);

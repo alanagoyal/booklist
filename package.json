@@ -13,7 +13,9 @@
     "start": "next start",
     "lint": "next lint",
     "test:classification": "tsx --test scripts/classify-books-with-jev.test.ts",
-    "test:related-books": "tsx --test scripts/fetch-related-books.test.ts"
+    "test:related-books": "tsx --test scripts/fetch-related-books.test.ts",
+    "test:catalog": "tsx --test utils/catalog.test.ts",
+    "test:browsing": "node scripts/test-browsing.mjs"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.7",
@@ -57,6 +59,7 @@
     "dotenv": "^16.5.0",
     "eslint": "^9",
     "eslint-config-next": "15.1.9",
+    "playwright": "1.62.1",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
     "tsx": "^4.19.3",

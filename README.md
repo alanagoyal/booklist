@@ -24,13 +24,15 @@ The application is built with Next.js and uses Supabase as its database:
    - Fetch all books and recommenders from Supabase
    - Calculate recommendation percentiles and bucket rankings (0-5)
    - Generate static JSON files in `public/data/` for fast client-side access
-   - Split data into essential/extended and initial/full files for progressive loading
+   - Split book data into essential fields for browsing and extended fields for detail views
 
 3. **Frontend**: A React/Next.js app that:
-   - Loads initial data (first 50 items) immediately for fast page load
-   - Progressively loads remaining data in the background
-   - Uses SWR for efficient client-side data fetching
-   - Renders books and recommenders in a virtualized grid for performance
+   - Server-renders the first visible rows and sends the complete compact catalog for the selected view
+   - Loads the other catalog through `/booklist/api/catalog/[view]` only when switching views
+   - Fetches one full book or person through `/booklist/api/entities/[id]` when opening a detail panel
+   - Sorts and filters locally; URL updates preserve sharing and browser history without refetching the page
+   - Keeps scrolling in a separate virtualized row component with memoized rows and fixed heights
+   - Uses SWR's immutable cache for catalogs and details during the session
 
 ## Important: Base Path Configuration
 
@@ -39,7 +41,8 @@ This project is configured to be hosted at the `/booklist` path (e.g., `https://
 - `next.config.ts` has `basePath: "/booklist"`
 - `config/site.ts` has `url: "https://basecase.vc/booklist"`
 - `app/api/og/route.tsx` references `/booklist/fonts/...`
-- Static data is loaded from `/booklist/data/...`
+- Catalog and detail endpoints live under `/booklist/api/...`
+- The recommendation wizard still loads static files from `/booklist/data/...`
 
 ### If You Want to Host at the Root Path
 
@@ -62,10 +65,10 @@ To run this project at the root path instead (e.g., `https://example.com/`):
    + new URL('/fonts/SpecialElite-Regular.ttf', process.env.NEXT_PUBLIC_VERCEL_URL)
    ```
 
-4. **Update data paths** in `app/page.tsx` (remove `/booklist` prefix from all JSON paths):
+4. **Update client fetch paths** (remove the `/booklist` prefix from API and static-data URLs):
    ```diff
-   - "/booklist/data/books-initial.json"
-   + "/data/books-initial.json"
+   - "/booklist/data/books-essential.json"
+   + "/data/books-essential.json"
    ```
 
 ## Running Locally
@@ -170,3 +173,11 @@ The build process will regenerate all data files from Supabase before creating t
 - **State Management**: SWR for data fetching
 - **UI Components**: Radix UI primitives
 - **Virtualization**: @tanstack/react-virtual for performant large lists
+
+## Catalog regression tests
+
+Run `npx tsx --test utils/catalog.test.ts` to verify the compact catalogs retain all names, titles, recommendation counts, and descriptions used by the grid while excluding detail-only fields.
+
+Use `npx next build` to build against existing generated snapshots without refreshing data from Supabase. `npm run build` refreshes the snapshots first.
+
+For browser regressions, run `npx playwright install chromium` once, start a production server with `npm run start`, and run `npm run test:browsing`. Set `BASE_URL` to use another port, or `BROWSER_CHANNEL=chrome` to use an installed Chrome instead. The suite checks server-rendered rows with JavaScript disabled, continuous-list coverage, detail navigation, filters, sorting, history, mobile sizing, lazy catalogs, and failed-load retries.

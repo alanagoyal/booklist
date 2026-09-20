@@ -12,51 +12,42 @@ import {
   Check,
   ArrowUp,
   ArrowDown,
-  X,
   ListFilter,
 } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useVirtualizer } from "@tanstack/react-virtual";
+import { useSearchParams } from "next/navigation";
+import { VirtualRows, HEADER_HEIGHT, type ColumnDef } from "./virtual-rows";
 import { SearchBox } from "./semantic-search";
-import { countManager } from "@/components/counter";
+import { Counter } from "@/components/counter";
 import { ColumnFilter } from "./column-filter";
 
 type SortDirection = "asc" | "desc";
 
-type ColumnDef<T> = {
-  field: keyof T;
-  header: string;
-  width?: number;
-  cell?: (props: { row: { original: T } }) => React.ReactNode;
-};
-
-type DataGridProps<T extends Record<string, any>> = {
+type DataGridProps<T extends Record<string, any> & { id: string }> = {
   data: T[];
   columns: ColumnDef<T>[];
   getRowClassName?: (row: T) => string;
   onRowClick?: (row: T) => void;
 };
 
-export function DataGrid<T extends Record<string, any>>({
+export function DataGrid<T extends Record<string, any> & { id: string }>({
   data,
   columns,
   getRowClassName,
   onRowClick,
 }: DataGridProps<T>) {
   // Hooks
-  const router = useRouter();
   const searchParams = useSearchParams();
 
   // State
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
-  const [isDropdownClosing, setIsDropdownClosing] = useState(false);
   const [isMobileView, setIsMobileView] = useState(false);
   const [searchResults, setSearchResults] = useState<Set<string>>(new Set());
   const [isSearching, setIsSearching] = useState(false);
-  const [filters, setFilters] = useState<Record<string, string>>({});
-  const [debouncedFilters, setDebouncedFilters] = useState<
-    Record<string, string>
-  >({});
+  const filterParams = JSON.stringify(Object.fromEntries(columns.map(column => [
+    String(column.field), searchParams.get(String(column.field)) || "",
+  ])));
+  const filters = useMemo<Record<string, string>>(() => JSON.parse(filterParams), [filterParams]);
+  const [debouncedFilters, setDebouncedFilters] = useState(filters);
 
   // Get current view and sort configs directly from URL
   const viewMode = (searchParams.get("view") as "books" | "people") || "books";
@@ -87,14 +78,11 @@ export function DataGrid<T extends Record<string, any>>({
   );
 
   // Refs
-  const gridRef = useRef<HTMLDivElement>(null);
-  const headerRef = useRef<HTMLDivElement>(null);
   const dropdownRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
   const filterInputRefs = useRef<{ [key: string]: HTMLInputElement | null }>(
     {}
   );
-  const resizeTimeout = useRef<number | null>(null);
-  const parentRef = useRef<HTMLDivElement>(null);
+  const [scrollElement, setScrollElement] = useState<HTMLDivElement | null>(null);
 
   // Initial search value from URL
   const initialSearchValue = useMemo(() => {
@@ -151,8 +139,8 @@ export function DataGrid<T extends Record<string, any>>({
           if (field === "recommenders") {
             const recommendations = (item as any).recommendations || [];
             const recommenderNames = recommendations
-              .filter((rec: any) => rec.recommender)
-              .map((rec: any) => rec.recommender.full_name.toLowerCase());
+              .filter(Boolean)
+              .map((rec: any) => rec.full_name.toLowerCase());
             return recommenderNames.some((name: string) =>
               name.includes(value)
             );
@@ -186,22 +174,7 @@ export function DataGrid<T extends Record<string, any>>({
     isSearching,
   ]);
 
-  const hasNoFilteredResults = useMemo(
-    () => filteredData.length === 0,
-    [filteredData]
-  );
-  const hasActiveFilters = useMemo(
-    () => Object.values(debouncedFilters).some(value => Boolean(value)),
-    [debouncedFilters]
-  );
-
-  const showNoResultsMessage = useMemo(
-    () =>
-      !isSearching &&
-      hasNoFilteredResults &&
-      (hasSearchQuery || hasActiveFilters),
-    [isSearching, hasNoFilteredResults, hasSearchQuery, hasActiveFilters]
-  );
+  const showNoResultsMessage = !isSearching && filteredData.length === 0;
 
   // Sort data after filtering
   const sortedData = useMemo(() => {
@@ -269,37 +242,6 @@ export function DataGrid<T extends Record<string, any>>({
     return sorted;
   }, [filteredData, sortConfig.field, sortConfig.direction]);
 
-  // Update counter
-  useEffect(() => {
-    countManager.updateCount(viewMode, filteredData.length);
-  }, [filteredData.length, viewMode]);
-
-  // Initialize filters from URL on mount only
-  useEffect(() => {
-    const params = new URLSearchParams(searchParams?.toString() ?? "");
-    const newFilters: Record<string, string> = {};
-
-    // Get filter values from URL parameters
-    columns.forEach((column) => {
-      const field = String(column.field);
-      const value = params.get(field);
-      if (value) {
-        newFilters[field] = value;
-      }
-    });
-
-    // Handle description fields
-    const bookDesc = params.get("book_description");
-    const recommenderDesc = params.get("recommender_description");
-    if (bookDesc) newFilters["book_description"] = bookDesc;
-    if (recommenderDesc)
-      newFilters["recommender_description"] = recommenderDesc;
-
-    setFilters(newFilters);
-    setDebouncedFilters(newFilters);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Only run on mount - intentionally omitting dependencies to avoid re-initializing filters
-
   // Fast debounce for UI responsiveness
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -308,34 +250,6 @@ export function DataGrid<T extends Record<string, any>>({
 
     return () => clearTimeout(timeoutId);
   }, [filters]);
-
-  // Slower debounce for URL syncing (shareable links)
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      const params = new URLSearchParams(searchParams?.toString() ?? "");
-
-      // Remove all existing filter params
-      const validFilterFields = columns.map((col) => String(col.field));
-      validFilterFields.push("book_description", "recommender_description");
-      validFilterFields.forEach((field) => params.delete(field));
-
-      // Add new filter params
-      Object.entries(filters).forEach(([field, value]) => {
-        if (value) {
-          params.set(field, value);
-        }
-      });
-
-      // Only update URL if it actually changed
-      const newUrl = `?${params.toString()}`;
-      const currentUrl = `?${searchParams?.toString() ?? ""}`;
-      if (newUrl !== currentUrl) {
-        router.push(newUrl);
-      }
-    }, 1000); // Slower update for URL (1 second)
-
-    return () => clearTimeout(timeoutId);
-  }, [filters, searchParams, router, columns]);
 
   // Handle filter input changes
   const handleFilterChange = useCallback(
@@ -348,10 +262,10 @@ export function DataGrid<T extends Record<string, any>>({
             : "recommender_description"
           : field;
 
-      setFilters((prev) => ({
-        ...prev,
-        [urlField]: value,
-      }));
+      const params = new URLSearchParams(window.location.search);
+      if (value) params.set(urlField, value);
+      else params.delete(urlField);
+      window.history.replaceState(null, "", `?${params}`);
     },
     [viewMode]
   );
@@ -380,47 +294,16 @@ export function DataGrid<T extends Record<string, any>>({
         }
       }
 
-      router.replace(`?${params.toString()}`, { scroll: false });
+      window.history.replaceState(null, "", `?${params}`);
       setOpenDropdown(null);
     },
-    [router, searchParams]
+    [searchParams]
   );
 
-  // Keep resize observer for header width syncing
+  // Focus after the menu mounts without moving the scroll container.
   useEffect(() => {
-    const observer = new ResizeObserver(() => {
-      if (resizeTimeout.current) {
-        cancelAnimationFrame(resizeTimeout.current);
-      }
-      resizeTimeout.current = requestAnimationFrame(() => {
-        // Update header width if needed
-        if (gridRef.current?.firstElementChild && headerRef.current) {
-          headerRef.current.style.width = `${gridRef.current.firstElementChild.clientWidth}px`;
-        }
-      });
-    });
-
-    const container = gridRef.current;
-    if (container) {
-      observer.observe(container);
-    }
-
-    return () => {
-      observer.disconnect();
-      if (resizeTimeout.current) {
-        cancelAnimationFrame(resizeTimeout.current);
-      }
-    };
-  }, []);
-
-  // Clean up resize timeout
-  useEffect(() => {
-    return () => {
-      if (resizeTimeout.current) {
-        cancelAnimationFrame(resizeTimeout.current);
-      }
-    };
-  }, []);
+    if (openDropdown) filterInputRefs.current[openDropdown]?.focus({ preventScroll: true });
+  }, [openDropdown]);
 
   // Handle dropdown interactions
   useEffect(() => {
@@ -434,57 +317,27 @@ export function DataGrid<T extends Record<string, any>>({
         !dropdownElement?.contains(target) &&
         !target.closest("[data-dropdown]")
       ) {
-        setIsDropdownClosing(true);
         setOpenDropdown(null);
-        // Reset after dropdown close animation
-        setTimeout(() => {
-          setIsDropdownClosing(false);
-        }, 200); // Match transition-all duration-200
+        // A click on the grid dismisses the menu without opening a detail.
+        // Capture it before row and recommendation-button handlers run.
+        if (target.closest("[data-row-id]")) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
       }
     };
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener("click", handleClickOutside, true);
+    return () => document.removeEventListener("click", handleClickOutside, true);
   }, [openDropdown]);
-
-  // Event handlers
-  const handleRowClick = useCallback(
-    (e: React.MouseEvent, row: T) => {
-      const target = e.target as HTMLElement;
-
-      // Don't trigger row click if clicking on interactive elements
-      if (
-        target.closest("[data-dropdown]") ||
-        target.closest("a, button, input") ||
-        openDropdown ||
-        isDropdownClosing
-      ) {
-        return;
-      }
-
-      onRowClick?.(row);
-    },
-    [onRowClick, openDropdown, isDropdownClosing]
-  );
 
   // Dropdown handlers
   const handleDropdownClick = useCallback(
     (field: string, e: React.MouseEvent) => {
       e.stopPropagation();
-      if (isDropdownClosing) return;
-
-      const isOpening = openDropdown !== field;
       setOpenDropdown((prev) => (prev === field ? null : field));
-
-      // Focus input when opening dropdown
-      if (isOpening) {
-        // Use setTimeout to ensure the dropdown is rendered before focusing
-        setTimeout(() => {
-          filterInputRefs.current[field]?.focus();
-        }, 100); // Increased timeout to ensure dropdown is fully rendered
-      }
     },
-    [isDropdownClosing, openDropdown]
+    []
   );
 
   // Dropdown menu
@@ -494,11 +347,7 @@ export function DataGrid<T extends Record<string, any>>({
 
       return (
         <div
-          className="absolute top-full -left-px -right-px bg-background border border-border shadow-lg z-50 transition-all duration-200"
-          style={{
-            opacity: isDropdownClosing ? 0 : 1,
-            transform: isDropdownClosing ? "translateY(-4px)" : "translateY(0)",
-          }}
+          className="absolute top-full -left-px -right-px bg-background border border-border shadow-lg z-50"
         >
           <div>
             <button
@@ -548,7 +397,6 @@ export function DataGrid<T extends Record<string, any>>({
     },
     [
       openDropdown,
-      isDropdownClosing,
       sortConfig,
       handleSort,
       filters,
@@ -601,33 +449,6 @@ export function DataGrid<T extends Record<string, any>>({
     [sortConfig, handleDropdownClick, renderDropdownMenu, debouncedFilters]
   );
 
-  // Cells
-  const renderCell = useCallback(
-    ({ column, row }: { column: ColumnDef<T>; row: T }) => {
-      return (
-        <div key={String(column.field)} className="px-3 py-2">
-          {column.cell ? (
-            <div className="whitespace-pre-line transition-all duration-200 text-text selection:bg-main selection:text-mtext line-clamp-2">
-              {column.cell({ row: { original: row } })}
-            </div>
-          ) : (
-            <div className="whitespace-pre-line transition-all duration-200 text-text selection:bg-main selection:text-mtext line-clamp-2">
-              {row[column.field]}
-            </div>
-          )}
-        </div>
-      );
-    },
-    []
-  );
-
-  // Row virtualizer
-  const rowVirtualizer = useVirtualizer({
-    count: sortedData.length,
-    getScrollElement: () => parentRef.current,
-    estimateSize: () => 56, // Adjust based on your actual row height
-  });
-
   // Check screen size on mount and resize
   useEffect(() => {
     const checkScreenSize = () => {
@@ -645,7 +466,7 @@ export function DataGrid<T extends Record<string, any>>({
   }, []);
 
   return (
-    <div className="flex flex-col h-full text-base sm:text-sm">
+    <div className="flex flex-col h-full min-h-0 text-base sm:text-sm leading-5">
       {/* Search box */}
       <SearchBox
         initialValue={initialSearchValue}
@@ -656,8 +477,8 @@ export function DataGrid<T extends Record<string, any>>({
       />
       {/* Scrollable grid content */}
       <div
-        ref={parentRef}
-        className="flex-1 overflow-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent"
+        ref={setScrollElement}
+        className="min-h-0 flex-1 overflow-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent"
       >
         <div className="inline-block min-w-full">
           <div className="sticky top-0 z-10 bg-background">
@@ -665,6 +486,7 @@ export function DataGrid<T extends Record<string, any>>({
             <div
               className="grid"
               style={{
+                height: HEADER_HEIGHT,
                 gridTemplateColumns: `repeat(${columns.length}, minmax(200px, 1fr))`,
               }}
             >
@@ -678,46 +500,12 @@ export function DataGrid<T extends Record<string, any>>({
               </div>
             </div>
           ) : (
-            <div
-              className="relative"
-              style={{
-                height: `${rowVirtualizer.getTotalSize()}px`,
-              }}
-            >
-              {rowVirtualizer.getVirtualItems().map((virtualRow) => {
-                const row = sortedData[virtualRow.index];
-
-                // Use a stable key based on the row's unique identifier to
-                // ensure React remounts DOM nodes when the underlying data
-                // changes (e.g. after filtering). This prevents stale styles
-                // from lingering when different data occupies the same
-                // virtual index.
-                const rowKey = (row as any).id ?? `row-${virtualRow.index}`;
-
-                return (
-                  <div
-                    key={rowKey}
-                    className={`grid transition-colors duration-200 ${
-                      getRowClassName?.(row) || ""
-                    }`}
-                    style={{
-                      gridTemplateColumns: `repeat(${columns.length}, minmax(200px, 1fr))`,
-                      position: "absolute",
-                      top: `${virtualRow.start}px`,
-                      left: 0,
-                      width: "100%",
-                      height: `${virtualRow.size}px`,
-                    }}
-                    onClick={(e) => handleRowClick(e, row)}
-                  >
-                    {columns.map((column) => renderCell({ column, row }))}
-                  </div>
-                );
-              })}
-            </div>
+            <VirtualRows rows={sortedData} scrollElement={scrollElement} columns={columns}
+              getRowClassName={getRowClassName} onRowClick={openDropdown ? undefined : onRowClick} />
           )}
         </div>
       </div>
+      <Counter total={data.length} filteredCount={filteredData.length} viewMode={viewMode} />
     </div>
   );
 }

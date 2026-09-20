@@ -2,13 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-@font-face {
-  font-family: 'Special Elite';
-  src: url('/fonts/SpecialElite-Regular.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-}
-
 @layer base {
   :root {
     /* Base colors inspired by GitHub contribution graph */
@@ -130,16 +123,8 @@
     --chart-5: 155 60% 35%;
   }
 
-  * {
-    -webkit-overflow-scrolling: auto;
-    overscroll-behavior: none;
-    scroll-behavior: auto;
-  }
-
   body {
     @apply bg-background text-foreground antialiased font-sans;
-    touch-action: pan-y pinch-zoom;
-    font-family: 'Special Elite', monospace;
   }
 
   .border, .border-b {
