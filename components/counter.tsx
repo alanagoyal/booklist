@@ -2,38 +2,6 @@
 
 import { createPortal } from 'react-dom';
 import { useEffect, useState } from 'react';
-import { usePathname } from 'next/navigation';
-
-// Global state manager for counts
-export const countManager = {
-  _lastUpdate: 0,
-  _callbacks: new Set<() => void>(),
-  _filteredCount: {
-    books: 0,
-    people: 0,
-  },
-
-  addCallback(callback: () => void) {
-    this._callbacks.add(callback);
-    return () => {
-      this._callbacks.delete(callback);
-    };
-  },
-
-  updateCount(viewMode: 'books' | 'people', filteredCount: number) {
-    this._filteredCount[viewMode] = filteredCount;
-    this._lastUpdate = Date.now();
-    this._callbacks.forEach((callback) => callback());
-  },
-
-  getLastUpdate() {
-    return this._lastUpdate;
-  },
-
-  getFilteredCount(viewMode: 'books' | 'people') {
-    return this._filteredCount[viewMode];
-  }
-};
 
 // Color legend data with percentile ranges
 const legendData = [
@@ -70,30 +38,14 @@ export function LoadingState() {
 
 interface CounterProps {
   total: number;
+  filteredCount: number;
   viewMode?: 'books' | 'people';
 }
 
-export function Counter({ total, viewMode = 'books' }: CounterProps) {
+export function Counter({ total, filteredCount, viewMode = 'books' }: CounterProps) {
   const [mounted, setMounted] = useState(false);
-  const pathname = usePathname();
-  const isHomePage = pathname === '/';
-  const [filteredCount, setFilteredCount] = useState(total);
-
-  useEffect(() => {
-    setMounted(true);
-    const cleanup = countManager.addCallback(() => {
-      setFilteredCount(countManager.getFilteredCount(viewMode));
-    });
-    return cleanup;
-  }, [viewMode]);
-
-  // Reset filtered count when view mode changes
-  useEffect(() => {
-    setFilteredCount(countManager.getFilteredCount(viewMode));
-  }, [viewMode]);
-
-  // Only show on home page
-  if (!mounted || !isHomePage) return null;
+  useEffect(() => setMounted(true), []);
+  if (!mounted) return null;
 
   const text = viewMode === 'books'
     ? filteredCount === total 

@@ -14,36 +14,28 @@ import {
   ArrowDown,
   ListFilter,
 } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useVirtualizer } from "@tanstack/react-virtual";
+import { useSearchParams } from "next/navigation";
+import { VirtualRows, HEADER_HEIGHT, type ColumnDef } from "./virtual-rows";
 import { SearchBox } from "./semantic-search";
-import { countManager } from "@/components/counter";
+import { Counter } from "@/components/counter";
 import { ColumnFilter } from "./column-filter";
 
 type SortDirection = "asc" | "desc";
 
-type ColumnDef<T> = {
-  field: keyof T;
-  header: string;
-  width?: number;
-  cell?: (props: { row: { original: T } }) => React.ReactNode;
-};
-
-type DataGridProps<T extends Record<string, any>> = {
+type DataGridProps<T extends Record<string, any> & { id: string }> = {
   data: T[];
   columns: ColumnDef<T>[];
   getRowClassName?: (row: T) => string;
   onRowClick?: (row: T) => void;
 };
 
-export function DataGrid<T extends Record<string, any>>({
+export function DataGrid<T extends Record<string, any> & { id: string }>({
   data,
   columns,
   getRowClassName,
   onRowClick,
 }: DataGridProps<T>) {
   // Hooks
-  const router = useRouter();
   const searchParams = useSearchParams();
 
   // State
@@ -51,10 +43,11 @@ export function DataGrid<T extends Record<string, any>>({
   const [isMobileView, setIsMobileView] = useState(false);
   const [searchResults, setSearchResults] = useState<Set<string>>(new Set());
   const [isSearching, setIsSearching] = useState(false);
-  const [filters, setFilters] = useState<Record<string, string>>({});
-  const [debouncedFilters, setDebouncedFilters] = useState<
-    Record<string, string>
-  >({});
+  const filterParams = JSON.stringify(Object.fromEntries(columns.map(column => [
+    String(column.field), searchParams.get(String(column.field)) || "",
+  ])));
+  const filters = useMemo<Record<string, string>>(() => JSON.parse(filterParams), [filterParams]);
+  const [debouncedFilters, setDebouncedFilters] = useState(filters);
 
   // Get current view and sort configs directly from URL
   const viewMode = (searchParams.get("view") as "books" | "people") || "books";
@@ -89,7 +82,7 @@ export function DataGrid<T extends Record<string, any>>({
   const filterInputRefs = useRef<{ [key: string]: HTMLInputElement | null }>(
     {}
   );
-  const parentRef = useRef<HTMLDivElement>(null);
+  const [scrollElement, setScrollElement] = useState<HTMLDivElement | null>(null);
 
   // Initial search value from URL
   const initialSearchValue = useMemo(() => {
@@ -146,8 +139,8 @@ export function DataGrid<T extends Record<string, any>>({
           if (field === "recommenders") {
             const recommendations = (item as any).recommendations || [];
             const recommenderNames = recommendations
-              .filter((rec: any) => rec.recommender)
-              .map((rec: any) => rec.recommender.full_name.toLowerCase());
+              .filter(Boolean)
+              .map((rec: any) => rec.full_name.toLowerCase());
             return recommenderNames.some((name: string) =>
               name.includes(value)
             );
@@ -249,37 +242,6 @@ export function DataGrid<T extends Record<string, any>>({
     return sorted;
   }, [filteredData, sortConfig.field, sortConfig.direction]);
 
-  // Update counter
-  useEffect(() => {
-    countManager.updateCount(viewMode, filteredData.length);
-  }, [filteredData.length, viewMode]);
-
-  // Initialize filters from URL on mount only
-  useEffect(() => {
-    const params = new URLSearchParams(searchParams?.toString() ?? "");
-    const newFilters: Record<string, string> = {};
-
-    // Get filter values from URL parameters
-    columns.forEach((column) => {
-      const field = String(column.field);
-      const value = params.get(field);
-      if (value) {
-        newFilters[field] = value;
-      }
-    });
-
-    // Handle description fields
-    const bookDesc = params.get("book_description");
-    const recommenderDesc = params.get("recommender_description");
-    if (bookDesc) newFilters["book_description"] = bookDesc;
-    if (recommenderDesc)
-      newFilters["recommender_description"] = recommenderDesc;
-
-    setFilters(newFilters);
-    setDebouncedFilters(newFilters);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Only run on mount - intentionally omitting dependencies to avoid re-initializing filters
-
   // Fast debounce for UI responsiveness
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -288,34 +250,6 @@ export function DataGrid<T extends Record<string, any>>({
 
     return () => clearTimeout(timeoutId);
   }, [filters]);
-
-  // Slower debounce for URL syncing (shareable links)
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      const params = new URLSearchParams(searchParams?.toString() ?? "");
-
-      // Remove all existing filter params
-      const validFilterFields = columns.map((col) => String(col.field));
-      validFilterFields.push("book_description", "recommender_description");
-      validFilterFields.forEach((field) => params.delete(field));
-
-      // Add new filter params
-      Object.entries(filters).forEach(([field, value]) => {
-        if (value) {
-          params.set(field, value);
-        }
-      });
-
-      // Only update URL if it actually changed
-      const newUrl = `?${params.toString()}`;
-      const currentUrl = `?${searchParams?.toString() ?? ""}`;
-      if (newUrl !== currentUrl) {
-        router.replace(newUrl, { scroll: false });
-      }
-    }, 1000); // Slower update for URL (1 second)
-
-    return () => clearTimeout(timeoutId);
-  }, [filters, searchParams, router, columns]);
 
   // Handle filter input changes
   const handleFilterChange = useCallback(
@@ -328,10 +262,10 @@ export function DataGrid<T extends Record<string, any>>({
             : "recommender_description"
           : field;
 
-      setFilters((prev) => ({
-        ...prev,
-        [urlField]: value,
-      }));
+      const params = new URLSearchParams(window.location.search);
+      if (value) params.set(urlField, value);
+      else params.delete(urlField);
+      window.history.replaceState(null, "", `?${params}`);
     },
     [viewMode]
   );
@@ -360,10 +294,10 @@ export function DataGrid<T extends Record<string, any>>({
         }
       }
 
-      router.replace(`?${params.toString()}`, { scroll: false });
+      window.history.replaceState(null, "", `?${params}`);
       setOpenDropdown(null);
     },
-    [router, searchParams]
+    [searchParams]
   );
 
   // Focus after the menu mounts without moving the scroll container.
@@ -390,25 +324,6 @@ export function DataGrid<T extends Record<string, any>>({
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [openDropdown]);
-
-  // Event handlers
-  const handleRowClick = useCallback(
-    (e: React.MouseEvent, row: T) => {
-      const target = e.target as HTMLElement;
-
-      // Don't trigger row click if clicking on interactive elements
-      if (
-        target.closest("[data-dropdown]") ||
-        target.closest("a, button, input") ||
-        openDropdown
-      ) {
-        return;
-      }
-
-      onRowClick?.(row);
-    },
-    [onRowClick, openDropdown]
-  );
 
   // Dropdown handlers
   const handleDropdownClick = useCallback(
@@ -528,42 +443,6 @@ export function DataGrid<T extends Record<string, any>>({
     [sortConfig, handleDropdownClick, renderDropdownMenu, debouncedFilters]
   );
 
-  // Cells
-  const renderCell = useCallback(
-    ({ column, row }: { column: ColumnDef<T>; row: T }) => {
-      return (
-        <div key={String(column.field)} className="min-w-0 overflow-hidden px-3 py-2">
-          {column.cell ? (
-            <div className="whitespace-pre-line text-text selection:bg-main selection:text-mtext line-clamp-2">
-              {column.cell({ row: { original: row } })}
-            </div>
-          ) : (
-            <div className="whitespace-pre-line text-text selection:bg-main selection:text-mtext line-clamp-2">
-              {row[column.field]}
-            </div>
-          )}
-        </div>
-      );
-    },
-    []
-  );
-
-  // Fixed two-line rows: 40px of text plus 16px of padding.
-  const getItemKey = useCallback((index: number) => sortedData[index].id, [sortedData]);
-  const rowVirtualizer = useVirtualizer({
-    count: sortedData.length,
-    getScrollElement: () => parentRef.current,
-    estimateSize: () => 56,
-    getItemKey,
-    overscan: 12,
-    scrollMargin: 37, // The sticky column header precedes the rows.
-  });
-
-  // A different result set should start at the top, even when it is shorter.
-  useEffect(() => {
-    parentRef.current?.scrollTo({ top: 0 });
-  }, [sortedData]);
-
   // Check screen size on mount and resize
   useEffect(() => {
     const checkScreenSize = () => {
@@ -592,7 +471,7 @@ export function DataGrid<T extends Record<string, any>>({
       />
       {/* Scrollable grid content */}
       <div
-        ref={parentRef}
+        ref={setScrollElement}
         className="min-h-0 flex-1 overflow-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent"
       >
         <div className="inline-block min-w-full">
@@ -601,7 +480,7 @@ export function DataGrid<T extends Record<string, any>>({
             <div
               className="grid"
               style={{
-                height: 37,
+                height: HEADER_HEIGHT,
                 gridTemplateColumns: `repeat(${columns.length}, minmax(200px, 1fr))`,
               }}
             >
@@ -615,41 +494,12 @@ export function DataGrid<T extends Record<string, any>>({
               </div>
             </div>
           ) : (
-            <div
-              className="relative"
-              style={{
-                height: `${rowVirtualizer.getTotalSize()}px`,
-              }}
-            >
-              {rowVirtualizer.getVirtualItems().map((virtualRow) => {
-                const row = sortedData[virtualRow.index];
-
-                return (
-                  <div
-                    key={virtualRow.key}
-                    className={`grid overflow-hidden ${
-                      getRowClassName?.(row) || ""
-                    }`}
-                    style={{
-                      gridTemplateColumns: `repeat(${columns.length}, minmax(200px, 1fr))`,
-                      position: "absolute",
-                      top: 0,
-                      transform: `translateY(${virtualRow.start - 37}px)`,
-                      lineHeight: "20px",
-                      left: 0,
-                      width: "100%",
-                      height: `${virtualRow.size}px`,
-                    }}
-                    onClick={(e) => handleRowClick(e, row)}
-                  >
-                    {columns.map((column) => renderCell({ column, row }))}
-                  </div>
-                );
-              })}
-            </div>
+            <VirtualRows rows={sortedData} scrollElement={scrollElement} columns={columns}
+              getRowClassName={getRowClassName} onRowClick={openDropdown ? undefined : onRowClick} />
           )}
         </div>
       </div>
+      <Counter total={data.length} filteredCount={filteredData.length} viewMode={viewMode} />
     </div>
   );
 }

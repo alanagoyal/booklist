@@ -23,12 +23,24 @@ function HeaderContent() {
     const params = new URLSearchParams(currentParams);
     params.delete("key");
     params.set("view", "books");
-    router.push(`/?${params.toString()}`, { scroll: false });
+    if (pathname === "/") window.history.pushState(null, "", `?${params}`);
+    else router.push(`/?${params}`);
   };
   const isHomePage = pathname === "/";
   const view = isHomePage
     ? (searchParams.get("view") as "books" | "people") || "books"
     : null;
+
+  const changeView = (event: React.MouseEvent, nextView: "books" | "people", closeDetails = false) => {
+    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) return;
+    event.preventDefault();
+    setIsMenuOpen(false);
+    const params = new URLSearchParams(window.location.search);
+    params.set("view", nextView);
+    if (closeDetails) params.delete("key");
+    if (isHomePage) window.history.pushState(null, "", `?${params}`);
+    else router.push(`/?${params}`);
+  };
 
   // State for menu
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -72,12 +84,15 @@ function HeaderContent() {
       <div className="flex gap-4 px-3">
         <Link
           href={homeHref}
+          prefetch={false}
+          onClick={e => changeView(e, "books")}
           className="hidden md:block font-bold text-2xl text-text transition-colors duration-200 pt-3"
         >
           BOOKLIST
         </Link>
         <Link
           href={homeHref}
+          prefetch={false}
           onClick={handleMobileHomeClick}
           className="md:hidden font-bold text-2xl text-text transition-colors duration-200 pt-3"
         >
@@ -86,6 +101,8 @@ function HeaderContent() {
         <div className="hidden md:flex h-[48px] text-sm pt-2 space-x-3">
           <Link
             href={getViewHref("books")}
+            prefetch={false}
+            onClick={e => changeView(e, "books")}
             className={`h-full flex items-center px-1 transition-colors duration-200 border-b-2 text-text ${
               isHomePage && view === "books"
                 ? "border-text"
@@ -96,6 +113,8 @@ function HeaderContent() {
           </Link>
           <Link
             href={getViewHref("people")}
+            prefetch={false}
+            onClick={e => changeView(e, "people")}
             className={`h-full flex items-center px-1 transition-colors duration-200 border-b-2 text-text ${
               isHomePage && view === "people"
                 ? "border-text"
@@ -148,15 +167,9 @@ function HeaderContent() {
             >
               <Link
                 href={getViewHref("books")}
+                prefetch={false}
                 className="w-full px-4 py-2 flex items-center text-left text-text"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setIsMenuOpen(false);
-                  const params = new URLSearchParams(currentParams);
-                  params.delete("key");
-                  params.set("view", "books");
-                  router.push(`/?${params.toString()}`, { scroll: false });
-                }}
+                onClick={e => changeView(e, "books", true)}
               >
                 <span
                   className={`transition-all duration-200 ${isHomePage && view === "books" ? "border-b-2 border-text text-text" : ""}`}
@@ -166,15 +179,9 @@ function HeaderContent() {
               </Link>
               <Link
                 href={getViewHref("people")}
+                prefetch={false}
                 className="w-full px-4 py-2 flex items-center text-left text-text"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setIsMenuOpen(false);
-                  const params = new URLSearchParams(currentParams);
-                  params.delete("key");
-                  params.set("view", "people");
-                  router.push(`/?${params.toString()}`, { scroll: false });
-                }}
+                onClick={e => changeView(e, "people", true)}
               >
                 <span
                   className={`transition-all duration-200 ${isHomePage && view === "people" ? "border-b-2 border-text text-text" : ""}`}

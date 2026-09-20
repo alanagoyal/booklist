@@ -1,12 +1,10 @@
 import { X, BookOpen, Tag, ChevronLeft, User, Link } from "lucide-react";
-import { EssentialBook, ExtendedBook } from "@/types";
+import { FormattedBook } from "@/types";
 import { useCallback, useState } from "react";
 import { useEntityClick } from "../utils/use-entity-click";
-import useSWRImmutable from "swr/immutable";
-import fetcher from "@/utils/fetcher";
 
 type BookDetailProps = {
-  book: EssentialBook;
+  book: FormattedBook;
   onClose?: () => void;
   onBackdropClick?: () => void;
   isHovered?: boolean;
@@ -23,12 +21,8 @@ export default function BookDetail({
   isNavigating = false
 }: BookDetailProps) {
   const [showAllRecommenders, setShowAllRecommenders] = useState(false);
-  const { data: extended, error, mutate } = useSWRImmutable<ExtendedBook>(
-    isTopIndex ? `/booklist/api/books/${encodeURIComponent(book.id)}/related` : null,
-    fetcher
-  );
-  const relatedBooks = extended?.related_books ?? [];
-  const similarBooks = extended?.similar_books ?? [];
+  const relatedBooks = book.related_books;
+  const similarBooks = book.similar_books;
   const handleBackdropClick = useCallback(
     (e: React.MouseEvent) => {
       if (e.target === e.currentTarget) {
@@ -179,13 +173,6 @@ export default function BookDetail({
               )}
 
               {/* Similar books (combined) */}
-              {!extended && !error && <p role="status" className="text-muted-foreground">Loading similar books…</p>}
-              {error && (
-                <p role="alert" className="text-muted-foreground">
-                  Couldn’t load similar books.{" "}
-                  <button className="underline" onClick={() => void mutate()}>Try again</button>
-                </p>
-              )}
               {(relatedBooks.length > 0 || similarBooks.length > 0) && (
                 <div className="space-y-2">
                   <h2 className="text-base text-text font-bold">

@@ -1,27 +1,16 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
-import { Counter } from "@/components/counter";
-import { EssentialBook, FormattedRecommender } from "@/types";
-import { useRouter, useSearchParams } from "next/navigation";
-import BookDetail from "@/components/book-detail";
-import RecommenderDetail from "@/components/recommender-detail";
-import BookGrid from "./book-grid";
-import RecommenderGrid from "./recommender-grid";
+import type { Catalog } from "@/utils/catalog";
+import { CatalogView } from "./catalog-view";
+import { EntityDetail, EntityTitle } from "./entity-detail";
+import { useSearchParams } from "next/navigation";
 import { useDetailViewClick } from "@/utils/use-entity-click";
 
-export function BookList({
-  initialBooks,
-  initialRecommenders,
-}: {
-  initialBooks: EssentialBook[];
-  initialRecommenders: FormattedRecommender[];
-}) {
-  const router = useRouter();
+export function BookList({ initialCatalog }: { initialCatalog: Catalog }) {
   const searchParams = useSearchParams();
-  const viewMode = (searchParams.get("view") as "books" | "people") || "books";
   const [viewHistory, setViewHistory] = useState<
-    Array<{ id: string; actualId: string; type: "book" | "recommender" }>
+    Array<{ id: string; actualId: string }>
   >([]);
   const containerRef = useRef<HTMLDivElement>(null);
   const [isMobile, setIsMobile] = useState(false);
@@ -48,18 +37,18 @@ export function BookList({
   useEffect(() => {
     if (searchParams.get("key")) {
       const [actualId] = searchParams.get("key")!.split("--");
-      const isRecommender = initialRecommenders.find((r) => r.id === actualId);
 
       setViewHistory((prev) => {
         // Don't add if it's already the most recent view
         if (prev[prev.length - 1]?.id === searchParams.get("key")) return prev;
 
+        const existing = prev.findIndex(view => view.id === searchParams.get("key"));
+        if (existing >= 0) return prev.slice(0, existing + 1);
         return [
           ...prev,
           {
             id: searchParams.get("key")!, // Keep full viewId with timestamp in history
             actualId, // Store the real ID separately
-            type: isRecommender ? "recommender" : "book",
           },
         ];
       });
@@ -67,7 +56,7 @@ export function BookList({
       // Clear history when key param is removed
       setViewHistory([]);
     }
-  }, [searchParams, initialRecommenders]);
+  }, [searchParams]);
 
   // Handle closing the detail view
   const handleClose = useCallback(() => {
@@ -75,27 +64,27 @@ export function BookList({
       // If there's only one view, remove it completely
       const params = new URLSearchParams(searchParams.toString());
       params.delete("key");
-      router.push(`?${params.toString()}`, { scroll: false });
+      window.history.pushState(null, "", `?${params}`);
       setViewHistory([]);
     } else {
       // If there are multiple views, just remove the topmost one
       const previousView = viewHistory[viewHistory.length - 2]; // Get second-to-last view
       const params = new URLSearchParams(searchParams.toString());
       params.set("key", previousView.id);
-      router.push(`?${params.toString()}`, { scroll: false });
+      window.history.pushState(null, "", `?${params}`);
 
       // Update state to remove only the last view
       setViewHistory((prev) => prev.slice(0, -1));
     }
-  }, [router, searchParams, viewHistory]);
+  }, [searchParams, viewHistory]);
 
   // Handle closing all detail views
   const handleCloseAll = useCallback(() => {
     const params = new URLSearchParams(searchParams.toString());
     params.delete("key");
-    router.push(`?${params.toString()}`, { scroll: false });
+    window.history.pushState(null, "", `?${params}`);
     setViewHistory([]);
-  }, [router, searchParams]);
+  }, [searchParams]);
 
   // Handle tab click using the utility hook
   const handleTabClick = useDetailViewClick(
@@ -183,35 +172,11 @@ export function BookList({
   return (
     <div ref={containerRef} className="h-full flex flex-col relative">
       <div className="flex-1 overflow-hidden">
-        {viewMode === "books" ? (
-          <BookGrid data={initialBooks} isMobile={isMobile} />
-        ) : (
-          <RecommenderGrid data={initialRecommenders} isMobile={isMobile} />
-        )}
+        <CatalogView initialCatalog={initialCatalog} />
       </div>
-      <Counter
-        total={
-          viewMode === "books"
-            ? initialBooks.length
-            : initialRecommenders.length
-        }
-        viewMode={viewMode}
-      />
 
       {/* Render detail views */}
       {visibleDetailViews.map(({ view, originalIndex, visibleIndex, isLast }) => {
-        const selectedRecommender =
-          view.type === "recommender"
-            ? initialRecommenders.find((r) => r.id === view.actualId)
-            : null;
-        const selectedBook =
-          view.type === "book"
-            ? initialBooks.find(
-                (book) =>
-                  book.id === view.actualId || book.title === view.actualId
-              )
-            : null;
-
         const isHovered = hoveredTabId === view.id && !isLast;
 
         return (
@@ -224,26 +189,14 @@ export function BookList({
               width: `calc(100% - ${isMobile ? 0 : visibleIndex * 8}px)`,
             }}
           >
-            {selectedBook && (
-              <BookDetail
-                book={selectedBook}
-                onClose={isLast ? handleClose : () => {}}
-                onBackdropClick={isLast ? handleCloseAll : () => {}}
-                isHovered={isHovered}
-                isTopIndex={originalIndex === viewHistory.length - 1}
-                isNavigating={isNavigating}
-              />
-            )}
-            {selectedRecommender && (
-              <RecommenderDetail
-                recommender={selectedRecommender}
-                onClose={isLast ? handleClose : () => {}}
-                onBackdropClick={isLast ? handleCloseAll : () => {}}
-                isHovered={isHovered}
-                isTopIndex={originalIndex === viewHistory.length - 1}
-                isNavigating={isNavigating}
-              />
-            )}
+            <EntityDetail
+              id={view.actualId}
+              onClose={isLast ? handleClose : () => {}}
+              onBackdropClick={isLast ? handleCloseAll : () => {}}
+              isHovered={isHovered}
+              isTopIndex={isLast}
+              isNavigating={isNavigating}
+            />
           </div>
         );
       })}
@@ -251,24 +204,6 @@ export function BookList({
       {/* Render tabs */}
       {tabPositions.map(({ view, index, visibleIndex, shouldShow, position, zIndex }) => {
         if (!shouldShow) return null;
-
-        const selectedRecommender =
-          view.type === "recommender"
-            ? initialRecommenders.find((r) => r.id === view.actualId)
-            : null;
-        const selectedBook =
-          view.type === "book"
-            ? initialBooks.find(
-                (book) =>
-                  book.id === view.actualId || book.title === view.actualId
-              )
-            : null;
-
-        const tabTitle = selectedBook
-          ? selectedBook.title
-          : selectedRecommender
-            ? selectedRecommender.full_name
-            : "";
 
         return (
           <button
@@ -292,7 +227,7 @@ export function BookList({
             onMouseEnter={() => setHoveredTabId(view.id)}
             onMouseLeave={() => setHoveredTabId(null)}
           >
-            {tabTitle}
+            <EntityTitle id={view.actualId} />
           </button>
         );
       })}

@@ -1,46 +1,28 @@
-import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, Dispatch, SetStateAction } from "react";
 
-export const useEntityClick = () => {
-  const router = useRouter();
-  const searchParams = useSearchParams();
+// Query-only browsing state stays local. Next's native history integration
+// keeps useSearchParams and back/forward in sync without refetching the page.
+export function openEntity(id: string) {
+  const params = new URLSearchParams(window.location.search);
+  params.set("key", `${id}--${Date.now()}`);
+  window.history.pushState(null, "", `?${params}`);
+}
 
-  return useCallback((id: string) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("key", `${id}--${Date.now()}`);
-    router.push(`?${params.toString()}`, { scroll: false });
-  }, [router, searchParams]);
-};
+export const useEntityClick = () => useCallback(openEntity, []);
 
-type ViewHistoryItem = {
-  id: string;
-  actualId: string;
-  type: "book" | "recommender";
-};
+type ViewHistoryItem = { id: string; actualId: string };
 
 export const useDetailViewClick = (
   setViewHistory: Dispatch<SetStateAction<ViewHistoryItem[]>>,
   viewHistory: ViewHistoryItem[],
   setIsNavigating: Dispatch<SetStateAction<boolean>>,
   setHoveredTabId: Dispatch<SetStateAction<string | null>>
-) => {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-
-  return useCallback(
-    (view: ViewHistoryItem) => {
-      setIsNavigating(true);
-      setHoveredTabId(null);
-
-      const params = new URLSearchParams(searchParams.toString());
-      params.set("key", view.id);
-      router.push(`?${params.toString()}`, { scroll: false });
-      setViewHistory(viewHistory.slice(0, viewHistory.indexOf(view) + 1));
-
-      setTimeout(() => {
-        setIsNavigating(false);
-      }, 50);
-    },
-    [router, searchParams, setViewHistory, viewHistory, setIsNavigating, setHoveredTabId]
-  );
-};
+) => useCallback((view: ViewHistoryItem) => {
+  setIsNavigating(true);
+  setHoveredTabId(null);
+  const params = new URLSearchParams(window.location.search);
+  params.set("key", view.id);
+  window.history.pushState(null, "", `?${params}`);
+  setViewHistory(viewHistory.slice(0, viewHistory.indexOf(view) + 1));
+  setTimeout(() => setIsNavigating(false), 50);
+}, [setViewHistory, viewHistory, setIsNavigating, setHoveredTabId]);
