@@ -12,7 +12,6 @@ import {
   Check,
   ArrowUp,
   ArrowDown,
-  X,
   ListFilter,
 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -49,7 +48,6 @@ export function DataGrid<T extends Record<string, any>>({
 
   // State
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
-  const [isDropdownClosing, setIsDropdownClosing] = useState(false);
   const [isMobileView, setIsMobileView] = useState(false);
   const [searchResults, setSearchResults] = useState<Set<string>>(new Set());
   const [isSearching, setIsSearching] = useState(false);
@@ -87,13 +85,10 @@ export function DataGrid<T extends Record<string, any>>({
   );
 
   // Refs
-  const gridRef = useRef<HTMLDivElement>(null);
-  const headerRef = useRef<HTMLDivElement>(null);
   const dropdownRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
   const filterInputRefs = useRef<{ [key: string]: HTMLInputElement | null }>(
     {}
   );
-  const resizeTimeout = useRef<number | null>(null);
   const parentRef = useRef<HTMLDivElement>(null);
 
   // Initial search value from URL
@@ -186,22 +181,7 @@ export function DataGrid<T extends Record<string, any>>({
     isSearching,
   ]);
 
-  const hasNoFilteredResults = useMemo(
-    () => filteredData.length === 0,
-    [filteredData]
-  );
-  const hasActiveFilters = useMemo(
-    () => Object.values(debouncedFilters).some(value => Boolean(value)),
-    [debouncedFilters]
-  );
-
-  const showNoResultsMessage = useMemo(
-    () =>
-      !isSearching &&
-      hasNoFilteredResults &&
-      (hasSearchQuery || hasActiveFilters),
-    [isSearching, hasNoFilteredResults, hasSearchQuery, hasActiveFilters]
-  );
+  const showNoResultsMessage = !isSearching && filteredData.length === 0;
 
   // Sort data after filtering
   const sortedData = useMemo(() => {
@@ -330,7 +310,7 @@ export function DataGrid<T extends Record<string, any>>({
       const newUrl = `?${params.toString()}`;
       const currentUrl = `?${searchParams?.toString() ?? ""}`;
       if (newUrl !== currentUrl) {
-        router.push(newUrl);
+        router.replace(newUrl, { scroll: false });
       }
     }, 1000); // Slower update for URL (1 second)
 
@@ -386,41 +366,10 @@ export function DataGrid<T extends Record<string, any>>({
     [router, searchParams]
   );
 
-  // Keep resize observer for header width syncing
+  // Focus after the menu mounts without moving the scroll container.
   useEffect(() => {
-    const observer = new ResizeObserver(() => {
-      if (resizeTimeout.current) {
-        cancelAnimationFrame(resizeTimeout.current);
-      }
-      resizeTimeout.current = requestAnimationFrame(() => {
-        // Update header width if needed
-        if (gridRef.current?.firstElementChild && headerRef.current) {
-          headerRef.current.style.width = `${gridRef.current.firstElementChild.clientWidth}px`;
-        }
-      });
-    });
-
-    const container = gridRef.current;
-    if (container) {
-      observer.observe(container);
-    }
-
-    return () => {
-      observer.disconnect();
-      if (resizeTimeout.current) {
-        cancelAnimationFrame(resizeTimeout.current);
-      }
-    };
-  }, []);
-
-  // Clean up resize timeout
-  useEffect(() => {
-    return () => {
-      if (resizeTimeout.current) {
-        cancelAnimationFrame(resizeTimeout.current);
-      }
-    };
-  }, []);
+    if (openDropdown) filterInputRefs.current[openDropdown]?.focus({ preventScroll: true });
+  }, [openDropdown]);
 
   // Handle dropdown interactions
   useEffect(() => {
@@ -434,12 +383,7 @@ export function DataGrid<T extends Record<string, any>>({
         !dropdownElement?.contains(target) &&
         !target.closest("[data-dropdown]")
       ) {
-        setIsDropdownClosing(true);
         setOpenDropdown(null);
-        // Reset after dropdown close animation
-        setTimeout(() => {
-          setIsDropdownClosing(false);
-        }, 200); // Match transition-all duration-200
       }
     };
 
@@ -456,35 +400,23 @@ export function DataGrid<T extends Record<string, any>>({
       if (
         target.closest("[data-dropdown]") ||
         target.closest("a, button, input") ||
-        openDropdown ||
-        isDropdownClosing
+        openDropdown
       ) {
         return;
       }
 
       onRowClick?.(row);
     },
-    [onRowClick, openDropdown, isDropdownClosing]
+    [onRowClick, openDropdown]
   );
 
   // Dropdown handlers
   const handleDropdownClick = useCallback(
     (field: string, e: React.MouseEvent) => {
       e.stopPropagation();
-      if (isDropdownClosing) return;
-
-      const isOpening = openDropdown !== field;
       setOpenDropdown((prev) => (prev === field ? null : field));
-
-      // Focus input when opening dropdown
-      if (isOpening) {
-        // Use setTimeout to ensure the dropdown is rendered before focusing
-        setTimeout(() => {
-          filterInputRefs.current[field]?.focus();
-        }, 100); // Increased timeout to ensure dropdown is fully rendered
-      }
     },
-    [isDropdownClosing, openDropdown]
+    []
   );
 
   // Dropdown menu
@@ -494,11 +426,7 @@ export function DataGrid<T extends Record<string, any>>({
 
       return (
         <div
-          className="absolute top-full -left-px -right-px bg-background border border-border shadow-lg z-50 transition-all duration-200"
-          style={{
-            opacity: isDropdownClosing ? 0 : 1,
-            transform: isDropdownClosing ? "translateY(-4px)" : "translateY(0)",
-          }}
+          className="absolute top-full -left-px -right-px bg-background border border-border shadow-lg z-50"
         >
           <div>
             <button
@@ -548,7 +476,6 @@ export function DataGrid<T extends Record<string, any>>({
     },
     [
       openDropdown,
-      isDropdownClosing,
       sortConfig,
       handleSort,
       filters,
@@ -605,13 +532,13 @@ export function DataGrid<T extends Record<string, any>>({
   const renderCell = useCallback(
     ({ column, row }: { column: ColumnDef<T>; row: T }) => {
       return (
-        <div key={String(column.field)} className="px-3 py-2">
+        <div key={String(column.field)} className="min-w-0 overflow-hidden px-3 py-2">
           {column.cell ? (
-            <div className="whitespace-pre-line transition-all duration-200 text-text selection:bg-main selection:text-mtext line-clamp-2">
+            <div className="whitespace-pre-line text-text selection:bg-main selection:text-mtext line-clamp-2">
               {column.cell({ row: { original: row } })}
             </div>
           ) : (
-            <div className="whitespace-pre-line transition-all duration-200 text-text selection:bg-main selection:text-mtext line-clamp-2">
+            <div className="whitespace-pre-line text-text selection:bg-main selection:text-mtext line-clamp-2">
               {row[column.field]}
             </div>
           )}
@@ -621,12 +548,21 @@ export function DataGrid<T extends Record<string, any>>({
     []
   );
 
-  // Row virtualizer
+  // Fixed two-line rows: 40px of text plus 16px of padding.
+  const getItemKey = useCallback((index: number) => sortedData[index].id, [sortedData]);
   const rowVirtualizer = useVirtualizer({
     count: sortedData.length,
     getScrollElement: () => parentRef.current,
-    estimateSize: () => 56, // Adjust based on your actual row height
+    estimateSize: () => 56,
+    getItemKey,
+    overscan: 12,
+    scrollMargin: 37, // The sticky column header precedes the rows.
   });
+
+  // A different result set should start at the top, even when it is shorter.
+  useEffect(() => {
+    parentRef.current?.scrollTo({ top: 0 });
+  }, [sortedData]);
 
   // Check screen size on mount and resize
   useEffect(() => {
@@ -645,7 +581,7 @@ export function DataGrid<T extends Record<string, any>>({
   }, []);
 
   return (
-    <div className="flex flex-col h-full text-base sm:text-sm">
+    <div className="flex flex-col h-full min-h-0 text-base sm:text-sm leading-5">
       {/* Search box */}
       <SearchBox
         initialValue={initialSearchValue}
@@ -657,7 +593,7 @@ export function DataGrid<T extends Record<string, any>>({
       {/* Scrollable grid content */}
       <div
         ref={parentRef}
-        className="flex-1 overflow-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent"
+        className="min-h-0 flex-1 overflow-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent"
       >
         <div className="inline-block min-w-full">
           <div className="sticky top-0 z-10 bg-background">
@@ -665,6 +601,7 @@ export function DataGrid<T extends Record<string, any>>({
             <div
               className="grid"
               style={{
+                height: 37,
                 gridTemplateColumns: `repeat(${columns.length}, minmax(200px, 1fr))`,
               }}
             >
@@ -687,23 +624,18 @@ export function DataGrid<T extends Record<string, any>>({
               {rowVirtualizer.getVirtualItems().map((virtualRow) => {
                 const row = sortedData[virtualRow.index];
 
-                // Use a stable key based on the row's unique identifier to
-                // ensure React remounts DOM nodes when the underlying data
-                // changes (e.g. after filtering). This prevents stale styles
-                // from lingering when different data occupies the same
-                // virtual index.
-                const rowKey = (row as any).id ?? `row-${virtualRow.index}`;
-
                 return (
                   <div
-                    key={rowKey}
-                    className={`grid transition-colors duration-200 ${
+                    key={virtualRow.key}
+                    className={`grid overflow-hidden ${
                       getRowClassName?.(row) || ""
                     }`}
                     style={{
                       gridTemplateColumns: `repeat(${columns.length}, minmax(200px, 1fr))`,
                       position: "absolute",
-                      top: `${virtualRow.start}px`,
+                      top: 0,
+                      transform: `translateY(${virtualRow.start - 37}px)`,
+                      lineHeight: "20px",
                       left: 0,
                       width: "100%",
                       height: `${virtualRow.size}px`,

@@ -24,12 +24,12 @@ The application is built with Next.js and uses Supabase as its database:
    - Fetch all books and recommenders from Supabase
    - Calculate recommendation percentiles and bucket rankings (0-5)
    - Generate static JSON files in `public/data/` for fast client-side access
-   - Split data into essential/extended and initial/full files for progressive loading
+   - Split book data into essential fields for browsing and extended fields for detail views
 
 3. **Frontend**: A React/Next.js app that:
-   - Loads initial data (first 50 items) immediately for fast page load
-   - Progressively loads remaining data in the background
-   - Uses SWR for efficient client-side data fetching
+   - Loads the complete book and recommender lists before displaying the grid
+   - Fetches related-book data for a selected book through `/booklist/api/books/[id]/related`
+   - Uses SWR's immutable cache to keep the lists stable while browsing
    - Renders books and recommenders in a virtualized grid for performance
 
 ## Important: Base Path Configuration
@@ -64,8 +64,8 @@ To run this project at the root path instead (e.g., `https://example.com/`):
 
 4. **Update data paths** in `app/page.tsx` (remove `/booklist` prefix from all JSON paths):
    ```diff
-   - "/booklist/data/books-initial.json"
-   + "/data/books-initial.json"
+   - "/booklist/data/books-essential.json"
+   + "/data/books-essential.json"
    ```
 
 ## Running Locally

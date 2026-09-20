@@ -1,10 +1,12 @@
 import { X, BookOpen, Tag, ChevronLeft, User, Link } from "lucide-react";
-import { FormattedBook } from "@/types";
+import { EssentialBook, ExtendedBook } from "@/types";
 import { useCallback, useState } from "react";
 import { useEntityClick } from "../utils/use-entity-click";
+import useSWRImmutable from "swr/immutable";
+import fetcher from "@/utils/fetcher";
 
 type BookDetailProps = {
-  book: FormattedBook;
+  book: EssentialBook;
   onClose?: () => void;
   onBackdropClick?: () => void;
   isHovered?: boolean;
@@ -21,6 +23,12 @@ export default function BookDetail({
   isNavigating = false
 }: BookDetailProps) {
   const [showAllRecommenders, setShowAllRecommenders] = useState(false);
+  const { data: extended, error, mutate } = useSWRImmutable<ExtendedBook>(
+    isTopIndex ? `/booklist/api/books/${encodeURIComponent(book.id)}/related` : null,
+    fetcher
+  );
+  const relatedBooks = extended?.related_books ?? [];
+  const similarBooks = extended?.similar_books ?? [];
   const handleBackdropClick = useCallback(
     (e: React.MouseEvent) => {
       if (e.target === e.currentTarget) {
@@ -171,14 +179,21 @@ export default function BookDetail({
               )}
 
               {/* Similar books (combined) */}
-              {(book.related_books.length > 0 || book.similar_books.length > 0) && (
+              {!extended && !error && <p role="status" className="text-muted-foreground">Loading similar books…</p>}
+              {error && (
+                <p role="alert" className="text-muted-foreground">
+                  Couldn’t load similar books.{" "}
+                  <button className="underline" onClick={() => void mutate()}>Try again</button>
+                </p>
+              )}
+              {(relatedBooks.length > 0 || similarBooks.length > 0) && (
                 <div className="space-y-2">
                   <h2 className="text-base text-text font-bold">
                     Similar Books
                   </h2>
                   <div className="space-y-4">
                     {Object.values(
-                      [...book.similar_books, ...book.related_books].reduce<Record<string, {
+                      [...similarBooks, ...relatedBooks].reduce<Record<string, {
                         id: string;
                         title: string;
                         author: string;

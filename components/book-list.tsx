@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { Counter } from "@/components/counter";
-import { FormattedBook, FormattedRecommender } from "@/types";
+import { EssentialBook, FormattedRecommender } from "@/types";
 import { useRouter, useSearchParams } from "next/navigation";
 import BookDetail from "@/components/book-detail";
 import RecommenderDetail from "@/components/recommender-detail";
@@ -14,7 +14,7 @@ export function BookList({
   initialBooks,
   initialRecommenders,
 }: {
-  initialBooks: FormattedBook[];
+  initialBooks: EssentialBook[];
   initialRecommenders: FormattedRecommender[];
 }) {
   const router = useRouter();

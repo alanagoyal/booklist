@@ -3,7 +3,7 @@
 import { Fragment, useCallback } from "react";
 import { useEntityClick } from "../utils/use-entity-click";
 import { DataGrid } from "@/components/grid";
-import { FormattedBook } from "@/types";
+import { EssentialBook } from "@/types";
 import { truncateText } from "@/utils/text";
 import { formatPercentile } from "../utils/format";
 import { InfoIcon } from './icons';
@@ -12,7 +12,7 @@ import { InfoIcon } from './icons';
 function TitleCell({
   row: { original },
 }: {
-  row: { original: FormattedBook };
+  row: { original: EssentialBook };
 }) {
   return (
     <span className="text-text whitespace-pre-line line-clamp-2">
@@ -26,7 +26,7 @@ function RecommenderCell({
   original,
   isMobile,
 }: {
-  original: FormattedBook;
+  original: EssentialBook;
   isMobile: boolean;
 }) {
   const handleRecommenderClick = useEntityClick();
@@ -77,7 +77,7 @@ function RecommenderCell({
 }
 
 // Genre cell
-function GenreCell({ original }: { original: FormattedBook }) {
+function GenreCell({ original }: { original: EssentialBook }) {
   return (
     <div className="whitespace-pre-line line-clamp-2 text-text">
       <span className="break-words">
@@ -98,7 +98,7 @@ function GenreCell({ original }: { original: FormattedBook }) {
 }
 
 interface BookGridProps {
-  data: FormattedBook[];
+  data: EssentialBook[];
   isMobile: boolean;
 }
 
@@ -106,40 +106,40 @@ export default function BookGrid({ data, isMobile }: BookGridProps) {
   // Row click handler
   const handleEntityClick = useEntityClick();
   const handleRowClick = useCallback(
-    (book: FormattedBook) => handleEntityClick(book.id || book.title),
+    (book: EssentialBook) => handleEntityClick(book.id || book.title),
     [handleEntityClick]
   );
 
   // Columns
   const columns = [
     {
-      field: "title" as keyof FormattedBook,
+      field: "title" as keyof EssentialBook,
       header: "Title",
-      cell: (props: { row: { original: FormattedBook } }) => (
+      cell: (props: { row: { original: EssentialBook } }) => (
         <TitleCell {...props} />
       ),
     },
-    { field: "author" as keyof FormattedBook, header: "Author" },
+    { field: "author" as keyof EssentialBook, header: "Author" },
     {
-      field: "recommenders" as keyof FormattedBook,
+      field: "recommenders" as keyof EssentialBook,
       header: "Recommenders",
-      cell: (props: { row: { original: FormattedBook } }) => (
+      cell: (props: { row: { original: EssentialBook } }) => (
         <RecommenderCell original={props.row.original} isMobile={isMobile} />
       ),
     },
     {
-      field: "book_description" as keyof FormattedBook,
+      field: "book_description" as keyof EssentialBook,
       header: "Description",
-      cell: (props: { row: { original: FormattedBook } }) => (
+      cell: (props: { row: { original: EssentialBook } }) => (
         <div className="whitespace-pre-line line-clamp-2 text-text selection:bg-main selection:text-mtext transition-all duration-200">
           {props.row.original.description}
         </div>
       ),
     },
     {
-      field: "genres" as keyof FormattedBook,
+      field: "genres" as keyof EssentialBook,
       header: "Genre",
-      cell: (props: { row: { original: FormattedBook } }) => (
+      cell: (props: { row: { original: EssentialBook } }) => (
         <GenreCell original={props.row.original} />
       ),
     },
@@ -149,7 +149,7 @@ export default function BookGrid({ data, isMobile }: BookGridProps) {
     <DataGrid
       data={data}
       columns={columns}
-      getRowClassName={(row: FormattedBook) =>
+      getRowClassName={(row: EssentialBook) =>
         `cursor-pointer ${row._background_color}`
       }
       onRowClick={handleRowClick}
