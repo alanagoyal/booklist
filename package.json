@@ -6,11 +6,13 @@
     "node": "24.x"
   },
   "scripts": {
+    "classify-books": "tsx scripts/classify-books-with-jev.ts",
     "dev": "npm run dump-data && next dev",
     "dump-data": "tsx scripts/dump-data.ts",
     "build": "npm run dump-data && next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test:classification": "tsx --test scripts/classify-books-with-jev.test.ts"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.7",
@@ -21,6 +23,7 @@
     "@types/dotenv": "^6.1.1",
     "@types/lodash": "^4.17.16",
     "@types/react-window": "^1.8.8",
+    "@typesafe-ai/sdk": "0.6.0",
     "braintrust": "^0.0.195",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

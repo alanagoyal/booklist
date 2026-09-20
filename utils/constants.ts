@@ -1,4 +1,5 @@
 import { Book, Person } from "@/types";
+import { BOOK_GENRES } from "@/config/book-genres";
 
 export const FIELD_VALUES = {
   type: [
@@ -21,26 +22,5 @@ export const FIELD_VALUES = {
     "Product Manager or Designer",
     "Scientist"
   ],
-  genres: [
-    "Biography",
-    "Business",
-    "Children",
-    "Classic",
-    "Economics",
-    "Fantasy",
-    "Fiction",
-    "History",
-    "Horror",
-    "Memoir",
-    "Mystery",
-    "Nonfiction",
-    "Philosophy",
-    "Poetry",
-    "Politics",
-    "Romance",
-    "Science",
-    "Science Fiction",
-    "Self-Help",
-    "Young Adult",
-  ],
+  genres: BOOK_GENRES,
 } as const;
