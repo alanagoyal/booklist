@@ -2,6 +2,7 @@ import { createClient } from "@/utils/supabase/server";
 import { writeFileSync, mkdirSync, existsSync } from "fs";
 import { join } from "path";
 import { config } from "dotenv";
+import { fetchRelatedBooks } from "./fetch-related-books";
 import { 
   FormattedBook, 
   FormattedRecommender, 
@@ -36,8 +37,9 @@ async function fetchAllWithPagination<T>(
     });
 
     if (error) {
-      console.error(`Error fetching ${rpcName}:`, error);
-      break;
+      throw new Error(
+        `${rpcName} page ${page + 1} failed: ${error.code ? `${error.code} ` : ""}${error.message}`
+      );
     }
 
     if (!data || data.length === 0) {
@@ -124,18 +126,17 @@ async function dumpData() {
       );
 
       if (recommendationsError) {
-        console.error("Error fetching recommendations:", recommendationsError);
+        throw new Error(
+          `get_book_recommendations failed: ${recommendationsError.code ? `${recommendationsError.code} ` : ""}${recommendationsError.message}`
+        );
       }
 
-      // Get related books for all books
-      const { data: relatedBooksData, error: relatedError } = await supabase.rpc(
-        "get_related_books",
-        { book_ids: booksWithBuckets.map((b: any) => b.id) }
+      // Bound the work done by each RPC call so the recommendation self-join
+      // stays below the database statement timeout.
+      const relatedBooksData = await fetchRelatedBooks(
+        supabase,
+        booksWithBuckets.map((book: any) => book.id)
       );
-
-      if (relatedError) {
-        console.error("Error fetching related books:", relatedError);
-      }
       
       // Combine all data
       const formattedBooks: FormattedBook[] = booksWithBuckets.map((book: any) => ({
@@ -364,7 +365,8 @@ async function dumpData() {
       console.log(`✓ Wrote initial data for ${initialRecommenders.length} recommenders`);
     }
   } catch (error) {
-    console.error("Error:", error);
+    console.error("Data export failed:", error);
+    process.exitCode = 1;
   }
 }
 
